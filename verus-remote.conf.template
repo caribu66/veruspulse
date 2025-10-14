@@ -1,0 +1,43 @@
+# VerusCoin Daemon Configuration - Remote Access Setup
+# This configuration allows the daemon to accept connections from other machines on the network
+
+# RPC Configuration for Remote Access
+rpcuser=verus
+rpcpassword=verus
+rpcallowip=192.168.1.0/24
+rpcallowip=10.0.0.0/8
+rpcallowip=172.16.0.0/12
+rpchost=0.0.0.0
+rpcbind=0.0.0.0
+rpcport=18843
+server=1
+rpcworkqueue=256
+
+# Essential Indexes for Explorer Functionality
+txindex=1
+addressindex=1
+timestampindex=1
+spentindex=1
+identityindex=1
+
+# Performance Optimizations for Explorer
+dbcache=2048
+maxmempool=512
+maxconnections=40
+maxuploadtarget=0
+minrelaytxfee=0.00001
+
+# Network Configuration
+# Allow incoming connections from the network
+listen=1
+bind=0.0.0.0
+
+# Explorer-Specific Features
+daemon=1
+
+# Security Notes:
+# - Change rpcuser and rpcpassword to secure values
+# - Restrict rpcallowip to your specific network ranges
+# - Consider using a firewall to limit access to port 18843
+# - Use HTTPS in production environments
+

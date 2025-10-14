@@ -1,0 +1,720 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for VerusCoin Explorer */
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Theme variables */
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e3a8a;
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #8b5cf6;
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.05);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-bg-hover: rgba(255, 255, 255, 0.1);
+}
+
+/* Light theme */
+[data-theme='light'] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --accent-primary: #2563eb;
+  --accent-secondary: #7c3aed;
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e1;
+  --card-bg: #ffffff;
+  --card-bg-hover: #f8fafc;
+}
+
+/* High contrast theme */
+[data-high-contrast='true'] {
+  --bg-primary: #000000;
+  --bg-secondary: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --accent-primary: #00ff00;
+  --accent-secondary: #ffff00;
+}
+
+/* Reduced motion */
+[data-reduced-motion='true'] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Ensure theme is applied */
+html {
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 50%,
+    var(--bg-primary) 100%
+  );
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+body {
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 50%,
+    var(--bg-primary) 100%
+  );
+  min-height: 100vh;
+  color: var(--text-primary);
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
+}
+
+/* Theme-aware utility classes */
+.theme-text-primary {
+  color: var(--text-primary);
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary);
+}
+
+.theme-text-muted {
+  color: var(--text-muted);
+}
+
+.theme-bg-primary {
+  background-color: var(--bg-primary);
+}
+
+.theme-bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.theme-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-primary);
+}
+
+.theme-card:hover {
+  background-color: var(--card-bg-hover);
+}
+
+.theme-border {
+  border-color: var(--border-primary);
+}
+
+.theme-border-secondary {
+  border-color: var(--border-secondary);
+}
+
+/* Light theme specific overrides for common Tailwind classes */
+[data-theme='light'] .text-white {
+  color: var(--text-primary) !important;
+}
+
+[data-theme='light'] .text-blue-200 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='light'] .text-blue-300 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme='light'] .text-gray-400 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme='light'] .bg-white\/10 {
+  background-color: var(--card-bg) !important;
+}
+
+[data-theme='light'] .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+[data-theme='light'] .bg-white\/20 {
+  background-color: var(--card-bg-hover) !important;
+}
+
+[data-theme='light'] .border-white\/10 {
+  border-color: var(--border-primary) !important;
+}
+
+[data-theme='light'] .border-white\/20 {
+  border-color: var(--border-secondary) !important;
+}
+
+/* Additional light theme overrides for better contrast */
+[data-theme='light'] .text-green-300 {
+  color: #059669 !important;
+}
+
+[data-theme='light'] .text-green-400 {
+  color: #16a34a !important;
+}
+
+[data-theme='light'] .text-blue-400 {
+  color: #2563eb !important;
+}
+
+[data-theme='light'] .text-purple-400 {
+  color: #7c3aed !important;
+}
+
+[data-theme='light'] .text-yellow-400 {
+  color: #ca8a04 !important;
+}
+
+[data-theme='light'] .text-red-400 {
+  color: #dc2626 !important;
+}
+
+[data-theme='light'] .text-orange-400 {
+  color: #ea580c !important;
+}
+
+/* Ensure navigation and header elements have good contrast */
+[data-theme='light'] .bg-white\/10:hover {
+  background-color: var(--card-bg-hover) !important;
+}
+
+[data-theme='light'] .hover\:bg-white\/20:hover {
+  background-color: var(--card-bg-hover) !important;
+}
+
+/* Fix background gradients and complex backgrounds */
+[data-theme='light'] .bg-gradient-to-br {
+  background: linear-gradient(
+    to bottom right,
+    #f8fafc,
+    #e2e8f0,
+    #f1f5f9
+  ) !important;
+}
+
+[data-theme='light'] .from-slate-900 {
+  --tw-gradient-from: #f8fafc !important;
+}
+
+[data-theme='light'] .via-blue-900 {
+  --tw-gradient-via: #e2e8f0 !important;
+}
+
+[data-theme='light'] .to-slate-900 {
+  --tw-gradient-to: #f1f5f9 !important;
+}
+
+/* Fix input fields and form elements */
+[data-theme='light'] .placeholder-blue-200::placeholder {
+  color: var(--text-muted) !important;
+}
+
+[data-theme='light'] input[type='text'],
+[data-theme='light'] input[type='search'],
+[data-theme='light'] textarea,
+[data-theme='light'] select {
+  color: var(--text-primary) !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-color: var(--border-primary) !important;
+}
+
+[data-theme='light'] input[type='text']:focus,
+[data-theme='light'] input[type='search']:focus,
+[data-theme='light'] textarea:focus,
+[data-theme='light'] select:focus {
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Fix backdrop blur elements */
+[data-theme='light'] .backdrop-blur-sm {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid var(--border-primary) !important;
+}
+
+/* Fix loading states and animations */
+[data-theme='light'] .animate-spin {
+  border-color: var(--accent-primary) !important;
+}
+
+[data-theme='light'] .animate-pulse {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Fix scrollbar */
+[data-theme='light'] ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme='light'] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme='light'] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Fix focus states */
+[data-theme='light'] .focus\:ring-blue-500\/50:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Fix shadow effects */
+[data-theme='light'] .shadow-lg {
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme='light'] .shadow-md {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Fix specific component issues */
+[data-theme='light'] .text-red-200 {
+  color: #dc2626 !important;
+}
+
+[data-theme='light'] .bg-red-500\/10 {
+  background-color: rgba(220, 38, 38, 0.1) !important;
+}
+
+[data-theme='light'] .border-red-500\/20 {
+  border-color: rgba(220, 38, 38, 0.2) !important;
+}
+
+/* Fix more specific color issues */
+[data-theme='light'] .text-blue-300 {
+  color: #1d4ed8 !important;
+}
+
+[data-theme='light'] .text-gray-300 {
+  color: #6b7280 !important;
+}
+
+[data-theme='light'] .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+[data-theme='light'] .text-white\/80 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='light'] .text-white\/60 {
+  color: var(--text-muted) !important;
+}
+
+/* Fix icon backgrounds */
+[data-theme='light'] .bg-blue-500\/20 {
+  background-color: rgba(37, 99, 235, 0.1) !important;
+}
+
+[data-theme='light'] .bg-green-500\/20 {
+  background-color: rgba(34, 197, 94, 0.1) !important;
+}
+
+[data-theme='light'] .bg-purple-500\/20 {
+  background-color: rgba(147, 51, 234, 0.1) !important;
+}
+
+[data-theme='light'] .bg-yellow-500\/20 {
+  background-color: rgba(234, 179, 8, 0.1) !important;
+}
+
+[data-theme='light'] .bg-orange-500\/20 {
+  background-color: rgba(249, 115, 22, 0.1) !important;
+}
+
+[data-theme='light'] .bg-red-500\/20 {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Fix border colors */
+[data-theme='light'] .border-blue-500\/30 {
+  border-color: rgba(37, 99, 235, 0.3) !important;
+}
+
+[data-theme='light'] .border-green-500\/30 {
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+[data-theme='light'] .border-purple-500\/30 {
+  border-color: rgba(147, 51, 234, 0.3) !important;
+}
+
+/* Fix hover states for better interaction feedback */
+[data-theme='light'] .hover\:text-white:hover {
+  color: var(--text-primary) !important;
+}
+
+[data-theme='light'] .hover\:text-blue-300:hover {
+  color: #1d4ed8 !important;
+}
+
+[data-theme='light'] .hover\:bg-blue-500\/30:hover {
+  background-color: rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Fix disabled states */
+[data-theme='light'] .disabled\:opacity-50:disabled {
+  opacity: 0.6 !important;
+}
+
+/* Fix loading skeleton states */
+[data-theme='light'] .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme='light'] .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Fix code blocks and monospace text */
+[data-theme='light'] .font-mono {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  padding: 0.125rem 0.25rem !important;
+  border-radius: 0.25rem !important;
+}
+
+/* Fix breadcrumb navigation */
+[data-theme='light'] .text-blue-200 {
+  color: var(--text-secondary) !important;
+}
+
+/* Fix footer and secondary text */
+[data-theme='light'] .text-xs {
+  color: var(--text-muted) !important;
+}
+
+/* Fix theme toggle buttons specifically */
+[data-theme='light'] .bg-yellow-500\/20 {
+  background-color: rgba(234, 179, 8, 0.15) !important;
+}
+
+[data-theme='light'] .text-yellow-400 {
+  color: #ca8a04 !important;
+}
+
+/* Fix button states */
+[data-theme='light'] .bg-blue-500 {
+  background-color: var(--accent-primary) !important;
+}
+
+[data-theme='light'] .bg-blue-500:hover {
+  background-color: #1d4ed8 !important;
+}
+
+/* Fix active/inactive states */
+[data-theme='light'] button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+/* Fix mobile menu and responsive elements */
+[data-theme='light'] .lg\:hidden {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='light'] .lg\:hidden:hover {
+  color: var(--text-primary) !important;
+  background-color: var(--card-bg-hover) !important;
+}
+
+/* Fix navigation active states */
+[data-theme='light'] .bg-white\/20 {
+  background-color: var(--card-bg-hover) !important;
+}
+
+/* Fix tab navigation */
+[data-theme='light'] nav button {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='light'] nav button:hover {
+  color: var(--text-primary) !important;
+  background-color: var(--card-bg-hover) !important;
+}
+
+/* Fix border bottom for navigation */
+[data-theme='light'] .border-b-2 {
+  border-bottom-color: var(--accent-primary) !important;
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20;
+}
+
+/* Text gradient */
+.text-gradient {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Modal scrollbar */
+.modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #6b7280 #1f2937;
+  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.3);
+  border-radius: 3px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.6);
+  border-radius: 3px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.8);
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Focus styles */
+.focus-visible:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast focus styles */
+[data-high-contrast='true'] .focus-visible:focus {
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
+/* Theme-aware components */
+.theme-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+[data-theme='light'] .theme-card {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-high-contrast='true'] .theme-card {
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent-primary);
+}
+
+/* Theme-aware buttons */
+.theme-button {
+  background: var(--accent-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--accent-primary);
+}
+
+.theme-button:hover {
+  background: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+}
+
+[data-high-contrast='true'] .theme-button {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  border: 2px solid var(--accent-primary);
+}
+
+/* Theme-aware text */
+.theme-text-primary {
+  color: var(--text-primary);
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary);
+}
+
+/* Theme-aware backgrounds */
+.theme-bg-primary {
+  background: var(--bg-primary);
+}
+
+.theme-bg-secondary {
+  background: var(--bg-secondary);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  /* Touch-friendly interactions */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* Larger touch targets */
+  button,
+  a,
+  [role='button'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better spacing for mobile */
+  .mobile-spacing {
+    padding: 1rem;
+  }
+
+  /* Mobile-friendly scrollbars */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  /* Prevent zoom on input focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Better mobile typography */
+  h1 {
+    font-size: 1.5rem;
+  }
+  h2 {
+    font-size: 1.25rem;
+  }
+  h3 {
+    font-size: 1.125rem;
+  }
+
+  /* Mobile-friendly modals */
+  .modal-mobile {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+}
+
+/* Mobile viewport height fix */
+:root {
+  --vh: 1vh;
+}
+
+.mobile-vh {
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+/* High contrast mobile styles */
+[data-high-contrast='true'] @media (max-width: 768px) {
+  button,
+  a,
+  [role='button'] {
+    border: 2px solid var(--accent-primary);
+  }
+
+  input,
+  select,
+  textarea {
+    border: 2px solid var(--accent-primary);
+  }
+}

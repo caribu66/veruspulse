@@ -1,0 +1,30 @@
+# VerusCoin Daemon Configuration - Optimized for Explorer
+rpcuser=verus
+rpcpassword=verus
+rpcallowip=127.0.0.1
+rpchost=127.0.0.1
+rpcbind=127.0.0.1
+rpcport=18843
+server=1
+rpcworkqueue=256
+
+# Essential Indexes for Explorer Functionality
+txindex=1
+addressindex=1
+timestampindex=1
+spentindex=1
+identityindex=1
+
+# Performance Optimizations for Explorer
+dbcache=2048
+maxmempool=512
+maxconnections=40
+maxuploadtarget=0
+minrelaytxfee=0.00001
+
+# Explorer-Specific Features
+# Enable detailed transaction info
+# Enable block template for mining info
+# Enable mempool info for transaction monitoring
+
+daemon=1

@@ -1,0 +1,37 @@
+# UTXO Database Configuration
+# Copy this to .env.local and configure your database
+
+# Enable UTXO enhancement (set to 'true' to enable)
+UTXO_DATABASE_ENABLED=false
+
+# Database Configuration
+# PostgreSQL (recommended for production)
+DATABASE_URL=postgresql://username:password@localhost:5432/verus_utxo_db
+
+# SQLite (for development/testing)
+# DATABASE_URL=sqlite:./data/utxo.db
+
+# Database Connection Pool
+DB_POOL_MIN=2
+DB_POOL_MAX=10
+DB_POOL_IDLE_TIMEOUT=30000
+
+# UTXO Sync Configuration
+UTXO_SYNC_INTERVAL=300000  # 5 minutes in milliseconds
+UTXO_SYNC_BATCH_SIZE=100   # Number of addresses to sync per batch
+UTXO_CLEANUP_INTERVAL=86400000  # 24 hours in milliseconds
+
+# Staking Constants (Verus-specific)
+VERUS_MIN_STAKE_AGE=2000      # blocks (~33 hours)
+VERUS_MIN_STAKE_VALUE=100000000  # 1 VRSC in satoshis
+VERUS_COOLDOWN_PERIOD=2000    # blocks after staking
+VERUS_BLOCK_TIME=60           # seconds
+
+# Performance Settings
+UTXO_CACHE_TTL=300000         # 5 minutes cache TTL
+UTXO_ANALYTICS_TTL=3600000    # 1 hour analytics cache TTL
+MAX_UTXO_HISTORY_DAYS=365     # Keep UTXO history for 1 year
+
+# Logging
+UTXO_LOG_LEVEL=info           # debug, info, warn, error
+UTXO_LOG_SQL=false            # Log SQL queries (development only)

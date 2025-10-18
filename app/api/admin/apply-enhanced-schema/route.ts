@@ -273,15 +273,16 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: 'Enhanced database schema applied successfully'
+      message: 'Enhanced database schema applied successfully',
     });
-
   } catch (error: any) {
     console.error('[Schema] Error applying schema:', error);
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
-

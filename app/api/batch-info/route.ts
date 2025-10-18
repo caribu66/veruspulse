@@ -74,6 +74,3 @@ export async function GET() {
     );
   }
 }
-
-
-

@@ -220,14 +220,33 @@ class HealthMonitor {
   async checkMemoryHealth(): Promise<HealthStatus> {
     try {
       const memoryUsage = process.memoryUsage();
-      const totalMemory = memoryUsage.heapTotal;
-      const usedMemory = memoryUsage.heapUsed;
-      const memoryUsagePercent = (usedMemory / totalMemory) * 100;
+
+      // Get system memory information
+      const fs = require('fs');
+      const memInfo = fs.readFileSync('/proc/meminfo', 'utf8');
+      const memTotalMatch = memInfo.match(/MemTotal:\s+(\d+)\s+kB/);
+      const memAvailableMatch = memInfo.match(/MemAvailable:\s+(\d+)\s+kB/);
+
+      let systemMemoryPercent = 0;
+      let systemTotalMemory = 0;
+      let systemUsedMemory = 0;
+
+      if (memTotalMatch && memAvailableMatch) {
+        systemTotalMemory = parseInt(memTotalMatch[1]) * 1024; // Convert to bytes
+        const systemAvailableMemory = parseInt(memAvailableMatch[1]) * 1024; // Convert to bytes
+        systemUsedMemory = systemTotalMemory - systemAvailableMemory;
+        systemMemoryPercent = (systemUsedMemory / systemTotalMemory) * 100;
+      } else {
+        // Fallback to RSS-based calculation if /proc/meminfo is not available
+        systemTotalMemory = memoryUsage.rss * 10; // Rough estimate
+        systemUsedMemory = memoryUsage.rss;
+        systemMemoryPercent = (systemUsedMemory / systemTotalMemory) * 100;
+      }
 
       let status: 'healthy' | 'degraded' | 'unhealthy';
-      if (memoryUsagePercent < 70) {
+      if (systemMemoryPercent < 70) {
         status = 'healthy';
-      } else if (memoryUsagePercent < 90) {
+      } else if (systemMemoryPercent < 90) {
         status = 'degraded';
       } else {
         status = 'unhealthy';
@@ -236,13 +255,15 @@ class HealthMonitor {
       const healthStatus: HealthStatus = {
         component: 'memory',
         status,
-        message: `Memory usage: ${memoryUsagePercent.toFixed(1)}%`,
+        message: `System memory usage: ${systemMemoryPercent.toFixed(1)}%`,
         metrics: {
-          heapUsed: usedMemory,
-          heapTotal: totalMemory,
+          heapUsed: memoryUsage.heapUsed,
+          heapTotal: memoryUsage.heapTotal,
           rss: memoryUsage.rss,
           external: memoryUsage.external,
-          usagePercent: memoryUsagePercent,
+          usagePercent: systemMemoryPercent,
+          systemTotalMemory,
+          systemUsedMemory,
         },
         lastChecked: new Date().toISOString(),
       };

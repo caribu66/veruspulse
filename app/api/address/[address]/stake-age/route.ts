@@ -14,10 +14,13 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({
-      success: false,
-      error: 'Stake age analysis feature is not currently available',
-    }, { status: 503 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Stake age analysis feature is not currently available',
+      },
+      { status: 503 }
+    );
   } catch (error) {
     console.error('Error analyzing stake age:', error);
     return NextResponse.json(
@@ -45,10 +48,13 @@ export async function POST(
       );
     }
 
-    return NextResponse.json({
-      success: false,
-      error: 'Stake age analysis feature is not currently available',
-    }, { status: 503 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Stake age analysis feature is not currently available',
+      },
+      { status: 503 }
+    );
   } catch (error) {
     console.error('Error in comprehensive stake age analysis:', error);
     return NextResponse.json(

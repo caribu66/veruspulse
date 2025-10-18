@@ -72,7 +72,10 @@ export class ComprehensiveStatisticsCalculator {
 
     // Calculate basic metrics
     const totalStakes = stakeEvents.length;
-    const totalRewardsSatoshis = stakeEvents.reduce((sum, event) => sum + BigInt(event.reward_amount), BigInt(0));
+    const totalRewardsSatoshis = stakeEvents.reduce(
+      (sum, event) => sum + BigInt(event.reward_amount),
+      BigInt(0)
+    );
     const firstStakeTime = stakeEvents[0].block_time;
     const lastStakeTime = stakeEvents[stakeEvents.length - 1].block_time;
 
@@ -85,9 +88,20 @@ export class ComprehensiveStatisticsCalculator {
     const stakesPerMonth = totalStakes / (totalDays / 30);
 
     // Calculate APY and ROI
-    const avgStakeAmount = stakeEvents.reduce((sum, event) => sum + BigInt(event.stake_amount), BigInt(0)) / BigInt(totalStakes);
-    const apyAllTime = this.calculateAPY(Number(totalRewardsSatoshis), Number(avgStakeAmount), totalDays);
-    const roiAllTime = this.calculateROI(Number(totalRewardsSatoshis), Number(avgStakeAmount));
+    const avgStakeAmount =
+      stakeEvents.reduce(
+        (sum, event) => sum + BigInt(event.stake_amount),
+        BigInt(0)
+      ) / BigInt(totalStakes);
+    const apyAllTime = this.calculateAPY(
+      Number(totalRewardsSatoshis),
+      Number(avgStakeAmount),
+      totalDays
+    );
+    const roiAllTime = this.calculateROI(
+      Number(totalRewardsSatoshis),
+      Number(avgStakeAmount)
+    );
 
     // Calculate time-period specific APYs
     const apy7d = await this.calculatePeriodAPY(address, 7);
@@ -100,19 +114,28 @@ export class ComprehensiveStatisticsCalculator {
     const stakingEfficiency = await this.calculateStakingEfficiency(address);
 
     // Calculate average metrics
-    const avgStakeAge = Math.floor(stakeEvents.reduce((sum, event) => sum + event.stake_age, 0) / totalStakes);
+    const avgStakeAge = Math.floor(
+      stakeEvents.reduce((sum, event) => sum + event.stake_age, 0) / totalStakes
+    );
     const avgRewardAmountSatoshis = Number(totalRewardsSatoshis) / totalStakes;
 
     // Get UTXO health metrics
     const utxoMetrics = await this.getUTXOMetrics(address);
 
     // Calculate records
-    const highestReward = Math.max(...stakeEvents.map(e => Number(e.reward_amount)));
-    const lowestReward = Math.min(...stakeEvents.map(e => Number(e.reward_amount)));
-    const highestRewardEvent = stakeEvents.find(e => Number(e.reward_amount) === highestReward);
+    const highestReward = Math.max(
+      ...stakeEvents.map(e => Number(e.reward_amount))
+    );
+    const lowestReward = Math.min(
+      ...stakeEvents.map(e => Number(e.reward_amount))
+    );
+    const highestRewardEvent = stakeEvents.find(
+      e => Number(e.reward_amount) === highestReward
+    );
 
     // Calculate streaks and dry spells
-    const { longestDrySpell, currentStreak } = this.calculateStreaks(stakeEvents);
+    const { longestDrySpell, currentStreak } =
+      this.calculateStreaks(stakeEvents);
 
     // Calculate trends
     const rewardTrend7d = await this.calculateTrend(address, 'reward', 7);
@@ -152,7 +175,7 @@ export class ComprehensiveStatisticsCalculator {
       rewardTrend7d,
       rewardTrend30d,
       apyTrend7d,
-      apyTrend30d
+      apyTrend30d,
     };
 
     // Store statistics
@@ -167,9 +190,13 @@ export class ComprehensiveStatisticsCalculator {
   /**
    * Calculate APY (Annual Percentage Yield)
    */
-  private calculateAPY(totalRewards: number, avgStakeAmount: number, durationDays: number): number {
+  private calculateAPY(
+    totalRewards: number,
+    avgStakeAmount: number,
+    durationDays: number
+  ): number {
     if (avgStakeAmount === 0 || durationDays === 0) return 0;
-    
+
     const roi = totalRewards / avgStakeAmount;
     const annualizedRoi = (roi / durationDays) * 365;
     return annualizedRoi * 100;
@@ -186,7 +213,10 @@ export class ComprehensiveStatisticsCalculator {
   /**
    * Calculate APY for a specific time period
    */
-  private async calculatePeriodAPY(address: string, days: number): Promise<number> {
+  private async calculatePeriodAPY(
+    address: string,
+    days: number
+  ): Promise<number> {
     const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
     const result = await this.db.query(
@@ -209,7 +239,10 @@ export class ComprehensiveStatisticsCalculator {
   /**
    * Calculate ROI for a specific time period
    */
-  private async calculatePeriodROI(address: string, days: number): Promise<number> {
+  private async calculatePeriodROI(
+    address: string,
+    days: number
+  ): Promise<number> {
     const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
     const result = await this.db.query(
@@ -240,7 +273,7 @@ export class ComprehensiveStatisticsCalculator {
     );
 
     const actualStakes = Number(result.rows[0]?.actual_stakes || 0);
-    
+
     // Simple efficiency metric: normalized by time
     // This can be enhanced with network difficulty and stake weight
     return Math.min(actualStakes / 100, 1.0); // Normalize to 0-1
@@ -273,14 +306,17 @@ export class ComprehensiveStatisticsCalculator {
       totalValueSatoshis: Number(row.total_value),
       eligibleValueSatoshis: Number(row.eligible_value),
       largestUtxoSatoshis: Number(row.largest_utxo),
-      smallestEligibleSatoshis: Number(row.smallest_eligible)
+      smallestEligibleSatoshis: Number(row.smallest_eligible),
     };
   }
 
   /**
    * Calculate streaks and dry spells
    */
-  private calculateStreaks(stakeEvents: any[]): { longestDrySpell: number; currentStreak: number } {
+  private calculateStreaks(stakeEvents: any[]): {
+    longestDrySpell: number;
+    currentStreak: number;
+  } {
     let longestDrySpell = 0;
     let currentStreak = 0;
 
@@ -293,21 +329,29 @@ export class ComprehensiveStatisticsCalculator {
     }
 
     // Calculate current streak (days since last stake)
-    const lastStakeTime = new Date(stakeEvents[stakeEvents.length - 1].block_time).getTime();
+    const lastStakeTime = new Date(
+      stakeEvents[stakeEvents.length - 1].block_time
+    ).getTime();
     currentStreak = (Date.now() - lastStakeTime) / (1000 * 60 * 60 * 24);
 
     return {
       longestDrySpell: Math.floor(longestDrySpell),
-      currentStreak: Math.floor(currentStreak)
+      currentStreak: Math.floor(currentStreak),
     };
   }
 
   /**
    * Calculate trend direction
    */
-  private async calculateTrend(address: string, metric: 'reward' | 'apy', days: number): Promise<string> {
+  private async calculateTrend(
+    address: string,
+    metric: 'reward' | 'apy',
+    days: number
+  ): Promise<string> {
     const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    const midpointDate = new Date(Date.now() - (days / 2) * 24 * 60 * 60 * 1000);
+    const midpointDate = new Date(
+      Date.now() - (days / 2) * 24 * 60 * 60 * 1000
+    );
 
     if (metric === 'reward') {
       const firstHalf = await this.db.query(
@@ -328,7 +372,7 @@ export class ComprehensiveStatisticsCalculator {
       const secondAvg = Number(secondHalf.rows[0]?.avg_reward || 0);
 
       const change = ((secondAvg - firstAvg) / firstAvg) * 100;
-      
+
       if (change > 5) return 'increasing';
       if (change < -5) return 'decreasing';
       return 'stable';
@@ -341,7 +385,9 @@ export class ComprehensiveStatisticsCalculator {
   /**
    * Resolve friendly name from VerusID
    */
-  private async resolveFriendlyName(address: string): Promise<string | undefined> {
+  private async resolveFriendlyName(
+    address: string
+  ): Promise<string | undefined> {
     try {
       const result = await this.db.query(
         'SELECT name FROM identities WHERE identityaddress = $1',
@@ -456,14 +502,17 @@ export class ComprehensiveStatisticsCalculator {
       stats.rewardTrend7d,
       stats.rewardTrend30d,
       stats.apyTrend7d,
-      stats.apyTrend30d
+      stats.apyTrend30d,
     ]);
   }
 
   /**
    * Generate time series data
    */
-  private async generateTimeSeries(address: string, stakeEvents: any[]): Promise<void> {
+  private async generateTimeSeries(
+    address: string,
+    stakeEvents: any[]
+  ): Promise<void> {
     // Generate daily, weekly, and monthly time series
     await this.generateDailyTimeSeries(address, stakeEvents);
     await this.generateWeeklyTimeSeries(address, stakeEvents);
@@ -473,7 +522,10 @@ export class ComprehensiveStatisticsCalculator {
   /**
    * Generate daily time series
    */
-  private async generateDailyTimeSeries(address: string, stakeEvents: any[]): Promise<void> {
+  private async generateDailyTimeSeries(
+    address: string,
+    stakeEvents: any[]
+  ): Promise<void> {
     const dailyData = new Map<string, any[]>();
 
     // Group events by day
@@ -488,9 +540,13 @@ export class ComprehensiveStatisticsCalculator {
     // Store daily aggregates
     for (const [date, events] of Array.from(dailyData.entries())) {
       const stakeCount = events.length;
-      const totalRewards = events.reduce((sum, e) => sum + Number(e.reward_amount), 0);
+      const totalRewards = events.reduce(
+        (sum, e) => sum + Number(e.reward_amount),
+        0
+      );
       const avgReward = totalRewards / stakeCount;
-      const avgStakeAge = events.reduce((sum, e) => sum + e.stake_age, 0) / stakeCount;
+      const avgStakeAge =
+        events.reduce((sum, e) => sum + e.stake_age, 0) / stakeCount;
 
       const periodStart = new Date(date + 'T00:00:00Z');
       const periodEnd = new Date(date + 'T23:59:59Z');
@@ -505,7 +561,16 @@ export class ComprehensiveStatisticsCalculator {
           total_rewards_satoshis = EXCLUDED.total_rewards_satoshis,
           avg_reward_satoshis = EXCLUDED.avg_reward_satoshis,
           avg_stake_age = EXCLUDED.avg_stake_age`,
-        [address, 'daily', periodStart, periodEnd, stakeCount, totalRewards, avgReward, avgStakeAge]
+        [
+          address,
+          'daily',
+          periodStart,
+          periodEnd,
+          stakeCount,
+          totalRewards,
+          avgReward,
+          avgStakeAge,
+        ]
       );
     }
   }
@@ -513,7 +578,10 @@ export class ComprehensiveStatisticsCalculator {
   /**
    * Generate weekly time series
    */
-  private async generateWeeklyTimeSeries(address: string, stakeEvents: any[]): Promise<void> {
+  private async generateWeeklyTimeSeries(
+    address: string,
+    stakeEvents: any[]
+  ): Promise<void> {
     // Similar to daily but grouped by week
     const weeklyData = new Map<string, any[]>();
 
@@ -522,7 +590,7 @@ export class ComprehensiveStatisticsCalculator {
       const weekStart = new Date(date);
       weekStart.setDate(date.getDate() - date.getDay());
       const weekKey = weekStart.toISOString().split('T')[0];
-      
+
       if (!weeklyData.has(weekKey)) {
         weeklyData.set(weekKey, []);
       }
@@ -531,7 +599,10 @@ export class ComprehensiveStatisticsCalculator {
 
     for (const [weekStart, events] of Array.from(weeklyData.entries())) {
       const stakeCount = events.length;
-      const totalRewards = events.reduce((sum, e) => sum + Number(e.reward_amount), 0);
+      const totalRewards = events.reduce(
+        (sum, e) => sum + Number(e.reward_amount),
+        0
+      );
       const avgReward = totalRewards / stakeCount;
 
       const periodStart = new Date(weekStart + 'T00:00:00Z');
@@ -547,7 +618,15 @@ export class ComprehensiveStatisticsCalculator {
           stake_count = EXCLUDED.stake_count,
           total_rewards_satoshis = EXCLUDED.total_rewards_satoshis,
           avg_reward_satoshis = EXCLUDED.avg_reward_satoshis`,
-        [address, 'weekly', periodStart, periodEnd, stakeCount, totalRewards, avgReward]
+        [
+          address,
+          'weekly',
+          periodStart,
+          periodEnd,
+          stakeCount,
+          totalRewards,
+          avgReward,
+        ]
       );
     }
   }
@@ -555,13 +634,16 @@ export class ComprehensiveStatisticsCalculator {
   /**
    * Generate monthly time series
    */
-  private async generateMonthlyTimeSeries(address: string, stakeEvents: any[]): Promise<void> {
+  private async generateMonthlyTimeSeries(
+    address: string,
+    stakeEvents: any[]
+  ): Promise<void> {
     const monthlyData = new Map<string, any[]>();
 
     for (const event of stakeEvents) {
       const date = new Date(event.block_time);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
+
       if (!monthlyData.has(monthKey)) {
         monthlyData.set(monthKey, []);
       }
@@ -570,7 +652,10 @@ export class ComprehensiveStatisticsCalculator {
 
     for (const [month, events] of Array.from(monthlyData.entries())) {
       const stakeCount = events.length;
-      const totalRewards = events.reduce((sum, e) => sum + Number(e.reward_amount), 0);
+      const totalRewards = events.reduce(
+        (sum, e) => sum + Number(e.reward_amount),
+        0
+      );
       const avgReward = totalRewards / stakeCount;
 
       const [year, monthNum] = month.split('-');
@@ -588,7 +673,15 @@ export class ComprehensiveStatisticsCalculator {
           stake_count = EXCLUDED.stake_count,
           total_rewards_satoshis = EXCLUDED.total_rewards_satoshis,
           avg_reward_satoshis = EXCLUDED.avg_reward_satoshis`,
-        [address, 'monthly', periodStart, periodEnd, stakeCount, totalRewards, avgReward]
+        [
+          address,
+          'monthly',
+          periodStart,
+          periodEnd,
+          stakeCount,
+          totalRewards,
+          avgReward,
+        ]
       );
     }
   }
@@ -617,4 +710,3 @@ export class ComprehensiveStatisticsCalculator {
     console.log('[Stats Calculator] Network rankings updated');
   }
 }
-

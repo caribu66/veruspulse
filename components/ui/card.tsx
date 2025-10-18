@@ -1,78 +1,254 @@
-import * as React from 'react';
+'use client';
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className = '', ...props }, ref) => (
-  <div
-    ref={ref}
-    className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`}
-    {...props}
-  />
-));
-Card.displayName = 'Card';
+import React, { HTMLAttributes, ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
-const CardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className = '', ...props }, ref) => (
-  <div
-    ref={ref}
-    className={`flex flex-col space-y-1.5 p-6 ${className}`}
-    {...props}
-  />
-));
-CardHeader.displayName = 'CardHeader';
+/**
+ * Card Component System
+ * Standardized card styles with consistent variants and spacing
+ *
+ * @example
+ * ```tsx
+ * <Card variant="elevated" hover="lift">
+ *   <CardHeader>
+ *     <CardTitle>Title</CardTitle>
+ *     <CardDescription>Description</CardDescription>
+ *   </CardHeader>
+ *   <CardContent>
+ *     Content here
+ *   </CardContent>
+ *   <CardFooter>
+ *     <Button>Action</Button>
+ *   </CardFooter>
+ * </Card>
+ * ```
+ */
 
-const CardTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className = '', ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={`text-2xl font-semibold leading-none tracking-tight ${className}`}
-    {...props}
-  />
-));
-CardTitle.displayName = 'CardTitle';
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  /** Card visual style */
+  variant?: 'default' | 'elevated' | 'flat' | 'outlined';
+  /** Padding size - follows 8pt grid system */
+  padding?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  /** Hover effect */
+  hover?: 'none' | 'lift' | 'glow' | 'brighten';
+  /** Additional class names */
+  className?: string;
+  /** Card content */
+  children?: ReactNode;
+}
 
-const CardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className = '', ...props }, ref) => (
-  <p
-    ref={ref}
-    className={`text-sm text-muted-foreground ${className}`}
-    {...props}
-  />
-));
-CardDescription.displayName = 'CardDescription';
+export function Card({
+  variant = 'default',
+  padding = 'md',
+  hover = 'none',
+  className,
+  children,
+  onClick,
+  ...props
+}: CardProps) {
+  // Base styles
+  const baseStyles = 'rounded-xl transition-all duration-200';
 
-const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className = '', ...props }, ref) => (
-  <div ref={ref} className={`p-6 pt-0 ${className}`} {...props} />
-));
-CardContent.displayName = 'CardContent';
+  // Variant styles - Solid, professional design
+  const variantStyles = {
+    default: 'bg-slate-900 border border-slate-700',
+    elevated: 'bg-slate-800 border border-slate-700 shadow-xl',
+    flat: 'bg-slate-900',
+    outlined: 'bg-slate-900 border-2 border-verus-blue/40',
+  };
 
-const CardFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className = '', ...props }, ref) => (
-  <div
-    ref={ref}
-    className={`flex items-center p-6 pt-0 ${className}`}
-    {...props}
-  />
-));
-CardFooter.displayName = 'CardFooter';
+  // Padding styles - 8pt grid system
+  const paddingStyles = {
+    none: 'p-0', // 0px
+    xs: 'p-2', // 8px - NEW: extra small
+    sm: 'p-3 md:p-4', // 12px → 16px
+    md: 'p-4 md:p-6', // 16px → 24px
+    lg: 'p-6 md:p-8', // 24px → 32px
+    xl: 'p-8 md:p-12', // 32px → 48px - NEW: extra large
+  };
 
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
-};
+  // Hover styles - Subtle, professional effects
+  const hoverStyles = {
+    none: '',
+    lift: 'hover:shadow-2xl hover:-translate-y-0.5',
+    glow: 'hover:border-verus-blue/60 hover:shadow-lg',
+    brighten: 'hover:bg-slate-800',
+  };
+
+  // Clickable cursor
+  const clickableStyles = onClick ? 'cursor-pointer' : '';
+
+  return (
+    <div
+      className={cn(
+        baseStyles,
+        variantStyles[variant],
+        paddingStyles[padding],
+        hoverStyles[hover],
+        clickableStyles,
+        className
+      )}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Card Header Component
+ * Typically contains title and description
+ */
+export interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string;
+  children?: ReactNode;
+}
+
+export function CardHeader({ className, children, ...props }: CardHeaderProps) {
+  return (
+    <div className={cn('flex flex-col space-y-1.5 pb-4', className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Card Title Component
+ */
+export interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> {
+  className?: string;
+  children?: ReactNode;
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+}
+
+export function CardTitle({
+  className,
+  children,
+  as: Component = 'h3',
+  ...props
+}: CardTitleProps) {
+  return (
+    <Component
+      className={cn('text-xl md:text-2xl font-bold text-white', className)}
+      {...props}
+    >
+      {children}
+    </Component>
+  );
+}
+
+/**
+ * Card Description Component
+ */
+export interface CardDescriptionProps
+  extends HTMLAttributes<HTMLParagraphElement> {
+  className?: string;
+  children?: ReactNode;
+}
+
+export function CardDescription({
+  className,
+  children,
+  ...props
+}: CardDescriptionProps) {
+  return (
+    <p className={cn('text-sm text-slate-400', className)} {...props}>
+      {children}
+    </p>
+  );
+}
+
+/**
+ * Card Content Component
+ */
+export interface CardContentProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string;
+  children?: ReactNode;
+}
+
+export function CardContent({
+  className,
+  children,
+  ...props
+}: CardContentProps) {
+  return (
+    <div className={cn('', className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Card Footer Component
+ */
+export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string;
+  children?: ReactNode;
+}
+
+export function CardFooter({ className, children, ...props }: CardFooterProps) {
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-3 pt-4 border-t border-slate-700',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Stat Card Component
+ * Specialized card for displaying statistics
+ */
+export interface StatCardProps {
+  label: string;
+  value: string | number;
+  change?: number;
+  icon?: ReactNode;
+  trend?: 'up' | 'down' | 'neutral';
+  className?: string;
+}
+
+export function StatCard({
+  label,
+  value,
+  change,
+  icon,
+  trend,
+  className,
+}: StatCardProps) {
+  const trendColors = {
+    up: 'text-green-400',
+    down: 'text-red-400',
+    neutral: 'text-gray-400',
+  };
+
+  const trendColor = trend ? trendColors[trend] : 'text-gray-400';
+
+  return (
+    <Card variant="elevated" hover="glow" className={className}>
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <p className="text-sm text-slate-400 mb-1">{label}</p>
+          <p className="text-2xl md:text-3xl font-bold text-white">{value}</p>
+          {change !== undefined && (
+            <p className={cn('text-sm mt-1', trendColor)}>
+              {change > 0 && '+'}
+              {change}%
+            </p>
+          )}
+        </div>
+        {icon && (
+          <div className="flex-shrink-0 p-3 bg-slate-800 border border-slate-700 rounded-lg">
+            {icon}
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+}

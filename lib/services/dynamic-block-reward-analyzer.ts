@@ -196,8 +196,8 @@ export class DynamicBlockRewardAnalyzer {
       samples.push(currentHeight);
     }
 
-  // Remove duplicates and sort
-  return Array.from(new Set(samples)).sort((a, b) => a - b);
+    // Remove duplicates and sort
+    return Array.from(new Set(samples)).sort((a, b) => a - b);
   }
 
   /**

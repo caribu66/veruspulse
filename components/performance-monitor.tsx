@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Activity, MemoryStick, Clock, Zap } from 'lucide-react';
+import { Activity, Memory, Clock, Lightning } from '@phosphor-icons/react';
 
 interface PerformanceMetrics {
   memoryUsage: number;
@@ -87,13 +87,13 @@ export function PerformanceMonitor() {
 
   const getMemoryColor = (usage: number) => {
     if (usage < 50) return 'text-green-400';
-    if (usage < 75) return 'text-yellow-400';
+    if (usage < 75) return 'text-verus-teal';
     return 'text-red-400';
   };
 
   const getMemoryBgColor = (usage: number) => {
     if (usage < 50) return 'bg-green-500/20';
-    if (usage < 75) return 'bg-yellow-500/20';
+    if (usage < 75) return 'bg-verus-teal/20';
     return 'bg-red-500/20';
   };
 
@@ -115,7 +115,7 @@ export function PerformanceMonitor() {
       <div className="space-y-2 text-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center text-white/80">
-            <MemoryStick className="h-3 w-3 mr-1" />
+            <Memory className="h-3 w-3 mr-1" />
             Memory
           </div>
           <span className={getMemoryColor(metrics.memoryUsage)}>
@@ -139,10 +139,10 @@ export function PerformanceMonitor() {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center text-white/80">
-            <Zap className="h-3 w-3 mr-1" />
+            <Lightning className="h-3 w-3 mr-1" />
             API Calls
           </div>
-          <span className="text-purple-400">{metrics.apiCalls}</span>
+          <span className="text-verus-blue">{metrics.apiCalls}</span>
         </div>
 
         <div className="text-white/60 text-[10px] pt-1 border-t border-white/10">

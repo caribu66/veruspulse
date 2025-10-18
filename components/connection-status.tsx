@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Wifi, WifiOff, Server, Clock } from 'lucide-react';
+import { WifiHigh, WifiSlash, HardDrives, Clock } from '@phosphor-icons/react';
 
 interface ConnectionStatusProps {
   className?: string;
@@ -74,23 +74,23 @@ export function ConnectionStatus({ className = '' }: ConnectionStatusProps) {
   };
 
   const getStatusColor = () => {
-    if (isLoading) return 'text-yellow-400';
+    if (isLoading) return 'text-verus-teal';
     return status.connected ? 'text-green-400' : 'text-red-400';
   };
 
   const getStatusIcon = () => {
     if (isLoading) return <Clock className="h-4 w-4 animate-spin" />;
     return status.connected ? (
-      <Wifi className="h-4 w-4" />
+      <WifiHigh className="h-4 w-4" />
     ) : (
-      <WifiOff className="h-4 w-4" />
+      <WifiSlash className="h-4 w-4" />
     );
   };
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
       <div className="flex items-center space-x-1">
-        <Server className="h-4 w-4 text-blue-400" />
+        <HardDrives className="h-4 w-4 text-blue-400" />
         <span className="text-sm text-white/80">Daemon:</span>
       </div>
 

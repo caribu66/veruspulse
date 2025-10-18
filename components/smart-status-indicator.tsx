@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Wifi,
-  WifiOff,
-  Server,
+  WifiHigh,
+  WifiSlash,
+  HardDrives,
   Clock,
-  AlertTriangle,
+  Warning,
   CheckCircle,
   XCircle,
   Loader2,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 
 interface ConnectionStatus {
   connected: boolean;
@@ -91,8 +91,8 @@ export function SmartStatusIndicator({
     if (isLoading) {
       return {
         icon: Loader2,
-        color: 'text-yellow-400',
-        bgColor: 'bg-yellow-500/20',
+        color: 'text-verus-teal',
+        bgColor: 'bg-verus-teal/20',
         borderColor: 'border-yellow-500/30',
         label: 'Checking...',
         status: 'loading',
@@ -126,9 +126,9 @@ export function SmartStatusIndicator({
 
     if (status.latency > 1000) {
       return {
-        icon: AlertTriangle,
-        color: 'text-orange-400',
-        bgColor: 'bg-orange-500/20',
+        icon: Warning,
+        color: 'text-verus-cyan',
+        bgColor: 'bg-verus-cyan/20',
         borderColor: 'border-orange-500/30',
         label: 'Slow',
         status: 'warning',

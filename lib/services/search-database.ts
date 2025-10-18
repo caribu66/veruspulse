@@ -96,15 +96,24 @@ export class SearchDatabaseService {
         CREATE INDEX IF NOT EXISTS idx_search_analytics_type_date ON search_analytics(search_type, date);
       `);
 
-      enhancedLogger.info('DATABASE', 'Search database tables initialized successfully');
+      enhancedLogger.info(
+        'DATABASE',
+        'Search database tables initialized successfully'
+      );
     } catch (error) {
-      enhancedLogger.error('DATABASE', 'Failed to initialize search database tables', error as Error);
+      enhancedLogger.error(
+        'DATABASE',
+        'Failed to initialize search database tables',
+        error as Error
+      );
       throw error;
     }
   }
 
   // Store a search in the database
-  async storeSearch(search: Omit<SearchHistory, 'id' | 'createdAt' | 'updatedAt'>): Promise<SearchHistory> {
+  async storeSearch(
+    search: Omit<SearchHistory, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<SearchHistory> {
     const query = `
       INSERT INTO search_history (
         search_query, search_type, result_found, result_data, user_agent, ip_address, timestamp
@@ -125,17 +134,26 @@ export class SearchDatabaseService {
     try {
       const result = await this.db.query(query, values);
       const searchRecord = this.mapRowToSearchHistory(result.rows[0]);
-      
-      enhancedLogger.info('DATABASE', `Stored search: ${search.searchType} for "${search.searchQuery}"`);
+
+      enhancedLogger.info(
+        'DATABASE',
+        `Stored search: ${search.searchType} for "${search.searchQuery}"`
+      );
       return searchRecord;
     } catch (error) {
-      enhancedLogger.error('DATABASE', 'Failed to store search', error as Error);
+      enhancedLogger.error(
+        'DATABASE',
+        'Failed to store search',
+        error as Error
+      );
       throw error;
     }
   }
 
   // Store a VerusID search result
-  async storeVerusIDSearch(verusIDSearch: Omit<VerusIDSearch, 'id' | 'createdAt' | 'updatedAt'>): Promise<VerusIDSearch> {
+  async storeVerusIDSearch(
+    verusIDSearch: Omit<VerusIDSearch, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<VerusIDSearch> {
     const query = `
       INSERT INTO verusid_searches (
         search_history_id, verus_id, identity_address, primary_addresses, friendly_name,
@@ -150,14 +168,18 @@ export class SearchDatabaseService {
       verusIDSearch.searchHistoryId,
       verusIDSearch.verusID,
       verusIDSearch.identityAddress,
-      verusIDSearch.primaryAddresses ? JSON.stringify(verusIDSearch.primaryAddresses) : null,
+      verusIDSearch.primaryAddresses
+        ? JSON.stringify(verusIDSearch.primaryAddresses)
+        : null,
       verusIDSearch.friendlyName,
       verusIDSearch.fullyQualifiedName,
       verusIDSearch.parent,
       verusIDSearch.minimumSignatures,
       verusIDSearch.canRevoke,
       verusIDSearch.privateAddress,
-      verusIDSearch.contentMap ? JSON.stringify(verusIDSearch.contentMap) : null,
+      verusIDSearch.contentMap
+        ? JSON.stringify(verusIDSearch.contentMap)
+        : null,
       verusIDSearch.revocationAuthority,
       verusIDSearch.recoveryAuthority,
       verusIDSearch.timeLock,
@@ -174,11 +196,18 @@ export class SearchDatabaseService {
     try {
       const result = await this.db.query(query, values);
       const verusIDRecord = this.mapRowToVerusIDSearch(result.rows[0]);
-      
-      enhancedLogger.info('DATABASE', `Stored VerusID search: ${verusIDSearch.verusID}`);
+
+      enhancedLogger.info(
+        'DATABASE',
+        `Stored VerusID search: ${verusIDSearch.verusID}`
+      );
       return verusIDRecord;
     } catch (error) {
-      enhancedLogger.error('DATABASE', 'Failed to store VerusID search', error as Error);
+      enhancedLogger.error(
+        'DATABASE',
+        'Failed to store VerusID search',
+        error as Error
+      );
       throw error;
     }
   }
@@ -195,7 +224,11 @@ export class SearchDatabaseService {
       const result = await this.db.query(query, [limit]);
       return result.rows.map(row => this.mapRowToSearchHistory(row));
     } catch (error) {
-      enhancedLogger.error('DATABASE', 'Failed to get recent searches', error as Error);
+      enhancedLogger.error(
+        'DATABASE',
+        'Failed to get recent searches',
+        error as Error
+      );
       throw error;
     }
   }
@@ -247,15 +280,23 @@ export class SearchDatabaseService {
         mostSearchedVerusIDs: topSearches,
       };
     } catch (error) {
-      enhancedLogger.error('DATABASE', 'Failed to get VerusID search stats', error as Error);
+      enhancedLogger.error(
+        'DATABASE',
+        'Failed to get VerusID search stats',
+        error as Error
+      );
       throw error;
     }
   }
 
   // Update search analytics
-  async updateSearchAnalytics(searchType: string, responseTime: number, success: boolean): Promise<void> {
+  async updateSearchAnalytics(
+    searchType: string,
+    responseTime: number,
+    success: boolean
+  ): Promise<void> {
     const today = new Date().toISOString().split('T')[0];
-    
+
     const query = `
       INSERT INTO search_analytics (search_type, total_searches, successful_searches, failed_searches, average_response_time, date)
       VALUES ($1, 1, $2, $3, $4, $5)
@@ -282,7 +323,11 @@ export class SearchDatabaseService {
     try {
       await this.db.query(query, values);
     } catch (error) {
-      enhancedLogger.error('DATABASE', 'Failed to update search analytics', error as Error);
+      enhancedLogger.error(
+        'DATABASE',
+        'Failed to update search analytics',
+        error as Error
+      );
       // Don't throw here as this is not critical for the search functionality
     }
   }
@@ -309,7 +354,9 @@ export class SearchDatabaseService {
       searchHistoryId: row.search_history_id,
       verusID: row.verus_id,
       identityAddress: row.identity_address,
-      primaryAddresses: row.primary_addresses ? JSON.parse(row.primary_addresses) : undefined,
+      primaryAddresses: row.primary_addresses
+        ? JSON.parse(row.primary_addresses)
+        : undefined,
       friendlyName: row.friendly_name,
       fullyQualifiedName: row.fully_qualified_name,
       parent: row.parent,
@@ -338,7 +385,3 @@ export class SearchDatabaseService {
     await this.db.end();
   }
 }
-
-
-
-

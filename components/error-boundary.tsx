@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { Warning, ArrowsClockwise, House } from '@phosphor-icons/react';
 
 interface Props {
   children: ReactNode;
@@ -47,7 +47,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="max-w-md w-full bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
             <div className="text-center">
               <div className="mx-auto w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
-                <AlertTriangle className="h-8 w-8 text-red-400" />
+                <Warning className="h-8 w-8 text-red-400" />
               </div>
 
               <h1 className="text-2xl font-bold text-white mb-4">
@@ -55,8 +55,8 @@ export class ErrorBoundary extends Component<Props, State> {
               </h1>
 
               <p className="text-blue-200 mb-6">
-                The Verus Explorer encountered an unexpected error. This might
-                be due to a network issue or a temporary problem.
+                VerusPulse encountered an unexpected error. This might be due to
+                a network issue or a temporary problem.
               </p>
 
               {process.env.NODE_ENV === 'development' && this.state.error && (
@@ -75,7 +75,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   onClick={this.handleReset}
                   className="flex items-center justify-center space-x-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
                 >
-                  <RefreshCw className="h-4 w-4" />
+                  <ArrowsClockwise className="h-4 w-4" />
                   <span>Try Again</span>
                 </button>
 
@@ -91,7 +91,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   }}
                   className="flex items-center justify-center space-x-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition-colors"
                 >
-                  <Home className="h-4 w-4" />
+                  <House className="h-4 w-4" />
                   <span>Go Back</span>
                 </button>
               </div>

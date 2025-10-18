@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-verus-blue/20 to-verus-green/20">
       <div className="max-w-md w-full mx-4">
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 text-center">
           {/* Animated Loading Spinner */}
@@ -29,7 +29,7 @@ export default function Loading() {
           <div className="mt-6">
             <div className="w-full bg-white/10 rounded-full h-2">
               <div
-                className="bg-gradient-to-r from-blue-400 to-purple-400 h-2 rounded-full animate-pulse"
+                className="bg-gradient-to-r from-verus-blue to-verus-green h-2 rounded-full animate-pulse"
                 style={{ width: '60%' }}
               ></div>
             </div>

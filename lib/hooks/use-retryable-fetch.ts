@@ -186,8 +186,14 @@ export function useApiFetch<T = any>(baseUrl: string = '') {
           if (!error) return false;
           const msg = String(error.message || '').toLowerCase();
           const isTypeError = (error as any)?.name === 'TypeError';
-          const isNetwork = msg.includes('network') || msg.includes('failed to fetch') || msg.includes('networkerror') || msg.includes('network error');
-          const is5xx = /http\s*5\d{2}|\b500\b|\b502\b|\b503\b|\b504\b/.test(msg);
+          const isNetwork =
+            msg.includes('network') ||
+            msg.includes('failed to fetch') ||
+            msg.includes('networkerror') ||
+            msg.includes('network error');
+          const is5xx = /http\s*5\d{2}|\b500\b|\b502\b|\b503\b|\b504\b/.test(
+            msg
+          );
           return isTypeError || isNetwork || is5xx;
         },
         ...options,

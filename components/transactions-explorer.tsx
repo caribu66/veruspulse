@@ -9,12 +9,12 @@ import {
   ArrowRight,
   Copy,
   Check,
-  ExternalLink,
-  AlertCircle,
+  ArrowSquareOut,
+  WarningCircle,
   Info,
   ArrowLeft,
   ArrowDown,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import {
   formatFriendlyNumber,
   formatCryptoValue,
@@ -129,9 +129,9 @@ export function TransactionsExplorer() {
       case 'scripthash':
         return 'bg-green-500/20 text-green-400';
       case 'witness_v0_keyhash':
-        return 'bg-purple-500/20 text-purple-400';
+        return 'bg-verus-blue/20 text-verus-blue';
       case 'witness_v0_scripthash':
-        return 'bg-yellow-500/20 text-yellow-400';
+        return 'bg-verus-teal/20 text-verus-teal';
       default:
         return 'bg-gray-500/20 text-gray-400';
     }
@@ -140,7 +140,7 @@ export function TransactionsExplorer() {
   const getTransactionTypeColor = (type: string) => {
     switch (type) {
       case 'Coinbase':
-        return 'bg-yellow-500/20 text-yellow-400';
+        return 'bg-verus-teal/20 text-verus-teal';
       case 'Stake Reward':
         return 'bg-green-500/20 text-green-400';
       case 'Burn':
@@ -167,7 +167,7 @@ export function TransactionsExplorer() {
     return (
       <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
         <div className="flex items-center space-x-3">
-          <AlertCircle className="h-5 w-5 text-red-400" />
+          <WarningCircle className="h-5 w-5 text-red-400" />
           <div>
             <div className="text-red-400 font-semibold">Error</div>
             <div className="text-red-300 text-sm">{error}</div>
@@ -194,7 +194,7 @@ export function TransactionsExplorer() {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-blue-500/20">
               <Activity className="h-5 w-5 text-blue-400" />
@@ -208,7 +208,7 @@ export function TransactionsExplorer() {
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-green-500/20">
               <Coins className="h-5 w-5 text-green-400" />
@@ -229,10 +229,10 @@ export function TransactionsExplorer() {
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-purple-500/20">
-              <Hash className="h-5 w-5 text-purple-400" />
+            <div className="p-2 rounded-lg bg-verus-blue/20">
+              <Hash className="h-5 w-5 text-verus-blue" />
             </div>
             <div>
               <div className="text-white font-semibold">Average Size</div>
@@ -248,10 +248,10 @@ export function TransactionsExplorer() {
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-yellow-500/20">
-              <Clock className="h-5 w-5 text-yellow-400" />
+            <div className="p-2 rounded-lg bg-verus-teal/20">
+              <Clock className="h-5 w-5 text-verus-teal" />
             </div>
             <div>
               <div className="text-white font-semibold">Latest Transaction</div>
@@ -266,7 +266,7 @@ export function TransactionsExplorer() {
       </div>
 
       {/* Transactions Table */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+      <div className="bg-slate-900 rounded-2xl p-6 border border-slate-700">
         <h3 className="text-xl font-bold text-white mb-4">
           Recent Transactions
         </h3>
@@ -276,7 +276,7 @@ export function TransactionsExplorer() {
             {transactions.map((tx, index) => (
               <div
                 key={`transactions-explorer-${tx.txid}`}
-                className="bg-white/5 rounded-lg p-4"
+                className="bg-slate-800 rounded-lg p-4 border border-slate-700"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-3">
@@ -287,7 +287,7 @@ export function TransactionsExplorer() {
                     </div>
                     <button
                       onClick={() => copyToClipboard(tx.txid, `tx-${index}`)}
-                      className="flex items-center space-x-1 px-2 py-1 bg-white/10 hover:bg-white/20 rounded transition-colors"
+                      className="flex items-center space-x-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded transition-colors"
                     >
                       {copied === `tx-${index}` ? (
                         <Check className="h-3 w-3" />
@@ -438,7 +438,7 @@ export function TransactionsExplorer() {
             <button
               onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
               disabled={currentPage === 0}
-              className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowRight className="h-4 w-4 rotate-180" />
               <span>Previous</span>
@@ -453,7 +453,7 @@ export function TransactionsExplorer() {
                 setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
               }
               disabled={currentPage >= totalPages - 1}
-              className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>Next</span>
               <ArrowRight className="h-4 w-4" />

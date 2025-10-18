@@ -1,7 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, Activity, Database, Network, Clock } from 'lucide-react';
+import {
+  CheckCircle,
+  Activity,
+  Database,
+  Network,
+  Clock,
+} from '@phosphor-icons/react';
 
 interface LoadingStep {
   id: string;
@@ -54,7 +60,7 @@ export function EnhancedLoadingScreen() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-verus-blue/20 to-verus-green/20">
       <div className="max-w-lg w-full mx-4">
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
           {/* Header */}
@@ -145,7 +151,7 @@ export function EnhancedLoadingScreen() {
             </div>
             <div className="w-full bg-white/10 rounded-full h-2">
               <div
-                className="bg-gradient-to-r from-blue-400 to-purple-400 h-2 rounded-full transition-all duration-500 ease-out"
+                className="bg-gradient-to-r from-verus-blue to-verus-green h-2 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>

@@ -2,19 +2,19 @@
 
 import { useState } from 'react';
 import {
-  Search,
+  MagnifyingGlass,
   Database,
   Activity,
   User,
-  Users,
+  UsersThree,
   Hash,
   Clock,
   Copy,
   Check,
-  ExternalLink,
-  AlertCircle,
+  ArrowSquareOut,
+  WarningCircle,
   Info,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 
 interface SearchResult {
   type: 'block' | 'transaction' | 'address' | 'verusid';
@@ -122,8 +122,8 @@ export function UniversalSearch() {
         setResults(searchResults);
       }
     } catch (err) {
-      setError('Search failed. Please try again.');
-      console.error('Search error:', err);
+      setError('MagnifyingGlass failed. Please try again.');
+      console.error('MagnifyingGlass error:', err);
     } finally {
       setLoading(false);
     }
@@ -156,7 +156,7 @@ export function UniversalSearch() {
       case 'address':
         return User;
       case 'verusid':
-        return Users;
+        return UsersThree;
       default:
         return Hash;
     }
@@ -169,9 +169,9 @@ export function UniversalSearch() {
       case 'transaction':
         return 'text-green-400';
       case 'address':
-        return 'text-purple-400';
+        return 'text-verus-blue';
       case 'verusid':
-        return 'text-yellow-400';
+        return 'text-verus-teal';
       default:
         return 'text-gray-400';
     }
@@ -181,14 +181,16 @@ export function UniversalSearch() {
     <div className="space-y-6 text-white">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-white mb-4">Universal Search</h1>
+        <h1 className="text-4xl font-bold text-white mb-4">
+          Universal MagnifyingGlass
+        </h1>
         <p className="text-blue-200 text-lg mb-8">
-          Search for blocks, transactions, addresses, and VerusIDs across the
-          Verus blockchain
+          MagnifyingGlass for blocks, transactions, addresses, and VerusIDs
+          across the Verus blockchain
         </p>
       </div>
 
-      {/* Search Input */}
+      {/* MagnifyingGlass Input */}
       <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
         <div className="flex items-center space-x-4">
           <div className="flex-1">
@@ -206,14 +208,16 @@ export function UniversalSearch() {
             disabled={loading || !query.trim()}
             className="flex items-center space-x-3 px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
           >
-            <Search className="h-5 w-5" />
-            <span>{loading ? 'Searching...' : 'Search'}</span>
+            <MagnifyingGlass className="h-5 w-5" />
+            <span>{loading ? 'Searching...' : 'MagnifyingGlass'}</span>
           </button>
         </div>
 
-        {/* Search Examples */}
+        {/* MagnifyingGlass Examples */}
         <div className="mt-6">
-          <div className="text-blue-200 text-sm mb-3">Search Examples:</div>
+          <div className="text-blue-200 text-sm mb-3">
+            MagnifyingGlass Examples:
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <div className="bg-white/5 rounded-lg p-3">
               <div className="text-white font-semibold mb-1">Block Height</div>
@@ -242,7 +246,9 @@ export function UniversalSearch() {
       {/* Results */}
       {results.length > 0 && (
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white">Search Results</h2>
+          <h2 className="text-2xl font-bold text-white">
+            MagnifyingGlass Results
+          </h2>
 
           {results.map((result, index) => {
             const Icon = getResultIcon(result.type);
@@ -301,9 +307,11 @@ export function UniversalSearch() {
       {error && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
           <div className="flex items-center space-x-3">
-            <AlertCircle className="h-5 w-5 text-red-400" />
+            <WarningCircle className="h-5 w-5 text-red-400" />
             <div>
-              <div className="text-red-400 font-semibold">Search Error</div>
+              <div className="text-red-400 font-semibold">
+                MagnifyingGlass Error
+              </div>
               <div className="text-red-300 text-sm">{error}</div>
             </div>
           </div>

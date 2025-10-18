@@ -5,13 +5,16 @@ import { addSecurityHeaders } from '@/lib/middleware/security';
 
 export async function GET(request: NextRequest) {
   let searchDb: SearchDatabaseService | null = null;
-  
+
   try {
     if (!process.env.DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: 'Search database not configured',
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Search database not configured',
+        },
+        { status: 503 }
+      );
     }
 
     searchDb = new SearchDatabaseService(process.env.DATABASE_URL);
@@ -37,7 +40,11 @@ export async function GET(request: NextRequest) {
 
     return addSecurityHeaders(response);
   } catch (error) {
-    enhancedLogger.error('API', 'Failed to get search statistics', error as Error);
+    enhancedLogger.error(
+      'API',
+      'Failed to get search statistics',
+      error as Error
+    );
 
     const response = NextResponse.json(
       {
@@ -54,12 +61,12 @@ export async function GET(request: NextRequest) {
       try {
         await searchDb.close();
       } catch (error) {
-        enhancedLogger.warn('DATABASE', 'Failed to close search database connection', { error: (error as Error).message });
+        enhancedLogger.warn(
+          'DATABASE',
+          'Failed to close search database connection',
+          { error: (error as Error).message }
+        );
       }
     }
   }
 }
-
-
-
-

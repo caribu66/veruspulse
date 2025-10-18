@@ -45,10 +45,10 @@ export async function GET(
 
     // Get UTXO timeline from database
     console.log(`Getting UTXO history for ${address}`);
-    
+
     // Get stake events for this address
     const stakeEvents = await dbService.getStakeEvents(address);
-    
+
     // Filter by date range if provided
     let filteredEvents = stakeEvents;
     if (startDate || endDate) {
@@ -67,7 +67,7 @@ export async function GET(
       txid: event.txid,
       rewardAmount: event.reward_amount,
       stakeAmount: event.stake_amount,
-      stakeAge: event.stake_age
+      stakeAge: event.stake_age,
     }));
 
     return NextResponse.json({
@@ -126,22 +126,25 @@ export async function POST(
     }
 
     // Return message to use the comprehensive scanner instead
-    return NextResponse.json({
-      success: false,
-      error: 'This endpoint has been replaced',
-      message: 'Use /api/admin/mass-scan to scan historical data',
-      alternative: {
-        endpoint: '/api/admin/mass-scan',
-        method: 'POST',
-        body: {
-          action: 'start',
-          options: {
-            addresses: [address]
-          }
-        }
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'This endpoint has been replaced',
+        message: 'Use /api/admin/mass-scan to scan historical data',
+        alternative: {
+          endpoint: '/api/admin/mass-scan',
+          method: 'POST',
+          body: {
+            action: 'start',
+            options: {
+              addresses: [address],
+            },
+          },
+        },
+        timestamp: new Date().toISOString(),
       },
-      timestamp: new Date().toISOString(),
-    }, { status: 410 });
+      { status: 410 }
+    );
   } catch (error) {
     console.error('Error in UTXO history sync:', error);
     return NextResponse.json(

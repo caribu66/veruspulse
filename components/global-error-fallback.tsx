@@ -2,12 +2,12 @@
 
 import React from 'react';
 import {
-  AlertTriangle,
-  RefreshCw,
-  Home,
+  Warning,
+  ArrowsClockwise,
+  House,
   Bug,
-  ExternalLink,
-} from 'lucide-react';
+  ArrowSquareOut,
+} from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 
 export function GlobalErrorFallback() {
@@ -38,7 +38,7 @@ export function GlobalErrorFallback() {
       <div className="max-w-lg w-full bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
         <div className="text-center">
           <div className="mx-auto w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
-            <AlertTriangle className="h-10 w-10 text-red-400" />
+            <Warning className="h-10 w-10 text-red-400" />
           </div>
 
           <h1 className="text-3xl font-bold text-white mb-4">
@@ -46,9 +46,8 @@ export function GlobalErrorFallback() {
           </h1>
 
           <p className="text-blue-200 mb-6 leading-relaxed">
-            The Verus Explorer encountered an unexpected error. This might be
-            due to a network issue, a temporary problem, or a bug in the
-            application.
+            VerusPulse encountered an unexpected error. This might be due to a
+            network issue, a temporary problem, or a bug in the application.
           </p>
 
           <div className="space-y-3 mb-8">
@@ -71,7 +70,7 @@ export function GlobalErrorFallback() {
               onClick={handleReload}
               className="flex items-center justify-center space-x-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             >
-              <RefreshCw className="h-4 w-4" />
+              <ArrowsClockwise className="h-4 w-4" />
               <span>Reload Page</span>
             </button>
 
@@ -79,7 +78,7 @@ export function GlobalErrorFallback() {
               onClick={handleGoBack}
               className="flex items-center justify-center space-x-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white/20"
             >
-              <Home className="h-4 w-4" />
+              <House className="h-4 w-4" />
               <span>Go Back</span>
             </button>
           </div>
@@ -89,7 +88,7 @@ export function GlobalErrorFallback() {
               onClick={handleReportBug}
               className="flex items-center justify-center space-x-2 text-blue-400 hover:text-blue-300 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded"
             >
-              <ExternalLink className="h-4 w-4" />
+              <ArrowSquareOut className="h-4 w-4" />
               <span>Report this issue</span>
             </button>
           </div>

@@ -11,10 +11,10 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const verbose = searchParams.get('verbose') === 'true';
 
-    // Get raw mempool transactions
-    const rawMempool = await verusAPI.getRawMempool(verbose);
+    // Get raw mempool transactions with verbose details
+    const rawMempool = await verusAPI.getRawMempool(true);
 
-    if (!rawMempool || !Array.isArray(rawMempool)) {
+    if (!rawMempool || typeof rawMempool !== 'object') {
       return NextResponse.json({
         success: true,
         data: {
@@ -25,13 +25,13 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Get detailed transaction information for each TX
+    // Convert verbose mempool object to array and get detailed transaction information
     const transactions = [];
-    const txIds = rawMempool.slice(0, limit);
+    const txIds = Object.keys(rawMempool).slice(0, limit);
 
     for (const txId of txIds) {
       try {
-        const txInfo = await verusAPI.getMempoolEntry(txId);
+        const txInfo = rawMempool[txId];
         if (txInfo) {
           transactions.push({
             txid: txId,
@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
           });
         }
       } catch (error) {
-        logger.warn(`Failed to get details for transaction ${txId}:`, error);
-        // Add basic transaction info even if detailed fetch fails
+        logger.warn(`Failed to process transaction ${txId}:`, error);
+        // Add basic transaction info even if processing fails
         transactions.push({
           txid: txId,
           size: 0,

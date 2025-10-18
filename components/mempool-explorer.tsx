@@ -8,15 +8,15 @@ import {
   Coins,
   Copy,
   Check,
-  AlertCircle,
-  RefreshCw,
-  Download,
+  WarningCircle,
+  ArrowsClockwise,
+  DownloadSimple,
   ArrowUpDown,
-  TrendingUp,
-  TrendingDown,
+  TrendUp,
+  TrendDown,
   Activity,
-  DollarSign,
-} from 'lucide-react';
+  CurrencyDollar,
+} from '@phosphor-icons/react';
 import {
   formatFriendlyNumber,
   formatCryptoValue,
@@ -172,7 +172,7 @@ export function MempoolExplorer() {
     return (
       <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
         <div className="flex items-center space-x-3">
-          <AlertCircle className="h-5 w-5 text-red-400" />
+          <WarningCircle className="h-5 w-5 text-red-400" />
           <div>
             <div className="text-red-400 font-semibold">Error</div>
             <div className="text-red-300 text-sm">{error}</div>
@@ -225,7 +225,9 @@ export function MempoolExplorer() {
             disabled={loading}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 text-sm"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <ArrowsClockwise
+              className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+            />
             <span>Refresh</span>
           </button>
         </div>
@@ -250,7 +252,7 @@ export function MempoolExplorer() {
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-green-500/20">
-              <DollarSign className="h-5 w-5 text-green-400" />
+              <CurrencyDollar className="h-5 w-5 text-green-400" />
             </div>
             <div>
               <div className="text-white font-semibold">Total Fees</div>
@@ -263,8 +265,8 @@ export function MempoolExplorer() {
 
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-purple-500/20">
-              <Coins className="h-5 w-5 text-purple-400" />
+            <div className="p-2 rounded-lg bg-verus-blue/20">
+              <Coins className="h-5 w-5 text-verus-blue" />
             </div>
             <div>
               <div className="text-white font-semibold">Total Size</div>
@@ -277,8 +279,8 @@ export function MempoolExplorer() {
 
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-yellow-500/20">
-              <DollarSign className="h-5 w-5 text-yellow-400" />
+            <div className="p-2 rounded-lg bg-verus-teal/20">
+              <CurrencyDollar className="h-5 w-5 text-verus-teal" />
             </div>
             <div>
               <div className="text-white font-semibold">Average Fee</div>
@@ -291,8 +293,8 @@ export function MempoolExplorer() {
 
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-orange-500/20">
-              <Hash className="h-5 w-5 text-orange-400" />
+            <div className="p-2 rounded-lg bg-verus-cyan/20">
+              <Hash className="h-5 w-5 text-verus-cyan" />
             </div>
             <div>
               <div className="text-white font-semibold">Average Size</div>
@@ -334,16 +336,16 @@ export function MempoolExplorer() {
                 title={`Sort ${sortDirection === 'asc' ? 'Descending' : 'Ascending'}`}
               >
                 {sortDirection === 'asc' ? (
-                  <TrendingUp className="h-4 w-4" />
+                  <TrendUp className="h-4 w-4" />
                 ) : (
-                  <TrendingDown className="h-4 w-4" />
+                  <TrendDown className="h-4 w-4" />
                 )}
               </button>
             </div>
 
             {/* Export Controls */}
             <div className="flex items-center space-x-2">
-              <Download className="h-4 w-4 text-blue-400" />
+              <DownloadSimple className="h-4 w-4 text-blue-400" />
               <button
                 onClick={exportToJSON}
                 className="px-2 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 text-xs rounded transition-colors"
@@ -438,7 +440,7 @@ export function MempoolExplorer() {
 
                     {/* Dependencies */}
                     {tx.depends.length > 0 && (
-                      <div className="text-yellow-400 text-xs">
+                      <div className="text-verus-teal text-xs">
                         ⚠️ Depends on {tx.depends.length} transaction
                         {tx.depends.length > 1 ? 's' : ''}
                       </div>

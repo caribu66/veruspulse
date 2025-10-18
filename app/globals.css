@@ -2,10 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import achievement animations */
+@import '../styles/achievement-animations.css';
+
 /* Custom styles for VerusCoin Explorer */
 body {
   font-family:
-    'Inter',
+    'Poppins',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -21,34 +24,102 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Theme variables */
+/* ================================================================
+   VERUS OFFICIAL COLOR SYSTEM - Professional Brand Palette
+   Following 60-30-10 Design Rule & WCAG AA Accessibility
+   ================================================================ */
+
 :root {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e3a8a;
-  --text-primary: #ffffff;
-  --text-secondary: #e2e8f0;
-  --text-muted: #94a3b8;
-  --accent-primary: #3b82f6;
-  --accent-secondary: #8b5cf6;
-  --border-primary: rgba(255, 255, 255, 0.1);
-  --border-secondary: rgba(255, 255, 255, 0.05);
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --card-bg-hover: rgba(255, 255, 255, 0.1);
+  /* ============ Background Colors (60% usage) ============ */
+  --bg-primary: #0a0e1a; /* Main dark background */
+  --bg-secondary: #141b2d; /* Secondary background */
+  --bg-tertiary: #1a2332; /* Cards, panels */
+  --bg-elevated: rgba(20, 27, 45, 0.6); /* Elevated elements */
+  --bg-elevated-hover: rgba(20, 27, 45, 0.8); /* Elevated hover */
+
+  /* ============ Text Colors - WCAG AA Compliant ============ */
+  --text-primary: #ffffff; /* Primary text - 7:1 contrast */
+  --text-secondary: #e2e8f0; /* Secondary text - 4.5:1 contrast */
+  --text-muted: #cbd5e1; /* Muted text - 4.5:1 contrast */
+  --text-on-dark: #f8fafc; /* Text on dark - WCAG AAA */
+
+  /* ============ Verus Official Brand Colors ============ */
+  --verus-blue: #3165d4; /* Official Verus Blue - primary brand color */
+  --verus-blue-light: #4a7ce8; /* Hover states */
+  --verus-blue-dark: #2650b3; /* Active states */
+  --verus-green: #4AA658; /* Official Verus Green - success, positive */
+  --verus-green-light: #5cb96a; /* Green highlights */
+  --verus-green-dark: #3d8a49; /* Green active */
+  --verus-red: #D4313E; /* Official Verus Red - errors, alerts */
+  --verus-red-light: #e04b56; /* Red highlights */
+  --verus-red-dark: #b52732; /* Red active */
+
+  /* ============ Semantic Colors (official palette only) ============ */
+  --color-success: #4AA658; /* Success states (official green) */
+  --color-warning: #f59e0b; /* Warning states */
+  --color-error: #D4313E; /* Error states (official red) */
+  --color-info: #3165d4; /* Info states (official blue) */
+
+  /* ============ Border Colors ============ */
+  --border-primary: rgba(49, 101, 212, 0.2); /* Verus blue borders */
+  --border-secondary: rgba(255, 255, 255, 0.08); /* Subtle borders */
+  --border-elevated: rgba(49, 101, 212, 0.3); /* Elevated borders */
+
+  /* ============ Legacy Variables (for compatibility) ============ */
+  --accent-primary: var(--verus-blue);
+  --accent-secondary: var(--verus-green);
+  --accent-success: var(--verus-green);
+  --card-bg: var(--bg-elevated);
+  --card-bg-hover: var(--bg-elevated-hover);
+  --text-secondary-on-dark: var(--text-secondary);
+  --text-muted-on-dark: var(--text-muted);
 }
 
-/* Light theme */
+/* ============ Light Theme - WCAG AA Compliant ============ */
 [data-theme='light'] {
+  /* Backgrounds */
   --bg-primary: #ffffff;
-  --bg-secondary: #f1f5f9;
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --accent-primary: #2563eb;
-  --accent-secondary: #7c3aed;
-  --border-primary: #e2e8f0;
-  --border-secondary: #cbd5e1;
-  --card-bg: #ffffff;
-  --card-bg-hover: #f8fafc;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --bg-elevated: rgba(255, 255, 255, 0.9);
+  --bg-elevated-hover: rgba(248, 250, 252, 0.95);
+
+  /* Text Colors */
+  --text-primary: #0a0e1a; /* 7:1 contrast - WCAG AAA */
+  --text-secondary: #334155; /* 4.5:1 contrast - WCAG AA */
+  --text-muted: #475569; /* 4.5:1 contrast - WCAG AA */
+  --text-on-light: #0a0e1a;
+
+  /* Brand Colors remain consistent */
+  --verus-blue: #3165d4;
+  --verus-blue-light: #4a7ce8;
+  --verus-blue-dark: #2650b3;
+  --verus-green: #4AA658;
+  --verus-green-light: #5cb96a;
+  --verus-green-dark: #3d8a49;
+  --verus-red: #D4313E;
+  --verus-red-light: #e04b56;
+  --verus-red-dark: #b52732;
+
+  /* Semantic Colors */
+  --color-success: #4AA658;
+  --color-warning: #f59e0b;
+  --color-error: #D4313E;
+  --color-info: #3165d4;
+
+  /* Borders */
+  --border-primary: #cbd5e1;
+  --border-secondary: #e2e8f0;
+  --border-elevated: rgba(49, 101, 212, 0.2);
+
+  /* Legacy */
+  --accent-primary: var(--verus-blue);
+  --accent-secondary: var(--verus-green);
+  --accent-success: var(--verus-green);
+  --card-bg: var(--bg-elevated);
+  --card-bg-hover: var(--bg-elevated-hover);
+  --text-secondary-on-light: var(--text-secondary);
+  --text-muted-on-light: var(--text-muted);
 }
 
 /* High contrast theme */
@@ -70,23 +141,13 @@ body {
 
 /* Ensure theme is applied */
 html {
-  background: linear-gradient(
-    135deg,
-    var(--bg-primary) 0%,
-    var(--bg-secondary) 50%,
-    var(--bg-primary) 100%
-  );
+  background: #020617; /* slate-950 - solid professional background */
   min-height: 100vh;
   transition: background 0.3s ease;
 }
 
 body {
-  background: linear-gradient(
-    135deg,
-    var(--bg-primary) 0%,
-    var(--bg-secondary) 50%,
-    var(--bg-primary) 100%
-  );
+  background: #020617; /* slate-950 - solid professional background */
   min-height: 100vh;
   color: var(--text-primary);
   transition:
@@ -94,22 +155,172 @@ body {
     color 0.3s ease;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Verus Blue */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(20, 27, 45, 0.3);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.5);
+  background: rgba(49, 101, 212, 0.5);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.7);
+  background: rgba(49, 101, 212, 0.7);
+}
+
+/* Hide scrollbar utility class */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* ================================================================
+   PROFESSIONAL COLOR MAPPING - Redirects to Verus Palette
+   Maps all scattered color classes to unified Verus brand colors
+   ================================================================ */
+
+/* Primary Blue Colors - Main brand color (60% usage) */
+.text-blue-200,
+.text-blue-300,
+.text-blue-400,
+.text-blue-500 {
+  color: var(--verus-blue) !important;
+}
+
+.text-blue-100 {
+  color: var(--verus-blue-light) !important;
+}
+
+.text-blue-600,
+.text-blue-700 {
+  color: var(--verus-blue-dark) !important;
+}
+
+.bg-blue-500,
+.bg-blue-500\/10,
+.bg-blue-500\/20,
+.bg-blue-500\/30 {
+  background-color: rgba(49, 101, 212, 0.2) !important;
+}
+
+.border-blue-500,
+.border-blue-500\/30 {
+  border-color: var(--border-primary) !important;
+}
+
+/* Green Colors - Success states (official palette) */
+.text-green-400,
+.text-green-500,
+.text-teal-400,
+.text-teal-500,
+.text-cyan-400,
+.text-cyan-500 {
+  color: var(--verus-green) !important;
+}
+
+.bg-green-500,
+.bg-green-500\/10,
+.bg-green-500\/20,
+.bg-green-500\/30,
+.bg-teal-500\/20,
+.bg-cyan-500\/20 {
+  background-color: rgba(74, 166, 88, 0.2) !important;
+}
+
+.border-green-500,
+.border-green-500\/30,
+.border-teal-500\/30 {
+  border-color: rgba(74, 166, 88, 0.3) !important;
+}
+
+/* Yellow/Orange Colors - Warnings (minimal usage) */
+.text-yellow-400,
+.text-yellow-500,
+.text-orange-400,
+.text-orange-500 {
+  color: var(--color-warning) !important;
+}
+
+.bg-yellow-500,
+.bg-yellow-500\/10,
+.bg-yellow-500\/20,
+.bg-yellow-500\/30,
+.bg-orange-500,
+.bg-orange-500\/20 {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Red Colors - Errors (official palette) */
+.text-red-400,
+.text-red-500 {
+  color: var(--color-error) !important;
+}
+
+.bg-red-500,
+.bg-red-500\/10,
+.bg-red-500\/20,
+.bg-red-500\/30 {
+  background-color: rgba(212, 49, 62, 0.2) !important;
+}
+
+.border-red-500\/30 {
+  border-color: rgba(212, 49, 62, 0.3) !important;
+}
+
+/* Purple/Indigo Colors - Map to Verus Blue for consistency */
+.text-purple-400,
+.text-purple-500,
+.text-indigo-400,
+.text-indigo-500 {
+  color: var(--verus-blue) !important;
+}
+
+.bg-purple-500,
+.bg-purple-500\/10,
+.bg-purple-500\/20,
+.bg-purple-500\/30,
+.bg-indigo-500\/20 {
+  background-color: rgba(49, 101, 212, 0.2) !important;
+}
+
+.border-purple-500\/30,
+.border-indigo-500\/30 {
+  border-color: var(--border-primary) !important;
+}
+
+/* Pink Colors - Map to Blue for consistency */
+.text-pink-400,
+.text-pink-500 {
+  color: var(--verus-blue) !important;
+}
+
+.bg-pink-500\/20 {
+  background-color: rgba(49, 101, 212, 0.2) !important;
+}
+
+/* Gray Colors - Use text hierarchy */
+.text-gray-200,
+.text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+
+.text-gray-400,
+.text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.bg-gray-500\/20,
+.bg-gray-800\/50 {
+  background-color: var(--bg-elevated) !important;
 }
 
 /* Theme-aware utility classes */
@@ -150,83 +361,57 @@ body {
   border-color: var(--border-secondary);
 }
 
-/* Light theme specific overrides for common Tailwind classes */
+/* ================================================================
+   LIGHT THEME COLOR OVERRIDES
+   Ensures professional appearance in light mode
+   ================================================================ */
+
 [data-theme='light'] .text-white {
   color: var(--text-primary) !important;
 }
 
-[data-theme='light'] .text-blue-200 {
+[data-theme='light'] .text-white\/80 {
   color: var(--text-secondary) !important;
 }
 
-[data-theme='light'] .text-blue-300 {
+[data-theme='light'] .text-white\/60 {
   color: var(--text-muted) !important;
 }
 
-[data-theme='light'] .text-gray-400 {
-  color: var(--text-muted) !important;
-}
-
-[data-theme='light'] .bg-white\/10 {
-  background-color: var(--card-bg) !important;
-}
-
-[data-theme='light'] .bg-white\/5 {
-  background-color: rgba(0, 0, 0, 0.03) !important;
-}
-
+[data-theme='light'] .bg-white\/5,
+[data-theme='light'] .bg-white\/10,
 [data-theme='light'] .bg-white\/20 {
-  background-color: var(--card-bg-hover) !important;
+  background-color: var(--bg-elevated) !important;
 }
 
-[data-theme='light'] .border-white\/10 {
-  border-color: var(--border-primary) !important;
-}
-
+[data-theme='light'] .border-white\/10,
 [data-theme='light'] .border-white\/20 {
   border-color: var(--border-secondary) !important;
 }
 
-/* Additional light theme overrides for better contrast */
-[data-theme='light'] .text-green-300 {
-  color: #059669 !important;
-}
-
-[data-theme='light'] .text-green-400 {
-  color: #16a34a !important;
-}
-
-[data-theme='light'] .text-blue-400 {
-  color: #2563eb !important;
-}
-
-[data-theme='light'] .text-purple-400 {
-  color: #7c3aed !important;
-}
-
-[data-theme='light'] .text-yellow-400 {
-  color: #ca8a04 !important;
-}
-
-[data-theme='light'] .text-red-400 {
-  color: #dc2626 !important;
-}
-
-[data-theme='light'] .text-orange-400 {
-  color: #ea580c !important;
-}
-
-/* Ensure navigation and header elements have good contrast */
-[data-theme='light'] .bg-white\/10:hover {
-  background-color: var(--card-bg-hover) !important;
-}
-
+/* Light theme - Hover and Interactive States */
+[data-theme='light'] .bg-white\/10:hover,
 [data-theme='light'] .hover\:bg-white\/20:hover {
-  background-color: var(--card-bg-hover) !important;
+  background-color: var(--bg-elevated-hover) !important;
 }
 
-/* Fix background gradients and complex backgrounds */
-[data-theme='light'] .bg-gradient-to-br {
+[data-theme='light'] .hover\:text-white:hover {
+  color: var(--verus-blue) !important;
+}
+
+[data-theme='light'] .hover\:text-blue-300:hover,
+[data-theme='light'] .hover\:text-blue-400:hover {
+  color: var(--verus-blue-dark) !important;
+}
+
+[data-theme='light'] button:hover,
+[data-theme='light'] a:hover {
+  color: var(--verus-blue) !important;
+}
+
+/* Light theme - Gradients */
+[data-theme='light'] .bg-gradient-to-br,
+[data-theme='light'] .bg-gradient-to-r {
   background: linear-gradient(
     to bottom right,
     #f8fafc,
@@ -238,251 +423,129 @@ body {
 [data-theme='light'] .from-slate-900 {
   --tw-gradient-from: #f8fafc !important;
 }
-
 [data-theme='light'] .via-blue-900 {
   --tw-gradient-via: #e2e8f0 !important;
 }
-
 [data-theme='light'] .to-slate-900 {
   --tw-gradient-to: #f1f5f9 !important;
 }
 
-/* Fix input fields and form elements */
-[data-theme='light'] .placeholder-blue-200::placeholder {
-  color: var(--text-muted) !important;
-}
-
-[data-theme='light'] input[type='text'],
-[data-theme='light'] input[type='search'],
+/* Light theme - Form Elements */
+[data-theme='light'] input,
 [data-theme='light'] textarea,
 [data-theme='light'] select {
   color: var(--text-primary) !important;
-  background-color: rgba(255, 255, 255, 0.8) !important;
+  background-color: var(--bg-primary) !important;
   border-color: var(--border-primary) !important;
 }
 
-[data-theme='light'] input[type='text']:focus,
-[data-theme='light'] input[type='search']:focus,
+[data-theme='light'] input:focus,
 [data-theme='light'] textarea:focus,
 [data-theme='light'] select:focus {
-  border-color: var(--accent-primary) !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+  border-color: var(--verus-blue) !important;
+  box-shadow: 0 0 0 3px rgba(49, 101, 212, 0.1) !important;
 }
 
-/* Fix backdrop blur elements */
+[data-theme='light'] .placeholder-blue-200::placeholder,
+[data-theme='light'] ::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Light theme - Backdrop & Effects */
 [data-theme='light'] .backdrop-blur-sm {
   background-color: rgba(255, 255, 255, 0.9) !important;
-  border: 1px solid var(--border-primary) !important;
+  border-color: var(--border-primary) !important;
 }
 
-/* Fix loading states and animations */
-[data-theme='light'] .animate-spin {
-  border-color: var(--accent-primary) !important;
-}
-
-[data-theme='light'] .animate-pulse {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Fix scrollbar */
+/* Light theme - Scrollbar */
 [data-theme='light'] ::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.05) !important;
 }
 
 [data-theme='light'] ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2) !important;
+  background: var(--verus-blue) !important;
+  opacity: 0.5;
 }
 
 [data-theme='light'] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3) !important;
+  background: var(--verus-blue-dark) !important;
 }
 
-/* Fix focus states */
-[data-theme='light'] .focus\:ring-blue-500\/50:focus {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-}
-
-/* Fix shadow effects */
-[data-theme='light'] .shadow-lg {
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-}
-
-[data-theme='light'] .shadow-md {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-}
-
-/* Fix specific component issues */
-[data-theme='light'] .text-red-200 {
-  color: #dc2626 !important;
-}
-
-[data-theme='light'] .bg-red-500\/10 {
-  background-color: rgba(220, 38, 38, 0.1) !important;
-}
-
-[data-theme='light'] .border-red-500\/20 {
-  border-color: rgba(220, 38, 38, 0.2) !important;
-}
-
-/* Fix more specific color issues */
-[data-theme='light'] .text-blue-300 {
-  color: #1d4ed8 !important;
-}
-
-[data-theme='light'] .text-gray-300 {
-  color: #6b7280 !important;
-}
-
-[data-theme='light'] .text-gray-500 {
-  color: #6b7280 !important;
-}
-
-[data-theme='light'] .text-white\/80 {
-  color: var(--text-secondary) !important;
-}
-
-[data-theme='light'] .text-white\/60 {
-  color: var(--text-muted) !important;
-}
-
-/* Fix icon backgrounds */
-[data-theme='light'] .bg-blue-500\/20 {
-  background-color: rgba(37, 99, 235, 0.1) !important;
-}
-
-[data-theme='light'] .bg-green-500\/20 {
-  background-color: rgba(34, 197, 94, 0.1) !important;
-}
-
-[data-theme='light'] .bg-purple-500\/20 {
-  background-color: rgba(147, 51, 234, 0.1) !important;
-}
-
-[data-theme='light'] .bg-yellow-500\/20 {
-  background-color: rgba(234, 179, 8, 0.1) !important;
-}
-
-[data-theme='light'] .bg-orange-500\/20 {
-  background-color: rgba(249, 115, 22, 0.1) !important;
-}
-
-[data-theme='light'] .bg-red-500\/20 {
-  background-color: rgba(239, 68, 68, 0.1) !important;
-}
-
-/* Fix border colors */
-[data-theme='light'] .border-blue-500\/30 {
-  border-color: rgba(37, 99, 235, 0.3) !important;
-}
-
-[data-theme='light'] .border-green-500\/30 {
-  border-color: rgba(34, 197, 94, 0.3) !important;
-}
-
-[data-theme='light'] .border-purple-500\/30 {
-  border-color: rgba(147, 51, 234, 0.3) !important;
-}
-
-/* Fix hover states for better interaction feedback */
-[data-theme='light'] .hover\:text-white:hover {
-  color: var(--text-primary) !important;
-}
-
-[data-theme='light'] .hover\:text-blue-300:hover {
-  color: #1d4ed8 !important;
-}
-
-[data-theme='light'] .hover\:bg-blue-500\/30:hover {
-  background-color: rgba(37, 99, 235, 0.15) !important;
-}
-
-/* Fix disabled states */
-[data-theme='light'] .disabled\:opacity-50:disabled {
-  opacity: 0.6 !important;
-}
-
-/* Fix loading skeleton states */
-[data-theme='light'] .bg-white\/10 {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-[data-theme='light'] .bg-white\/5 {
-  background-color: rgba(0, 0, 0, 0.03) !important;
-}
-
-/* Fix code blocks and monospace text */
-[data-theme='light'] .font-mono {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-  padding: 0.125rem 0.25rem !important;
-  border-radius: 0.25rem !important;
-}
-
-/* Fix breadcrumb navigation */
-[data-theme='light'] .text-blue-200 {
-  color: var(--text-secondary) !important;
-}
-
-/* Fix footer and secondary text */
-[data-theme='light'] .text-xs {
-  color: var(--text-muted) !important;
-}
-
-/* Fix theme toggle buttons specifically */
-[data-theme='light'] .bg-yellow-500\/20 {
-  background-color: rgba(234, 179, 8, 0.15) !important;
-}
-
-[data-theme='light'] .text-yellow-400 {
-  color: #ca8a04 !important;
-}
-
-/* Fix button states */
-[data-theme='light'] .bg-blue-500 {
-  background-color: var(--accent-primary) !important;
-}
-
-[data-theme='light'] .bg-blue-500:hover {
-  background-color: #1d4ed8 !important;
-}
-
-/* Fix active/inactive states */
+/* Light theme - Button and Interactive States */
 [data-theme='light'] button:disabled {
-  opacity: 0.6 !important;
+  opacity: 0.5 !important;
   cursor: not-allowed !important;
 }
 
-/* Fix mobile menu and responsive elements */
-[data-theme='light'] .lg\:hidden {
-  color: var(--text-secondary) !important;
+[data-theme='light'] .border-b-2,
+[data-theme='light'] .border-b-blue-500 {
+  border-bottom-color: var(--verus-blue) !important;
 }
 
-[data-theme='light'] .lg\:hidden:hover {
-  color: var(--text-primary) !important;
-  background-color: var(--card-bg-hover) !important;
+/* ================================================================
+   ELEVATION SYSTEM - Consistent Shadow Hierarchy
+   Creates visual depth using standardized shadow scales
+   ================================================================ */
+
+:root {
+  /* Base shadows - Light mode optimized */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  
+  /* Elevation levels - Semantic naming */
+  --elevation-base: var(--shadow-sm);      /* Base cards, default elevation */
+  --elevation-raised: var(--shadow-md);    /* Hovered cards, raised elements */
+  --elevation-floating: var(--shadow-lg);  /* Dropdowns, popovers */
+  --elevation-overlay: var(--shadow-xl);   /* Modals, dialogs */
+  --elevation-modal: var(--shadow-2xl);    /* Full-screen overlays */
 }
 
-/* Fix navigation active states */
-[data-theme='light'] .bg-white\/20 {
-  background-color: var(--card-bg-hover) !important;
+/* Dark theme shadows - Enhanced for dark backgrounds */
+[data-theme='dark'],
+:root {
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
 }
 
-/* Fix tab navigation */
-[data-theme='light'] nav button {
-  color: var(--text-secondary) !important;
+/* Elevation utility classes */
+.elevation-base {
+  box-shadow: var(--elevation-base);
 }
 
-[data-theme='light'] nav button:hover {
-  color: var(--text-primary) !important;
-  background-color: var(--card-bg-hover) !important;
+.elevation-raised {
+  box-shadow: var(--elevation-raised);
 }
 
-/* Fix border bottom for navigation */
-[data-theme='light'] .border-b-2 {
-  border-bottom-color: var(--accent-primary) !important;
+.elevation-floating {
+  box-shadow: var(--elevation-floating);
+}
+
+.elevation-overlay {
+  box-shadow: var(--elevation-overlay);
+}
+
+.elevation-modal {
+  box-shadow: var(--elevation-modal);
+}
+
+/* Hover elevation transitions */
+.elevation-base:hover {
+  box-shadow: var(--elevation-raised);
+  transition: box-shadow 0.3s ease;
+}
+
+.elevation-raised:hover {
+  box-shadow: var(--elevation-floating);
+  transition: box-shadow 0.3s ease;
 }
 
 /* Animation utilities */
@@ -501,34 +564,64 @@ body {
   animation: fadeIn 0.6s ease-out;
 }
 
-/* Glass morphism effect */
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* Removed gradient animations - using solid colors for professional look */
+
+/* Quick Stats Ticker Animations */
+@keyframes ticker-slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-/* Custom button styles */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 20px currentColor;
+  }
+}
+
+.ticker-item {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.ticker-item:hover {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Smooth scroll for ticker */
+.ticker-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Removed glass morphism - using solid cards for better readability */
+
+/* Custom button styles - Verus Brand */
 .btn-primary {
-  @apply bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  background-color: var(--accent-primary);
+  @apply hover:bg-opacity-80 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-secondary);
 }
 
 .btn-secondary {
-  @apply bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  @apply bg-slate-800 hover:bg-slate-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 border border-slate-700;
 }
 
-/* Card styles */
+/* Card styles - Solid, professional design */
 .card {
-  @apply bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20;
+  @apply bg-slate-900 rounded-2xl p-6 border border-slate-700;
 }
 
-/* Text gradient */
-.text-gradient {
-  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+/* Removed text gradient - using solid Verus blue for emphasis */
 
 /* Modal scrollbar */
 .modal-scroll {
@@ -591,17 +684,16 @@ body {
   outline-offset: 3px;
 }
 
-/* Theme-aware components */
+/* Theme-aware components - Solid, professional design */
 .theme-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #0f172a; /* slate-900 */
+  border: 1px solid #334155; /* slate-700 */
   color: var(--text-primary);
 }
 
 [data-theme='light'] .theme-card {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f8fafc; /* slate-50 */
+  border: 1px solid #cbd5e1; /* slate-300 */
 }
 
 [data-high-contrast='true'] .theme-card {
@@ -650,6 +742,40 @@ body {
   /* Touch-friendly interactions */
   .touch-manipulation {
     touch-action: manipulation;
+  }
+
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Mobile-friendly tables */
+  table {
+    font-size: 0.875rem; /* 14px */
+  }
+
+  /* Responsive overflow containers */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Custom scrollbar for mobile */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 
   /* Larger touch targets */
@@ -702,6 +828,56 @@ body {
 
 .mobile-vh {
   height: calc(var(--vh, 1vh) * 100);
+}
+
+/* ================================================================
+   PROFESSIONAL DATA PRESENTATION UTILITIES
+   Clean, solid styling for explorer data
+   ================================================================ */
+
+/* Solid card utilities */
+.card-solid {
+  background-color: #0f172a; /* slate-900 */
+  border: 1px solid #334155; /* slate-700 */
+}
+
+.card-elevated {
+  background-color: #1e293b; /* slate-800 */
+  border: 1px solid #334155; /* slate-700 */
+  box-shadow: var(--elevation-raised);
+}
+
+.accent-border {
+  border-color: rgba(49, 101, 212, 0.4); /* Verus blue */
+}
+
+.accent-border-strong {
+  border-color: rgba(49, 101, 212, 0.6); /* Verus blue - stronger */
+}
+
+/* Data typography - Monospace for numbers */
+.data-value {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+}
+
+.stat-large {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-medium {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.stat-small {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 /* High contrast mobile styles */

@@ -1,32 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import {
-  Menu,
-  X,
-  Search,
-  Database,
-  Activity,
-  User,
-  Users,
-  BarChart3,
-  Clock,
-  Wifi,
-  WifiOff,
-  Network,
-} from 'lucide-react';
+import { useMemo } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { ChartBar, MagnifyingGlass, UsersThree } from '@phosphor-icons/react';
+import { VerusPriceTicker } from './verus-price-ticker';
+import { ICON_SIZES } from '@/lib/constants/design-tokens';
 
+// Ultra-simplified navigation - consolidated to 3 core sections
 type ExplorerTab =
-  | 'dashboard'
-  | 'search'
-  | 'blocks'
-  | 'transactions'
-  | 'addresses'
-  | 'verusids'
-  | 'mempool'
-  | 'live';
+  | 'dashboard' // Home with network overview
+  | 'explorer' // Unified: blocks, transactions, addresses
+  | 'verusids'; // VerusID identity system
 
 interface EnhancedNavigationBarProps {
   activeTab: ExplorerTab;
@@ -37,241 +21,118 @@ export function EnhancedNavigationBar({
   activeTab,
   onTabChange,
 }: EnhancedNavigationBarProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const router = useRouter();
-
-  // Memoize navigation items to prevent unnecessary re-renders
+  // Navigation items with icons
   const navigationItems = useMemo(
     () => [
+      { key: 'dashboard' as ExplorerTab, label: 'Dashboard', icon: ChartBar },
       {
-        key: 'dashboard',
-        label: 'Dashboard',
-        icon: BarChart3,
-        description: 'View network overview and statistics',
+        key: 'explorer' as ExplorerTab,
+        label: 'Explorer',
+        icon: MagnifyingGlass,
       },
-      {
-        key: 'search',
-        label: 'Search',
-        icon: Search,
-        description: 'Search for blocks, transactions, and addresses',
-      },
-      {
-        key: 'blocks',
-        label: 'Blocks',
-        icon: Database,
-        description: 'Browse blockchain blocks',
-      },
-      {
-        key: 'transactions',
-        label: 'Transactions',
-        icon: Activity,
-        description: 'View transaction history',
-      },
-      {
-        key: 'addresses',
-        label: 'Addresses',
-        icon: User,
-        description: 'Explore wallet addresses',
-      },
-      {
-        key: 'verusids',
-        label: 'VerusIDs',
-        icon: Users,
-        description: 'Manage Verus identities',
-      },
-      {
-        key: 'mempool',
-        label: 'Mempool',
-        icon: Network,
-        description: 'View pending transactions',
-      },
+      { key: 'verusids' as ExplorerTab, label: 'VerusIDs', icon: UsersThree },
     ],
     []
   );
 
-  const handleTabChange = useCallback(
-    (tab: ExplorerTab) => {
-      onTabChange(tab);
-      // Close mobile menu when navigating
-      setMobileMenuOpen(false);
-    },
-    [onTabChange]
-  );
-
-  // Keyboard navigation support
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent, action: () => void) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        action();
-      }
-    },
-    []
-  );
-
-  // Close mobile menu on escape key
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && mobileMenuOpen) {
-        setMobileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [mobileMenuOpen]);
-
   return (
-    <header
-      className="bg-black/20 backdrop-blur-sm border-b border-white/10 sticky top-0 z-50"
-      role="banner"
-      aria-label="Main navigation"
-    >
+    <div className="bg-slate-950 border-b border-slate-700 sticky top-0 z-50">
+      {/* Top Row: Logo + Price Ticker */}
       <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Main Navigation Bar */}
         <nav
+          id="navigation"
           className="flex items-center justify-between"
           role="navigation"
           aria-label="Primary navigation"
         >
-          {/* Left: Logo and Brand */}
-          <div className="flex items-center space-x-6 flex-shrink-0">
-            <div className="w-14 h-14 flex items-center justify-center bg-white/5 rounded-xl p-3">
-              <Image
-                src="/5049.png"
-                alt="Verus Logo"
-                width={32}
-                height={32}
-                className="w-full h-full object-contain"
-                style={{ width: 'auto', height: 'auto' }}
-                priority
+          {/* Left: Logo */}
+          <div className="flex items-center flex-shrink-0">
+            <div className="flex items-center justify-center relative">
+              {/* Verus Logo */}
+              <div className="flex items-center space-x-3">
+                {/* Logo Image */}
+                <div className="relative h-12 w-12">
+                  <Image
+                    src="/verus-icon-blue.png"
+                    alt="Verus"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+
+                {/* Logo Text */}
+                <span className="text-white font-bold text-3xl">Verus</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Center: Price Ticker */}
+          <div className="hidden lg:flex flex-1 justify-center px-12">
+            <VerusPriceTicker
+              refreshInterval={6000}
+              speed={20}
+              showControls={false}
+              showVolume={true}
+              showMarketCap={true}
+              className="w-full max-w-3xl"
+            />
+          </div>
+
+          {/* Right: Tablet Ticker */}
+          <div className="flex items-center space-x-3 flex-shrink-0">
+            {/* Verus Price Ticker (Tablet) */}
+            <div className="hidden md:flex lg:hidden">
+              <VerusPriceTicker
+                refreshInterval={6000}
+                speed={15}
+                showControls={false}
+                showVolume={false}
+                showMarketCap={false}
+                className="w-full max-w-sm"
               />
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-2xl font-bold text-white leading-tight mb-1">
-                Verus
-              </h1>
-              <p className="text-sm text-white/70 leading-tight">
-                The Internet of Value
-              </p>
-            </div>
-            <div className="sm:hidden">
-              <h1 className="text-lg font-bold text-white leading-tight">
-                Verus Explorer
-              </h1>
-            </div>
-          </div>
-
-          {/* Center: Main Navigation */}
-          <div className="hidden lg:flex items-center space-x-4 flex-1 justify-center mx-8">
-            <nav
-              className="flex items-center space-x-3"
-              role="navigation"
-              aria-label="Main navigation"
-            >
-              {navigationItems.map(nav => {
-                const Icon = nav.icon;
-                const isActive = activeTab === nav.key;
-                return (
-                  <button
-                    key={nav.key}
-                    onClick={() => handleTabChange(nav.key as ExplorerTab)}
-                    onKeyDown={e =>
-                      handleKeyDown(e, () =>
-                        handleTabChange(nav.key as ExplorerTab)
-                      )
-                    }
-                    className={`flex items-center space-x-3 px-5 py-3 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
-                      isActive
-                        ? 'bg-white/20 text-white shadow-lg border border-white/10'
-                        : 'text-white/80 hover:text-white hover:bg-white/10 hover:shadow-md'
-                    }`}
-                    aria-label={`Navigate to ${nav.label}. ${nav.description}`}
-                    aria-current={isActive ? 'page' : undefined}
-                    aria-describedby={
-                      isActive ? `${nav.key}-description` : undefined
-                    }
-                    title={nav.description}
-                  >
-                    <Icon className="h-4 w-4" aria-hidden="true" />
-                    <span className="text-sm font-medium">{nav.label}</span>
-                    {isActive && (
-                      <span id={`${nav.key}-description`} className="sr-only">
-                        Current page
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Right: Actions and Controls */}
-          <div className="flex items-center space-x-3 flex-shrink-0">
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              onKeyDown={e =>
-                handleKeyDown(e, () => setMobileMenuOpen(!mobileMenuOpen))
-              }
-              className="lg:hidden p-2.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-              aria-label="Toggle navigation menu"
-              aria-expanded={mobileMenuOpen}
-              aria-controls="mobile-navigation"
-            >
-              {mobileMenuOpen ? (
-                <X className="h-5 w-5" aria-hidden="true" />
-              ) : (
-                <Menu className="h-5 w-5" aria-hidden="true" />
-              )}
-            </button>
           </div>
         </nav>
-
-        {/* Mobile Navigation Menu */}
-        {mobileMenuOpen && (
-          <div
-            id="mobile-navigation"
-            className="lg:hidden mt-6 p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile navigation menu"
-          >
-            <nav
-              className="grid grid-cols-2 gap-4"
-              role="navigation"
-              aria-label="Mobile navigation"
-            >
-              {navigationItems.map(nav => {
-                const Icon = nav.icon;
-                const isActive = activeTab === nav.key;
-                return (
-                  <button
-                    key={nav.key}
-                    onClick={() => handleTabChange(nav.key as ExplorerTab)}
-                    onKeyDown={e =>
-                      handleKeyDown(e, () =>
-                        handleTabChange(nav.key as ExplorerTab)
-                      )
-                    }
-                    className={`flex items-center space-x-3 px-5 py-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
-                      isActive
-                        ? 'bg-white/20 text-white border border-white/20'
-                        : 'text-white/80 hover:text-white hover:bg-white/10'
-                    }`}
-                    aria-label={`Navigate to ${nav.label}. ${nav.description}`}
-                    aria-current={isActive ? 'page' : undefined}
-                    title={nav.description}
-                  >
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                    <span className="text-sm font-medium">{nav.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        )}
       </div>
-    </header>
+
+      {/* Navigation Tabs Row */}
+      <div className="border-t border-slate-700 bg-slate-900">
+        <div className="max-w-7xl mx-auto px-6 py-3">
+          <nav
+            className="flex gap-3 overflow-x-auto scrollbar-hide"
+            role="navigation"
+            aria-label="Main sections"
+          >
+            {navigationItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.key;
+
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => onTabChange(item.key)}
+                  className={`
+                    flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-full
+                    transition-all duration-200 whitespace-nowrap
+                    ${
+                      isActive
+                        ? 'bg-verus-blue text-white font-semibold shadow-lg border border-verus-blue-light'
+                        : 'bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-verus-blue/60'
+                    }
+                  `}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <Icon className={ICON_SIZES.sm} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+    </div>
   );
 }

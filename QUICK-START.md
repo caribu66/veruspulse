@@ -17,6 +17,7 @@ npm run dev
 ```
 
 This will:
+
 1. Sync the specified VerusID
 2. Extract block analytics
 3. Calculate comprehensive statistics
@@ -100,14 +101,14 @@ PGPASSWORD='verus_secure_2024' psql -U verus_user -d verus_utxo_db -h localhost 
 
 # View top 10 stakers
 PGPASSWORD='verus_secure_2024' psql -U verus_user -d verus_utxo_db -h localhost -c \
-  "SELECT address, total_stakes, total_rewards_satoshis/100000000.0 as rewards_vrsc 
-   FROM verusid_statistics 
-   ORDER BY total_rewards_satoshis DESC 
+  "SELECT address, total_stakes, total_rewards_satoshis/100000000.0 as rewards_vrsc
+   FROM verusid_statistics
+   ORDER BY total_rewards_satoshis DESC
    LIMIT 10;"
 
 # Check block analytics
 PGPASSWORD='verus_secure_2024' psql -U verus_user -d verus_utxo_db -h localhost -c \
-  "SELECT COUNT(*) as blocks_analyzed, 
+  "SELECT COUNT(*) as blocks_analyzed,
           COUNT(CASE WHEN block_type='minted' THEN 1 END) as pos_blocks
    FROM block_analytics;"
 ```
@@ -119,21 +120,25 @@ PGPASSWORD='verus_secure_2024' psql -U verus_user -d verus_utxo_db -h localhost 
 Once data is synced, the dashboard shows:
 
 ### Hero Stats (Always Visible)
+
 - 💰 Total Rewards (VRSC)
 - 📊 APY (All Time)
 - ⚡ Total Stakes
 - 🏆 Network Rank
 
 ### Performance Charts (Expandable)
+
 - 📈 Monthly Rewards (Bar Chart)
 - 📉 APY Trend (Line Chart)
 
 ### UTXO Health (Expandable)
+
 - 🥧 UTXO Distribution (Pie Chart)
 - ✅ Eligible vs Cooldown
 - 💎 Value Metrics
 
 ### Records & Achievements (Expandable)
+
 - 🏅 Highest Reward
 - 📅 Best Month
 - ⚡ Staking Frequency
@@ -167,6 +172,7 @@ curl -X POST 'http://localhost:3000/api/admin/sync-all-verusids?batch_size=10&de
 ### "Statistics not found" Error
 
 The VerusID hasn't been synced yet:
+
 ```bash
 ./test-sync-single.sh YOUR_VERUSID@
 ```
@@ -174,6 +180,7 @@ The VerusID hasn't been synced yet:
 ### Sync is Slow
 
 This is normal! Each VerusID takes 30-120 seconds depending on:
+
 - Number of historical stakes
 - Blockchain responsiveness
 - System resources
@@ -181,6 +188,7 @@ This is normal! Each VerusID takes 30-120 seconds depending on:
 ### High Memory Usage
 
 The system automatically pauses at 85% memory usage. If this happens frequently:
+
 ```bash
 # Use smaller batches and longer delays
 curl -X POST 'http://localhost:3000/api/admin/sync-all-verusids?batch_size=3&delay=20000'
@@ -242,4 +250,3 @@ You'll know it's working when:
 ---
 
 **Need help?** Check `COMPREHENSIVE-STAKING-SYSTEM-COMPLETE.md` for detailed documentation.
-

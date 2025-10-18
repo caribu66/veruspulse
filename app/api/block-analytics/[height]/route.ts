@@ -33,18 +33,24 @@ export async function GET(
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: 'UTXO database not enabled',
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'UTXO database not enabled',
+        },
+        { status: 503 }
+      );
     }
 
     const db = getDbPool();
     if (!db) {
-      return NextResponse.json({
-        success: false,
-        error: 'Database connection failed',
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Database connection failed',
+        },
+        { status: 500 }
+      );
     }
 
     // Get block analytics
@@ -55,11 +61,14 @@ export async function GET(
     const result = await db.query(query, [blockHeight]);
 
     if (result.rows.length === 0) {
-      return NextResponse.json({
-        success: false,
-        error: 'Block analytics not found',
-        message: 'This block has not been analyzed yet.',
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Block analytics not found',
+          message: 'This block has not been analyzed yet.',
+        },
+        { status: 404 }
+      );
     }
 
     const block = result.rows[0];
@@ -81,27 +90,37 @@ export async function GET(
         nonce: block.nonce,
         transactions: {
           count: block.tx_count,
-          coinbaseAmountVRSC: (parseFloat(block.coinbase_amount_satoshis) || 0) / 100000000,
-          stakingRewardVRSC: (parseFloat(block.staking_reward_satoshis) || 0) / 100000000,
-          totalFeesVRSC: (parseFloat(block.total_fees_satoshis) || 0) / 100000000,
+          coinbaseAmountVRSC:
+            (parseFloat(block.coinbase_amount_satoshis) || 0) / 100000000,
+          stakingRewardVRSC:
+            (parseFloat(block.staking_reward_satoshis) || 0) / 100000000,
+          totalFeesVRSC:
+            (parseFloat(block.total_fees_satoshis) || 0) / 100000000,
         },
         network: {
           hashrate: block.network_hashrate,
-          totalSupplyVRSC: (parseFloat(block.total_supply_satoshis) || 0) / 100000000,
-          stakingParticipationRate: parseFloat(block.staking_participation_rate),
+          totalSupplyVRSC:
+            (parseFloat(block.total_supply_satoshis) || 0) / 100000000,
+          stakingParticipationRate: parseFloat(
+            block.staking_participation_rate
+          ),
         },
         timing: {
           blockInterval: block.block_interval,
           averageBlockTime: block.average_block_time,
           solveTime: block.solve_time,
         },
-        staker: block.block_type === 'minted' ? {
-          address: block.staker_address,
-          identity: block.staker_identity,
-          stakeAmountVRSC: (parseFloat(block.stake_amount_satoshis) || 0) / 100000000,
-          coinAgeDestroyed: block.coin_age_destroyed,
-          stakeWeight: block.stake_weight,
-        } : null,
+        staker:
+          block.block_type === 'minted'
+            ? {
+                address: block.staker_address,
+                identity: block.staker_identity,
+                stakeAmountVRSC:
+                  (parseFloat(block.stake_amount_satoshis) || 0) / 100000000,
+                coinAgeDestroyed: block.coin_age_destroyed,
+                stakeWeight: block.stake_weight,
+              }
+            : null,
         advanced: {
           merkleRoot: block.merkle_root,
           chainTrust: block.chain_trust,
@@ -127,4 +146,3 @@ export async function GET(
     );
   }
 }
-

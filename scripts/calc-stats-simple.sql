@@ -26,8 +26,8 @@ SELECT
     MAX(sr.block_time) as last_stake,
     -- Simple APY
     CASE WHEN EXTRACT(DAY FROM (MAX(sr.block_time) - MIN(sr.block_time))) > 1
-         THEN LEAST(9999, ((SUM(sr.amount_sats)::numeric / 100000000) / 
-              EXTRACT(DAY FROM (MAX(sr.block_time) - MIN(sr.block_time))) * 365 * 100))
+         THEN ((SUM(sr.amount_sats)::numeric / 100000000) / 
+              EXTRACT(DAY FROM (MAX(sr.block_time) - MIN(sr.block_time))) * 365 * 100)
          ELSE 0 
     END as apy_all,
     -- APY 30d

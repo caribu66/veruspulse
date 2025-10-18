@@ -65,9 +65,10 @@ export class BlockAnalyticsExtractor {
   ): Promise<BlockAnalytics | null> {
     try {
       // Get block data - convert number to string if needed
-      const blockIdentifier = typeof blockHashOrHeight === 'number' 
-        ? (await verusAPI.getBlockHash(blockHashOrHeight))
-        : blockHashOrHeight;
+      const blockIdentifier =
+        typeof blockHashOrHeight === 'number'
+          ? await verusAPI.getBlockHash(blockHashOrHeight)
+          : blockHashOrHeight;
       const block = await verusAPI.getBlock(blockIdentifier, 2); // verbosity 2 for full tx data
       if (!block) {
         console.warn(`Block not found: ${blockHashOrHeight}`);
@@ -123,7 +124,10 @@ export class BlockAnalyticsExtractor {
 
       return analytics;
     } catch (error) {
-      console.error(`Error extracting block analytics for ${blockHashOrHeight}:`, error);
+      console.error(
+        `Error extracting block analytics for ${blockHashOrHeight}:`,
+        error
+      );
       return null;
     }
   }
@@ -163,7 +167,11 @@ export class BlockAnalyticsExtractor {
 
       // Find staker address (usually first output)
       const firstOutput = coinstakeTx.vout[0];
-      if (firstOutput && firstOutput.scriptPubKey && firstOutput.scriptPubKey.addresses) {
+      if (
+        firstOutput &&
+        firstOutput.scriptPubKey &&
+        firstOutput.scriptPubKey.addresses
+      ) {
         info.stakerAddress = firstOutput.scriptPubKey.addresses[0];
 
         // Try to resolve identity
@@ -194,9 +202,14 @@ export class BlockAnalyticsExtractor {
         try {
           const stakingInput = coinstakeTx.vin[1];
           if (stakingInput.txid && stakingInput.vout !== undefined) {
-            const prevTx = await verusAPI.getRawTransaction(stakingInput.txid, true);
+            const prevTx = await verusAPI.getRawTransaction(
+              stakingInput.txid,
+              true
+            );
             if (prevTx && prevTx.vout && prevTx.vout[stakingInput.vout]) {
-              info.stakeAmount = Math.round((prevTx.vout[stakingInput.vout].value || 0) * 100000000);
+              info.stakeAmount = Math.round(
+                (prevTx.vout[stakingInput.vout].value || 0) * 100000000
+              );
             }
           }
         } catch (e) {
@@ -208,7 +221,6 @@ export class BlockAnalyticsExtractor {
       if (block.stakemodifier) {
         info.stakeModifier = block.stakemodifier;
       }
-
     } catch (error) {
       console.error('Error extracting staking info:', error);
     }
@@ -297,7 +309,6 @@ export class BlockAnalyticsExtractor {
       } catch (e) {
         // Mining info may not be available
       }
-
     } catch (error) {
       console.error('Error calculating network metrics:', error);
     }
@@ -361,7 +372,10 @@ export class BlockAnalyticsExtractor {
 
       await this.db.query(query, values);
     } catch (error) {
-      console.error(`Error storing block analytics for height ${analytics.height}:`, error);
+      console.error(
+        `Error storing block analytics for height ${analytics.height}:`,
+        error
+      );
       throw error;
     }
   }
@@ -369,9 +383,14 @@ export class BlockAnalyticsExtractor {
   /**
    * Extract and store analytics for a range of blocks
    */
-  async extractBlockRange(startHeight: number, endHeight: number): Promise<number> {
+  async extractBlockRange(
+    startHeight: number,
+    endHeight: number
+  ): Promise<number> {
     let processed = 0;
-    console.log(`Extracting block analytics from ${startHeight} to ${endHeight}...`);
+    console.log(
+      `Extracting block analytics from ${startHeight} to ${endHeight}...`
+    );
 
     for (let height = startHeight; height <= endHeight; height++) {
       try {
@@ -381,7 +400,9 @@ export class BlockAnalyticsExtractor {
           processed++;
 
           if (processed % 100 === 0) {
-            console.log(`Processed ${processed} blocks (current: ${height})...`);
+            console.log(
+              `Processed ${processed} blocks (current: ${height})...`
+            );
           }
         }
       } catch (error) {
@@ -399,4 +420,3 @@ export class BlockAnalyticsExtractor {
     return processed;
   }
 }
-

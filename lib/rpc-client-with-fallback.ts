@@ -202,9 +202,12 @@ export class VerusClientWithFallback {
       // Try fallback APIs
       for (const api of this.fallbackAPIs) {
         try {
-          const response = await fetch(`${api.baseUrl}/addr/${address}/balance`, {
-            signal: AbortSignal.timeout(10000),
-          });
+          const response = await fetch(
+            `${api.baseUrl}/addr/${address}/balance`,
+            {
+              signal: AbortSignal.timeout(10000),
+            }
+          );
 
           if (response.ok) {
             const data = await response.json();
@@ -314,7 +317,8 @@ export class VerusClientWithFallback {
 
     // Determine recommendation
     if (results.localDaemon.available) {
-      results.recommendation = 'Local daemon is available and will be used (best option)';
+      results.recommendation =
+        'Local daemon is available and will be used (best option)';
     } else {
       const availableFallbacks = results.fallbackAPIs.filter(
         (api: any) => api.available
@@ -372,6 +376,3 @@ export class VerusClientWithFallback {
 
 // Singleton instance
 export const verusClientWithFallback = new VerusClientWithFallback();
-
-
-

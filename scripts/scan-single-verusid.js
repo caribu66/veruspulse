@@ -19,7 +19,9 @@ console.log(`║  Scanning VerusID: ${VERUS_ID.padEnd(29)} ║`);
 console.log(`╚════════════════════════════════════════════════╝\n`);
 
 // Make API call to scan
-fetch(`http://localhost:3000/api/verusid/${VERUS_ID}/staking-stats?refresh=true`)
+fetch(
+  `http://localhost:3000/api/verusid/${VERUS_ID}/staking-stats?refresh=true`
+)
   .then(res => res.json())
   .then(data => {
     if (data.success) {
@@ -39,4 +41,3 @@ fetch(`http://localhost:3000/api/verusid/${VERUS_ID}/staking-stats?refresh=true`
     console.error('❌ Failed to scan:', err.message);
     process.exit(1);
   });
-

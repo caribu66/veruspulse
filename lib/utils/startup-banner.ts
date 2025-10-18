@@ -1,4 +1,5 @@
 import { enhancedLogger } from './enhanced-logger';
+import { initializeSmartVerusIDUpdater } from '../services/smart-verusid-updater';
 
 export function showStartupBanner() {
   console.log('\n');
@@ -14,12 +15,37 @@ export function showStartupBanner() {
   console.log('========================================');
   console.log('🎯 Watch this console for detailed activity');
   console.log('========================================\n');
-  
+
   enhancedLogger.info('SYSTEM', 'Enhanced logging system initialized');
   enhancedLogger.info('SYSTEM', `Environment: ${process.env.NODE_ENV}`);
-  enhancedLogger.info('SYSTEM', `Verus RPC: ${process.env.VERUS_RPC_HOST || 'http://127.0.0.1:18843'}`);
+  enhancedLogger.info(
+    'SYSTEM',
+    `Verus RPC: ${process.env.VERUS_RPC_HOST || 'http://127.0.0.1:18843'}`
+  );
+
+  // Initialize Smart VerusID Updater if database is available
+  if (
+    process.env.DATABASE_URL &&
+    process.env.UTXO_DATABASE_ENABLED === 'true'
+  ) {
+    initializeSmartVerusIDUpdater(process.env.DATABASE_URL)
+      .then(() => {
+        enhancedLogger.info(
+          'SYSTEM',
+          'Smart VerusID Updater initialized successfully'
+        );
+      })
+      .catch(error => {
+        enhancedLogger.warn(
+          'SYSTEM',
+          'Failed to initialize Smart VerusID Updater:',
+          error.message
+        );
+      });
+  } else {
+    enhancedLogger.info(
+      'SYSTEM',
+      'Smart VerusID Updater disabled (no database URL or UTXO_DATABASE_ENABLED=false)'
+    );
+  }
 }
-
-
-
-

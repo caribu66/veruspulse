@@ -53,7 +53,3 @@ export interface SearchAnalytics {
   createdAt?: Date;
   updatedAt?: Date;
 }
-
-
-
-

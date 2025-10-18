@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { WarningCircle, ArrowsClockwise } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 
 export default function Error({
@@ -29,12 +29,12 @@ export default function Error({
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-verus-blue/20 to-verus-green/20">
       <div className="max-w-md w-full mx-4">
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 text-center">
           <div className="flex justify-center mb-6">
             <div className="p-4 rounded-full bg-red-500/20">
-              <AlertCircle className="h-12 w-12 text-red-400" />
+              <WarningCircle className="h-12 w-12 text-red-400" />
             </div>
           </div>
 
@@ -63,7 +63,7 @@ export default function Error({
               onClick={reset}
               className="flex items-center justify-center space-x-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors text-white font-medium"
             >
-              <RefreshCw className="h-4 w-4" />
+              <ArrowsClockwise className="h-4 w-4" />
               <span>Try Again</span>
             </button>
 

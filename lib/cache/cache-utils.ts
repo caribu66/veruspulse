@@ -314,5 +314,3 @@ export const CacheInvalidation = {
     await CacheManager.delete(CACHE_KEYS.verusIdList());
   },
 };
-
-

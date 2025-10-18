@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Copy, Check, ExternalLink } from 'lucide-react';
+import { Copy, Check, ArrowSquareOut } from '@phosphor-icons/react';
 
 interface BlockDetailRowProps {
   label: string;
@@ -65,7 +65,7 @@ export function BlockDetailRow({
               className="text-blue-400 hover:underline flex items-center space-x-1"
             >
               <span className="truncate">{displayValue}</span>
-              <ExternalLink className="h-3 w-3 flex-shrink-0" />
+              <ArrowSquareOut className="h-3 w-3 flex-shrink-0" />
             </Link>
           ) : (
             <span className={isHash ? 'break-all' : ''}>{displayValue}</span>

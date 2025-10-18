@@ -6,20 +6,20 @@ import {
   Clock,
   Coins,
   ArrowRight,
-  ExternalLink,
-  RefreshCw,
-  ChevronRight,
+  ArrowSquareOut,
+  ArrowsClockwise,
+  CaretRight,
   Activity,
-  TrendingUp,
+  TrendUp,
   X,
-  Sparkles,
-  Zap,
+  Sparkle,
+  Lightning,
   Bell,
   Shield,
   Hammer,
   Network,
-  DollarSign,
-} from 'lucide-react';
+  CurrencyDollar,
+} from '@phosphor-icons/react';
 import Link from 'next/link';
 import './animations/new-block-animations.css';
 import {
@@ -28,6 +28,7 @@ import {
   formatCryptoValue,
   formatFileSize,
 } from '@/lib/utils/number-formatting';
+import { logger } from '@/lib/utils/logger';
 
 interface Block {
   hash: string;
@@ -149,7 +150,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
         setSyncStatus(syncStatus);
 
         if (syncStatus && !syncStatus.isSynced) {
-          console.warn(
+          logger.warn(
             `Blockchain sync: ${syncStatus.syncPercentage}% - blocks may not be current`
           );
         }
@@ -189,7 +190,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
       }
     } catch (err) {
       setBlocksError('Network error');
-      console.error('Error fetching blocks:', err);
+      logger.error('Error fetching blocks:', err);
     } finally {
       setBlocksLoading(false);
     }
@@ -242,7 +243,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
       }
     } catch (err) {
       setMempoolError('Network error');
-      console.error('Error fetching mempool transactions:', err);
+      logger.error('Error fetching mempool transactions:', err);
     } finally {
       setMempoolLoading(false);
     }
@@ -298,7 +299,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
     if (validationtype === 'stake' || blocktype === 'minted') {
       return 'text-green-400 bg-green-500/10 border-green-500/20';
     }
-    return 'text-orange-400 bg-orange-500/10 border-orange-500/20';
+    return 'text-blue-400 bg-verus-cyan/10 border-verus-cyan/20';
   };
 
   const getBlockTypeIcon = (blocktype?: string, validationtype?: string) => {
@@ -312,8 +313,8 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
     if (priority > 1000)
       return 'text-green-400 bg-green-500/10 border-green-500/20';
     if (priority > 100)
-      return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
-    return 'text-orange-400 bg-orange-500/10 border-orange-500/20';
+      return 'text-green-400 bg-green-500/10 border-green-500/20';
+    return 'text-verus-blue bg-verus-blue/10 border-verus-blue/40';
   };
 
   // Get current state based on active tab
@@ -346,15 +347,15 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
 
   return (
     <div
-      className={`bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6 transition-all duration-500 ease-in-out ${className}`}
+      className={`bg-slate-900 rounded-xl border border-slate-700 p-6 transition-all duration-500 ease-in-out ${className}`}
     >
       {/* Enhanced New Block Notification */}
       {activeTab === 'blocks' && newBlockNotification && (
-        <div className="notification-toast-in mb-4 p-4 bg-gradient-to-r from-green-500/20 to-blue-500/20 border border-green-500/30 rounded-lg relative overflow-hidden">
-          <div className="absolute inset-0 new-block-shimmer pointer-events-none" />
+        <div className="notification-toast-in mb-4 p-4 bg-slate-800 border border-verus-green/40 rounded-lg relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none" />
           <div className="flex items-center space-x-3 relative z-10">
             <div className="p-2 rounded-full bg-green-500/20 sparkle-icon">
-              <Sparkles className="h-4 w-4 text-green-400 transition-all duration-300 ease-in-out" />
+              <Sparkle className="h-4 w-4 text-green-400 transition-all duration-300 ease-in-out" />
             </div>
             <div className="flex-1">
               <div className="text-green-400 font-semibold text-sm">
@@ -384,11 +385,11 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
 
       {/* Enhanced New Transaction Notification */}
       {activeTab === 'mempool' && newTransactionNotification && (
-        <div className="notification-toast-in mb-4 p-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-lg relative overflow-hidden">
+        <div className="notification-toast-in mb-4 p-4 bg-slate-800 border border-verus-blue/40 rounded-lg relative overflow-hidden">
           <div className="absolute inset-0 new-block-shimmer pointer-events-none" />
           <div className="flex items-center space-x-3 relative z-10">
             <div className="p-2 rounded-full bg-blue-500/20 sparkle-icon">
-              <Sparkles className="h-4 w-4 text-blue-400 transition-all duration-300 ease-in-out" />
+              <Sparkle className="h-4 w-4 text-blue-400 transition-all duration-300 ease-in-out" />
             </div>
             <div className="flex-1">
               <div className="text-blue-400 font-semibold text-sm">
@@ -422,8 +423,8 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
           onClick={() => setActiveTab('blocks')}
           className={`px-4 py-2 rounded-lg transition-all duration-300 ease-in-out ${
             activeTab === 'blocks'
-              ? 'bg-blue-500/20 text-white border border-blue-500/30'
-              : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-transparent'
+              ? 'bg-verus-blue text-white border border-verus-blue-light'
+              : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700'
           }`}
         >
           Latest Blocks
@@ -432,8 +433,8 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
           onClick={() => setActiveTab('mempool')}
           className={`px-4 py-2 rounded-lg transition-all duration-300 ease-in-out ${
             activeTab === 'mempool'
-              ? 'bg-blue-500/20 text-white border border-blue-500/30'
-              : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-transparent'
+              ? 'bg-verus-blue text-white border border-verus-blue-light'
+              : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700'
           }`}
         >
           Mempool
@@ -470,7 +471,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                 ? `Updated ${formatTime(Math.floor(currentLastUpdate.getTime() / 1000))}`
                 : 'Loading...'}
               {activeTab === 'blocks' && syncStatus && !syncStatus.isSynced && (
-                <div className="text-orange-400 text-xs mt-1">
+                <div className="text-blue-400 text-xs mt-1">
                   ⚠️ Blockchain syncing: {syncStatus.syncPercentage}%
                 </div>
               )}
@@ -485,17 +486,17 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                 : fetchMempoolTransactions
             }
             disabled={currentLoading}
-            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-300 ease-in-out hover:scale-105 disabled:opacity-50"
+            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all duration-300 ease-in-out hover:scale-105 disabled:opacity-50"
           >
-            <RefreshCw
+            <ArrowsClockwise
               className={`h-4 w-4 text-blue-400 transition-all duration-300 ease-in-out ${currentLoading ? 'animate-spin' : ''}`}
             />
           </button>
           <Link
             href={activeTab === 'blocks' ? '/blocks' : '/mempool'}
-            className="p-2 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 transition-all duration-300 ease-in-out hover:scale-105"
+            className="p-2 rounded-lg bg-verus-blue/10 hover:bg-verus-blue/20 border border-verus-blue/40 transition-all duration-300 ease-in-out hover:scale-105"
           >
-            <ExternalLink className="h-4 w-4 text-blue-400 transition-all duration-300 ease-in-out" />
+            <ArrowSquareOut className="h-4 w-4 text-blue-400 transition-all duration-300 ease-in-out" />
           </Link>
         </div>
       </div>
@@ -510,7 +511,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
               return (
                 <div
                   key={`live-blocks-${block.hash}`}
-                  className={`group bg-white/5 hover:bg-white/10 rounded-lg p-4 transition-all duration-500 ease-in-out cursor-pointer border border-transparent hover:border-white/10 hover:scale-[1.02] gpu-accelerated ${
+                  className={`group bg-slate-800 hover:bg-slate-700 rounded-lg p-4 transition-all duration-300 ease-in-out cursor-pointer border border-slate-700 hover:border-verus-blue/60 hover:scale-[1.02] gpu-accelerated ${
                     isNewestBlock
                       ? 'new-block-enhanced-glow new-block-slide-in new-block-shimmer'
                       : 'block-item-slide'
@@ -525,7 +526,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                         className={`p-1.5 rounded-md transition-all duration-500 ease-in-out ${getBlockTypeColor(block.blocktype, block.validationtype)} ${isNewestBlock ? 'new-block-bounce' : ''}`}
                       >
                         {isNewestBlock ? (
-                          <Zap className="h-3 w-3 transition-all duration-300 ease-in-out sparkle-icon" />
+                          <Lightning className="h-3 w-3 transition-all duration-300 ease-in-out sparkle-icon" />
                         ) : (
                           getBlockTypeIcon(
                             block.blocktype,
@@ -564,7 +565,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                             <span>{block.nTx} tx</span>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <TrendingUp className="h-3 w-3" />
+                            <TrendUp className="h-3 w-3" />
                             <span>{formatDifficulty(block.difficulty)}</span>
                           </div>
                         </div>
@@ -583,7 +584,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                           </div>
                         )}
                       </div>
-                      <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-white transition-all duration-300 ease-in-out group-hover:translate-x-1" />
+                      <CaretRight className="h-4 w-4 text-gray-400 group-hover:text-white transition-all duration-300 ease-in-out group-hover:translate-x-1" />
                     </div>
                   </div>
 
@@ -607,7 +608,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
             return (
               <div
                 key={`live-mempool-${tx.txid}`}
-                className={`group bg-white/5 hover:bg-white/10 rounded-lg p-4 transition-all duration-500 ease-in-out cursor-pointer border border-transparent hover:border-white/10 hover:scale-[1.02] gpu-accelerated ${
+                className={`group bg-slate-800 hover:bg-slate-700 rounded-lg p-4 transition-all duration-300 ease-in-out cursor-pointer border border-slate-700 hover:border-verus-blue/60 hover:scale-[1.02] gpu-accelerated ${
                   isNewestTransaction
                     ? 'new-block-enhanced-glow new-block-slide-in new-block-shimmer'
                     : 'block-item-slide'
@@ -622,7 +623,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                       className={`p-1.5 rounded-md transition-all duration-500 ease-in-out ${getPriorityColor(tx.currentpriority)} ${isNewestTransaction ? 'new-block-bounce' : ''}`}
                     >
                       {isNewestTransaction ? (
-                        <Zap className="h-3 w-3 transition-all duration-300 ease-in-out sparkle-icon" />
+                        <Lightning className="h-3 w-3 transition-all duration-300 ease-in-out sparkle-icon" />
                       ) : (
                         <Activity className="h-3 w-3" />
                       )}
@@ -670,13 +671,13 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                       </div>
                       <div className="text-green-400 text-xs">Fee</div>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-white transition-all duration-300 ease-in-out group-hover:translate-x-1" />
+                    <CaretRight className="h-4 w-4 text-gray-400 group-hover:text-white transition-all duration-300 ease-in-out group-hover:translate-x-1" />
                   </div>
                 </div>
 
                 {/* Dependencies */}
                 {tx.depends.length > 0 && (
-                  <div className="mt-2 text-xs text-yellow-400">
+                  <div className="mt-2 text-xs text-green-400">
                     ⚠️ Depends on {tx.depends.length} transaction
                     {tx.depends.length > 1 ? 's' : ''}
                   </div>
@@ -708,7 +709,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
 
       {/* Block Detail Modal */}
       {selectedBlock && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-gray-900 border border-gray-600 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto transform transition-all duration-500 ease-out animate-in zoom-in-95">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -717,7 +718,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                 </h3>
                 <button
                   onClick={() => setSelectedBlock(null)}
-                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-300 ease-in-out hover:scale-110"
+                  className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all duration-300 ease-in-out hover:scale-110"
                 >
                   <X className="h-5 w-5 text-gray-400 transition-all duration-300 ease-in-out" />
                 </button>
@@ -767,12 +768,12 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                 <div className="pt-4 border-t border-white/10">
                   <Link
                     href={`/block/${selectedBlock.hash}`}
-                    className="inline-flex items-center space-x-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out hover:scale-105"
+                    className="inline-flex items-center space-x-2 bg-verus-blue/10 hover:bg-verus-blue/20 text-verus-blue px-4 py-2 rounded-lg border border-verus-blue/40 transition-all duration-300 ease-in-out hover:scale-105"
                   >
                     <span className="transition-all duration-300 ease-in-out">
                       View Full Details
                     </span>
-                    <ExternalLink className="h-4 w-4 transition-all duration-300 ease-in-out" />
+                    <ArrowSquareOut className="h-4 w-4 transition-all duration-300 ease-in-out" />
                   </Link>
                 </div>
               </div>
@@ -783,7 +784,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
 
       {/* Transaction Detail Modal */}
       {selectedTransaction && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-gray-900 border border-gray-600 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto transform transition-all duration-500 ease-out animate-in zoom-in-95">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -792,7 +793,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                 </h3>
                 <button
                   onClick={() => setSelectedTransaction(null)}
-                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-300 ease-in-out hover:scale-110"
+                  className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all duration-300 ease-in-out hover:scale-110"
                 >
                   <X className="h-5 w-5 text-gray-400 transition-all duration-300 ease-in-out" />
                 </button>
@@ -843,12 +844,12 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                 <div className="pt-4 border-t border-white/10">
                   <Link
                     href={`/transaction/${selectedTransaction.txid}`}
-                    className="inline-flex items-center space-x-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out hover:scale-105"
+                    className="inline-flex items-center space-x-2 bg-verus-blue/10 hover:bg-verus-blue/20 text-verus-blue px-4 py-2 rounded-lg border border-verus-blue/40 transition-all duration-300 ease-in-out hover:scale-105"
                   >
                     <span className="transition-all duration-300 ease-in-out">
                       View Full Details
                     </span>
-                    <ExternalLink className="h-4 w-4 transition-all duration-300 ease-in-out" />
+                    <ArrowSquareOut className="h-4 w-4 transition-all duration-300 ease-in-out" />
                   </Link>
                 </div>
               </div>

@@ -36,7 +36,7 @@ db.query('SELECT current_database(), current_user')
     console.log(`✅ Connected to database: ${result.rows[0].current_database}`);
     console.log(`   User: ${result.rows[0].current_user}`);
     console.log('');
-    
+
     return startScanner();
   })
   .catch(error => {
@@ -46,19 +46,21 @@ db.query('SELECT current_database(), current_user')
 
 async function startScanner() {
   console.log('📦 Loading scanner modules...');
-  
+
   // Dynamic import for ES modules
-  const { IntelligentMassScanner } = await import('../lib/services/intelligent-mass-scanner.js');
-  
+  const { IntelligentMassScanner } = await import(
+    '../lib/services/intelligent-mass-scanner.js'
+  );
+
   console.log('✅ Scanner loaded');
   console.log('');
-  
+
   // Parse command line arguments
   const args = process.argv.slice(2);
   const scanType = args[0] || 'full';
   const limitAddresses = parseInt(args[1]) || 10000;
   const days = parseInt(args[2]) || 30;
-  
+
   console.log('📋 Configuration:');
   console.log(`   Scan Type: ${scanType}`);
   console.log(`   Address Limit: ${limitAddresses}`);
@@ -66,11 +68,11 @@ async function startScanner() {
     console.log(`   Days: ${days}`);
   }
   console.log('');
-  
+
   // Configure scanner based on type
   let config;
   let options = { limitAddresses };
-  
+
   if (scanType === 'full' || scanType === 'full-history') {
     console.log('🔄 Starting FULL HISTORY scan...');
     config = {
@@ -84,17 +86,17 @@ async function startScanner() {
     };
   } else if (scanType === 'recent') {
     console.log(`🔄 Starting RECENT scan (${days} days)...`);
-    
+
     // Calculate block range
     const { verusAPI } = await import('../lib/rpc-client-robust.js');
     const blockchainInfo = await verusAPI.getBlockchainInfo();
     const currentHeight = blockchainInfo.blocks;
     const blocksToScan = days * 1440; // ~1440 blocks per day
     const startHeight = Math.max(1, currentHeight - blocksToScan);
-    
+
     options.startFromHeight = startHeight;
     options.endAtHeight = currentHeight;
-    
+
     config = {
       maxConcurrentRequests: 5,
       delayBetweenBatches: 50,
@@ -109,66 +111,72 @@ async function startScanner() {
     console.log('');
     console.log('Usage:');
     console.log('  node scripts/standalone-scanner.js full [limitAddresses]');
-    console.log('  node scripts/standalone-scanner.js recent [limitAddresses] [days]');
+    console.log(
+      '  node scripts/standalone-scanner.js recent [limitAddresses] [days]'
+    );
     console.log('');
     console.log('Examples:');
     console.log('  node scripts/standalone-scanner.js full 10000');
     console.log('  node scripts/standalone-scanner.js recent 10000 30');
     process.exit(1);
   }
-  
+
   console.log('⚙️  Scanner Configuration:');
   console.log(`   Max Concurrent: ${config.maxConcurrentRequests}`);
   console.log(`   Batch Delay: ${config.delayBetweenBatches}ms`);
   console.log(`   Block Batch Size: ${config.blockBatchSize}`);
   console.log('');
-  
+
   // Initialize scanner
   const scanner = new IntelligentMassScanner(db, config);
-  
+
   // Progress monitoring
   const progressInterval = setInterval(() => {
     const progress = scanner.getProgress();
-    
+
     if (!scanner.isScanning()) {
       clearInterval(progressInterval);
       return;
     }
-    
-    const blockPercent = progress.totalBlocks > 0 ?
-      ((progress.blocksProcessed / progress.totalBlocks) * 100).toFixed(2) : 0;
-    
+
+    const blockPercent =
+      progress.totalBlocks > 0
+        ? ((progress.blocksProcessed / progress.totalBlocks) * 100).toFixed(2)
+        : 0;
+
     const elapsed = Date.now() - progress.startTime;
     const hours = Math.floor(elapsed / 3600000);
     const minutes = Math.floor((elapsed % 3600000) / 60000);
     const seconds = Math.floor((elapsed % 60000) / 1000);
-    
-    console.log(`[${hours}h ${minutes}m ${seconds}s] Phase: ${progress.currentPhase} | Blocks: ${progress.blocksProcessed}/${progress.totalBlocks} (${blockPercent}%) | Stakes: ${progress.stakeEventsFound} | Errors: ${progress.errors}`);
+
+    console.log(
+      `[${hours}h ${minutes}m ${seconds}s] Phase: ${progress.currentPhase} | Blocks: ${progress.blocksProcessed}/${progress.totalBlocks} (${blockPercent}%) | Stakes: ${progress.stakeEventsFound} | Errors: ${progress.errors}`
+    );
   }, 10000); // Update every 10 seconds
-  
+
   console.log('🚀 Scanner started!');
   console.log('   Press Ctrl+C to stop gracefully');
   console.log('');
-  
+
   // Handle Ctrl+C
   process.on('SIGINT', () => {
     console.log('');
     console.log('⏸️  Stopping scanner gracefully...');
     scanner.stopScan();
     clearInterval(progressInterval);
-    
+
     setTimeout(() => {
       console.log('✅ Scanner stopped');
       process.exit(0);
     }, 2000);
   });
-  
+
   // Start the scan
   try {
     await scanner.scanAllVerusIDs(options);
-    
+
     clearInterval(progressInterval);
-    
+
     const progress = scanner.getProgress();
     console.log('');
     console.log('================================================');
@@ -178,9 +186,11 @@ async function startScanner() {
     console.log(`   Blocks Processed: ${progress.blocksProcessed}`);
     console.log(`   Stake Events Found: ${progress.stakeEventsFound}`);
     console.log(`   Errors: ${progress.errors}`);
-    console.log(`   Cache Efficiency: ${((progress.cacheHits / (progress.cacheHits + progress.cacheMisses)) * 100).toFixed(2)}%`);
+    console.log(
+      `   Cache Efficiency: ${((progress.cacheHits / (progress.cacheHits + progress.cacheMisses)) * 100).toFixed(2)}%`
+    );
     console.log('');
-    
+
     await db.end();
     process.exit(0);
   } catch (error) {
@@ -192,4 +202,3 @@ async function startScanner() {
     process.exit(1);
   }
 }
-

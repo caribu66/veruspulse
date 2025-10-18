@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       return addSecurityHeaders(response);
     }
 
-  enhancedLogger.info('REQUEST', `Looking up VerusID: ${identity}`);
+    enhancedLogger.info('REQUEST', `Looking up VerusID: ${identity}`);
 
     // Initialize search database if available
     if (process.env.DATABASE_URL) {
@@ -34,7 +34,11 @@ export async function POST(request: NextRequest) {
         searchDb = new SearchDatabaseService(process.env.DATABASE_URL);
         await searchDb.initializeTables();
       } catch (error) {
-        enhancedLogger.warn('DATABASE', 'Search database not available, continuing without storage', { error: (error as Error).message });
+        enhancedLogger.warn(
+          'DATABASE',
+          'Search database not available, continuing without storage',
+          { error: (error as Error).message }
+        );
       }
     }
 
@@ -48,32 +52,38 @@ export async function POST(request: NextRequest) {
         enhancedLogger.info('CACHE', `Found cached identity for: ${identity}`);
       }
     } catch (error) {
-      enhancedLogger.warn('CACHE', 'Cache lookup failed, continuing with RPC', { error: (error as Error).message });
+      enhancedLogger.warn('CACHE', 'Cache lookup failed, continuing with RPC', {
+        error: (error as Error).message,
+      });
     }
 
     // Look up the VerusID using latest API methods (or use cached data)
     const [identityData, identityHistory] = await Promise.allSettled([
-      cachedIdentity ? Promise.resolve(null) : verusAPI.getIdentity(identity).catch(err => {
-        logger.warn('Identity fetch failed:', err);
-        return null;
-      }),
-      cachedIdentity ? Promise.resolve(null) : verusAPI.getIdentityHistory(identity).catch(err => {
-        // Check if it's specifically the "Identity APIs not activated" error
-        if (
-          err.message &&
-          err.message.includes('Identity APIs not activated')
-        ) {
-          logger.info(
-            'Identity history not available - Identity APIs not activated on blockchain'
-          );
-          return {
-            notAvailable: true,
-            reason: 'Identity APIs not activated on blockchain',
-          };
-        }
-        logger.warn('Identity history fetch failed:', err);
-        return null;
-      }),
+      cachedIdentity
+        ? Promise.resolve(null)
+        : verusAPI.getIdentity(identity).catch(err => {
+            logger.warn('Identity fetch failed:', err);
+            return null;
+          }),
+      cachedIdentity
+        ? Promise.resolve(null)
+        : verusAPI.getIdentityHistory(identity).catch(err => {
+            // Check if it's specifically the "Identity APIs not activated" error
+            if (
+              err.message &&
+              err.message.includes('Identity APIs not activated')
+            ) {
+              logger.info(
+                'Identity history not available - Identity APIs not activated on blockchain'
+              );
+              return {
+                notAvailable: true,
+                reason: 'Identity APIs not activated on blockchain',
+              };
+            }
+            logger.warn('Identity history fetch failed:', err);
+            return null;
+          }),
     ]);
 
     // Build result from cache or RPC response
@@ -96,7 +106,8 @@ export async function POST(request: NextRequest) {
       };
     } else {
       result = {
-        identity: identityData.status === 'fulfilled' ? identityData.value : null,
+        identity:
+          identityData.status === 'fulfilled' ? identityData.value : null,
         history:
           identityHistory.status === 'fulfilled' ? identityHistory.value : null,
         identityHistoryAvailable:
@@ -106,7 +117,7 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString(),
         cached: false,
       };
-      
+
       // Cache the newly fetched identity
       if (result.identity) {
         try {
@@ -119,7 +130,9 @@ export async function POST(request: NextRequest) {
           );
           enhancedLogger.info('CACHE', `Cached identity for: ${identity}`);
         } catch (error) {
-          enhancedLogger.warn('CACHE', 'Failed to cache identity', { error: (error as Error).message });
+          enhancedLogger.warn('CACHE', 'Failed to cache identity', {
+            error: (error as Error).message,
+          });
         }
       }
     }
@@ -135,16 +148,17 @@ export async function POST(request: NextRequest) {
       return addSecurityHeaders(response);
     }
 
-  enhancedLogger.info('REQUEST', `VerusID lookup successful: ${identity}`);
+    enhancedLogger.info('REQUEST', `VerusID lookup successful: ${identity}`);
 
     // Store search in database if available
     if (searchDb && result.identity) {
       try {
         const responseTime = Date.now() - startTime;
         const userAgent = request.headers.get('user-agent') || undefined;
-        const ipAddress = request.headers.get('x-forwarded-for') || 
-                         request.headers.get('x-real-ip') || 
-                         'unknown';
+        const ipAddress =
+          request.headers.get('x-forwarded-for') ||
+          request.headers.get('x-real-ip') ||
+          'unknown';
 
         // Store the search history
         const searchRecord = await searchDb.storeSearch({
@@ -160,7 +174,7 @@ export async function POST(request: NextRequest) {
         // Store the VerusID details
         const identityData = result.identity;
         const core = identityData.identity || {};
-        
+
         await searchDb.storeVerusIDSearch({
           searchHistoryId: searchRecord.id,
           verusID: identity,
@@ -189,9 +203,14 @@ export async function POST(request: NextRequest) {
         // Update analytics
         await searchDb.updateSearchAnalytics('verusid', responseTime, true);
 
-        enhancedLogger.info('DATABASE', `Stored VerusID search for: ${identity}`);
+        enhancedLogger.info(
+          'DATABASE',
+          `Stored VerusID search for: ${identity}`
+        );
       } catch (error) {
-        enhancedLogger.warn('DATABASE', 'Failed to store VerusID search', { error: (error as Error).message });
+        enhancedLogger.warn('DATABASE', 'Failed to store VerusID search', {
+          error: (error as Error).message,
+        });
         // Continue with response even if storage fails
       }
     }
@@ -203,16 +222,17 @@ export async function POST(request: NextRequest) {
 
     return addSecurityHeaders(response);
   } catch (error) {
-  enhancedLogger.error('REQUEST', 'Error fetching VerusID', error as Error);
+    enhancedLogger.error('REQUEST', 'Error fetching VerusID', error as Error);
 
     // Store failed search if database is available
     if (searchDb) {
       try {
         const responseTime = Date.now() - startTime;
         const userAgent = request.headers.get('user-agent') || undefined;
-        const ipAddress = request.headers.get('x-forwarded-for') || 
-                         request.headers.get('x-real-ip') || 
-                         'unknown';
+        const ipAddress =
+          request.headers.get('x-forwarded-for') ||
+          request.headers.get('x-real-ip') ||
+          'unknown';
 
         await searchDb.storeSearch({
           searchQuery: identity || 'unknown',
@@ -225,7 +245,9 @@ export async function POST(request: NextRequest) {
 
         await searchDb.updateSearchAnalytics('verusid', responseTime, false);
       } catch (dbError) {
-        enhancedLogger.warn('DATABASE', 'Failed to store failed search', { error: (dbError as Error).message });
+        enhancedLogger.warn('DATABASE', 'Failed to store failed search', {
+          error: (dbError as Error).message,
+        });
       }
     }
 
@@ -245,7 +267,11 @@ export async function POST(request: NextRequest) {
       try {
         await searchDb.close();
       } catch (error) {
-        enhancedLogger.warn('DATABASE', 'Failed to close search database connection', { error: (error as Error).message });
+        enhancedLogger.warn(
+          'DATABASE',
+          'Failed to close search database connection',
+          { error: (error as Error).message }
+        );
       }
     }
   }

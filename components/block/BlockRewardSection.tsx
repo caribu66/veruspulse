@@ -1,7 +1,13 @@
 'use client';
 
 import { BlockDetailRow } from './BlockDetailRow';
-import { Coins, Shield, Hammer, TrendingUp, Clock } from 'lucide-react';
+import {
+  Coins,
+  Shield,
+  Hammer,
+  TrendUp as TrendingUp,
+  Clock,
+} from '@phosphor-icons/react';
 import { Block } from '@/lib/types/block-types';
 
 interface BlockRewardSectionProps {
@@ -20,7 +26,7 @@ export function BlockRewardSection({ block }: BlockRewardSectionProps) {
     ) {
       return <Shield className="h-5 w-5 text-green-400" />;
     }
-    return <Hammer className="h-5 w-5 text-orange-400" />;
+    return <Hammer className="h-5 w-5 text-verus-cyan" />;
   };
 
   const getRewardColor = () => {
@@ -30,7 +36,7 @@ export function BlockRewardSection({ block }: BlockRewardSectionProps) {
     ) {
       return 'bg-green-500/10 border-green-500/20';
     }
-    return 'bg-yellow-500/10 border-yellow-500/20';
+    return 'bg-verus-teal/10 border-verus-teal/20';
   };
 
   const getRewardDotColor = () => {
@@ -86,7 +92,7 @@ export function BlockRewardSection({ block }: BlockRewardSectionProps) {
               <BlockDetailRow
                 label="Stake Age"
                 value={`${block.stakeRewardInfo.stakeAge} blocks`}
-                icon={<Clock className="h-4 w-4 text-purple-400" />}
+                icon={<Clock className="h-4 w-4 text-verus-blue" />}
               />
             )}
 
@@ -119,7 +125,7 @@ export function BlockRewardSection({ block }: BlockRewardSectionProps) {
           <BlockDetailRow
             label="Stake Age"
             value={`${block.stakeAge} blocks`}
-            icon={<Clock className="h-4 w-4 text-purple-400" />}
+            icon={<Clock className="h-4 w-4 text-verus-blue" />}
           />
         )}
       </div>

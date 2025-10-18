@@ -3,6 +3,9 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { VerusIDExplorer } from '@/components/verusid-explorer';
 
+// Mock fetch API
+global.fetch = jest.fn() as jest.Mock;
+
 // Mock localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
@@ -27,6 +30,47 @@ Object.defineProperty(window, 'localStorage', {
 describe('VerusIDExplorer - Basic Rendering', () => {
   beforeEach(() => {
     localStorageMock.clear();
+    jest.clearAllMocks();
+
+    // Reset fetch mock with default responses
+    (global.fetch as jest.Mock).mockImplementation((url: string) => {
+      // Mock the sync status endpoint that VerusIDSyncStatus polls
+      if (url.includes('/api/admin/sync-all-verusids')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            success: true,
+            progress: {
+              status: 'idle',
+              total: 0,
+              processed: 0,
+              failed: 0,
+              percentComplete: 0,
+              errors: [],
+            },
+          }),
+        } as Response);
+      }
+
+      // Mock the staking stats endpoint
+      if (url.includes('/staking-stats')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            success: true,
+            data: {
+              summary: { totalStakes: 1 },
+            },
+          }),
+        } as Response);
+      }
+
+      // Default mock for other endpoints
+      return Promise.resolve({
+        ok: false,
+        json: async () => ({ success: false, error: 'Not mocked' }),
+      } as Response);
+    });
   });
 
   it('should render without crashing', () => {
@@ -36,7 +80,7 @@ describe('VerusIDExplorer - Basic Rendering', () => {
 
   it('should display breadcrumb navigation', () => {
     render(<VerusIDExplorer />);
-    expect(screen.getByText('Verus Explorer')).toBeInTheDocument();
+    expect(screen.getByText('VerusPulse')).toBeInTheDocument();
     expect(screen.getByText('VerusIDs')).toBeInTheDocument();
   });
 
@@ -77,7 +121,7 @@ describe('VerusIDExplorer - Basic Rendering', () => {
 
   it('should have proper component structure', () => {
     const { container } = render(<VerusIDExplorer />);
-    expect(container.firstChild).toHaveClass('space-y-8');
+    expect(container.firstChild).toHaveClass('space-y-6');
   });
 
   it('should render all tab buttons', () => {

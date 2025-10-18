@@ -1,7 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeft,
+  ArrowRight,
+} from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 
 interface BlockNavigationProps {

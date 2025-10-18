@@ -24,7 +24,7 @@ export class VerusIDScanner {
     total: 0,
     processed: 0,
     errors: 0,
-    startTime: Date.now()
+    startTime: Date.now(),
   };
 
   constructor() {
@@ -44,7 +44,7 @@ export class VerusIDScanner {
     const {
       batchSize = 10,
       includeExisting = false,
-      generateMockData = true
+      generateMockData = true,
     } = options;
 
     this.isRunning = true;
@@ -52,7 +52,7 @@ export class VerusIDScanner {
       total: 0,
       processed: 0,
       errors: 0,
-      startTime: Date.now()
+      startTime: Date.now(),
     };
 
     try {
@@ -66,31 +66,42 @@ export class VerusIDScanner {
 
       // Step 2: Get existing VerusIDs from database
       const existingIds = await this.getExistingVerusIDs();
-      logger.info(`💾 Found ${existingIds.length} existing VerusIDs in database`);
+      logger.info(
+        `💾 Found ${existingIds.length} existing VerusIDs in database`
+      );
 
       // Step 3: Process each VerusID
-      const idsToProcess = includeExisting ? verusIds : verusIds.filter(id => 
-        !existingIds.includes(id.identityaddress)
-      );
+      const idsToProcess = includeExisting
+        ? verusIds
+        : verusIds.filter(id => !existingIds.includes(id.identityaddress));
 
       logger.info(`⚡ Processing ${idsToProcess.length} VerusIDs...`);
 
       for (let i = 0; i < idsToProcess.length; i += batchSize) {
         const batch = idsToProcess.slice(i, i + batchSize);
-        
-        await Promise.all(batch.map(async (verusId) => {
-          try {
-            await this.processVerusID(verusId, generateMockData);
-            this.progress.processed++;
-          } catch (error) {
-            logger.error(`❌ Error processing ${verusId.identityaddress}:`, error);
-            this.progress.errors++;
-          }
-        }));
+
+        await Promise.all(
+          batch.map(async verusId => {
+            try {
+              await this.processVerusID(verusId, generateMockData);
+              this.progress.processed++;
+            } catch (error) {
+              logger.error(
+                `❌ Error processing ${verusId.identityaddress}:`,
+                error
+              );
+              this.progress.errors++;
+            }
+          })
+        );
 
         // Log progress every batch
-        const percent = Math.round((this.progress.processed / idsToProcess.length) * 100);
-        logger.info(`📈 Progress: ${this.progress.processed}/${idsToProcess.length} (${percent}%) - ${this.progress.errors} errors`);
+        const percent = Math.round(
+          (this.progress.processed / idsToProcess.length) * 100
+        );
+        logger.info(
+          `📈 Progress: ${this.progress.processed}/${idsToProcess.length} (${percent}%) - ${this.progress.errors} errors`
+        );
       }
 
       // Step 4: Generate rankings and percentiles
@@ -104,9 +115,8 @@ export class VerusIDScanner {
         total: this.progress.total,
         processed: this.progress.processed,
         errors: this.progress.errors,
-        duration: Date.now() - this.progress.startTime
+        duration: Date.now() - this.progress.startTime,
       };
-
     } catch (error) {
       logger.error('❌ VerusID scan failed:', error);
       throw error;
@@ -119,23 +129,27 @@ export class VerusIDScanner {
     try {
       // Try to fetch from blockchain
       const identities = await verusAPI.listIdentities();
-      
+
       if (identities && Array.isArray(identities)) {
         return identities.map((id: any) => ({
           identityaddress: id.identityaddress,
           identity: {
             name: id.identity?.name || '',
-            primaryaddresses: id.identity?.primaryaddresses || []
+            primaryaddresses: id.identity?.primaryaddresses || [],
           },
-          friendlyname: id.friendlyname || ''
+          friendlyname: id.friendlyname || '',
         }));
       }
-      
-      logger.warn('⚠️ No identities returned from blockchain, using fallback data');
+
+      logger.warn(
+        '⚠️ No identities returned from blockchain, using fallback data'
+      );
       return this.getFallbackVerusIDs();
-      
     } catch (error) {
-      logger.warn('⚠️ Failed to fetch from blockchain, using fallback data:', error);
+      logger.warn(
+        '⚠️ Failed to fetch from blockchain, using fallback data:',
+        error
+      );
       return this.getFallbackVerusIDs();
     }
   }
@@ -146,39 +160,41 @@ export class VerusIDScanner {
       {
         identityaddress: 'iPZkWmFAhQSFsgKiLExowaoXvzaor2bBZ5',
         identity: { name: 'Joanna', primaryaddresses: [] },
-        friendlyname: 'Joanna.VRSC@'
+        friendlyname: 'Joanna.VRSC@',
       },
       {
         identityaddress: 'i41PfpVaaeaodXcc9FEeKHVLbgi3iGXDa8',
         identity: { name: 'Farinole', primaryaddresses: [] },
-        friendlyname: 'Farinole.VRSC@'
+        friendlyname: 'Farinole.VRSC@',
       },
       {
         identityaddress: 'iJ5eKjP7qQr8sT9uV0wX1yZ2aB3cD4eF5gH6',
         identity: { name: 'TestUser1', primaryaddresses: [] },
-        friendlyname: 'TestUser1.VRSC@'
+        friendlyname: 'TestUser1.VRSC@',
       },
       {
         identityaddress: 'iK6fLkQ8rRs9tU0vW1xY2zA3bC4dE5fG6hI7',
         identity: { name: 'TestUser2', primaryaddresses: [] },
-        friendlyname: 'TestUser2.VRSC@'
+        friendlyname: 'TestUser2.VRSC@',
       },
       {
         identityaddress: 'iL7gMlR9sSt0uV1wX2yZ3aB4cD5eF6gH7iJ8',
         identity: { name: 'TestUser3', primaryaddresses: [] },
-        friendlyname: 'TestUser3.VRSC@'
-      }
+        friendlyname: 'TestUser3.VRSC@',
+      },
     ];
   }
 
   private async getExistingVerusIDs(): Promise<string[]> {
-    const result = await this.db.query('SELECT address FROM verusid_statistics');
+    const result = await this.db.query(
+      'SELECT address FROM verusid_statistics'
+    );
     return result.rows.map(row => row.address);
   }
 
   private async processVerusID(verusId: VerusID, generateMockData: boolean) {
     const address = verusId.identityaddress;
-    
+
     // Check if already exists
     const existing = await this.db.query(
       'SELECT * FROM verusid_statistics WHERE address = $1',
@@ -192,7 +208,7 @@ export class VerusIDScanner {
 
     // Generate comprehensive statistics
     const stats = await this.generateVerusIDStats(verusId, generateMockData);
-    
+
     if (existing.rows.length > 0) {
       // Update existing record
       await this.updateVerusIDStats(address, stats);
@@ -209,7 +225,10 @@ export class VerusIDScanner {
     logger.info(`✅ Processed ${verusId.friendlyname} (${address})`);
   }
 
-  private async generateVerusIDStats(verusId: VerusID, generateMockData: boolean) {
+  private async generateVerusIDStats(
+    verusId: VerusID,
+    generateMockData: boolean
+  ): Promise<any> {
     if (!generateMockData) {
       // Try to get real data from existing UTXO database
       const stakeEvents = await this.getStakeEvents(verusId.identityaddress);
@@ -218,11 +237,12 @@ export class VerusIDScanner {
 
     // Generate realistic mock data based on the VerusID
     const baseMultiplier = this.getBaseMultiplier(verusId.identityaddress);
-    
+
     return {
       friendly_name: verusId.friendlyname,
       total_stakes: Math.floor(Math.random() * 5000 + 1000) * baseMultiplier,
-      total_rewards_satoshis: Math.floor(Math.random() * 50000000000 + 10000000000) * baseMultiplier,
+      total_rewards_satoshis:
+        Math.floor(Math.random() * 50000000000 + 10000000000) * baseMultiplier,
       apy_all_time: Math.random() * 50 + 50,
       apy_yearly: Math.random() * 60 + 40,
       apy_90d: Math.random() * 70 + 30,
@@ -230,17 +250,27 @@ export class VerusIDScanner {
       roi_all_time: Math.random() * 200 + 100,
       staking_efficiency: Math.random() * 0.5 + 0.5,
       avg_stake_age: Math.random() * 30 + 10,
-      first_stake_time: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
-      last_stake_time: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+      first_stake_time: new Date(
+        Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000
+      ).toISOString(),
+      last_stake_time: new Date(
+        Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
+      ).toISOString(),
       network_rank: null, // Will be calculated later
       network_percentile: 0,
       eligible_utxos: Math.floor(Math.random() * 200 + 50),
       current_utxos: Math.floor(Math.random() * 300 + 100),
-      total_utxo_value_satoshis: Math.floor(Math.random() * 100000000000 + 10000000000),
-      largest_utxo_satoshis: Math.floor(Math.random() * 10000000000 + 1000000000),
-      smallest_eligible_satoshis: Math.floor(Math.random() * 100000000 + 10000000),
+      total_utxo_value_satoshis: Math.floor(
+        Math.random() * 100000000000 + 10000000000
+      ),
+      largest_utxo_satoshis: Math.floor(
+        Math.random() * 10000000000 + 1000000000
+      ),
+      smallest_eligible_satoshis: Math.floor(
+        Math.random() * 100000000 + 10000000
+      ),
       cooldown_utxos: Math.floor(Math.random() * 50 + 10),
-      inactive_utxos: Math.floor(Math.random() * 100 + 20)
+      inactive_utxos: Math.floor(Math.random() * 100 + 20),
     };
   }
 
@@ -270,14 +300,21 @@ export class VerusIDScanner {
     }
 
     const totalStakes = stakeEvents.length;
-    const totalRewards = stakeEvents.reduce((sum, event) => sum + (event.reward_amount || 0), 0);
+    const totalRewards = stakeEvents.reduce(
+      (sum, event) => sum + (event.reward_amount || 0),
+      0
+    );
     const firstStake = stakeEvents[0]?.block_time;
     const lastStake = stakeEvents[stakeEvents.length - 1]?.block_time;
-    
+
     // Calculate APY (simplified)
-    const timeSpan = new Date(lastStake).getTime() - new Date(firstStake).getTime();
+    const timeSpan =
+      new Date(lastStake).getTime() - new Date(firstStake).getTime();
     const days = timeSpan / (1000 * 60 * 60 * 24);
-    const apy = days > 0 ? (totalRewards / (totalStakes * 100000000)) * (365 / days) * 100 : 0;
+    const apy =
+      days > 0
+        ? (totalRewards / (totalStakes * 100000000)) * (365 / days) * 100
+        : 0;
 
     return {
       friendly_name: verusId.friendlyname,
@@ -300,7 +337,7 @@ export class VerusIDScanner {
       largest_utxo_satoshis: 10000000000,
       smallest_eligible_satoshis: 100000000,
       cooldown_utxos: Math.floor(totalStakes * 0.1),
-      inactive_utxos: Math.floor(totalStakes * 0.2)
+      inactive_utxos: Math.floor(totalStakes * 0.2),
     };
   }
 
@@ -317,12 +354,28 @@ export class VerusIDScanner {
     `;
 
     await this.db.query(query, [
-      address, stats.friendly_name, stats.total_stakes, stats.total_rewards_satoshis,
-      stats.apy_all_time, stats.apy_yearly, stats.apy_90d, stats.apy_30d, stats.roi_all_time,
-      stats.staking_efficiency, stats.avg_stake_age, stats.first_stake_time, stats.last_stake_time,
-      stats.network_rank, stats.network_percentile, stats.eligible_utxos, stats.current_utxos,
-      stats.total_utxo_value_satoshis, stats.largest_utxo_satoshis, stats.smallest_eligible_satoshis,
-      stats.cooldown_utxos, stats.inactive_utxos
+      address,
+      stats.friendly_name,
+      stats.total_stakes,
+      stats.total_rewards_satoshis,
+      stats.apy_all_time,
+      stats.apy_yearly,
+      stats.apy_90d,
+      stats.apy_30d,
+      stats.roi_all_time,
+      stats.staking_efficiency,
+      stats.avg_stake_age,
+      stats.first_stake_time,
+      stats.last_stake_time,
+      stats.network_rank,
+      stats.network_percentile,
+      stats.eligible_utxos,
+      stats.current_utxos,
+      stats.total_utxo_value_satoshis,
+      stats.largest_utxo_satoshis,
+      stats.smallest_eligible_satoshis,
+      stats.cooldown_utxos,
+      stats.inactive_utxos,
     ]);
   }
 
@@ -339,12 +392,28 @@ export class VerusIDScanner {
     `;
 
     await this.db.query(query, [
-      address, stats.friendly_name, stats.total_stakes, stats.total_rewards_satoshis,
-      stats.apy_all_time, stats.apy_yearly, stats.apy_90d, stats.apy_30d, stats.roi_all_time,
-      stats.staking_efficiency, stats.avg_stake_age, stats.first_stake_time, stats.last_stake_time,
-      stats.network_rank, stats.network_percentile, stats.eligible_utxos, stats.current_utxos,
-      stats.total_utxo_value_satoshis, stats.largest_utxo_satoshis, stats.smallest_eligible_satoshis,
-      stats.cooldown_utxos, stats.inactive_utxos
+      address,
+      stats.friendly_name,
+      stats.total_stakes,
+      stats.total_rewards_satoshis,
+      stats.apy_all_time,
+      stats.apy_yearly,
+      stats.apy_90d,
+      stats.apy_30d,
+      stats.roi_all_time,
+      stats.staking_efficiency,
+      stats.avg_stake_age,
+      stats.first_stake_time,
+      stats.last_stake_time,
+      stats.network_rank,
+      stats.network_percentile,
+      stats.eligible_utxos,
+      stats.current_utxos,
+      stats.total_utxo_value_satoshis,
+      stats.largest_utxo_satoshis,
+      stats.smallest_eligible_satoshis,
+      stats.cooldown_utxos,
+      stats.inactive_utxos,
     ]);
   }
 
@@ -355,22 +424,30 @@ export class VerusIDScanner {
       const date = new Date();
       date.setMonth(date.getMonth() - i);
       date.setDate(1);
-      
+
       monthlyData.push({
         address,
         period_type: 'monthly',
         period_start: date.toISOString(),
-        period_end: new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString(),
+        period_end: new Date(
+          date.getFullYear(),
+          date.getMonth() + 1,
+          0
+        ).toISOString(),
         stake_count: Math.floor(Math.random() * 100 + 50),
-        total_rewards_satoshis: Math.floor(Math.random() * 1000000000 + 500000000),
+        total_rewards_satoshis: Math.floor(
+          Math.random() * 1000000000 + 500000000
+        ),
         apy: stats.apy_all_time + (Math.random() - 0.5) * 20,
-        staking_efficiency: stats.staking_efficiency + (Math.random() - 0.5) * 0.2
+        staking_efficiency:
+          stats.staking_efficiency + (Math.random() - 0.5) * 0.2,
       });
     }
 
     // Insert monthly data
     for (const data of monthlyData) {
-      await this.db.query(`
+      await this.db.query(
+        `
         INSERT INTO staking_timeline (
           address, period_type, period_start, period_end, stake_count,
           total_rewards_satoshis, apy, staking_efficiency, created_at
@@ -381,10 +458,18 @@ export class VerusIDScanner {
           apy = EXCLUDED.apy,
           staking_efficiency = EXCLUDED.staking_efficiency,
           updated_at = NOW()
-      `, [
-        data.address, data.period_type, data.period_start, data.period_end,
-        data.stake_count, data.total_rewards_satoshis, data.apy, data.staking_efficiency
-      ]);
+      `,
+        [
+          data.address,
+          data.period_type,
+          data.period_start,
+          data.period_end,
+          data.stake_count,
+          data.total_rewards_satoshis,
+          data.apy,
+          data.staking_efficiency,
+        ]
+      );
     }
 
     // Generate daily data for the last 30 days
@@ -392,22 +477,26 @@ export class VerusIDScanner {
     for (let i = 29; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      
+
       dailyData.push({
         address,
         period_type: 'daily',
         period_start: date.toISOString().split('T')[0],
         period_end: date.toISOString().split('T')[0],
         stake_count: Math.floor(Math.random() * 10 + 1),
-        total_rewards_satoshis: Math.floor(Math.random() * 100000000 + 10000000),
+        total_rewards_satoshis: Math.floor(
+          Math.random() * 100000000 + 10000000
+        ),
         apy: stats.apy_all_time + (Math.random() - 0.5) * 30,
-        staking_efficiency: stats.staking_efficiency + (Math.random() - 0.5) * 0.3
+        staking_efficiency:
+          stats.staking_efficiency + (Math.random() - 0.5) * 0.3,
       });
     }
 
     // Insert daily data
     for (const data of dailyData) {
-      await this.db.query(`
+      await this.db.query(
+        `
         INSERT INTO staking_timeline (
           address, period_type, period_start, period_end, stake_count,
           total_rewards_satoshis, apy, staking_efficiency, created_at
@@ -418,10 +507,18 @@ export class VerusIDScanner {
           apy = EXCLUDED.apy,
           staking_efficiency = EXCLUDED.staking_efficiency,
           updated_at = NOW()
-      `, [
-        data.address, data.period_type, data.period_start, data.period_end,
-        data.stake_count, data.total_rewards_satoshis, data.apy, data.staking_efficiency
-      ]);
+      `,
+        [
+          data.address,
+          data.period_type,
+          data.period_start,
+          data.period_end,
+          data.stake_count,
+          data.total_rewards_satoshis,
+          data.apy,
+          data.staking_efficiency,
+        ]
+      );
     }
   }
 
@@ -437,7 +534,7 @@ export class VerusIDScanner {
     `);
 
     const total = result.rows.length;
-    
+
     for (let i = 0; i < result.rows.length; i++) {
       const row = result.rows[i];
       const rank = i + 1;
@@ -456,7 +553,7 @@ export class VerusIDScanner {
     return {
       isRunning: this.isRunning,
       ...this.progress,
-      duration: this.isRunning ? Date.now() - this.progress.startTime : 0
+      duration: this.isRunning ? Date.now() - this.progress.startTime : 0,
     };
   }
 

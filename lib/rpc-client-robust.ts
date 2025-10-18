@@ -1,6 +1,7 @@
 import { logger } from './utils/logger';
 import { enhancedLogger } from './utils/enhanced-logger';
 import { RPCErrorHandler } from './utils/rpc-error-handler';
+import { ListIdentitiesParams } from './types/verus-rpc-types';
 
 interface RPCResponse {
   result?: any;
@@ -17,7 +18,7 @@ class VerusAPIClient {
 
   constructor() {
     this.baseUrl = process.env.VERUS_RPC_HOST || 'http://127.0.0.1:18843';
-    this.timeout = 10000; // 10 seconds
+    this.timeout = parseInt(process.env.VERUS_RPC_TIMEOUT || '15000'); // 15 seconds default
   }
 
   private async sleep(ms: number): Promise<void> {
@@ -109,9 +110,13 @@ class VerusAPIClient {
 
         const timerId = `${method}-${Date.now()}`;
         enhancedLogger.startTimer(timerId);
-        
+
         if (attempt > 0) {
-          enhancedLogger.rpcCall(method, 'retry', undefined, { attempt, maxRetries, params });
+          enhancedLogger.rpcCall(method, 'retry', undefined, {
+            attempt,
+            maxRetries,
+            params,
+          });
         } else {
           enhancedLogger.rpcCall(method, 'success', undefined, { params });
         }
@@ -167,7 +172,10 @@ class VerusAPIClient {
 
         // Detect aborts specifically and log for observability
         try {
-          const isAbort = error && (error.name === 'AbortError' || /aborted/i.test(error.message || ''));
+          const isAbort =
+            error &&
+            (error.name === 'AbortError' ||
+              /aborted/i.test(error.message || ''));
           if (isAbort) {
             logger.warn(`✋ RPC Call aborted: ${method} (attempt ${attempt})`);
             // For aborts we generally don't want to retry
@@ -203,7 +211,11 @@ class VerusAPIClient {
     );
   }
 
-  async call(method: string, params: any[] = [], signal?: AbortSignal): Promise<any> {
+  async call(
+    method: string,
+    params: any[] = [],
+    signal?: AbortSignal
+  ): Promise<any> {
     return this.callWithRetry(method, params, 3, signal);
   }
 
@@ -319,11 +331,19 @@ class VerusAPIClient {
     return this.call('getaddresstxids', [{ addresses: [address] }], signal);
   }
 
-  async getRawTransaction(txid: string, verbose: boolean = true, signal?: AbortSignal) {
+  async getRawTransaction(
+    txid: string,
+    verbose: boolean = true,
+    signal?: AbortSignal
+  ) {
     return this.call('getrawtransaction', [txid, verbose ? 1 : 0], signal);
   }
 
-  async getBlock(hash: string, verbose: number | boolean = true, signal?: AbortSignal) {
+  async getBlock(
+    hash: string,
+    verbose: number | boolean = true,
+    signal?: AbortSignal
+  ) {
     // Support both boolean and numeric verbosity levels
     const verbosity =
       typeof verbose === 'boolean' ? (verbose ? 1 : 0) : verbose;
@@ -355,8 +375,31 @@ class VerusAPIClient {
   }
 
   // Verus-specific methods (updated for latest API)
-  async listIdentities(signal?: AbortSignal) {
-    return this.call('listidentities', [], signal);
+  async listIdentities(params?: ListIdentitiesParams, signal?: AbortSignal) {
+    if (!params) {
+      return this.call('listidentities', [], signal);
+    }
+    const defaultParams = {
+      start: 0,
+      count: 10,
+      txproof: false,
+    };
+    const finalParams = { ...defaultParams, ...params };
+    return this.call(
+      'listidentities',
+      [
+        finalParams.start,
+        finalParams.count,
+        finalParams.systemid,
+        finalParams.parent,
+        finalParams.timelockfrom,
+        finalParams.timelockto,
+        finalParams.fromheight,
+        finalParams.toheight,
+        finalParams.txproof,
+      ],
+      signal
+    );
   }
 
   async listCurrencies(signal?: AbortSignal) {
@@ -388,8 +431,16 @@ class VerusAPIClient {
     return this.call('getaddressmempool', [{ addresses: [address] }], signal);
   }
 
-  async getAddressTransaction(address: string, txid: string, signal?: AbortSignal) {
-    return this.call('getaddresstransaction', [{ addresses: [address], txid }], signal);
+  async getAddressTransaction(
+    address: string,
+    txid: string,
+    signal?: AbortSignal
+  ) {
+    return this.call(
+      'getaddresstransaction',
+      [{ addresses: [address], txid }],
+      signal
+    );
   }
 
   async getNotarizationCount(chainId: string, signal?: AbortSignal) {
@@ -442,18 +493,26 @@ class VerusAPIClient {
 
   // Performance monitoring
 
-  async getMempoolEntry(txid: string, signal?: AbortSignal) {
-    return this.call('getmempoolentry', [txid], signal);
-  }
+  // Note: getmempoolentry method doesn't exist in this version of Verus
+  // Use getrawmempool with verbose=true instead
 
-  async getChainTxStats(nblocks?: number, blockhash?: string, signal?: AbortSignal) {
+  async getChainTxStats(
+    nblocks?: number,
+    blockhash?: string,
+    signal?: AbortSignal
+  ) {
     const params: any[] = [];
     if (nblocks !== undefined) params.push(nblocks);
     if (blockhash !== undefined) params.push(blockhash);
     return this.call('getchaintxstats', params, signal);
   }
 
-  async getTxOut(txid: string, n: number, includeMempool: boolean = true, signal?: AbortSignal) {
+  async getTxOut(
+    txid: string,
+    n: number,
+    includeMempool: boolean = true,
+    signal?: AbortSignal
+  ) {
     return this.call('gettxout', [txid, n, includeMempool], signal);
   }
 
@@ -473,15 +532,27 @@ class VerusAPIClient {
     return this.call('getnettotals', [], signal);
   }
 
-  async getNetworkHashPS(nblocks: number = 120, height: number = -1, signal?: AbortSignal) {
+  async getNetworkHashPS(
+    nblocks: number = 120,
+    height: number = -1,
+    signal?: AbortSignal
+  ) {
     return this.call('getnetworkhashps', [nblocks, height], signal);
   }
 
-  async getMempoolAncestors(txid: string, verbose: boolean = false, signal?: AbortSignal) {
+  async getMempoolAncestors(
+    txid: string,
+    verbose: boolean = false,
+    signal?: AbortSignal
+  ) {
     return this.call('getmempoolancestors', [txid, verbose], signal);
   }
 
-  async getMempoolDescendants(txid: string, verbose: boolean = false, signal?: AbortSignal) {
+  async getMempoolDescendants(
+    txid: string,
+    verbose: boolean = false,
+    signal?: AbortSignal
+  ) {
     return this.call('getmempooldescendants', [txid, verbose], signal);
   }
 
@@ -543,7 +614,10 @@ class VerusAPIClient {
     return this.call('getnotarizationdatabyaddress', [address], signal);
   }
 
-  async getNotarizationDataByCurrency(currencyId: string, signal?: AbortSignal) {
+  async getNotarizationDataByCurrency(
+    currencyId: string,
+    signal?: AbortSignal
+  ) {
     return this.call('getnotarizationdatabycurrency', [currencyId], signal);
   }
 

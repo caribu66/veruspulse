@@ -17,6 +17,7 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  transformIgnorePatterns: ['node_modules/(?!(echarts|echarts-for-react)/)'],
   collectCoverageFrom: [
     'components/**/*.{js,jsx,ts,tsx}',
     'app/**/*.{js,jsx,ts,tsx}',

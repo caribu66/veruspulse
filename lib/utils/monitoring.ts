@@ -41,8 +41,30 @@ export class MonitoringService {
 
   updateMemoryUsage(): void {
     if (typeof process !== 'undefined' && process.memoryUsage) {
-      const memUsage = process.memoryUsage();
-      this.metrics.memoryUsage = memUsage.heapUsed / 1024 / 1024; // MB
+      try {
+        // Get system memory information
+        const fs = require('fs');
+        const memInfo = fs.readFileSync('/proc/meminfo', 'utf8');
+        const memTotalMatch = memInfo.match(/MemTotal:\s+(\d+)\s+kB/);
+        const memAvailableMatch = memInfo.match(/MemAvailable:\s+(\d+)\s+kB/);
+
+        if (memTotalMatch && memAvailableMatch) {
+          const systemTotalMemory = parseInt(memTotalMatch[1]) * 1024; // Convert to bytes
+          const systemAvailableMemory = parseInt(memAvailableMatch[1]) * 1024; // Convert to bytes
+          const systemUsedMemory = systemTotalMemory - systemAvailableMemory;
+          const systemMemoryPercent =
+            (systemUsedMemory / systemTotalMemory) * 100;
+          this.metrics.memoryUsage = systemMemoryPercent; // Store as percentage
+        } else {
+          // Fallback to RSS-based calculation
+          const memUsage = process.memoryUsage();
+          this.metrics.memoryUsage = memUsage.rss / 1024 / 1024; // MB
+        }
+      } catch (error) {
+        // Fallback to heap usage if system memory check fails
+        const memUsage = process.memoryUsage();
+        this.metrics.memoryUsage = memUsage.heapUsed / 1024 / 1024; // MB
+      }
     }
   }
 
@@ -58,7 +80,7 @@ export class MonitoringService {
       requests: metrics.requests,
       errors: metrics.errors,
       responseTime: metrics.responseTime,
-      memoryUsage: `${metrics.memoryUsage.toFixed(2)}MB`,
+      memoryUsage: `${metrics.memoryUsage.toFixed(1)}%`,
       uptime: `${(metrics.uptime / 1000).toFixed(2)}s`,
     });
   }

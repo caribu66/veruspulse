@@ -1,34 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Joanna@ Staking Charts - Test</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: #fff; }
-        h1 { text-align: center; color: #4ade80; }
-        .chart-container { width: 100%; height: 400px; margin: 20px 0; background: #2a2a2a; border-radius: 8px; }
-        .stats { display: flex; gap: 20px; margin: 20px 0; }
-        .stat-card { flex: 1; padding: 20px; background: #2a2a2a; border-radius: 8px; text-align: center; }
-        .stat-value { font-size: 32px; font-weight: bold; color: #4ade80; }
-        .stat-label { font-size: 14px; color: #888; margin-top: 5px; }
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #1a1a1a;
+        color: #fff;
+      }
+      h1 {
+        text-align: center;
+        color: #4ade80;
+      }
+      .chart-container {
+        width: 100%;
+        height: 400px;
+        margin: 20px 0;
+        background: #2a2a2a;
+        border-radius: 8px;
+      }
+      .stats {
+        display: flex;
+        gap: 20px;
+        margin: 20px 0;
+      }
+      .stat-card {
+        flex: 1;
+        padding: 20px;
+        background: #2a2a2a;
+        border-radius: 8px;
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 32px;
+        font-weight: bold;
+        color: #4ade80;
+      }
+      .stat-label {
+        font-size: 14px;
+        color: #888;
+        margin-top: 5px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>🎯 Joanna@ - Complete Staking History (2020-2025)</h1>
-    
+
     <div class="stats">
-        <div class="stat-card">
-            <div class="stat-value" id="totalStakes">-</div>
-            <div class="stat-label">Total Stakes</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="totalRewards">-</div>
-            <div class="stat-label">Total VRSC Rewards</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="avgReward">-</div>
-            <div class="stat-label">Avg Reward per Stake</div>
-        </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalStakes">-</div>
+        <div class="stat-label">Total Stakes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalRewards">-</div>
+        <div class="stat-label">Total VRSC Rewards</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgReward">-</div>
+        <div class="stat-label">Avg Reward per Stake</div>
+      </div>
     </div>
 
     <h2>📅 Daily Rewards (All Time - 248 Days)</h2>
@@ -41,159 +73,224 @@
     <div id="monthlyChart" class="chart-container"></div>
 
     <script>
-        // Fetch data from API
-        fetch('http://localhost:3000/api/verusid/Joanna@/staking-stats')
-            .then(res => res.json())
-            .then(data => {
-                const { summary, timeSeries } = data.data;
-                
-                // Update stats cards
-                document.getElementById('totalStakes').textContent = summary.totalStakes.toLocaleString();
-                document.getElementById('totalRewards').textContent = summary.totalRewardsVRSC.toFixed(2);
-                document.getElementById('avgReward').textContent = (summary.totalRewardsVRSC / summary.totalStakes).toFixed(2);
+      // Fetch data from API
+      fetch('http://localhost:3000/api/verusid/Joanna@/staking-stats')
+        .then(res => res.json())
+        .then(data => {
+          const { summary, timeSeries } = data.data;
 
-                // Daily Chart
-                const dailyChart = echarts.init(document.getElementById('dailyChart'));
-                dailyChart.setOption({
-                    title: { text: 'Daily Staking Rewards', left: 'center', textStyle: { color: '#fff' } },
-                    tooltip: { 
-                        trigger: 'axis',
-                        formatter: (params) => {
-                            const date = params[0].axisValue;
-                            const stakes = params[0].value;
-                            const rewards = params[1].value;
-                            return `${date}<br/>Stakes: ${stakes}<br/>Rewards: ${rewards.toFixed(4)} VRSC`;
-                        }
-                    },
-                    legend: { data: ['Stakes', 'Rewards'], top: 30, textStyle: { color: '#fff' } },
-                    xAxis: { 
-                        type: 'category', 
-                        data: timeSeries.daily.map(d => d.date),
-                        axisLabel: { color: '#888', rotate: 45 }
-                    },
-                    yAxis: [
-                        { type: 'value', name: 'Stakes', axisLabel: { color: '#888' }, nameTextStyle: { color: '#888' } },
-                        { type: 'value', name: 'VRSC', axisLabel: { color: '#888' }, nameTextStyle: { color: '#888' } }
-                    ],
-                    series: [
-                        {
-                            name: 'Stakes',
-                            type: 'bar',
-                            data: timeSeries.daily.map(d => d.stakeCount),
-                            itemStyle: { color: '#4ade80' }
-                        },
-                        {
-                            name: 'Rewards',
-                            type: 'line',
-                            yAxisIndex: 1,
-                            data: timeSeries.daily.map(d => d.totalRewardsVRSC),
-                            itemStyle: { color: '#fbbf24' },
-                            smooth: true
-                        }
-                    ],
-                    grid: { bottom: 100 }
-                });
+          // Update stats cards
+          document.getElementById('totalStakes').textContent =
+            summary.totalStakes.toLocaleString();
+          document.getElementById('totalRewards').textContent =
+            summary.totalRewardsVRSC.toFixed(2);
+          document.getElementById('avgReward').textContent = (
+            summary.totalRewardsVRSC / summary.totalStakes
+          ).toFixed(2);
 
-                // Weekly Chart
-                const weeklyChart = echarts.init(document.getElementById('weeklyChart'));
-                weeklyChart.setOption({
-                    title: { text: 'Weekly Staking Rewards', left: 'center', textStyle: { color: '#fff' } },
-                    tooltip: { 
-                        trigger: 'axis',
-                        formatter: (params) => {
-                            const week = params[0].axisValue;
-                            const stakes = params[0].value;
-                            const rewards = params[1].value;
-                            return `Week of ${week}<br/>Stakes: ${stakes}<br/>Rewards: ${rewards.toFixed(2)} VRSC`;
-                        }
-                    },
-                    legend: { data: ['Stakes', 'Rewards'], top: 30, textStyle: { color: '#fff' } },
-                    xAxis: { 
-                        type: 'category', 
-                        data: timeSeries.weekly.map(d => d.week.substring(0, 10)),
-                        axisLabel: { color: '#888', rotate: 45 }
-                    },
-                    yAxis: [
-                        { type: 'value', name: 'Stakes', axisLabel: { color: '#888' }, nameTextStyle: { color: '#888' } },
-                        { type: 'value', name: 'VRSC', axisLabel: { color: '#888' }, nameTextStyle: { color: '#888' } }
-                    ],
-                    series: [
-                        {
-                            name: 'Stakes',
-                            type: 'bar',
-                            data: timeSeries.weekly.map(d => d.stakeCount),
-                            itemStyle: { color: '#60a5fa' }
-                        },
-                        {
-                            name: 'Rewards',
-                            type: 'line',
-                            yAxisIndex: 1,
-                            data: timeSeries.weekly.map(d => d.totalRewardsVRSC),
-                            itemStyle: { color: '#f472b6' },
-                            smooth: true,
-                            areaStyle: { opacity: 0.3 }
-                        }
-                    ],
-                    grid: { bottom: 100 }
-                });
+          // Daily Chart
+          const dailyChart = echarts.init(
+            document.getElementById('dailyChart')
+          );
+          dailyChart.setOption({
+            title: {
+              text: 'Daily Staking Rewards',
+              left: 'center',
+              textStyle: { color: '#fff' },
+            },
+            tooltip: {
+              trigger: 'axis',
+              formatter: params => {
+                const date = params[0].axisValue;
+                const stakes = params[0].value;
+                const rewards = params[1].value;
+                return `${date}<br/>Stakes: ${stakes}<br/>Rewards: ${rewards.toFixed(4)} VRSC`;
+              },
+            },
+            legend: {
+              data: ['Stakes', 'Rewards'],
+              top: 30,
+              textStyle: { color: '#fff' },
+            },
+            xAxis: {
+              type: 'category',
+              data: timeSeries.daily.map(d => d.date),
+              axisLabel: { color: '#888', rotate: 45 },
+            },
+            yAxis: [
+              {
+                type: 'value',
+                name: 'Stakes',
+                axisLabel: { color: '#888' },
+                nameTextStyle: { color: '#888' },
+              },
+              {
+                type: 'value',
+                name: 'VRSC',
+                axisLabel: { color: '#888' },
+                nameTextStyle: { color: '#888' },
+              },
+            ],
+            series: [
+              {
+                name: 'Stakes',
+                type: 'bar',
+                data: timeSeries.daily.map(d => d.stakeCount),
+                itemStyle: { color: '#4ade80' },
+              },
+              {
+                name: 'Rewards',
+                type: 'line',
+                yAxisIndex: 1,
+                data: timeSeries.daily.map(d => d.totalRewardsVRSC),
+                itemStyle: { color: '#fbbf24' },
+                smooth: true,
+              },
+            ],
+            grid: { bottom: 100 },
+          });
 
-                // Monthly Chart
-                const monthlyChart = echarts.init(document.getElementById('monthlyChart'));
-                monthlyChart.setOption({
-                    title: { text: 'Monthly Staking Rewards (2020-2025)', left: 'center', textStyle: { color: '#fff' } },
-                    tooltip: { 
-                        trigger: 'axis',
-                        formatter: (params) => {
-                            const month = params[0].axisValue;
-                            const stakes = params[0].value;
-                            const rewards = params[1].value;
-                            return `${month}<br/>Stakes: ${stakes}<br/>Rewards: ${rewards.toFixed(2)} VRSC`;
-                        }
-                    },
-                    legend: { data: ['Stakes', 'Rewards'], top: 30, textStyle: { color: '#fff' } },
-                    xAxis: { 
-                        type: 'category', 
-                        data: timeSeries.monthly.map(d => d.month.substring(0, 7)),
-                        axisLabel: { color: '#888', rotate: 45 }
-                    },
-                    yAxis: [
-                        { type: 'value', name: 'Stakes', axisLabel: { color: '#888' }, nameTextStyle: { color: '#888' } },
-                        { type: 'value', name: 'VRSC', axisLabel: { color: '#888' }, nameTextStyle: { color: '#888' } }
-                    ],
-                    series: [
-                        {
-                            name: 'Stakes',
-                            type: 'bar',
-                            data: timeSeries.monthly.map(d => d.stakeCount),
-                            itemStyle: { color: '#8b5cf6' }
-                        },
-                        {
-                            name: 'Rewards',
-                            type: 'line',
-                            yAxisIndex: 1,
-                            data: timeSeries.monthly.map(d => d.totalRewardsVRSC),
-                            itemStyle: { color: '#ef4444' },
-                            smooth: true,
-                            areaStyle: { opacity: 0.3 }
-                        }
-                    ],
-                    dataZoom: [
-                        { type: 'slider', start: 0, end: 100 },
-                        { type: 'inside' }
-                    ],
-                    grid: { bottom: 150 }
-                });
+          // Weekly Chart
+          const weeklyChart = echarts.init(
+            document.getElementById('weeklyChart')
+          );
+          weeklyChart.setOption({
+            title: {
+              text: 'Weekly Staking Rewards',
+              left: 'center',
+              textStyle: { color: '#fff' },
+            },
+            tooltip: {
+              trigger: 'axis',
+              formatter: params => {
+                const week = params[0].axisValue;
+                const stakes = params[0].value;
+                const rewards = params[1].value;
+                return `Week of ${week}<br/>Stakes: ${stakes}<br/>Rewards: ${rewards.toFixed(2)} VRSC`;
+              },
+            },
+            legend: {
+              data: ['Stakes', 'Rewards'],
+              top: 30,
+              textStyle: { color: '#fff' },
+            },
+            xAxis: {
+              type: 'category',
+              data: timeSeries.weekly.map(d => d.week.substring(0, 10)),
+              axisLabel: { color: '#888', rotate: 45 },
+            },
+            yAxis: [
+              {
+                type: 'value',
+                name: 'Stakes',
+                axisLabel: { color: '#888' },
+                nameTextStyle: { color: '#888' },
+              },
+              {
+                type: 'value',
+                name: 'VRSC',
+                axisLabel: { color: '#888' },
+                nameTextStyle: { color: '#888' },
+              },
+            ],
+            series: [
+              {
+                name: 'Stakes',
+                type: 'bar',
+                data: timeSeries.weekly.map(d => d.stakeCount),
+                itemStyle: { color: '#60a5fa' },
+              },
+              {
+                name: 'Rewards',
+                type: 'line',
+                yAxisIndex: 1,
+                data: timeSeries.weekly.map(d => d.totalRewardsVRSC),
+                itemStyle: { color: '#f472b6' },
+                smooth: true,
+                areaStyle: { opacity: 0.3 },
+              },
+            ],
+            grid: { bottom: 100 },
+          });
 
-                console.log('✅ All charts loaded successfully!');
-                console.log('Daily data points:', timeSeries.daily.length);
-                console.log('Weekly data points:', timeSeries.weekly.length);
-                console.log('Monthly data points:', timeSeries.monthly.length);
-            })
-            .catch(err => {
-                console.error('Error loading data:', err);
-                alert('Failed to load data. Make sure the API server is running on localhost:3000');
-            });
+          // Monthly Chart
+          const monthlyChart = echarts.init(
+            document.getElementById('monthlyChart')
+          );
+          monthlyChart.setOption({
+            title: {
+              text: 'Monthly Staking Rewards (2020-2025)',
+              left: 'center',
+              textStyle: { color: '#fff' },
+            },
+            tooltip: {
+              trigger: 'axis',
+              formatter: params => {
+                const month = params[0].axisValue;
+                const stakes = params[0].value;
+                const rewards = params[1].value;
+                return `${month}<br/>Stakes: ${stakes}<br/>Rewards: ${rewards.toFixed(2)} VRSC`;
+              },
+            },
+            legend: {
+              data: ['Stakes', 'Rewards'],
+              top: 30,
+              textStyle: { color: '#fff' },
+            },
+            xAxis: {
+              type: 'category',
+              data: timeSeries.monthly.map(d => d.month.substring(0, 7)),
+              axisLabel: { color: '#888', rotate: 45 },
+            },
+            yAxis: [
+              {
+                type: 'value',
+                name: 'Stakes',
+                axisLabel: { color: '#888' },
+                nameTextStyle: { color: '#888' },
+              },
+              {
+                type: 'value',
+                name: 'VRSC',
+                axisLabel: { color: '#888' },
+                nameTextStyle: { color: '#888' },
+              },
+            ],
+            series: [
+              {
+                name: 'Stakes',
+                type: 'bar',
+                data: timeSeries.monthly.map(d => d.stakeCount),
+                itemStyle: { color: '#8b5cf6' },
+              },
+              {
+                name: 'Rewards',
+                type: 'line',
+                yAxisIndex: 1,
+                data: timeSeries.monthly.map(d => d.totalRewardsVRSC),
+                itemStyle: { color: '#ef4444' },
+                smooth: true,
+                areaStyle: { opacity: 0.3 },
+              },
+            ],
+            dataZoom: [
+              { type: 'slider', start: 0, end: 100 },
+              { type: 'inside' },
+            ],
+            grid: { bottom: 150 },
+          });
+
+          console.log('✅ All charts loaded successfully!');
+          console.log('Daily data points:', timeSeries.daily.length);
+          console.log('Weekly data points:', timeSeries.weekly.length);
+          console.log('Monthly data points:', timeSeries.monthly.length);
+        })
+        .catch(err => {
+          console.error('Error loading data:', err);
+          alert(
+            'Failed to load data. Make sure the API server is running on localhost:3000'
+          );
+        });
     </script>
-</body>
+  </body>
 </html>
-

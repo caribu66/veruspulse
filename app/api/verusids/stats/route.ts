@@ -20,18 +20,24 @@ export async function GET(request: NextRequest) {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: 'UTXO database not enabled',
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'UTXO database not enabled',
+        },
+        { status: 503 }
+      );
     }
 
     const db = getDbPool();
     if (!db) {
-      return NextResponse.json({
-        success: false,
-        error: 'Database connection failed',
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Database connection failed',
+        },
+        { status: 500 }
+      );
     }
 
     // Get comprehensive VerusID statistics
@@ -130,7 +136,9 @@ export async function GET(request: NextRequest) {
         totalStakers: parseInt(stats.total_stakers) || 0,
         activeStakers: parseInt(stats.active_stakers) || 0,
         totalStakes: parseInt(stats.total_stakes_all) || 0,
-        totalRewardsVRSC: stats.total_rewards_all ? parseFloat(stats.total_rewards_all) / 100000000 : 0,
+        totalRewardsVRSC: stats.total_rewards_all
+          ? parseFloat(stats.total_rewards_all) / 100000000
+          : 0,
         averageAPY: stats.avg_apy ? parseFloat(stats.avg_apy) : 0,
         maxAPY: stats.max_apy ? parseFloat(stats.max_apy) : 0,
         staked24h: parseInt(stats.staked_24h) || 0,
@@ -164,4 +172,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

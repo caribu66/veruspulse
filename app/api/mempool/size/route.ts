@@ -15,6 +15,11 @@ export async function GET() {
       );
     }
 
+    // Debug logging only when mempool is not empty
+    if (mempoolInfo.size > 0) {
+      console.log('🔍 Debug - Mempool size:', mempoolInfo.size);
+    }
+
     return NextResponse.json({
       success: true,
       data: mempoolInfo,

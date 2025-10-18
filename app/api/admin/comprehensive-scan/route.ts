@@ -29,49 +29,64 @@ export async function POST(request: NextRequest) {
         calculator = new ComprehensiveStatisticsCalculator(db);
 
         // Start scanning in the background
-        scanner.startScan({
-          startHeight: startHeight || 1,
-          endHeight,
-          batchSize: 100,
-          addresses
-        }).then(async () => {
-          console.log('[Comprehensive Scan] Block scanning complete, calculating statistics...');
-          
-          // Get all unique addresses from stake events
-          const result = await db.query(
-            'SELECT DISTINCT address FROM stake_events ORDER BY address'
-          );
+        scanner
+          .startScan({
+            startHeight: startHeight || 1,
+            endHeight,
+            batchSize: 100,
+            addresses,
+          })
+          .then(async () => {
+            console.log(
+              '[Comprehensive Scan] Block scanning complete, calculating statistics...'
+            );
 
-          const allAddresses = result.rows.map(row => row.address);
-          console.log(`[Comprehensive Scan] Found ${allAddresses.length} unique stakers`);
+            // Get all unique addresses from stake events
+            const result = await db.query(
+              'SELECT DISTINCT address FROM stake_events ORDER BY address'
+            );
 
-          // Calculate statistics for each address
-          for (const address of allAddresses) {
-            try {
-              await calculator!.calculateStatsForAddress(address);
-            } catch (error) {
-              console.error(`[Comprehensive Scan] Error calculating stats for ${address}:`, error);
+            const allAddresses = result.rows.map(row => row.address);
+            console.log(
+              `[Comprehensive Scan] Found ${allAddresses.length} unique stakers`
+            );
+
+            // Calculate statistics for each address
+            for (const address of allAddresses) {
+              try {
+                await calculator!.calculateStatsForAddress(address);
+              } catch (error) {
+                console.error(
+                  `[Comprehensive Scan] Error calculating stats for ${address}:`,
+                  error
+                );
+              }
             }
-          }
 
-          // Calculate network rankings
-          await calculator!.calculateNetworkRankings();
+            // Calculate network rankings
+            await calculator!.calculateNetworkRankings();
 
-          console.log('[Comprehensive Scan] All statistics calculated successfully!');
-        }).catch(error => {
-          console.error('[Comprehensive Scan] Error during scan:', error);
-        });
+            console.log(
+              '[Comprehensive Scan] All statistics calculated successfully!'
+            );
+          })
+          .catch(error => {
+            console.error('[Comprehensive Scan] Error during scan:', error);
+          });
 
         return NextResponse.json({
           success: true,
           message: 'Comprehensive scan started',
-          progress: scanner.getProgress()
+          progress: scanner.getProgress(),
         });
       } else {
-        return NextResponse.json({
-          success: false,
-          message: 'Scan already in progress'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            message: 'Scan already in progress',
+          },
+          { status: 400 }
+        );
       }
     }
 
@@ -80,13 +95,16 @@ export async function POST(request: NextRequest) {
         scanner.stopScan();
         return NextResponse.json({
           success: true,
-          message: 'Scan stopped'
+          message: 'Scan stopped',
         });
       } else {
-        return NextResponse.json({
-          success: false,
-          message: 'No scan in progress'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            message: 'No scan in progress',
+          },
+          { status: 400 }
+        );
       }
     }
 
@@ -100,16 +118,23 @@ export async function POST(request: NextRequest) {
           isRunning,
           progress: {
             ...progress,
-            percentComplete: ((progress.blocksProcessed / (progress.targetHeight - progress.currentHeight + progress.blocksProcessed)) * 100).toFixed(2),
-            estimatedTimeRemaining: progress.estimatedCompletion ? 
-              new Date(progress.estimatedCompletion).toISOString() : null
-          }
+            percentComplete: (
+              (progress.blocksProcessed /
+                (progress.targetHeight -
+                  progress.currentHeight +
+                  progress.blocksProcessed)) *
+              100
+            ).toFixed(2),
+            estimatedTimeRemaining: progress.estimatedCompletion
+              ? new Date(progress.estimatedCompletion).toISOString()
+              : null,
+          },
         });
       } else {
         return NextResponse.json({
           success: true,
           isRunning: false,
-          progress: null
+          progress: null,
         });
       }
     }
@@ -133,7 +158,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          results
+          results,
         });
       } else {
         // Calculate for all addresses
@@ -157,7 +182,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          message: `Statistics calculated for ${processed}/${allAddresses.length} addresses`
+          message: `Statistics calculated for ${processed}/${allAddresses.length} addresses`,
         });
       }
     }
@@ -178,55 +203,67 @@ export async function POST(request: NextRequest) {
         scanner = new ComprehensiveBlockScanner(db);
         calculator = new ComprehensiveStatisticsCalculator(db);
 
-        scanner.startScan({
-          startHeight,
-          endHeight: currentHeight,
-          batchSize: 100,
-          addresses
-        }).then(async () => {
-          console.log('[Recent Scan] Block scanning complete, calculating statistics...');
-          
-          const result = await db.query(
-            'SELECT DISTINCT address FROM stake_events WHERE block_height >= $1',
-            [startHeight]
-          );
+        scanner
+          .startScan({
+            startHeight,
+            endHeight: currentHeight,
+            batchSize: 100,
+            addresses,
+          })
+          .then(async () => {
+            console.log(
+              '[Recent Scan] Block scanning complete, calculating statistics...'
+            );
 
-          const recentAddresses = result.rows.map(row => row.address);
-          
-          for (const address of recentAddresses) {
-            try {
-              await calculator!.calculateStatsForAddress(address);
-            } catch (error) {
-              console.error(`Error calculating stats for ${address}:`, error);
+            const result = await db.query(
+              'SELECT DISTINCT address FROM stake_events WHERE block_height >= $1',
+              [startHeight]
+            );
+
+            const recentAddresses = result.rows.map(row => row.address);
+
+            for (const address of recentAddresses) {
+              try {
+                await calculator!.calculateStatsForAddress(address);
+              } catch (error) {
+                console.error(`Error calculating stats for ${address}:`, error);
+              }
             }
-          }
 
-          await calculator!.calculateNetworkRankings();
+            await calculator!.calculateNetworkRankings();
 
-          console.log('[Recent Scan] Recent statistics calculated successfully!');
-        }).catch(error => {
-          console.error('[Recent Scan] Error during scan:', error);
-        });
+            console.log(
+              '[Recent Scan] Recent statistics calculated successfully!'
+            );
+          })
+          .catch(error => {
+            console.error('[Recent Scan] Error during scan:', error);
+          });
 
         return NextResponse.json({
           success: true,
           message: `Scanning last ${daysToScan} days (blocks ${startHeight} to ${currentHeight})`,
-          progress: scanner.getProgress()
+          progress: scanner.getProgress(),
         });
       }
     }
 
-    return NextResponse.json({
-      success: false,
-      message: 'Invalid action'
-    }, { status: 400 });
-
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Invalid action',
+      },
+      { status: 400 }
+    );
   } catch (error: any) {
     console.error('[Comprehensive Scan API] Error:', error);
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -241,24 +278,35 @@ export async function GET(request: NextRequest) {
         isRunning,
         progress: {
           ...progress,
-          percentComplete: progress.targetHeight > 0 ?
-            ((progress.blocksProcessed / (progress.targetHeight - progress.currentHeight + progress.blocksProcessed)) * 100).toFixed(2) : 0,
-          estimatedTimeRemaining: progress.estimatedCompletion ?
-            new Date(progress.estimatedCompletion).toISOString() : null
-        }
+          percentComplete:
+            progress.targetHeight > 0
+              ? (
+                  (progress.blocksProcessed /
+                    (progress.targetHeight -
+                      progress.currentHeight +
+                      progress.blocksProcessed)) *
+                  100
+                ).toFixed(2)
+              : 0,
+          estimatedTimeRemaining: progress.estimatedCompletion
+            ? new Date(progress.estimatedCompletion).toISOString()
+            : null,
+        },
       });
     } else {
       return NextResponse.json({
         success: true,
         isRunning: false,
-        progress: null
+        progress: null,
       });
     }
   } catch (error: any) {
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
-

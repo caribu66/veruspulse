@@ -43,7 +43,7 @@ export class IntelligentMassScanner {
 
   constructor(dbPool: Pool, config?: Partial<ScanConfig>) {
     this.db = dbPool;
-    
+
     // Default configuration optimized for not hammering RPC
     this.config = {
       maxConcurrentRequests: 3, // Low to avoid overwhelming RPC
@@ -53,7 +53,7 @@ export class IntelligentMassScanner {
       cacheBlockData: true, // Cache blocks to reduce duplicate requests
       maxRetries: 3,
       backoffMultiplier: 2,
-      ...config
+      ...config,
     };
 
     this.blockCache = new Map();
@@ -67,18 +67,20 @@ export class IntelligentMassScanner {
       currentPhase: 'idle',
       errors: 0,
       cacheHits: 0,
-      cacheMisses: 0
+      cacheMisses: 0,
     };
   }
 
   /**
    * Main entry point - Scan all active VerusIDs
    */
-  async scanAllVerusIDs(options: {
-    startFromHeight?: number;
-    endAtHeight?: number;
-    limitAddresses?: number;
-  } = {}): Promise<void> {
+  async scanAllVerusIDs(
+    options: {
+      startFromHeight?: number;
+      endAtHeight?: number;
+      limitAddresses?: number;
+    } = {}
+  ): Promise<void> {
     if (this.isRunning) {
       throw new Error('Scan already in progress');
     }
@@ -91,22 +93,28 @@ export class IntelligentMassScanner {
 
       // Phase 1: Get all active VerusIDs from the blockchain
       this.progress.currentPhase = 'discovering_identities';
-      const addresses = await this.discoverActiveVerusIDs(options.limitAddresses);
+      const addresses = await this.discoverActiveVerusIDs(
+        options.limitAddresses
+      );
       this.progress.totalAddresses = addresses.length;
-      
-      console.log(`[Intelligent Scanner] Found ${addresses.length} active VerusIDs`);
+
+      console.log(
+        `[Intelligent Scanner] Found ${addresses.length} active VerusIDs`
+      );
 
       // Phase 2: Determine block range
       this.progress.currentPhase = 'determining_range';
-      const blockchainInfo = await this.rateLimitedRequest(() => 
+      const blockchainInfo = await this.rateLimitedRequest(() =>
         verusAPI.getBlockchainInfo()
       );
-      
+
       const endHeight = options.endAtHeight || blockchainInfo.blocks;
       const startHeight = options.startFromHeight || 1;
       this.progress.totalBlocks = endHeight - startHeight + 1;
 
-      console.log(`[Intelligent Scanner] Scanning blocks ${startHeight} to ${endHeight} (${this.progress.totalBlocks} blocks)`);
+      console.log(
+        `[Intelligent Scanner] Scanning blocks ${startHeight} to ${endHeight} (${this.progress.totalBlocks} blocks)`
+      );
 
       // Phase 3: Scan blocks in an intelligent way
       this.progress.currentPhase = 'scanning_blocks';
@@ -122,7 +130,6 @@ export class IntelligentMassScanner {
       console.log(`  Stake Events: ${this.progress.stakeEventsFound}`);
       console.log(`  Cache Efficiency: ${this.getCacheEfficiency()}%`);
       console.log(`  Errors: ${this.progress.errors}`);
-
     } catch (error) {
       console.error('[Intelligent Scanner] Fatal error:', error);
       throw error;
@@ -141,17 +148,19 @@ export class IntelligentMassScanner {
     // Strategy 1: Get from existing stake_events table
     console.log('[Discovery] Checking existing stake events...');
     const existingResult = await this.db.query(
-      'SELECT DISTINCT address FROM stake_events WHERE address LIKE \'i%\' LIMIT $1',
+      "SELECT DISTINCT address FROM stake_events WHERE address LIKE 'i%' LIMIT $1",
       [limit || 100000]
     );
     existingResult.rows.forEach(row => addresses.add(row.address));
-    console.log(`[Discovery] Found ${addresses.size} addresses from existing data`);
+    console.log(
+      `[Discovery] Found ${addresses.size} addresses from existing data`
+    );
 
     // Strategy 2: Get from identities table if available
     console.log('[Discovery] Checking identities table...');
     try {
       const identitiesResult = await this.db.query(
-        'SELECT DISTINCT identity_address FROM identities WHERE identity_address LIKE \'i%\' LIMIT $1',
+        "SELECT DISTINCT identity_address FROM identities WHERE identity_address LIKE 'i%' LIMIT $1",
         [limit || 100000]
       );
       identitiesResult.rows.forEach(row => addresses.add(row.identity_address));
@@ -179,27 +188,38 @@ export class IntelligentMassScanner {
   /**
    * Discover addresses using listidentities RPC call
    */
-  private async discoverFromRPC(addresses: Set<string>, limit?: number): Promise<void> {
+  private async discoverFromRPC(
+    addresses: Set<string>,
+    limit?: number
+  ): Promise<void> {
     try {
       const batchSize = 1000; // Fetch 1000 at a time
       const maxToFetch = limit || 100000;
       let fetched = 0;
 
-      console.log(`[Discovery RPC] Fetching up to ${maxToFetch} VerusIDs from blockchain...`);
+      console.log(
+        `[Discovery RPC] Fetching up to ${maxToFetch} VerusIDs from blockchain...`
+      );
 
       while (fetched < maxToFetch) {
         const identities = await this.rateLimitedRequest(() =>
           verusAPI.listIdentities({
             start: fetched,
             count: Math.min(batchSize, maxToFetch - fetched),
-            txproof: false
+            txproof: false,
           })
         );
 
         // listIdentities only returns wallet identities, not all blockchain identities
         // So if it returns null or empty, we skip this method
-        if (!identities || !Array.isArray(identities) || identities.length === 0) {
-          console.log(`[Discovery RPC] listIdentities returned no data (only shows wallet identities). Skipping RPC discovery.`);
+        if (
+          !identities ||
+          !Array.isArray(identities) ||
+          identities.length === 0
+        ) {
+          console.log(
+            `[Discovery RPC] listIdentities returned no data (only shows wallet identities). Skipping RPC discovery.`
+          );
           break;
         }
 
@@ -214,7 +234,9 @@ export class IntelligentMassScanner {
         });
 
         fetched += identities.length;
-        console.log(`[Discovery RPC] Progress: ${fetched} fetched, ${addresses.size} unique I-addresses found`);
+        console.log(
+          `[Discovery RPC] Progress: ${fetched} fetched, ${addresses.size} unique I-addresses found`
+        );
 
         // If we got fewer than requested, we've reached the end
         if (identities.length < batchSize) {
@@ -223,25 +245,35 @@ export class IntelligentMassScanner {
         }
       }
 
-      console.log(`[Discovery RPC] Complete! Found ${addresses.size} unique I-addresses`);
+      console.log(
+        `[Discovery RPC] Complete! Found ${addresses.size} unique I-addresses`
+      );
     } catch (error: any) {
-      console.error(`[Discovery RPC] Error fetching identities:`, error.message);
+      console.error(
+        `[Discovery RPC] Error fetching identities:`,
+        error.message
+      );
     }
   }
 
   /**
    * Discover addresses from recent blocks
    */
-  private async discoverFromRecentBlocks(addresses: Set<string>, limit?: number): Promise<void> {
-    const blockchainInfo = await this.rateLimitedRequest(() => 
+  private async discoverFromRecentBlocks(
+    addresses: Set<string>,
+    limit?: number
+  ): Promise<void> {
+    const blockchainInfo = await this.rateLimitedRequest(() =>
       verusAPI.getBlockchainInfo()
     );
-    
+
     const currentHeight = blockchainInfo.blocks;
     const scanDepth = 10000; // Scan last 10k blocks for addresses
     const startHeight = Math.max(1, currentHeight - scanDepth);
 
-    console.log(`[Discovery] Scanning blocks ${startHeight} to ${currentHeight}...`);
+    console.log(
+      `[Discovery] Scanning blocks ${startHeight} to ${currentHeight}...`
+    );
 
     for (let height = currentHeight; height >= startHeight; height -= 100) {
       if (limit && addresses.size >= limit) break;
@@ -251,12 +283,12 @@ export class IntelligentMassScanner {
         batch.push(height - i);
       }
 
-      await this.processBatchWithRateLimit(batch, async (blockHeight) => {
+      await this.processBatchWithRateLimit(batch, async blockHeight => {
         try {
-          const hash = await this.rateLimitedRequest(() => 
+          const hash = await this.rateLimitedRequest(() =>
             verusAPI.getBlockHash(blockHeight)
           );
-          const block = await this.rateLimitedRequest(() => 
+          const block = await this.rateLimitedRequest(() =>
             verusAPI.getBlock(hash, 1)
           );
 
@@ -284,7 +316,9 @@ export class IntelligentMassScanner {
       });
 
       if (height % 1000 === 0) {
-        console.log(`[Discovery] Scanned to block ${height}, found ${addresses.size} addresses`);
+        console.log(
+          `[Discovery] Scanned to block ${height}, found ${addresses.size} addresses`
+        );
       }
     }
   }
@@ -298,23 +332,32 @@ export class IntelligentMassScanner {
     targetAddresses: string[]
   ): Promise<void> {
     const addressSet = new Set(targetAddresses);
-    
+
     console.log('[Intelligent Scan] Starting optimized block scanning...');
-    console.log(`[Intelligent Scan] Config: ${this.config.maxConcurrentRequests} concurrent, ${this.config.delayBetweenBatches}ms delay`);
+    console.log(
+      `[Intelligent Scan] Config: ${this.config.maxConcurrentRequests} concurrent, ${this.config.delayBetweenBatches}ms delay`
+    );
 
     // Process blocks in batches
-    for (let height = startHeight; height <= endHeight; height += this.config.blockBatchSize) {
+    for (
+      let height = startHeight;
+      height <= endHeight;
+      height += this.config.blockBatchSize
+    ) {
       if (!this.isRunning) break;
 
-      const batchEnd = Math.min(height + this.config.blockBatchSize - 1, endHeight);
+      const batchEnd = Math.min(
+        height + this.config.blockBatchSize - 1,
+        endHeight
+      );
       const batch = [];
-      
+
       for (let h = height; h <= batchEnd; h++) {
         batch.push(h);
       }
 
       // Process this batch with rate limiting
-      await this.processBatchWithRateLimit(batch, async (blockHeight) => {
+      await this.processBatchWithRateLimit(batch, async blockHeight => {
         await this.processBlockOptimized(blockHeight, addressSet);
       });
 
@@ -324,14 +367,24 @@ export class IntelligentMassScanner {
       const elapsed = Date.now() - this.progress.startTime;
       const blocksRemaining = endHeight - this.progress.blocksProcessed;
       const avgTimePerBlock = elapsed / this.progress.blocksProcessed;
-      this.progress.estimatedCompletion = Date.now() + (blocksRemaining * avgTimePerBlock);
+      this.progress.estimatedCompletion =
+        Date.now() + blocksRemaining * avgTimePerBlock;
 
       // Progress update every 1000 blocks
       if (this.progress.blocksProcessed % 1000 === 0) {
-        const percentage = (this.progress.blocksProcessed / this.progress.totalBlocks * 100).toFixed(2);
-        const eta = new Date(this.progress.estimatedCompletion).toLocaleTimeString();
-        console.log(`[Progress] ${this.progress.blocksProcessed}/${this.progress.totalBlocks} blocks (${percentage}%), ${this.progress.stakeEventsFound} stakes found, ETA: ${eta}`);
-        console.log(`[Cache] Efficiency: ${this.getCacheEfficiency()}%, Hits: ${this.progress.cacheHits}, Misses: ${this.progress.cacheMisses}`);
+        const percentage = (
+          (this.progress.blocksProcessed / this.progress.totalBlocks) *
+          100
+        ).toFixed(2);
+        const eta = new Date(
+          this.progress.estimatedCompletion
+        ).toLocaleTimeString();
+        console.log(
+          `[Progress] ${this.progress.blocksProcessed}/${this.progress.totalBlocks} blocks (${percentage}%), ${this.progress.stakeEventsFound} stakes found, ETA: ${eta}`
+        );
+        console.log(
+          `[Cache] Efficiency: ${this.getCacheEfficiency()}%, Hits: ${this.progress.cacheHits}, Misses: ${this.progress.cacheMisses}`
+        );
       }
 
       // Delay between batches to avoid hammering RPC
@@ -342,20 +395,21 @@ export class IntelligentMassScanner {
   /**
    * Process a single block in an optimized way
    */
-  private async processBlockOptimized(height: number, targetAddresses: Set<string>): Promise<void> {
+  private async processBlockOptimized(
+    height: number,
+    targetAddresses: Set<string>
+  ): Promise<void> {
     try {
       // Check cache first
       let block = this.getFromCache(height);
-      
+
       if (!block) {
         this.progress.cacheMisses++;
-        const hash = await this.rateLimitedRequest(() => 
+        const hash = await this.rateLimitedRequest(() =>
           verusAPI.getBlockHash(height)
         );
-        block = await this.rateLimitedRequest(() => 
-          verusAPI.getBlock(hash, 2)
-        );
-        
+        block = await this.rateLimitedRequest(() => verusAPI.getBlock(hash, 2));
+
         if (this.config.cacheBlockData) {
           this.addToCache(height, block);
         }
@@ -364,20 +418,26 @@ export class IntelligentMassScanner {
       }
 
       // Only process if it's a PoS block
-      if (block.blocktype !== 'minted' && !block.stakeRewardInfo?.isStakeReward) {
+      if (
+        block.blocktype !== 'minted' &&
+        !block.stakeRewardInfo?.isStakeReward
+      ) {
         return;
       }
 
       // Extract stake event
       if (block.tx && block.tx.length > 0) {
         const coinstake = block.tx[0];
-        
+
         if (coinstake.vout && coinstake.vout.length > 1) {
           const output = coinstake.vout[1];
-          
-          if (output.scriptPubKey?.addresses && output.scriptPubKey.addresses.length > 0) {
+
+          if (
+            output.scriptPubKey?.addresses &&
+            output.scriptPubKey.addresses.length > 0
+          ) {
             const address = output.scriptPubKey.addresses[0];
-            
+
             // Only process if it's a target address
             if (targetAddresses.has(address)) {
               const rewardAmount = block.stakeRewardInfo?.rewardAmount || 0;
@@ -391,7 +451,7 @@ export class IntelligentMassScanner {
                 blockTime: new Date(block.time * 1000),
                 rewardAmount: Math.floor(rewardAmount * 100000000),
                 stakeAmount: Math.floor(stakeAmount * 100000000),
-                stakeAge
+                stakeAge,
               });
 
               this.progress.stakeEventsFound++;
@@ -402,11 +462,12 @@ export class IntelligentMassScanner {
 
       // Also store block analytics
       await this.storeBlockAnalytics(block);
-
     } catch (error) {
       this.progress.errors++;
       if (this.progress.errors % 100 === 0) {
-        console.error(`[Error] Processed ${this.progress.errors} errors so far`);
+        console.error(
+          `[Error] Processed ${this.progress.errors} errors so far`
+        );
       }
     }
   }
@@ -447,7 +508,7 @@ export class IntelligentMassScanner {
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;
     const minDelay = 10; // 10ms minimum between requests
-    
+
     if (timeSinceLastRequest < minDelay) {
       await this.sleep(minDelay - timeSinceLastRequest);
     }
@@ -458,8 +519,11 @@ export class IntelligentMassScanner {
       return await request();
     } catch (error) {
       if (retries < this.config.maxRetries) {
-        const backoffDelay = Math.pow(this.config.backoffMultiplier, retries) * 100;
-        console.log(`[Retry] Attempt ${retries + 1}/${this.config.maxRetries}, waiting ${backoffDelay}ms`);
+        const backoffDelay =
+          Math.pow(this.config.backoffMultiplier, retries) * 100;
+        console.log(
+          `[Retry] Attempt ${retries + 1}/${this.config.maxRetries}, waiting ${backoffDelay}ms`
+        );
         await this.sleep(backoffDelay);
         return this.rateLimitedRequest(request, retries + 1);
       }
@@ -487,7 +551,9 @@ export class IntelligentMassScanner {
 
   private getCacheEfficiency(): number {
     const total = this.progress.cacheHits + this.progress.cacheMisses;
-    return total > 0 ? (this.progress.cacheHits / total * 100).toFixed(2) as any : 0;
+    return total > 0
+      ? (((this.progress.cacheHits / total) * 100).toFixed(2) as any)
+      : 0;
   }
 
   /**
@@ -517,7 +583,7 @@ export class IntelligentMassScanner {
       event.blockTime,
       event.rewardAmount,
       event.stakeAmount,
-      event.stakeAge
+      event.stakeAge,
     ]);
   }
 
@@ -525,8 +591,9 @@ export class IntelligentMassScanner {
    * Store block analytics
    */
   private async storeBlockAnalytics(block: any): Promise<void> {
-    const isPoS = block.blocktype === 'minted' || block.stakeRewardInfo?.isStakeReward;
-    
+    const isPoS =
+      block.blocktype === 'minted' || block.stakeRewardInfo?.isStakeReward;
+
     const query = `
       INSERT INTO block_analytics (
         height, block_hash, block_time, block_type,
@@ -543,7 +610,7 @@ export class IntelligentMassScanner {
       block.difficulty || 0,
       block.size || 0,
       block.tx?.length || 0,
-      Math.floor((block.stakeRewardInfo?.rewardAmount || 0) * 100000000)
+      Math.floor((block.stakeRewardInfo?.rewardAmount || 0) * 100000000),
     ]);
   }
 
@@ -551,9 +618,13 @@ export class IntelligentMassScanner {
    * Calculate statistics for all addresses
    */
   private async calculateAllStatistics(addresses: string[]): Promise<void> {
-    console.log(`[Statistics] Calculating stats for ${addresses.length} addresses...`);
+    console.log(
+      `[Statistics] Calculating stats for ${addresses.length} addresses...`
+    );
 
-    const { ComprehensiveStatisticsCalculator } = await import('./comprehensive-statistics-calculator');
+    const { ComprehensiveStatisticsCalculator } = await import(
+      './comprehensive-statistics-calculator'
+    );
     const calculator = new ComprehensiveStatisticsCalculator(this.db);
 
     let processed = 0;
@@ -561,9 +632,11 @@ export class IntelligentMassScanner {
       try {
         await calculator.calculateStatsForAddress(address);
         processed++;
-        
+
         if (processed % 100 === 0) {
-          console.log(`[Statistics] Calculated stats for ${processed}/${addresses.length} addresses`);
+          console.log(
+            `[Statistics] Calculated stats for ${processed}/${addresses.length} addresses`
+          );
         }
       } catch (error) {
         // Skip addresses with no stake events
@@ -572,7 +645,7 @@ export class IntelligentMassScanner {
 
     // Calculate network rankings
     await calculator.calculateNetworkRankings();
-    
+
     console.log(`[Statistics] Complete! Processed ${processed} addresses`);
   }
 
@@ -604,4 +677,3 @@ export class IntelligentMassScanner {
     return this.isRunning;
   }
 }
-

@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
     if (action === 'start') {
       // Initialize scanner if not already running
       if (!scanner || !scanner.isScanning()) {
-        
         // Custom configuration from request
         const scanConfig = {
           maxConcurrentRequests: config?.maxConcurrentRequests || 3,
@@ -48,27 +47,33 @@ export async function POST(request: NextRequest) {
         scanner = new IntelligentMassScanner(getDbPool(), scanConfig);
 
         // Start scanning in the background
-        scanner.scanAllVerusIDs({
-          startFromHeight: options?.startFromHeight,
-          endAtHeight: options?.endAtHeight,
-          limitAddresses: options?.limitAddresses
-        }).then(() => {
-          console.log('[Mass Scan API] Scan completed successfully!');
-        }).catch(error => {
-          console.error('[Mass Scan API] Scan failed:', error);
-        });
+        scanner
+          .scanAllVerusIDs({
+            startFromHeight: options?.startFromHeight,
+            endAtHeight: options?.endAtHeight,
+            limitAddresses: options?.limitAddresses,
+          })
+          .then(() => {
+            console.log('[Mass Scan API] Scan completed successfully!');
+          })
+          .catch(error => {
+            console.error('[Mass Scan API] Scan failed:', error);
+          });
 
         return NextResponse.json({
           success: true,
           message: 'Intelligent mass scan started',
           config: scanConfig,
-          progress: scanner.getProgress()
+          progress: scanner.getProgress(),
         });
       } else {
-        return NextResponse.json({
-          success: false,
-          message: 'Scan already in progress'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            message: 'Scan already in progress',
+          },
+          { status: 400 }
+        );
       }
     }
 
@@ -77,13 +82,16 @@ export async function POST(request: NextRequest) {
         scanner.stopScan();
         return NextResponse.json({
           success: true,
-          message: 'Scan stopped'
+          message: 'Scan stopped',
         });
       } else {
-        return NextResponse.json({
-          success: false,
-          message: 'No scan in progress'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            message: 'No scan in progress',
+          },
+          { status: 400 }
+        );
       }
     }
 
@@ -93,10 +101,19 @@ export async function POST(request: NextRequest) {
         const isRunning = scanner.isScanning();
 
         // Calculate percentages
-        const blockPercent = progress.totalBlocks > 0 ?
-          ((progress.blocksProcessed / progress.totalBlocks) * 100).toFixed(2) : 0;
-        const addressPercent = progress.totalAddresses > 0 ?
-          ((progress.addressesProcessed / progress.totalAddresses) * 100).toFixed(2) : 0;
+        const blockPercent =
+          progress.totalBlocks > 0
+            ? ((progress.blocksProcessed / progress.totalBlocks) * 100).toFixed(
+                2
+              )
+            : 0;
+        const addressPercent =
+          progress.totalAddresses > 0
+            ? (
+                (progress.addressesProcessed / progress.totalAddresses) *
+                100
+              ).toFixed(2)
+            : 0;
 
         // Calculate rates
         const elapsed = Date.now() - progress.startTime;
@@ -110,21 +127,22 @@ export async function POST(request: NextRequest) {
             ...progress,
             percentages: {
               blocks: blockPercent,
-              addresses: addressPercent
+              addresses: addressPercent,
             },
             rates: {
               blocksPerSecond: blocksPerSecond.toFixed(2),
-              stakesPerSecond: stakesPerSecond.toFixed(2)
+              stakesPerSecond: stakesPerSecond.toFixed(2),
             },
-            estimatedCompletion: progress.estimatedCompletion ?
-              new Date(progress.estimatedCompletion).toISOString() : null
-          }
+            estimatedCompletion: progress.estimatedCompletion
+              ? new Date(progress.estimatedCompletion).toISOString()
+              : null,
+          },
         });
       } else {
         return NextResponse.json({
           success: true,
           isRunning: false,
-          progress: null
+          progress: null,
         });
       }
     }
@@ -152,21 +170,24 @@ export async function POST(request: NextRequest) {
 
       scanner = new IntelligentMassScanner(getDbPool(), scanConfig);
 
-      scanner.scanAllVerusIDs({
-        startFromHeight: startHeight,
-        endAtHeight: currentHeight,
-        limitAddresses: body.limitAddresses
-      }).then(() => {
-        console.log('[Mass Scan API] Recent scan completed!');
-      }).catch(error => {
-        console.error('[Mass Scan API] Recent scan failed:', error);
-      });
+      scanner
+        .scanAllVerusIDs({
+          startFromHeight: startHeight,
+          endAtHeight: currentHeight,
+          limitAddresses: body.limitAddresses,
+        })
+        .then(() => {
+          console.log('[Mass Scan API] Recent scan completed!');
+        })
+        .catch(error => {
+          console.error('[Mass Scan API] Recent scan failed:', error);
+        });
 
       return NextResponse.json({
         success: true,
         message: `Scanning last ${days} days (blocks ${startHeight} to ${currentHeight})`,
         config: scanConfig,
-        progress: scanner.getProgress()
+        progress: scanner.getProgress(),
       });
     }
 
@@ -184,35 +205,43 @@ export async function POST(request: NextRequest) {
 
       scanner = new IntelligentMassScanner(getDbPool(), scanConfig);
 
-      scanner.scanAllVerusIDs({
-        startFromHeight: body.startHeight || 1,
-        endAtHeight: body.endHeight,
-        limitAddresses: body.limitAddresses || 10000 // Default 10k limit
-      }).then(() => {
-        console.log('[Mass Scan API] Full historical scan completed!');
-      }).catch(error => {
-        console.error('[Mass Scan API] Full historical scan failed:', error);
-      });
+      scanner
+        .scanAllVerusIDs({
+          startFromHeight: body.startHeight || 1,
+          endAtHeight: body.endHeight,
+          limitAddresses: body.limitAddresses || 10000, // Default 10k limit
+        })
+        .then(() => {
+          console.log('[Mass Scan API] Full historical scan completed!');
+        })
+        .catch(error => {
+          console.error('[Mass Scan API] Full historical scan failed:', error);
+        });
 
       return NextResponse.json({
         success: true,
         message: 'Full historical scan started with conservative settings',
         config: scanConfig,
-        progress: scanner.getProgress()
+        progress: scanner.getProgress(),
       });
     }
 
-    return NextResponse.json({
-      success: false,
-      message: 'Invalid action'
-    }, { status: 400 });
-
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Invalid action',
+      },
+      { status: 400 }
+    );
   } catch (error: any) {
     console.error('[Mass Scan API] Error:', error);
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -222,10 +251,17 @@ export async function GET(request: NextRequest) {
       const progress = scanner.getProgress();
       const isRunning = scanner.isScanning();
 
-      const blockPercent = progress.totalBlocks > 0 ?
-        ((progress.blocksProcessed / progress.totalBlocks) * 100).toFixed(2) : 0;
-      const addressPercent = progress.totalAddresses > 0 ?
-        ((progress.addressesProcessed / progress.totalAddresses) * 100).toFixed(2) : 0;
+      const blockPercent =
+        progress.totalBlocks > 0
+          ? ((progress.blocksProcessed / progress.totalBlocks) * 100).toFixed(2)
+          : 0;
+      const addressPercent =
+        progress.totalAddresses > 0
+          ? (
+              (progress.addressesProcessed / progress.totalAddresses) *
+              100
+            ).toFixed(2)
+          : 0;
 
       const elapsed = Date.now() - progress.startTime;
       const blocksPerSecond = progress.blocksProcessed / (elapsed / 1000);
@@ -238,29 +274,32 @@ export async function GET(request: NextRequest) {
           ...progress,
           percentages: {
             blocks: blockPercent,
-            addresses: addressPercent
+            addresses: addressPercent,
           },
           rates: {
             blocksPerSecond: blocksPerSecond.toFixed(2),
-            stakesPerSecond: stakesPerSecond.toFixed(2)
+            stakesPerSecond: stakesPerSecond.toFixed(2),
           },
-          estimatedCompletion: progress.estimatedCompletion ?
-            new Date(progress.estimatedCompletion).toISOString() : null,
-          elapsedTime: `${Math.floor(elapsed / 1000)}s`
-        }
+          estimatedCompletion: progress.estimatedCompletion
+            ? new Date(progress.estimatedCompletion).toISOString()
+            : null,
+          elapsedTime: `${Math.floor(elapsed / 1000)}s`,
+        },
       });
     } else {
       return NextResponse.json({
         success: true,
         isRunning: false,
-        progress: null
+        progress: null,
       });
     }
   } catch (error: any) {
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
-

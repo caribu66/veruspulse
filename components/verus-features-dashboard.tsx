@@ -6,19 +6,19 @@ import {
   Coins,
   Link,
   Shield,
-  Zap,
+  Lightning,
   Globe,
-  Search,
+  MagnifyingGlass,
   Eye,
   Lock,
   Unlock,
   Network,
   Hash,
-  TrendingUp,
-  AlertCircle,
+  TrendUp,
+  WarningCircle,
   CheckCircle,
-  RefreshCw,
-} from 'lucide-react';
+  ArrowsClockwise,
+} from '@phosphor-icons/react';
 
 interface VerusIdentity {
   identity: {
@@ -194,18 +194,20 @@ export function VerusFeaturesDashboard() {
           disabled={loading}
           className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
         >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <ArrowsClockwise
+            className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+          />
           <span>Refresh</span>
         </button>
       </div>
 
-      {/* Search */}
+      {/* MagnifyingGlass */}
       <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
         <div className="flex items-center space-x-3">
-          <Search className="h-5 w-5 text-blue-400" />
+          <MagnifyingGlass className="h-5 w-5 text-blue-400" />
           <input
             type="text"
-            placeholder="Search identities, currencies, or PBaaS chains..."
+            placeholder="MagnifyingGlass identities, currencies, or PBaaS chains..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-blue-200 focus:outline-none focus:border-blue-400"
@@ -253,7 +255,7 @@ export function VerusFeaturesDashboard() {
       {error && (
         <div className="bg-red-500/10 backdrop-blur-sm rounded-2xl p-6 border border-red-500/20">
           <div className="flex items-center space-x-3">
-            <AlertCircle className="h-6 w-6 text-red-400" />
+            <WarningCircle className="h-6 w-6 text-red-400" />
             <div>
               <h3 className="text-lg font-bold text-red-400">Error</h3>
               <p className="text-red-200 text-sm mt-1">{error}</p>
@@ -360,8 +362,8 @@ export function VerusFeaturesDashboard() {
                     className="bg-white/5 rounded-lg p-4 border border-white/10"
                   >
                     <div className="flex items-center space-x-3 mb-3">
-                      <div className="p-2 rounded-lg bg-yellow-500/20">
-                        <Coins className="h-4 w-4 text-yellow-400" />
+                      <div className="p-2 rounded-lg bg-verus-cyan/20">
+                        <Coins className="h-4 w-4 text-verus-cyan" />
                       </div>
                       <div>
                         <div className="text-white font-semibold">
@@ -438,8 +440,8 @@ export function VerusFeaturesDashboard() {
                     className="bg-white/5 rounded-lg p-4 border border-white/10"
                   >
                     <div className="flex items-center space-x-3 mb-3">
-                      <div className="p-2 rounded-lg bg-purple-500/20">
-                        <Link className="h-4 w-4 text-purple-400" />
+                      <div className="p-2 rounded-lg bg-verus-blue/20">
+                        <Link className="h-4 w-4 text-verus-blue" />
                       </div>
                       <div>
                         <div className="text-white font-semibold">
@@ -484,7 +486,7 @@ export function VerusFeaturesDashboard() {
       )}
 
       {/* Verus Features Info */}
-      <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+      <div className="bg-gradient-to-r from-verus-blue/10 to-verus-green/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
         <h3 className="text-xl font-bold text-white mb-4 flex items-center">
           <Shield className="h-5 w-5 mr-2" />
           Verus Unique Features
@@ -504,8 +506,8 @@ export function VerusFeaturesDashboard() {
           </div>
 
           <div className="flex items-start space-x-3">
-            <div className="p-2 rounded-lg bg-yellow-500/20">
-              <Coins className="h-5 w-5 text-yellow-400" />
+            <div className="p-2 rounded-lg bg-verus-cyan/20">
+              <Coins className="h-5 w-5 text-verus-cyan" />
             </div>
             <div>
               <h4 className="text-white font-semibold">Native Currencies</h4>
@@ -516,8 +518,8 @@ export function VerusFeaturesDashboard() {
           </div>
 
           <div className="flex items-start space-x-3">
-            <div className="p-2 rounded-lg bg-purple-500/20">
-              <Link className="h-5 w-5 text-purple-400" />
+            <div className="p-2 rounded-lg bg-verus-blue/20">
+              <Link className="h-5 w-5 text-verus-blue" />
             </div>
             <div>
               <h4 className="text-white font-semibold">PBaaS</h4>

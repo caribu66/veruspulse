@@ -20,18 +20,24 @@ export async function GET(request: NextRequest) {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: 'UTXO database not enabled',
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'UTXO database not enabled',
+        },
+        { status: 503 }
+      );
     }
 
     const db = getDbPool();
     if (!db) {
-      return NextResponse.json({
-        success: false,
-        error: 'Database connection failed',
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Database connection failed',
+        },
+        { status: 500 }
+      );
     }
 
     // Parse query parameters
@@ -83,7 +89,8 @@ export async function GET(request: NextRequest) {
       friendlyName: row.friendly_name,
       displayName: row.friendly_name || row.address,
       totalStakes: row.total_stakes,
-      totalRewardsVRSC: (parseFloat(row.total_rewards_satoshis) || 0) / 100000000,
+      totalRewardsVRSC:
+        (parseFloat(row.total_rewards_satoshis) || 0) / 100000000,
       apyAllTime: parseFloat(row.apy_all_time) || 0,
       apy30d: parseFloat(row.apy_30d) || 0,
       stakingEfficiency: parseFloat(row.staking_efficiency) || 0,
@@ -127,4 +134,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

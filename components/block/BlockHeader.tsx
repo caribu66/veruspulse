@@ -2,7 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Copy, Check, ArrowLeft, Settings, Shield, Hammer } from 'lucide-react';
+import {
+  Copy,
+  Check,
+  ArrowLeft,
+  Gear,
+  Shield,
+  Hammer,
+} from '@phosphor-icons/react';
 import { Block } from '@/lib/types/block-types';
 
 interface BlockHeaderProps {
@@ -32,7 +39,7 @@ export function BlockHeader({
     if (block.blocktype === 'staked' || block.validationtype === 'pos') {
       return <Shield className="h-5 w-5 text-green-400" />;
     }
-    return <Hammer className="h-5 w-5 text-orange-400" />;
+    return <Hammer className="h-5 w-5 text-verus-cyan" />;
   };
 
   const getBlockTypeText = () => {
@@ -61,12 +68,12 @@ export function BlockHeader({
             onClick={onToggleHeavyMetrics}
             className={`px-3 py-1 text-xs rounded transition-colors flex items-center space-x-2 ${
               heavyMetrics
-                ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                ? 'bg-verus-blue/20 text-verus-blue border border-verus-blue/30'
                 : 'bg-white/10 text-gray-400 hover:bg-white/20'
             }`}
             title="Enable heavy metrics (fees, miner identity, orphan status, etc.)"
           >
-            <Settings className="h-3 w-3" />
+            <Gear className="h-3 w-3" />
             <span>{heavyMetrics ? 'Heavy Metrics ON' : 'Heavy Metrics'}</span>
           </button>
         </div>
@@ -120,15 +127,15 @@ export function BlockHeader({
           </div>
         </div>
 
-        <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
-          <div className="text-purple-400 text-xs font-medium">Size</div>
+        <div className="bg-verus-blue/10 border border-verus-blue/20 rounded-lg p-3">
+          <div className="text-verus-blue text-xs font-medium">Size</div>
           <div className="text-white text-lg font-semibold">
             {formatSize(block.size)}
           </div>
         </div>
 
-        <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
-          <div className="text-orange-400 text-xs font-medium">Weight</div>
+        <div className="bg-verus-cyan/10 border border-verus-cyan/20 rounded-lg p-3">
+          <div className="text-verus-cyan text-xs font-medium">Weight</div>
           <div className="text-white text-lg font-semibold">
             {formatWeight(block.weight || 0)}
           </div>

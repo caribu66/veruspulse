@@ -16,7 +16,9 @@ console.log('==================================================\n');
 
 // Database configuration
 const dbConfig = {
-  connectionString: process.env.DATABASE_URL || 'postgresql://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db',
+  connectionString:
+    process.env.DATABASE_URL ||
+    'postgresql://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db',
   max: 5,
 };
 
@@ -40,21 +42,21 @@ async function rpcCall(method, params = []) {
   const { exec } = require('child_process');
   const { promisify } = require('util');
   const execAsync = promisify(exec);
-  
+
   const rpcUser = process.env.VERUS_RPC_USER || 'verus';
   const rpcPass = process.env.VERUS_RPC_PASSWORD || 'verus';
   const rpcHost = process.env.VERUS_RPC_HOST || '127.0.0.1';
   const rpcPort = process.env.VERUS_RPC_PORT || '27486';
-  
+
   const rpcData = JSON.stringify({
     jsonrpc: '1.0',
     id: 'populate',
     method,
     params,
   });
-  
+
   const cmd = `curl -s --user ${rpcUser}:${rpcPass} --data-binary '${rpcData}' -H 'content-type: text/plain;' http://${rpcHost}:${rpcPort}/`;
-  
+
   try {
     const { stdout } = await execAsync(cmd);
     const result = JSON.parse(stdout);
@@ -85,17 +87,17 @@ async function getBlock(hash) {
 // Extract I-addresses from block
 function extractIAddresses(block) {
   const addresses = new Set();
-  
+
   if (!block || !block.tx) {
     return addresses;
   }
-  
+
   for (const tx of block.tx) {
     if (!tx.vout) continue;
-    
+
     for (const vout of tx.vout) {
       if (!vout.scriptPubKey || !vout.scriptPubKey.addresses) continue;
-      
+
       for (const addr of vout.scriptPubKey.addresses) {
         if (addr && addr.startsWith('i')) {
           addresses.add(addr);
@@ -103,7 +105,7 @@ function extractIAddresses(block) {
       }
     }
   }
-  
+
   return addresses;
 }
 
@@ -113,7 +115,7 @@ async function insertVerusID(iAddress) {
     // Try to get identity details
     let name = 'unknown';
     let friendlyName = `${name}.VRSC@`;
-    
+
     try {
       const identity = await rpcCall('getidentity', [iAddress]);
       if (identity && identity.identity) {
@@ -123,15 +125,18 @@ async function insertVerusID(iAddress) {
     } catch (e) {
       // Identity lookup failed, use defaults
     }
-    
+
     // Insert or update
-    await db.query(`
+    await db.query(
+      `
       INSERT INTO identities (identity_address, base_name, friendly_name, last_refreshed_at)
       VALUES ($1, $2, $3, NOW())
       ON CONFLICT (identity_address) 
       DO UPDATE SET last_refreshed_at = NOW()
-    `, [iAddress, name, friendlyName]);
-    
+    `,
+      [iAddress, name, friendlyName]
+    );
+
     stats.verusIDsInserted++;
     return true;
   } catch (error) {
@@ -147,19 +152,19 @@ async function processBlock(height) {
     const hash = await getBlockHash(height);
     const block = await getBlock(hash);
     const addresses = extractIAddresses(block);
-    
+
     stats.blocksProcessed++;
     stats.verusIDsFound += addresses.size;
-    
+
     // Insert addresses
     for (const addr of addresses) {
       await insertVerusID(addr);
     }
-    
+
     if (addresses.size > 0) {
       console.log(`Block ${height}: Found ${addresses.size} VerusIDs`);
     }
-    
+
     return addresses.size;
   } catch (error) {
     console.error(`Error processing block ${height}:`, error.message);
@@ -171,28 +176,38 @@ async function processBlock(height) {
 // Process a range of blocks
 async function processRange(startHeight, endHeight) {
   console.log(`\nProcessing blocks ${startHeight} to ${endHeight}...\n`);
-  
+
   for (let height = startHeight; height <= endHeight; height += BATCH_SIZE) {
     const batchEnd = Math.min(height + BATCH_SIZE - 1, endHeight);
     const batchPromises = [];
-    
+
     // Process batch
-    for (let h = height; h <= batchEnd && batchPromises.length < MAX_CONCURRENT; h++) {
+    for (
+      let h = height;
+      h <= batchEnd && batchPromises.length < MAX_CONCURRENT;
+      h++
+    ) {
       batchPromises.push(processBlock(h));
     }
-    
+
     await Promise.all(batchPromises);
-    
+
     // Progress report
     const elapsed = (Date.now() - stats.startTime) / 1000;
     const blocksPerSec = stats.blocksProcessed / elapsed;
     const remaining = endHeight - stats.blocksProcessed;
     const eta = remaining / blocksPerSec;
-    
-    console.log(`\nProgress: ${stats.blocksProcessed}/${endHeight - startHeight + 1} blocks`);
-    console.log(`Found: ${stats.verusIDsFound} VerusIDs, Inserted: ${stats.verusIDsInserted}`);
-    console.log(`Speed: ${blocksPerSec.toFixed(2)} blocks/sec, ETA: ${(eta / 60).toFixed(1)} min\n`);
-    
+
+    console.log(
+      `\nProgress: ${stats.blocksProcessed}/${endHeight - startHeight + 1} blocks`
+    );
+    console.log(
+      `Found: ${stats.verusIDsFound} VerusIDs, Inserted: ${stats.verusIDsInserted}`
+    );
+    console.log(
+      `Speed: ${blocksPerSec.toFixed(2)} blocks/sec, ETA: ${(eta / 60).toFixed(1)} min\n`
+    );
+
     // Delay between batches
     await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
   }
@@ -204,7 +219,7 @@ async function main() {
     const args = process.argv.slice(2);
     let startHeight = 1;
     let endHeight = null;
-    
+
     // Parse arguments
     for (let i = 0; i < args.length; i++) {
       if (args[i] === '--start' || args[i] === '-s') {
@@ -230,23 +245,23 @@ Examples:
         process.exit(0);
       }
     }
-    
+
     // Get current height if not specified
     if (!endHeight) {
       console.log('Fetching current blockchain height...');
       endHeight = await getBlockCount();
       console.log(`Current height: ${endHeight}\n`);
     }
-    
+
     // Test database connection
     console.log('Testing database connection...');
     const dbTest = await db.query('SELECT COUNT(*) FROM identities');
     console.log(`Current VerusIDs in database: ${dbTest.rows[0].count}\n`);
-    
+
     // Start processing
     stats.startTime = Date.now();
     await processRange(startHeight, endHeight);
-    
+
     // Final stats
     const totalTime = (Date.now() - stats.startTime) / 1000;
     console.log('\n==================================================');
@@ -257,8 +272,9 @@ Examples:
     console.log(`VerusIDs inserted: ${stats.verusIDsInserted}`);
     console.log(`Errors: ${stats.errors}`);
     console.log(`Total time: ${(totalTime / 60).toFixed(1)} minutes`);
-    console.log(`Speed: ${(stats.blocksProcessed / totalTime).toFixed(2)} blocks/sec\n`);
-    
+    console.log(
+      `Speed: ${(stats.blocksProcessed / totalTime).toFixed(2)} blocks/sec\n`
+    );
   } catch (error) {
     console.error('\n❌ Fatal error:', error.message);
     process.exit(1);
@@ -269,4 +285,3 @@ Examples:
 
 // Run
 main().catch(console.error);
-

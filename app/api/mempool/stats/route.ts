@@ -50,8 +50,7 @@ export async function GET() {
               ((mempoolInfo.usage / mempoolInfo.maxmempool) * 100).toFixed(2)
             )
           : 0,
-      avgTxSize:
-        txCount > 0 ? Math.round(mempoolInfo.bytes / txCount) : 0,
+      avgTxSize: txCount > 0 ? Math.round(mempoolInfo.bytes / txCount) : 0,
 
       // Capacity info
       capacityUsed: mempoolInfo.usage || 0,
@@ -76,10 +75,17 @@ export async function GET() {
     // Cache the result
     if ((redisClient as any)?.status === 'ready') {
       // Use SET with EX for compatibility
-      await redisClient.set(cacheKey, JSON.stringify(response), 'EX', String(cacheTTL));
+      await redisClient.set(
+        cacheKey,
+        JSON.stringify(response),
+        'EX',
+        String(cacheTTL)
+      );
     }
 
-    logger.info(`✅ Mempool stats: ${stats.size} transactions, ${stats.usagePercentage}% full`);
+    logger.info(
+      `✅ Mempool stats: ${stats.size} transactions, ${stats.usagePercentage}% full`
+    );
 
     return NextResponse.json(response);
   } catch (error: any) {
@@ -146,6 +152,3 @@ function getMempoolHealth(mempoolInfo: any): {
     };
   }
 }
-
-
-

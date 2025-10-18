@@ -10,26 +10,29 @@ export async function POST(request: NextRequest) {
     const {
       batchSize = 10,
       includeExisting = false,
-      generateMockData = true
+      generateMockData = true,
     } = body;
 
     // Check if scan is already running
     if (scanner && scanner.getProgress().isRunning) {
-      return NextResponse.json({
-        success: false,
-        error: 'Scan already in progress',
-        progress: scanner.getProgress()
-      }, { status: 409 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Scan already in progress',
+          progress: scanner.getProgress(),
+        },
+        { status: 409 }
+      );
     }
 
     // Start new scan
     scanner = new VerusIDScanner();
-    
+
     // Start scan in background
     const scanPromise = scanner.startScan({
       batchSize,
       includeExisting,
-      generateMockData
+      generateMockData,
     });
 
     // Return immediately with progress info
@@ -40,44 +43,51 @@ export async function POST(request: NextRequest) {
       options: {
         batchSize,
         includeExisting,
-        generateMockData
-      }
+        generateMockData,
+      },
     });
-
   } catch (error: any) {
     logger.error('❌ Failed to start VerusID scan:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to start scan',
-      details: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to start scan',
+        details: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
 
 export async function GET() {
   try {
     if (!scanner) {
-      return NextResponse.json({
-        success: false,
-        error: 'No scanner instance found'
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'No scanner instance found',
+        },
+        { status: 404 }
+      );
     }
 
     const progress = scanner.getProgress();
-    
+
     return NextResponse.json({
       success: true,
       progress,
-      isRunning: progress.isRunning
+      isRunning: progress.isRunning,
     });
-
   } catch (error: any) {
     logger.error('❌ Failed to get scan progress:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to get progress',
-      details: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to get progress',
+        details: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -91,15 +101,17 @@ export async function DELETE() {
 
     return NextResponse.json({
       success: true,
-      message: 'Scan stopped and cleaned up'
+      message: 'Scan stopped and cleaned up',
     });
-
   } catch (error: any) {
     logger.error('❌ Failed to stop scan:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to stop scan',
-      details: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to stop scan',
+        details: error.message,
+      },
+      { status: 500 }
+    );
   }
 }

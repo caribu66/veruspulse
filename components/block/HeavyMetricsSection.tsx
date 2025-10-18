@@ -4,11 +4,11 @@ import { BlockDetailRow } from './BlockDetailRow';
 import {
   Shield,
   Hammer,
-  AlertTriangle,
+  Warning,
   CheckCircle,
   Clock,
-  TrendingUp,
-} from 'lucide-react';
+  TrendUp,
+} from '@phosphor-icons/react';
 import { Block } from '@/lib/types/block-types';
 
 interface HeavyMetricsSectionProps {
@@ -39,13 +39,13 @@ export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
     return minerType === 'staker' ? (
       <Shield className="h-4 w-4 text-green-400" />
     ) : (
-      <Hammer className="h-4 w-4 text-orange-400" />
+      <Hammer className="h-4 w-4 text-verus-cyan" />
     );
   };
 
   const getOrphanIcon = (isOrphan: boolean) => {
     return isOrphan ? (
-      <AlertTriangle className="h-4 w-4 text-red-400" />
+      <Warning className="h-4 w-4 text-red-400" />
     ) : (
       <CheckCircle className="h-4 w-4 text-green-400" />
     );
@@ -62,7 +62,7 @@ export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
       case 'high':
         return 'text-red-400';
       case 'medium':
-        return 'text-yellow-400';
+        return 'text-verus-teal';
       case 'low':
       default:
         return 'text-gray-400';
@@ -70,10 +70,10 @@ export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
   };
 
   return (
-    <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
+    <div className="bg-verus-blue/10 border border-verus-blue/20 rounded-lg p-4">
       <div className="flex items-center space-x-2 mb-4">
         <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-        <span className="text-purple-400 font-semibold">Heavy Metrics</span>
+        <span className="text-verus-blue font-semibold">Heavy Metrics</span>
         {block.metricsError && (
           <span className="text-red-400 text-xs bg-red-500/20 px-2 py-1 rounded">
             Calculation Failed
@@ -87,7 +87,7 @@ export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
           label="Total Fees"
           value={formatFee(block.feeTotal || 0)}
           copyable
-          icon={<TrendingUp className="h-4 w-4 text-purple-400" />}
+          icon={<TrendUp className="h-4 w-4 text-verus-blue" />}
         />
 
         <BlockDetailRow
@@ -169,9 +169,9 @@ export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
 
       {/* Warnings */}
       {block.feeApproximate && (
-        <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-          <div className="flex items-center space-x-2 text-yellow-400 text-sm">
-            <AlertTriangle className="h-4 w-4" />
+        <div className="mt-4 p-3 bg-verus-teal/10 border border-verus-teal/20 rounded-lg">
+          <div className="flex items-center space-x-2 text-verus-teal text-sm">
+            <Warning className="h-4 w-4" />
             <span>Fee calculation is approximate due to lookup limits</span>
           </div>
         </div>
@@ -180,7 +180,7 @@ export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
       {block.metricsError && (
         <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
           <div className="flex items-center space-x-2 text-red-400 text-sm">
-            <AlertTriangle className="h-4 w-4" />
+            <Warning className="h-4 w-4" />
             <span>Heavy metrics calculation failed</span>
           </div>
         </div>

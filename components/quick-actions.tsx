@@ -2,15 +2,15 @@
 
 import { useState } from 'react';
 import {
-  Search,
-  RefreshCw,
-  Settings,
+  MagnifyingGlass,
+  ArrowsClockwise,
+  Gear,
   Bell,
-  Download,
-  Upload,
-  Filter,
-  Bookmark,
-} from 'lucide-react';
+  DownloadSimple,
+  UploadSimple,
+  Funnel,
+  BookmarkSimple,
+} from '@phosphor-icons/react';
 
 interface QuickAction {
   id: string;
@@ -65,13 +65,13 @@ export function QuickActions({
   const actions: QuickAction[] = [
     {
       id: 'search',
-      icon: Search,
+      icon: MagnifyingGlass,
       label: 'Search',
       action: onSearch || (() => {}),
     },
     {
       id: 'refresh',
-      icon: RefreshCw,
+      icon: ArrowsClockwise,
       label: 'Refresh',
       action: handleRefresh,
       disabled: isRefreshing,
@@ -85,31 +85,31 @@ export function QuickActions({
     },
     {
       id: 'filter',
-      icon: Filter,
+      icon: Funnel,
       label: 'Filter',
       action: onFilter || (() => {}),
     },
     {
       id: 'bookmark',
-      icon: Bookmark,
+      icon: BookmarkSimple,
       label: 'Bookmark',
       action: onBookmark || (() => {}),
     },
     {
       id: 'export',
-      icon: Download,
+      icon: DownloadSimple,
       label: 'Export',
       action: onExport || (() => {}),
     },
     {
       id: 'import',
-      icon: Upload,
+      icon: UploadSimple,
       label: 'Import',
       action: onImport || (() => {}),
     },
     {
       id: 'settings',
-      icon: Settings,
+      icon: Gear,
       label: 'Settings',
       action: onSettings || (() => {}),
     },

@@ -20,18 +20,24 @@ export async function GET(request: NextRequest) {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: 'UTXO database not enabled',
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'UTXO database not enabled',
+        },
+        { status: 503 }
+      );
     }
 
     const db = getDbPool();
     if (!db) {
-      return NextResponse.json({
-        success: false,
-        error: 'Database connection failed',
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Database connection failed',
+        },
+        { status: 500 }
+      );
     }
 
     // Parse query parameters
@@ -45,7 +51,7 @@ export async function GET(request: NextRequest) {
     // Build search condition
     let searchCondition = '';
     let searchParams2: any[] = [limit, offset];
-    
+
     if (search) {
       searchCondition = `WHERE (
         i.base_name ILIKE $3 
@@ -62,13 +68,15 @@ export async function GET(request: NextRequest) {
         orderByClause = 'ORDER BY i.last_refreshed_at DESC NULLS LAST';
         break;
       case 'stakes':
-        orderByClause = 'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
+        orderByClause =
+          'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
         break;
       case 'recent':
         orderByClause = 'ORDER BY i.first_seen_block DESC NULLS LAST';
         break;
       case 'rewards':
-        orderByClause = 'ORDER BY COALESCE(s.total_rewards_satoshis, 0) DESC, i.base_name ASC';
+        orderByClause =
+          'ORDER BY COALESCE(s.total_rewards_satoshis, 0) DESC, i.base_name ASC';
         break;
     }
 
@@ -106,7 +114,7 @@ export async function GET(request: NextRequest) {
     const total = parseInt(countResult.rows[0]?.total) || 0;
 
     // Format results
-    const identities = result.rows.map((row) => ({
+    const identities = result.rows.map(row => ({
       address: row.identity_address,
       name: row.base_name || 'unknown',
       friendlyName: row.friendly_name || `${row.base_name || 'unknown'}.VRSC@`,
@@ -115,7 +123,9 @@ export async function GET(request: NextRequest) {
       lastScannedBlock: row.last_scanned_block,
       lastRefreshed: row.last_refreshed_at,
       totalStakes: row.total_stakes || 0,
-      totalRewardsVRSC: row.total_rewards_satoshis ? parseFloat(row.total_rewards_satoshis) / 100000000 : 0,
+      totalRewardsVRSC: row.total_rewards_satoshis
+        ? parseFloat(row.total_rewards_satoshis) / 100000000
+        : 0,
       lastStake: row.last_stake_time,
       apyAllTime: row.apy_all_time ? parseFloat(row.apy_all_time) : null,
       networkRank: row.network_rank,
@@ -157,4 +167,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

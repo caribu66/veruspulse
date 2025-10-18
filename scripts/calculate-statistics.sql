@@ -32,14 +32,20 @@ SELECT
     SUM(sr.amount_sats) as total_rewards_satoshis,
     MIN(sr.block_time) as first_stake_time,
     MAX(sr.block_time) as last_stake_time,
-    -- Simple APY calculation (rewards / time * 365)
+    -- Realistic APY calculation (rewards / estimated_stake_amount * 365 / days)
     CASE 
         WHEN EXTRACT(EPOCH FROM (MAX(sr.block_time) - MIN(sr.block_time))) > 0 
         THEN (SUM(sr.amount_sats)::float / 100000000) / 
-             (EXTRACT(EPOCH FROM (MAX(sr.block_time) - MIN(sr.block_time))) / 31536000) * 100
+             (CASE 
+                WHEN (SUM(sr.amount_sats)::float / 100000000) > 10000 THEN 50000  -- Large stakers: 50k VRSC
+                WHEN (SUM(sr.amount_sats)::float / 100000000) > 5000 THEN 25000   -- Medium stakers: 25k VRSC
+                WHEN (SUM(sr.amount_sats)::float / 100000000) > 1000 THEN 10000   -- Small stakers: 10k VRSC
+                ELSE 5000  -- Minimum estimate: 5k VRSC
+              END) * 
+             (365.0 / (EXTRACT(EPOCH FROM (MAX(sr.block_time) - MIN(sr.block_time))) / 86400)) * 100
         ELSE 0 
     END as apy_all_time,
-    -- 30-day APY
+    -- 30-day APY (more realistic calculation)
     CASE 
         WHEN EXTRACT(EPOCH FROM (MAX(sr.block_time) - MIN(sr.block_time))) > 0 
         AND MAX(sr.block_time) > NOW() - INTERVAL '30 days'
@@ -48,7 +54,13 @@ SELECT
             FROM staking_rewards 
             WHERE identity_address = sr.identity_address 
             AND block_time > NOW() - INTERVAL '30 days'
-        ) / 30 * 365 * 100
+        ) / 
+        (CASE 
+            WHEN (SUM(sr.amount_sats)::float / 100000000) > 10000 THEN 50000
+            WHEN (SUM(sr.amount_sats)::float / 100000000) > 5000 THEN 25000
+            WHEN (SUM(sr.amount_sats)::float / 100000000) > 1000 THEN 10000
+            ELSE 5000
+          END) * (365.0 / 30.0) * 100
         ELSE 0 
     END as apy_30d,
     -- Staking efficiency (stakes per day)

@@ -92,7 +92,7 @@ export class ComprehensiveBlockScanner {
       targetHeight: 0,
       blocksProcessed: 0,
       stakeEventsFound: 0,
-      startTime: Date.now()
+      startTime: Date.now(),
     };
   }
 
@@ -122,13 +122,19 @@ export class ComprehensiveBlockScanner {
         targetHeight: currentHeight,
         blocksProcessed: 0,
         stakeEventsFound: 0,
-        startTime: Date.now()
+        startTime: Date.now(),
       };
 
-      console.log(`[Block Scanner] Starting scan from ${startHeight} to ${currentHeight}`);
+      console.log(
+        `[Block Scanner] Starting scan from ${startHeight} to ${currentHeight}`
+      );
 
       // Process blocks in batches
-      for (let height = startHeight; height <= currentHeight; height += batchSize) {
+      for (
+        let height = startHeight;
+        height <= currentHeight;
+        height += batchSize
+      ) {
         if (!this.isScanning) break;
 
         const endBatch = Math.min(height + batchSize - 1, currentHeight);
@@ -137,19 +143,23 @@ export class ComprehensiveBlockScanner {
         // Update progress
         this.scanProgress.currentHeight = endBatch;
         this.scanProgress.blocksProcessed = endBatch - startHeight + 1;
-        
+
         const elapsed = Date.now() - this.scanProgress.startTime;
         const blocksRemaining = currentHeight - endBatch;
         const avgTimePerBlock = elapsed / this.scanProgress.blocksProcessed;
-        this.scanProgress.estimatedCompletion = Date.now() + (blocksRemaining * avgTimePerBlock);
+        this.scanProgress.estimatedCompletion =
+          Date.now() + blocksRemaining * avgTimePerBlock;
 
         if (this.scanProgress.blocksProcessed % 1000 === 0) {
-          console.log(`[Block Scanner] Progress: ${this.scanProgress.blocksProcessed}/${currentHeight - startHeight} blocks processed, ${this.scanProgress.stakeEventsFound} stake events found`);
+          console.log(
+            `[Block Scanner] Progress: ${this.scanProgress.blocksProcessed}/${currentHeight - startHeight} blocks processed, ${this.scanProgress.stakeEventsFound} stake events found`
+          );
         }
       }
 
-      console.log(`[Block Scanner] Scan complete! Processed ${this.scanProgress.blocksProcessed} blocks, found ${this.scanProgress.stakeEventsFound} stake events`);
-
+      console.log(
+        `[Block Scanner] Scan complete! Processed ${this.scanProgress.blocksProcessed} blocks, found ${this.scanProgress.stakeEventsFound} stake events`
+      );
     } catch (error) {
       console.error('[Block Scanner] Error during scan:', error);
       throw error;
@@ -161,7 +171,11 @@ export class ComprehensiveBlockScanner {
   /**
    * Process a batch of blocks
    */
-  private async processBatch(startHeight: number, endHeight: number, filterAddresses?: string[]): Promise<void> {
+  private async processBatch(
+    startHeight: number,
+    endHeight: number,
+    filterAddresses?: string[]
+  ): Promise<void> {
     const promises: Promise<void>[] = [];
 
     for (let height = startHeight; height <= endHeight; height++) {
@@ -175,23 +189,32 @@ export class ComprehensiveBlockScanner {
   /**
    * Process a single block and extract all analytics
    */
-  private async processBlock(height: number, filterAddresses?: string[]): Promise<void> {
+  private async processBlock(
+    height: number,
+    filterAddresses?: string[]
+  ): Promise<void> {
     try {
       // Get block hash
       const blockHash = await this.rpcClient.getBlockHash(height);
-      
+
       // Get full block data with verbosity 2 (includes transaction details)
       const block: BlockData = await this.rpcClient.getBlock(blockHash, 2);
 
       // Extract block analytics
       const analytics = await this.extractBlockAnalytics(block);
-      
+
       // Store block analytics
       await this.storeBlockAnalytics(analytics);
 
       // Extract and store stake events
-      if (block.stakeRewardInfo?.isStakeReward || block.blocktype === 'minted') {
-        const stakeEvents = await this.extractStakeEvents(block, filterAddresses);
+      if (
+        block.stakeRewardInfo?.isStakeReward ||
+        block.blocktype === 'minted'
+      ) {
+        const stakeEvents = await this.extractStakeEvents(
+          block,
+          filterAddresses
+        );
         for (const event of stakeEvents) {
           await this.storeStakeEvent(event);
           this.scanProgress.stakeEventsFound++;
@@ -205,7 +228,6 @@ export class ComprehensiveBlockScanner {
 
       // Update block timing analytics
       await this.updateBlockTimingAnalytics(block);
-
     } catch (error) {
       console.error(`[Block Scanner] Error processing block ${height}:`, error);
       // Continue processing other blocks
@@ -215,11 +237,14 @@ export class ComprehensiveBlockScanner {
   /**
    * Extract comprehensive block analytics
    */
-  private async extractBlockAnalytics(block: BlockData): Promise<BlockAnalytics> {
+  private async extractBlockAnalytics(
+    block: BlockData
+  ): Promise<BlockAnalytics> {
     const blockTime = new Date(block.time * 1000);
-    
+
     // Determine block type and reward info
-    const isPoS = block.stakeRewardInfo?.isStakeReward || block.blocktype === 'minted';
+    const isPoS =
+      block.stakeRewardInfo?.isStakeReward || block.blocktype === 'minted';
     const blockType = isPoS ? 'pos' : 'pow';
     const rewardAmount = block.stakeRewardInfo?.rewardAmount || 0;
     const stakeAmount = block.stakeAmount || 0;
@@ -230,8 +255,16 @@ export class ComprehensiveBlockScanner {
       for (const tx of block.tx) {
         // Calculate fees from transaction inputs and outputs
         if (tx.vin && tx.vout) {
-          const inputSum = tx.vin.reduce((sum: number, input: any) => sum + (input.valueSat || input.value * 100000000 || 0), 0);
-          const outputSum = tx.vout.reduce((sum: number, output: any) => sum + (output.valueSat || output.value * 100000000 || 0), 0);
+          const inputSum = tx.vin.reduce(
+            (sum: number, input: any) =>
+              sum + (input.valueSat || input.value * 100000000 || 0),
+            0
+          );
+          const outputSum = tx.vout.reduce(
+            (sum: number, output: any) =>
+              sum + (output.valueSat || output.value * 100000000 || 0),
+            0
+          );
           totalFees += Math.max(0, inputSum - outputSum);
         }
       }
@@ -244,7 +277,10 @@ export class ComprehensiveBlockScanner {
       const coinstake = block.tx[0];
       if (coinstake.vout && coinstake.vout.length > 1) {
         const output = coinstake.vout[1];
-        if (output.scriptPubKey?.addresses && output.scriptPubKey.addresses.length > 0) {
+        if (
+          output.scriptPubKey?.addresses &&
+          output.scriptPubKey.addresses.length > 0
+        ) {
           stakerAddress = output.scriptPubKey.addresses[0];
         }
       }
@@ -254,7 +290,9 @@ export class ComprehensiveBlockScanner {
     let blockInterval: number | undefined;
     if (block.height > 0) {
       try {
-        const prevBlockHash = await this.rpcClient.getBlockHash(block.height - 1);
+        const prevBlockHash = await this.rpcClient.getBlockHash(
+          block.height - 1
+        );
         const prevBlock = await this.rpcClient.getBlock(prevBlockHash, 1);
         blockInterval = block.time - prevBlock.time;
       } catch (error) {
@@ -293,28 +331,34 @@ export class ComprehensiveBlockScanner {
       merkleRoot: block.merkleroot,
       nonce: block.nonce,
       bits: block.bits,
-      version: block.version
+      version: block.version,
     };
   }
 
   /**
    * Extract stake events from a block
    */
-  private async extractStakeEvents(block: BlockData, filterAddresses?: string[]): Promise<StakeEvent[]> {
+  private async extractStakeEvents(
+    block: BlockData,
+    filterAddresses?: string[]
+  ): Promise<StakeEvent[]> {
     const events: StakeEvent[] = [];
 
     if (!block.tx || block.tx.length === 0) return events;
 
     // First transaction is coinstake for PoS blocks
     const coinstake = block.tx[0];
-    
+
     // Extract staker address and reward
     if (coinstake.vout && coinstake.vout.length > 1) {
       const output = coinstake.vout[1];
-      
-      if (output.scriptPubKey?.addresses && output.scriptPubKey.addresses.length > 0) {
+
+      if (
+        output.scriptPubKey?.addresses &&
+        output.scriptPubKey.addresses.length > 0
+      ) {
         const address = output.scriptPubKey.addresses[0];
-        
+
         // Filter by addresses if specified
         if (filterAddresses && !filterAddresses.includes(address)) {
           return events;
@@ -331,7 +375,7 @@ export class ComprehensiveBlockScanner {
           blockTime: new Date(block.time * 1000),
           rewardAmount: Math.floor(rewardAmount * 100000000),
           stakeAmount: Math.floor(stakeAmount * 100000000),
-          stakeAge
+          stakeAge,
         });
       }
     }
@@ -395,7 +439,7 @@ export class ComprehensiveBlockScanner {
       analytics.merkleRoot,
       analytics.nonce,
       analytics.bits,
-      analytics.version
+      analytics.version,
     ]);
   }
 
@@ -419,7 +463,7 @@ export class ComprehensiveBlockScanner {
       event.rewardAmount,
       event.stakeAmount,
       event.stakeAge,
-      0 // staking_probability - calculate later
+      0, // staking_probability - calculate later
     ]);
   }
 
@@ -442,7 +486,7 @@ export class ComprehensiveBlockScanner {
         pool.id,
         pool.id,
         pool.chainValue,
-        pool.valueDelta || 0
+        pool.valueDelta || 0,
       ]);
     }
   }
@@ -454,9 +498,10 @@ export class ComprehensiveBlockScanner {
     const blockTime = new Date(block.time * 1000);
     const date = blockTime.toISOString().split('T')[0];
     const hour = blockTime.getHours();
-    
-    const isPoS = block.stakeRewardInfo?.isStakeReward || block.blocktype === 'minted';
-    
+
+    const isPoS =
+      block.stakeRewardInfo?.isStakeReward || block.blocktype === 'minted';
+
     // Update hourly stats
     const hourlyQuery = `
       INSERT INTO block_timing_analytics (
@@ -473,7 +518,7 @@ export class ComprehensiveBlockScanner {
       date,
       hour,
       isPoS ? 1 : 0,
-      isPoS ? 0 : 1
+      isPoS ? 0 : 1,
     ]);
 
     // Update daily stats
@@ -488,11 +533,7 @@ export class ComprehensiveBlockScanner {
         pow_blocks = block_timing_analytics.pow_blocks + $3
     `;
 
-    await this.db.query(dailyQuery, [
-      date,
-      isPoS ? 1 : 0,
-      isPoS ? 0 : 1
-    ]);
+    await this.db.query(dailyQuery, [date, isPoS ? 1 : 0, isPoS ? 0 : 1]);
   }
 
   /**
@@ -516,4 +557,3 @@ export class ComprehensiveBlockScanner {
     return this.isScanning;
   }
 }
-

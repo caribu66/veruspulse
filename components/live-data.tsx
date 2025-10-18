@@ -12,17 +12,17 @@ import {
   Hash,
   Coins,
   Network,
-  TrendingUp,
-  Zap,
-  RefreshCw,
-  AlertCircle,
+  TrendUp,
+  Lightning,
+  ArrowsClockwise,
+  WarningCircle,
   Globe,
   ArrowUpRight,
   ArrowDownLeft,
   Copy,
   Check,
-  BarChart3,
-} from 'lucide-react';
+  ChartBar,
+} from '@phosphor-icons/react';
 
 interface LiveStats {
   blocks: number;
@@ -270,7 +270,7 @@ export function LiveData() {
     return (
       <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
         <div className="flex items-center space-x-3">
-          <AlertCircle className="h-5 w-5 text-red-400" />
+          <WarningCircle className="h-5 w-5 text-red-400" />
           <div>
             <div className="text-red-400 font-semibold">Error</div>
             <div className="text-red-300 text-sm">{error}</div>
@@ -298,7 +298,7 @@ export function LiveData() {
                 : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
             }`}
           >
-            <RefreshCw
+            <ArrowsClockwise
               className={`h-4 w-4 ${autoRefresh ? 'animate-spin' : ''}`}
             />
             <span className="text-sm">
@@ -309,7 +309,7 @@ export function LiveData() {
             onClick={fetchLiveData}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors"
           >
-            <RefreshCw className="h-4 w-4" />
+            <ArrowsClockwise className="h-4 w-4" />
             <span className="text-sm">Refresh</span>
           </button>
         </div>
@@ -318,7 +318,7 @@ export function LiveData() {
       {/* Section Navigation */}
       <div className="flex space-x-4">
         {[
-          { key: 'overview', label: 'Overview', icon: BarChart3 },
+          { key: 'overview', label: 'Overview', icon: ChartBar },
           { key: 'blocks', label: 'Recent Blocks', icon: Database },
           {
             key: 'transactions',
@@ -375,7 +375,7 @@ export function LiveData() {
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
               <div className="flex items-center space-x-3">
-                <Clock className="h-6 w-6 text-yellow-400" />
+                <Clock className="h-6 w-6 text-verus-teal" />
                 <div>
                   <div className="text-3xl font-bold text-white">
                     {stats.mempoolSize.toLocaleString()}
@@ -387,7 +387,7 @@ export function LiveData() {
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
               <div className="flex items-center space-x-3">
-                <Network className="h-6 w-6 text-purple-400" />
+                <Network className="h-6 w-6 text-verus-blue" />
                 <div>
                   <div className="text-3xl font-bold text-white">
                     {stats.connections}
@@ -399,7 +399,7 @@ export function LiveData() {
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
               <div className="flex items-center space-x-3">
-                <Hash className="h-6 w-6 text-orange-400" />
+                <Hash className="h-6 w-6 text-verus-cyan" />
                 <div>
                   <div className="text-3xl font-bold text-white">
                     {formatHashRate(stats.networkHashRate)}
@@ -411,7 +411,7 @@ export function LiveData() {
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
               <div className="flex items-center space-x-3">
-                <TrendingUp className="h-6 w-6 text-red-400" />
+                <TrendUp className="h-6 w-6 text-red-400" />
                 <div>
                   <div className="text-3xl font-bold text-white">
                     {formatDifficulty(stats.difficulty)}
@@ -435,7 +435,7 @@ export function LiveData() {
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
               <div className="flex items-center space-x-3">
-                <Zap className="h-6 w-6 text-pink-400" />
+                <Lightning className="h-6 w-6 text-verus-cyan" />
                 <div>
                   <div className="text-3xl font-bold text-white">
                     {stats.lastUpdate.toLocaleTimeString()}

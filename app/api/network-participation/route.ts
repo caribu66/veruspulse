@@ -6,12 +6,11 @@ export async function GET(request: NextRequest) {
     console.log('Fetching network participation metrics...');
 
     // Get basic network metrics
-    const [blockchainInfo, txOutInfo, miningInfo] =
-      await Promise.all([
-        verusAPI.getBlockchainInfo().catch(() => null),
-        verusAPI.getTxOutSetInfo().catch(() => null),
-        verusAPI.getMiningInfo().catch(() => null),
-      ]);
+    const [blockchainInfo, txOutInfo, miningInfo] = await Promise.all([
+      verusAPI.getBlockchainInfo().catch(() => null),
+      verusAPI.getTxOutSetInfo().catch(() => null),
+      verusAPI.getMiningInfo().catch(() => null),
+    ]);
 
     // Calculate basic participation metrics (without stake age analysis)
     const participationMetrics = {
@@ -46,10 +45,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    return NextResponse.json({
-      success: false,
-      error: 'Network participation analysis feature is not currently available',
-    }, { status: 503 });
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          'Network participation analysis feature is not currently available',
+      },
+      { status: 503 }
+    );
   } catch (error) {
     console.error('Error in network participation analysis:', error);
     return NextResponse.json(

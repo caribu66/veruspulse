@@ -109,13 +109,11 @@ export function formatCryptoValue(
         maximumFractionDigits: 0,
       }) + ` ${currency}`
     );
-  } 
+  }
   // For large amounts (1K+), show as whole numbers
   else if (Math.abs(num) >= 1000) {
-    return (
-      Math.round(num).toLocaleString('en-US') + ` ${currency}`
-    );
-  } 
+    return Math.round(num).toLocaleString('en-US') + ` ${currency}`;
+  }
   // For amounts >= 1, show with 2 decimal places
   else if (Math.abs(num) >= 1) {
     return (
@@ -124,7 +122,7 @@ export function formatCryptoValue(
         maximumFractionDigits: 2,
       }) + ` ${currency}`
     );
-  } 
+  }
   // For small amounts < 1, show with more precision
   else {
     return num.toFixed(4) + ` ${currency}`;
@@ -368,4 +366,23 @@ export function formatConnectionCount(
   } else {
     return connCount.toString();
   }
+}
+
+/**
+ * Format staking amounts with appropriate precision
+ */
+export function formatStake(
+  stake: number | string | null | undefined,
+  options: Omit<NumberFormatOptions, 'unit'> = {}
+): string {
+  if (stake === null || stake === undefined || isNaN(Number(stake))) {
+    return 'N/A';
+  }
+
+  const stakeAmount = Number(stake);
+
+  if (stakeAmount >= 1e9) return `${(stakeAmount / 1e9).toFixed(2)}B`;
+  if (stakeAmount >= 1e6) return `${(stakeAmount / 1e6).toFixed(2)}M`;
+  if (stakeAmount >= 1e3) return `${(stakeAmount / 1e3).toFixed(2)}K`;
+  return stakeAmount.toFixed(0);
 }

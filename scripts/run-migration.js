@@ -12,7 +12,7 @@ async function main() {
     const dir = path.join(__dirname, '..', 'db', 'migrations');
     const files = fs
       .readdirSync(dir)
-      .filter((f) => f.endsWith('.sql'))
+      .filter(f => f.endsWith('.sql'))
       .sort();
     for (const f of files) {
       const full = path.join(dir, f);
@@ -32,5 +32,3 @@ async function main() {
 }
 
 main();
-
-

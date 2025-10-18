@@ -1,15 +1,19 @@
-'use client';
+import { useEffect, useState } from 'react';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-
-export function useDebounce<T>(value: T, delay: number): T {
+/**
+ * Debounce hook - delays updating a value until after a specified delay
+ * Useful for search inputs, scroll events, etc.
+ */
+export function useDebounce<T>(value: T, delay: number = 500): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
+    // Set up timeout
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
 
+    // Cleanup timeout if value changes before delay
     return () => {
       clearTimeout(handler);
     };
@@ -18,64 +22,32 @@ export function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
+/**
+ * Debounced callback hook
+ */
 export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
-  delay: number
-): T {
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const callbackRef = useRef(callback);
+  delay: number = 500
+): (...args: Parameters<T>) => void {
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
-  // Update callback ref when callback changes
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
-
-  const debouncedCallback = useCallback(
-    (...args: Parameters<T>) => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        callbackRef.current(...args);
-      }, delay);
-    },
-    [delay]
-  ) as T;
-
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
-  }, []);
+  }, [timeoutId]);
 
-  return debouncedCallback;
-}
+  return (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
 
-export function useThrottle<T extends (...args: any[]) => any>(
-  callback: T,
-  delay: number
-): T {
-  const lastRun = useRef(Date.now());
-  const callbackRef = useRef(callback);
+    const newTimeoutId = setTimeout(() => {
+      callback(...args);
+    }, delay);
 
-  // Update callback ref when callback changes
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
-
-  const throttledCallback = useCallback(
-    (...args: Parameters<T>) => {
-      if (Date.now() - lastRun.current >= delay) {
-        callbackRef.current(...args);
-        lastRun.current = Date.now();
-      }
-    },
-    [delay]
-  ) as T;
-
-  return throttledCallback;
+    setTimeoutId(newTimeoutId);
+  };
 }

@@ -4,21 +4,21 @@ import { useState } from 'react';
 import {
   User,
   Coins,
-  TrendingUp,
-  TrendingDown,
+  TrendUp,
+  TrendDown,
   Clock,
   Hash,
   ArrowRight,
   ArrowLeft,
   Copy,
   Check,
-  Search,
-  AlertCircle,
+  MagnifyingGlass,
+  WarningCircle,
   Info,
-  BarChart3,
-  PieChart,
-  Award,
-} from 'lucide-react';
+  ChartBar,
+  ChartPie,
+  Medal,
+} from '@phosphor-icons/react';
 import {
   formatFriendlyNumber,
   formatCryptoValue,
@@ -219,8 +219,8 @@ export function AddressExplorer() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+      {/* MagnifyingGlass */}
+      <div className="bg-slate-900 rounded-2xl p-6 border border-slate-700">
         <div className="flex items-center space-x-4">
           <div className="flex-1">
             <input
@@ -228,7 +228,7 @@ export function AddressExplorer() {
               value={address}
               onChange={e => setAddress(e.target.value)}
               placeholder="Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs"
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onKeyDown={e => e.key === 'Enter' && searchAddress()}
             />
           </div>
@@ -237,8 +237,8 @@ export function AddressExplorer() {
             disabled={loading || !address.trim()}
             className="flex items-center space-x-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Search className="h-4 w-4" />
-            <span>{loading ? 'Searching...' : 'Search'}</span>
+            <MagnifyingGlass className="h-4 w-4" />
+            <span>{loading ? 'Searching...' : 'MagnifyingGlass'}</span>
           </button>
         </div>
       </div>
@@ -247,7 +247,7 @@ export function AddressExplorer() {
       {balance && (
         <div className="space-y-6">
           {/* Address Header */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+          <div className="bg-slate-900 rounded-2xl p-6 border border-slate-700">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">
                 {verusID ? 'VerusID & Address Details' : 'Address Details'}
@@ -256,7 +256,7 @@ export function AddressExplorer() {
                 {verusID && (
                   <button
                     onClick={() => copyToClipboard(address, 'verusid')}
-                    className="flex items-center space-x-2 px-3 py-1 bg-white/10 hover:bg-white/20 rounded transition-colors"
+                    className="flex items-center space-x-2 px-3 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded transition-colors"
                   >
                     {copied === 'verusid' ? (
                       <Check className="h-4 w-4" />
@@ -270,7 +270,7 @@ export function AddressExplorer() {
                   onClick={() =>
                     copyToClipboard(primaryAddress || address, 'address')
                   }
-                  className="flex items-center space-x-2 px-3 py-1 bg-white/10 hover:bg-white/20 rounded transition-colors"
+                  className="flex items-center space-x-2 px-3 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded transition-colors"
                 >
                   {copied === 'address' ? (
                     <Check className="h-4 w-4" />
@@ -320,7 +320,7 @@ export function AddressExplorer() {
 
           {/* Balance Summary */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
               <div className="flex items-center space-x-3">
                 <div className="p-2 rounded-lg bg-green-500/20">
                   <Coins className="h-5 w-5 text-green-400" />
@@ -334,10 +334,10 @@ export function AddressExplorer() {
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
               <div className="flex items-center space-x-3">
                 <div className="p-2 rounded-lg bg-blue-500/20">
-                  <TrendingUp className="h-5 w-5 text-blue-400" />
+                  <TrendUp className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
                   <div className="text-white font-semibold">Received</div>
@@ -348,10 +348,10 @@ export function AddressExplorer() {
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
               <div className="flex items-center space-x-3">
                 <div className="p-2 rounded-lg bg-red-500/20">
-                  <TrendingDown className="h-5 w-5 text-red-400" />
+                  <TrendDown className="h-5 w-5 text-red-400" />
                 </div>
                 <div>
                   <div className="text-white font-semibold">Sent</div>
@@ -362,10 +362,10 @@ export function AddressExplorer() {
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
               <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-lg bg-purple-500/20">
-                  <Hash className="h-5 w-5 text-purple-400" />
+                <div className="p-2 rounded-lg bg-verus-blue/20">
+                  <Hash className="h-5 w-5 text-verus-blue" />
                 </div>
                 <div>
                   <div className="text-white font-semibold">Transactions</div>
@@ -376,12 +376,12 @@ export function AddressExplorer() {
           </div>
 
           {/* Tabs */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+          <div className="bg-slate-900 rounded-2xl p-6 border border-slate-700">
             <div className="flex space-x-1 mb-6">
               {[
-                { key: 'overview', label: 'Overview', icon: BarChart3 },
+                { key: 'overview', label: 'Overview', icon: ChartBar },
                 { key: 'transactions', label: 'Transactions', icon: Hash },
-                { key: 'utxos', label: 'UTXOs', icon: PieChart },
+                { key: 'utxos', label: 'UTXOs', icon: ChartPie },
               ].map(tab => {
                 const Icon = tab.icon;
                 return (
@@ -390,8 +390,8 @@ export function AddressExplorer() {
                     onClick={() => setActiveTab(tab.key as any)}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                       activeTab === tab.key
-                        ? 'bg-white/20 text-white'
-                        : 'text-blue-200 hover:text-white hover:bg-white/10'
+                        ? 'bg-verus-blue text-white border border-verus-blue-light'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -405,7 +405,7 @@ export function AddressExplorer() {
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white/5 rounded-lg p-4">
+                  <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
                     <h4 className="text-lg font-semibold text-white mb-3">
                       Transaction Summary
                     </h4>
@@ -437,7 +437,7 @@ export function AddressExplorer() {
                     </div>
                   </div>
 
-                  <div className="bg-white/5 rounded-lg p-4">
+                  <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
                     <h4 className="text-lg font-semibold text-white mb-3">
                       UTXO Summary
                     </h4>
@@ -488,7 +488,10 @@ export function AddressExplorer() {
                     {transactions.slice(0, 10).map((tx, index) => {
                       const Icon = getTransactionTypeIcon(tx.type);
                       return (
-                        <div key={index} className="bg-white/5 rounded-lg p-4">
+                        <div
+                          key={index}
+                          className="bg-slate-800 rounded-lg p-4 border border-slate-700"
+                        >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-3">
                               <Icon
@@ -530,7 +533,10 @@ export function AddressExplorer() {
                 {utxos.length > 0 ? (
                   <div className="space-y-3">
                     {utxos.slice(0, 10).map((utxo, index) => (
-                      <div key={index} className="bg-white/5 rounded-lg p-4">
+                      <div
+                        key={index}
+                        className="bg-slate-800 rounded-lg p-4 border border-slate-700"
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <div className="text-white font-mono text-sm">
                             {utxo.txid.substring(0, 16)}...:{utxo.vout}
@@ -563,7 +569,7 @@ export function AddressExplorer() {
       {error && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
           <div className="flex items-center space-x-3">
-            <AlertCircle className="h-5 w-5 text-red-400" />
+            <WarningCircle className="h-5 w-5 text-red-400" />
             <div>
               <div className="text-red-400 font-semibold">Error</div>
               <div className="text-red-300 text-sm">{error}</div>

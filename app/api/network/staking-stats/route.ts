@@ -20,18 +20,24 @@ export async function GET(request: NextRequest) {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: 'UTXO database not enabled',
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'UTXO database not enabled',
+        },
+        { status: 503 }
+      );
     }
 
     const db = getDbPool();
     if (!db) {
-      return NextResponse.json({
-        success: false,
-        error: 'Database connection failed',
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Database connection failed',
+        },
+        { status: 500 }
+      );
     }
 
     // Get network-wide statistics
@@ -68,9 +74,12 @@ export async function GET(request: NextRequest) {
     const blockStats = blocksResult.rows[0];
 
     // Calculate PoS participation rate
-    const posParticipation = blockStats.total_blocks > 0
-      ? (parseInt(blockStats.pos_blocks) / parseInt(blockStats.total_blocks)) * 100
-      : 0;
+    const posParticipation =
+      blockStats.total_blocks > 0
+        ? (parseInt(blockStats.pos_blocks) /
+            parseInt(blockStats.total_blocks)) *
+          100
+        : 0;
 
     // Get distribution statistics
     const distributionQuery = `
@@ -93,7 +102,8 @@ export async function GET(request: NextRequest) {
         network: {
           totalVerusIDs: parseInt(networkStats.total_verusids) || 0,
           totalStakes: parseInt(networkStats.total_stakes) || 0,
-          totalRewardsVRSC: (parseFloat(networkStats.total_rewards) || 0) / 100000000,
+          totalRewardsVRSC:
+            (parseFloat(networkStats.total_rewards) || 0) / 100000000,
           averageAPY: parseFloat(networkStats.avg_apy) || 0,
           averageEfficiency: parseFloat(networkStats.avg_efficiency) || 0,
           totalUTXOs: parseInt(networkStats.total_utxos) || 0,
@@ -106,7 +116,8 @@ export async function GET(request: NextRequest) {
           posParticipation: Math.round(posParticipation * 100) / 100,
           avgBlockTime: Math.round(parseFloat(blockStats.avg_block_time) || 60),
           avgDifficulty: parseFloat(blockStats.avg_difficulty) || 0,
-          totalStakingRewardsVRSC: (parseFloat(blockStats.total_staking_rewards) || 0) / 100000000,
+          totalStakingRewardsVRSC:
+            (parseFloat(blockStats.total_staking_rewards) || 0) / 100000000,
         },
         distribution: {
           '1-10': parseInt(distribution.range_1_10) || 0,
@@ -132,4 +143,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

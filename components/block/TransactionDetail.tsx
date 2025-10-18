@@ -1,7 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Copy, Check, ExternalLink, Coins, ArrowRight } from 'lucide-react';
+import {
+  Copy,
+  Check,
+  ArrowSquareOut,
+  Coins,
+  ArrowRight,
+} from '@phosphor-icons/react';
 import Link from 'next/link';
 
 interface Vin {

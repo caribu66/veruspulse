@@ -50,7 +50,7 @@ export async function GET(
           let type: 'sent' | 'received' | 'stake_reward' = 'received';
           let value = 0;
           let isStakeReward = false;
-          
+
           // Basic stake reward detection
           if (blockInfo?.blocktype === 'minted' && blockInfo.tx?.[0] === txid) {
             isStakeReward = true;

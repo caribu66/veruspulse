@@ -1,6 +1,6 @@
 /**
  * Simple VerusID Cache
- * 
+ *
  * Stores VerusID staking data in PostgreSQL for fast lookups.
  * No separate service needed - runs inside Next.js.
  */
@@ -21,10 +21,15 @@ async function verusdRpc(method: string, params: any[] = []) {
     const rpcUrl = process.env.VERUS_RPC_HOST || 'http://127.0.0.1:18843';
     const rpcUser = process.env.VERUS_RPC_USER || 'verus';
     const rpcPass = process.env.VERUS_RPC_PASSWORD || 'verus';
-    
+
     const url = new URL(rpcUrl);
-    const postData = JSON.stringify({ jsonrpc: '1.0', id: '1', method, params });
-    
+    const postData = JSON.stringify({
+      jsonrpc: '1.0',
+      id: '1',
+      method,
+      params,
+    });
+
     const options = {
       hostname: url.hostname,
       port: url.port || (url.protocol === 'https:' ? 443 : 80),
@@ -33,15 +38,16 @@ async function verusdRpc(method: string, params: any[] = []) {
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(postData),
-        'Authorization': 'Basic ' + Buffer.from(`${rpcUser}:${rpcPass}`).toString('base64'),
+        Authorization:
+          'Basic ' + Buffer.from(`${rpcUser}:${rpcPass}`).toString('base64'),
       },
     };
-    
+
     const client = url.protocol === 'https:' ? https : http;
-    
-    const req = client.request(options, (res) => {
+
+    const req = client.request(options, res => {
       let data = '';
-      res.on('data', (chunk) => data += chunk);
+      res.on('data', chunk => (data += chunk));
       res.on('end', () => {
         try {
           const json = JSON.parse(data);
@@ -55,12 +61,12 @@ async function verusdRpc(method: string, params: any[] = []) {
         }
       });
     });
-    
-    req.on('error', (err) => {
+
+    req.on('error', err => {
       console.error(`[VerusID Cache] RPC ${method} failed:`, err.message);
       reject(err);
     });
-    
+
     req.write(postData);
     req.end();
   });
@@ -74,6 +80,17 @@ export async function resolveVerusID(input: string): Promise<{
   name: string;
   friendlyName: string;
   primaryAddresses: string[];
+  txid: string;
+  height: number;
+  version: number;
+  minimumsignatures: number;
+  parent: string;
+  canrevoke: boolean;
+  revocationauthority: string;
+  recoveryauthority: string;
+  timelock: number;
+  flags: number;
+  status: string;
 }> {
   // Normalize input
   let normalized = input.trim();
@@ -84,13 +101,24 @@ export async function resolveVerusID(input: string): Promise<{
   }
 
   // Get identity from verusd
-  const identity = await verusdRpc('getidentity', [normalized]) as any;
-  
+  const identity = (await verusdRpc('getidentity', [normalized])) as any;
+
   return {
     identityAddress: identity.identity.identityaddress,
     name: identity.identity.name || '',
     friendlyName: identity.friendlyname || '',
     primaryAddresses: identity.identity.primaryaddresses || [],
+    txid: identity.txid || '',
+    height: identity.height || 0,
+    version: identity.identity.version || 1,
+    minimumsignatures: identity.identity.minimumsignatures || 1,
+    parent: identity.identity.parent || '',
+    canrevoke: Boolean(identity.identity.revocationauthority),
+    revocationauthority: identity.identity.revocationauthority || '',
+    recoveryauthority: identity.identity.recoveryauthority || '',
+    timelock: identity.identity.timelock || 0,
+    flags: identity.identity.flags || 0,
+    status: identity.status || 'active',
   };
 }
 
@@ -110,7 +138,7 @@ export async function getCachedStats(identityAddress: string) {
   );
 
   if (result.rows.length === 0) return null;
-  
+
   const row = result.rows[0];
   return {
     totalRewards: Number(row.total_sats) / 1e8,
@@ -159,13 +187,13 @@ export async function getCachedIdentity(input: string): Promise<{
   if (result.rows.length === 0) return null;
 
   const row = result.rows[0];
-  
+
   // Parse primary_addresses if it's a string (shouldn't happen with JSONB, but just in case)
   let primaryAddresses = row.primary_addresses || [];
   if (typeof primaryAddresses === 'string') {
     primaryAddresses = JSON.parse(primaryAddresses);
   }
-  
+
   return {
     identityAddress: row.identity_address,
     name: row.base_name,
@@ -179,8 +207,8 @@ export async function getCachedIdentity(input: string): Promise<{
  * This runs async in the background - doesn't block the response
  */
 export async function cacheIdentity(
-  identityAddress: string, 
-  name: string, 
+  identityAddress: string,
+  name: string,
   friendlyName: string,
   primaryAddresses: string[]
 ): Promise<void> {
@@ -194,7 +222,7 @@ export async function cacheIdentity(
   );
 
   // Start background indexing (don't await - let it run async)
-  indexIdentityInBackground(identityAddress).catch(err => 
+  indexIdentityInBackground(identityAddress).catch(err =>
     console.error('Background indexing error:', err)
   );
 }
@@ -202,29 +230,35 @@ export async function cacheIdentity(
 /**
  * Index all rewards for an identity (background task)
  */
-async function indexIdentityInBackground(identityAddress: string): Promise<void> {
-  console.log(`[VerusID Cache] Starting background index for ${identityAddress}`);
-  
+async function indexIdentityInBackground(
+  identityAddress: string
+): Promise<void> {
+  console.log(
+    `[VerusID Cache] Starting background index for ${identityAddress}`
+  );
+
   try {
     // Get all transactions for this address
-    const txids = await verusdRpc('getaddresstxids', [{ addresses: [identityAddress] }]) as any[];
-    
+    const txids = (await verusdRpc('getaddresstxids', [
+      { addresses: [identityAddress] },
+    ])) as any[];
+
     console.log(`[VerusID Cache] Found ${txids.length} transactions to index`);
-    
+
     // Process in batches to avoid overwhelming the system
     for (let i = 0; i < txids.length; i++) {
       const txid = txids[i];
-      
+
       // Get transaction details
-      const tx = await verusdRpc('getrawtransaction', [txid, 1]) as any;
+      const tx = (await verusdRpc('getrawtransaction', [txid, 1])) as any;
       if (!tx.blockhash) continue; // Skip mempool txs
-      
+
       // Get block info
-      const block = await verusdRpc('getblock', [tx.blockhash, 1]) as any;
-      
+      const block = (await verusdRpc('getblock', [tx.blockhash, 1])) as any;
+
       // Find outputs paying to this identity
       const isCoinbase = !!tx.vin?.[0]?.coinbase;
-      
+
       if (isCoinbase) {
         // For staking rewards (coinbase), only count the smallest output as the reward
         // The largest output is typically the stake return, not the reward
@@ -234,21 +268,30 @@ async function indexIdentityInBackground(identityAddress: string): Promise<void>
             const addresses = vout.scriptPubKey?.addresses || [];
             return addresses.includes(identityAddress);
           });
-        
+
         if (myOutputs.length > 0) {
           // Sort by value to find the smallest (the actual reward)
           myOutputs.sort((a: any, b: any) => a.vout.value - b.vout.value);
-          
+
           // Only insert the smallest output (the reward, not the stake return)
           const rewardOutput = myOutputs[0];
           const amountSats = Math.round(rewardOutput.vout.value * 1e8);
-          
+
           await pool.query(
             `INSERT INTO staking_rewards 
              (identity_address, txid, vout, block_height, block_hash, block_time, amount_sats, classifier)
              VALUES ($1, $2, $3, $4, $5, to_timestamp($6), $7, $8)
              ON CONFLICT (txid, vout) DO NOTHING`,
-            [identityAddress, txid, rewardOutput.voutIndex, block.height, block.hash, block.time, amountSats, 'coinbase']
+            [
+              identityAddress,
+              txid,
+              rewardOutput.voutIndex,
+              block.height,
+              block.hash,
+              block.time,
+              amountSats,
+              'coinbase',
+            ]
           );
         }
       } else {
@@ -256,33 +299,47 @@ async function indexIdentityInBackground(identityAddress: string): Promise<void>
         for (let voutIndex = 0; voutIndex < tx.vout.length; voutIndex++) {
           const vout = tx.vout[voutIndex];
           const addresses = vout.scriptPubKey?.addresses || [];
-          
+
           if (addresses.includes(identityAddress)) {
             const amountSats = Math.round(vout.value * 1e8);
-            
+
             await pool.query(
               `INSERT INTO staking_rewards 
                (identity_address, txid, vout, block_height, block_hash, block_time, amount_sats, classifier)
                VALUES ($1, $2, $3, $4, $5, to_timestamp($6), $7, $8)
                ON CONFLICT (txid, vout) DO NOTHING`,
-              [identityAddress, txid, voutIndex, block.height, block.hash, block.time, amountSats, 'regular']
+              [
+                identityAddress,
+                txid,
+                voutIndex,
+                block.height,
+                block.hash,
+                block.time,
+                amountSats,
+                'regular',
+              ]
             );
           }
         }
       }
-      
+
       // Progress update every 100 txs
       if ((i + 1) % 100 === 0) {
-        console.log(`[VerusID Cache] Indexed ${i + 1}/${txids.length} transactions`);
+        console.log(
+          `[VerusID Cache] Indexed ${i + 1}/${txids.length} transactions`
+        );
       }
     }
-    
+
     // Refresh materialized view
     await pool.query('REFRESH MATERIALIZED VIEW CONCURRENTLY staking_daily');
-    
+
     console.log(`[VerusID Cache] ✅ Completed indexing ${identityAddress}`);
   } catch (error) {
-    console.error(`[VerusID Cache] ❌ Indexing failed for ${identityAddress}:`, error);
+    console.error(
+      `[VerusID Cache] ❌ Indexing failed for ${identityAddress}:`,
+      error
+    );
     throw error;
   }
 }
@@ -336,13 +393,18 @@ export async function cacheBalance(
  * Get cached balances for multiple addresses at once
  * Returns a Map of address -> balance data (only for cached entries)
  */
-export async function getCachedBalances(addresses: string[]): Promise<Map<string, {
-  balance: number;
-  received: number;
-  sent: number;
-}>> {
+export async function getCachedBalances(addresses: string[]): Promise<
+  Map<
+    string,
+    {
+      balance: number;
+      received: number;
+      sent: number;
+    }
+  >
+> {
   if (addresses.length === 0) return new Map();
-  
+
   const result = await pool.query(
     `SELECT address, balance, received, sent
      FROM address_balances 
@@ -358,9 +420,8 @@ export async function getCachedBalances(addresses: string[]): Promise<Map<string
       sent: Number(row.sent),
     });
   }
-  
+
   return balanceMap;
 }
 
 export { pool };
-

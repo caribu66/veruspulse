@@ -6,18 +6,18 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   Activity,
-  Server,
+  HardDrives,
   Network,
   Database,
   Clock,
-  AlertTriangle,
+  Warning,
   CheckCircle,
   XCircle,
-  RefreshCw,
-  TrendingUp,
+  ArrowsClockwise,
+  TrendUp,
   HardDrive,
-  Zap,
-} from 'lucide-react';
+  Lightning,
+} from '@phosphor-icons/react';
 
 interface DaemonStats {
   lastUpdate: number;
@@ -141,7 +141,7 @@ export function DaemonMonitorDashboard() {
       case 'healthy':
         return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'degraded':
-        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+        return <Warning className="h-4 w-4 text-verus-teal" />;
       case 'unhealthy':
         return <XCircle className="h-4 w-4 text-red-500" />;
     }
@@ -163,13 +163,13 @@ export function DaemonMonitorDashboard() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Server className="h-5 w-5" />
+            <HardDrives className="h-5 w-5" />
             Remote Daemon Monitor
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <RefreshCw className="h-6 w-6 animate-spin" />
+            <ArrowsClockwise className="h-6 w-6 animate-spin" />
             <span className="ml-2">Loading daemon statistics...</span>
           </div>
         </CardContent>
@@ -182,7 +182,7 @@ export function DaemonMonitorDashboard() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Server className="h-5 w-5" />
+            <HardDrives className="h-5 w-5" />
             Remote Daemon Monitor
           </CardTitle>
         </CardHeader>
@@ -209,7 +209,7 @@ export function DaemonMonitorDashboard() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Server className="h-5 w-5" />
+            <HardDrives className="h-5 w-5" />
             Remote Daemon Monitor
           </CardTitle>
         </CardHeader>
@@ -229,7 +229,7 @@ export function DaemonMonitorDashboard() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Server className="h-5 w-5" />
+              <HardDrives className="h-5 w-5" />
               Remote Daemon Monitor
             </CardTitle>
             <div className="flex items-center gap-2">
@@ -238,7 +238,7 @@ export function DaemonMonitorDashboard() {
                   variant="outline"
                   className="text-yellow-600 border-yellow-300"
                 >
-                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  <Warning className="h-3 w-3 mr-1" />
                   Stale Data
                 </Badge>
               )}
@@ -247,7 +247,7 @@ export function DaemonMonitorDashboard() {
                 disabled={loading}
                 className="p-2 hover:bg-gray-100 rounded transition-colors"
               >
-                <RefreshCw
+                <ArrowsClockwise
                   className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
                 />
               </button>
@@ -318,7 +318,7 @@ export function DaemonMonitorDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
+              <TrendUp className="h-5 w-5" />
               Sync Progress
             </CardTitle>
           </CardHeader>

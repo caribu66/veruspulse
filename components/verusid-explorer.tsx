@@ -3,43 +3,48 @@
 import { useState, useEffect, useRef } from 'react';
 // import { UnifiedStakingAnalytics } from './unified-staking-analytics'; // Removed
 import {
-  Users,
+  UsersThree,
   User,
   Shield,
   Clock,
   Hash,
   Copy,
   Check,
-  Search,
-  AlertCircle,
+  MagnifyingGlass,
+  WarningCircle,
   Info,
   Key,
   Globe,
   Lock,
-  Unlock,
-  TrendingUp,
+  LockOpen,
+  TrendUp,
   Eye,
   Star,
-  Filter,
-  SortAsc,
-  SortDesc,
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
+  Funnel,
+  SortAscending,
+  SortDescending,
+  CaretDown,
+  CaretRight,
+  ArrowSquareOut,
   Wallet,
-  Activity,
-  Award,
-  Zap,
+  Pulse,
+  Medal,
+  Lightning,
   Database,
   Network,
-  BarChart3,
-} from 'lucide-react';
+  ChartBar,
+} from '@phosphor-icons/react';
 import {
   formatCryptoValue,
   formatFriendlyNumber,
 } from '@/lib/utils/number-formatting';
 import { useApiFetch } from '@/lib/hooks/use-retryable-fetch';
 import { VerusIDStakingDashboard } from './verusid-staking-dashboard';
+import { VerusIDSyncStatus } from './verusid-sync-status';
+import { VerusIDUTXOAnalytics } from './verusid-utxo-analytics';
+import { VerusIDAchievements } from './verusid-achievements';
+import { VerusIDIdentityDetails } from './verusid-identity-details';
+import { Tabs, TabPanel } from './ui/tabs';
 
 interface VerusID {
   name: string;
@@ -107,9 +112,15 @@ export function VerusIDExplorer() {
   const [activeTab, setActiveTab] = useState<'search' | 'browse' | 'trending'>(
     'search'
   );
-  // Start with only the overview expanded. Staking analytics will mount when user expands it.
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+  const [detailsTab, setDetailsTab] = useState<
+    'overview' | 'staking' | 'utxo' | 'achievements' | 'identity'
+  >('overview');
+  const [loadedTabs, setLoadedTabs] = useState<Set<string>>(
     new Set(['overview'])
+  );
+  // Start with staking hero and performance expanded by default for better UX
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(['staking-hero', 'staking-performance', 'staking-overview'])
   );
   const [sortBy, setSortBy] = useState<'balance' | 'activity' | 'name'>(
     'balance'
@@ -161,20 +172,14 @@ export function VerusIDExplorer() {
     };
   }, []);
 
-  // Debug logging for stakingLoading state changes
-  useEffect(() => {
-    console.log(`[VerusID Debug] stakingLoading state changed to:`, stakingLoading);
-    console.log(`[VerusID Debug] Current expanded sections:`, Array.from(expandedSections));
-    console.log(`[VerusID Debug] isSectionExpanded('staking'):`, isSectionExpanded('staking'));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stakingLoading, expandedSections]);
+  // Removed debug logging - use logger for development debugging if needed
 
   // Update page title when VerusID changes
   useEffect(() => {
     if (verusID) {
       document.title = `${verusID.name} - VerusID Explorer`;
     } else {
-      document.title = 'VerusID Explorer - Verus Explorer';
+      document.title = 'VerusID Explorer - VerusPulse';
     }
   }, [verusID]);
 
@@ -220,21 +225,21 @@ export function VerusIDExplorer() {
     try {
       setBalanceLoading(true);
       console.log('Fetching balance for VerusID:', verusid);
-  // Use apiFetch which has retry logic and better error handling
-  const result = await apiFetch('/api/verusid-balance', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ verusid }),
-    signal,
-  }).catch((err: any) => {
-    console.error('Balance fetch failed:', err);
-    return null;
-  });
+      // Use apiFetch which has retry logic and better error handling
+      const result = await apiFetch('/api/verusid-balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verusid }),
+        signal,
+      }).catch((err: any) => {
+        console.error('Balance fetch failed:', err);
+        return null;
+      });
 
-  if (!result) {
-    setBalance(null);
-    return;
-  }
+      if (!result) {
+        setBalance(null);
+        return;
+      }
       console.log('Balance API response:', result);
 
       if (result.success && result.data) {
@@ -260,8 +265,13 @@ export function VerusIDExplorer() {
 
   // Accept an optional input override to avoid stale state when triggered by key events
   const searchIdentity = async (inputOverride?: string) => {
-    console.log('[VerusID Debug] searchIdentity called with override:', inputOverride);
-    const searchInput = (typeof inputOverride === 'string' ? inputOverride : identity).trim();
+    console.log(
+      '[VerusID Debug] searchIdentity called with override:',
+      inputOverride
+    );
+    const searchInput = (
+      typeof inputOverride === 'string' ? inputOverride : identity
+    ).trim();
     if (!searchInput) return;
 
     // Cancel any previous in-flight work
@@ -279,42 +289,66 @@ export function VerusIDExplorer() {
       setLoading(true);
       setError(null);
 
-        // Use apiFetch for retries; if it fails, it will throw or return null
-        const result = await apiFetch('/api/verusid/lookup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ input: searchInput }),
-          signal: controller.signal,
-        }).catch(err => {
-          console.error('Lookup fetch failed:', err);
-          return null;
-        });
+      // Use apiFetch for retries; if it fails, it will throw or return null
+      const result = await apiFetch('/api/verusid/lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: searchInput }),
+        signal: controller.signal,
+      }).catch(err => {
+        console.error('Lookup fetch failed:', err);
+        return null;
+      });
 
-        if (!result) {
-          setError('Network error while fetching identity');
-          return;
-        }
+      if (!result) {
+        setError('Network error while fetching identity');
+        return;
+      }
 
       if (result.success && result.data && result.data.identity) {
         const apiIdentity = result.data.identity;
 
         // Support multiple shapes from different APIs: prefer friendlyname, then nested identity.name
-        const resolvedName = apiIdentity.friendlyname || apiIdentity.identity?.name || apiIdentity.name || '';
-        const resolvedIdentityAddress = apiIdentity.identity?.identityaddress || apiIdentity.identityaddress || apiIdentity.identityAddress || '';
-        const resolvedPrimaryAddresses = apiIdentity.identity?.primaryaddresses || apiIdentity.primaryaddresses || [];
+        const resolvedName =
+          apiIdentity.friendlyName ||
+          apiIdentity.friendlyname ||
+          apiIdentity.identity?.name ||
+          apiIdentity.name ||
+          '';
+        const resolvedIdentityAddress =
+          apiIdentity.identityAddress ||
+          apiIdentity.identity?.identityaddress ||
+          apiIdentity.identityaddress ||
+          '';
+        const resolvedPrimaryAddresses =
+          apiIdentity.primaryAddresses ||
+          apiIdentity.identity?.primaryaddresses ||
+          apiIdentity.primaryaddresses ||
+          [];
 
-        // Our simple cache API returns a flat structure; normalize common fields
+        // Our API now returns a flat structure with all fields; normalize common fields
         const flattened: VerusID = {
           name: resolvedName,
           identityaddress: resolvedIdentityAddress,
           primaryaddresses: resolvedPrimaryAddresses,
-          minimumsignatures: 1,
+          minimumsignatures: apiIdentity.minimumsignatures || 1,
           parent: apiIdentity.parent || '',
-          canrevoke: Boolean(apiIdentity.identity?.revocationauthority || apiIdentity.revocationauthority),
+          canrevoke:
+            apiIdentity.canrevoke ||
+            Boolean(
+              apiIdentity.identity?.revocationauthority ||
+                apiIdentity.revocationauthority
+            ),
           privateaddress: '',
           contentmap: apiIdentity.contentmap || {},
-          revocationauthority: apiIdentity.identity?.revocationauthority || apiIdentity.revocationauthority || '',
-          recoveryauthority: apiIdentity.identity?.recoveryauthority || apiIdentity.recoveryauthority || '',
+          revocationauthority:
+            apiIdentity.revocationauthority ||
+            apiIdentity.identity?.revocationauthority ||
+            '',
+          recoveryauthority:
+            apiIdentity.recoveryauthority ||
+            apiIdentity.identity?.recoveryauthority ||
+            '',
           timelock: apiIdentity.timelock || 0,
           flags: apiIdentity.flags || 0,
           version: apiIdentity.version || 1,
@@ -324,7 +358,7 @@ export function VerusIDExplorer() {
         };
 
         setVerusID(flattened);
-        setIdentityHistory(null);  // Not cached yet
+        setIdentityHistory(null); // Not cached yet
         setLastUpdated(new Date());
 
         // Save to recent searches
@@ -344,8 +378,8 @@ export function VerusIDExplorer() {
         });
 
         // Fetch balance information (pass shared signal so it cancels together)
-  const balanceVerusID = flattened.name || searchInput;
-  await fetchBalance(balanceVerusID, controller.signal);
+        const balanceVerusID = flattened.name || searchInput;
+        await fetchBalance(balanceVerusID, controller.signal);
 
         // Resolve authority addresses to names in the background; prefer fields from the API
         void (async () => {
@@ -354,28 +388,44 @@ export function VerusIDExplorer() {
               key: 'revocation' | 'recovery' | 'parent';
               address?: string;
             }> = [
-              { key: 'revocation', address: apiIdentity.identity?.revocationauthority || apiIdentity.revocationauthority },
-              { key: 'recovery', address: apiIdentity.identity?.recoveryauthority || apiIdentity.recoveryauthority },
-              { key: 'parent', address: apiIdentity.parent || apiIdentity.identity?.parent },
+              {
+                key: 'revocation',
+                address:
+                  apiIdentity.identity?.revocationauthority ||
+                  apiIdentity.revocationauthority,
+              },
+              {
+                key: 'recovery',
+                address:
+                  apiIdentity.identity?.recoveryauthority ||
+                  apiIdentity.recoveryauthority,
+              },
+              {
+                key: 'parent',
+                address: apiIdentity.parent || apiIdentity.identity?.parent,
+              },
             ];
 
             const results = await Promise.all(
               toResolve.map(async item => {
                 if (!item.address) return { key: item.key, name: undefined };
                 try {
-                    const res = await apiFetch(`/api/verus-identity/${item.address}`, { signal: controller.signal });
-                    if (!res) return { key: item.key, name: undefined };
-                    const friendly = res?.data?.identity?.friendlyname;
-                    const fqn = res?.data?.identity?.fullyqualifiedname;
-                    const internal = res?.data?.identity?.identity?.name;
-                    const name = friendly || fqn || internal;
-                    return { key: item.key, name };
-                  } catch (err: any) {
-                    if ((err as any)?.name === 'AbortError') {
-                      return { key: item.key, name: undefined };
-                    }
+                  const res = await apiFetch(
+                    `/api/verus-identity/${item.address}`,
+                    { signal: controller.signal }
+                  );
+                  if (!res) return { key: item.key, name: undefined };
+                  const friendly = res?.data?.identity?.friendlyname;
+                  const fqn = res?.data?.identity?.fullyqualifiedname;
+                  const internal = res?.data?.identity?.identity?.name;
+                  const name = friendly || fqn || internal;
+                  return { key: item.key, name };
+                } catch (err: any) {
+                  if ((err as any)?.name === 'AbortError') {
                     return { key: item.key, name: undefined };
                   }
+                  return { key: item.key, name: undefined };
+                }
               })
             );
 
@@ -444,7 +494,7 @@ export function VerusIDExplorer() {
       case 'revoked':
         return 'text-red-400';
       case 'pending':
-        return 'text-yellow-400';
+        return 'text-green-400';
       default:
         return 'text-gray-400';
     }
@@ -457,7 +507,7 @@ export function VerusIDExplorer() {
         : String(status ?? '').toLowerCase();
     switch (normalized) {
       case 'active':
-        return <Unlock className="h-4 w-4" />;
+        return <LockOpen className="h-4 w-4" />;
       case 'revoked':
         return <Lock className="h-4 w-4" />;
       case 'pending':
@@ -468,133 +518,149 @@ export function VerusIDExplorer() {
   };
 
   const toggleSection = (section: string) => {
-    console.log(`[VerusID Debug] toggleSection called for section: "${section}"`);
-    console.log(`[VerusID Debug] Current expanded sections:`, Array.from(expandedSections));
-    console.log(`[VerusID Debug] Current stakingLoading state:`, stakingLoading);
-    
+    console.log(
+      `[VerusID Debug] toggleSection called for section: "${section}"`
+    );
+    console.log(
+      `[VerusID Debug] Current expanded sections:`,
+      Array.from(expandedSections)
+    );
+    console.log(
+      `[VerusID Debug] Current stakingLoading state:`,
+      stakingLoading
+    );
+
     const newExpanded = new Set(expandedSections);
     if (newExpanded.has(section)) {
-      console.log(`[VerusID Debug] Collapsing section: "${section}"`);
       newExpanded.delete(section);
       // Clear staking loading when collapsing
       if (section === 'staking') {
-        console.log(`[VerusID Debug] Clearing stakingLoading state (collapsing staking section)`);
         setStakingLoading(false);
       }
     } else {
-      console.log(`[VerusID Debug] Expanding section: "${section}"`);
       newExpanded.add(section);
       // Set staking loading when expanding staking section
       if (section === 'staking') {
-        console.log(`[VerusID Debug] Setting stakingLoading to true (expanding staking section)`);
         setStakingLoading(true);
         // Clear loading after a realistic delay to show the loading state
         setTimeout(() => {
-          console.log(`[VerusID Debug] Timeout triggered - setting stakingLoading to false`);
           setStakingLoading(false);
         }, 800);
       }
     }
-    
-    console.log(`[VerusID Debug] New expanded sections will be:`, Array.from(newExpanded));
     setExpandedSections(newExpanded);
   };
 
   const isSectionExpanded = (section: string) => expandedSections.has(section);
 
+  const handleTabChange = (tabId: string) => {
+    setDetailsTab(tabId as any);
+    setLoadedTabs(prev => new Set([...Array.from(prev), tabId]));
+  };
+
   return (
-    <div className="space-y-8 text-white px-6 py-8">
-      {/* Debug Panel - Only show in development */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 text-xs">
-          <h4 className="text-gray-300 font-semibold mb-2">🔧 Debug Info</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-gray-400">
-            <div>
-              <strong>loading:</strong> {String(loading)}
-            </div>
-            <div>
-              <strong>balanceLoading:</strong> {String(balanceLoading)}
-            </div>
-            <div>
-              <strong>stakingLoading:</strong> {String(stakingLoading)}
-            </div>
-            <div>
-              <strong>error:</strong> {error || 'none'}
-            </div>
-            <div>
-              <strong>verusID:</strong> {verusID ? verusID.name : 'none'}
-            </div>
-            <div>
-              <strong>identityaddress:</strong> {verusID?.identityaddress ? 'present' : 'none'}
-            </div>
-            <div>
-              <strong>expandedSections:</strong> {Array.from(expandedSections).join(', ') || 'none'}
-            </div>
-            <div>
-              <strong>activeTab:</strong> {activeTab}
+    <div className="space-y-6 text-white px-4 xl:px-8 py-8">
+      <div className="max-w-[1800px] mx-auto">
+        {/* Debug Panel - Only show in development */}
+        {process.env.NODE_ENV === 'development' && false && (
+          <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 text-xs">
+            <h4 className="text-gray-300 font-semibold mb-2">🔧 Debug Info</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4 text-gray-400">
+              <div>
+                <strong>loading:</strong> {String(loading)}
+              </div>
+              <div>
+                <strong>balanceLoading:</strong> {String(balanceLoading)}
+              </div>
+              <div>
+                <strong>stakingLoading:</strong> {String(stakingLoading)}
+              </div>
+              <div>
+                <strong>error:</strong> {error || 'none'}
+              </div>
+              <div>
+                <strong>verusID:</strong> {verusID?.name || 'none'}
+              </div>
+              <div>
+                <strong>identityaddress:</strong>{' '}
+                {verusID?.identityaddress ? 'present' : 'none'}
+              </div>
+              <div>
+                <strong>expandedSections:</strong>{' '}
+                {Array.from(expandedSections).join(', ') || 'none'}
+              </div>
+              <div>
+                <strong>activeTab:</strong> {activeTab}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Enhanced Header with Tabs */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-        <div className="flex items-center justify-between mb-8">
-          <div>
+        {/* Enhanced Header with Tabs */}
+        <div className="bg-slate-900 rounded-2xl p-8 border border-slate-700">
+          <div className="flex items-center justify-between mb-8">
+            <div>
               {/* Breadcrumb added for accessibility and tests */}
-              <nav aria-label="Breadcrumb" className="mb-2 text-sm text-blue-200">
-                <span className="mr-2">Verus Explorer</span>
+              <nav
+                aria-label="Breadcrumb"
+                className="mb-2 text-sm text-blue-200"
+              >
+                <span className="mr-2">VerusPulse</span>
                 <span className="text-gray-400">/</span>
                 <span className="ml-2">VerusIDs</span>
               </nav>
               <h2 className="text-3xl font-bold flex items-center">
-                <Users className="h-8 w-8 mr-3 text-purple-400" />
+                <UsersThree className="h-8 w-8 mr-3 text-verus-blue" />
                 VerusID Explorer
               </h2>
-            <p className="text-blue-200 text-sm mt-1">
-              Explore VerusID identities and their associated addresses
-            </p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <div className="bg-white/5 rounded-xl p-2">
-              <button
-                onClick={() => setActiveTab('search')}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                  activeTab === 'search'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <Search className="h-4 w-4" />
-                <span>Search</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('browse')}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                  activeTab === 'browse'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <Eye className="h-4 w-4" />
-                <span>Browse</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('trending')}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                  activeTab === 'trending'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <TrendingUp className="h-4 w-4" />
-                <span>Trending</span>
-              </button>
+              <p className="text-blue-200 text-sm mt-1">
+                Explore VerusID identities and their associated addresses
+              </p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="bg-slate-800 border border-slate-700 rounded-xl p-2">
+                <button
+                  onClick={() => setActiveTab('search')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                    activeTab === 'search'
+                      ? 'bg-blue-500 text-white'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <MagnifyingGlass className="h-4 w-4" />
+                  <span>MagnifyingGlass</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('browse')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                    activeTab === 'browse'
+                      ? 'bg-blue-500 text-white'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <Eye className="h-4 w-4" />
+                  <span>Browse</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('trending')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                    activeTab === 'trending'
+                      ? 'bg-blue-500 text-white'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <TrendUp className="h-4 w-4" />
+                  <span>Trending</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Search Interface */}
+        {/* VerusID Sync Status */}
+        <VerusIDSyncStatus currentVerusID={verusID?.identityaddress} />
+
+        {/* MagnifyingGlass Interface */}
         {activeTab === 'search' && (
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
@@ -604,7 +670,7 @@ export function VerusIDExplorer() {
                   value={identity}
                   onChange={e => setIdentity(e.target.value)}
                   placeholder="Enter VerusID (e.g., @username)"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 bg-white/10 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onKeyPress={e => {
                     if (e.key === 'Enter') {
                       const val = (e.currentTarget as HTMLInputElement).value;
@@ -618,14 +684,14 @@ export function VerusIDExplorer() {
                 disabled={loading || !identity.trim()}
                 className="flex items-center space-x-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Search className="h-4 w-4" />
-                <span>{loading ? 'Searching...' : 'Search'}</span>
+                <MagnifyingGlass className="h-4 w-4" />
+                <span>{loading ? 'Searching...' : 'MagnifyingGlass'}</span>
               </button>
             </div>
 
             {/* Recent Searches */}
             {recentSearches.length > 0 && (
-              <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-3 border border-white/10">
                 <p className="text-xs text-blue-200 mb-2 flex items-center">
                   <Clock className="h-3 w-3 mr-1" />
                   Recent Searches:
@@ -638,7 +704,7 @@ export function VerusIDExplorer() {
                         setIdentity(search);
                         setTimeout(() => void searchIdentity(search), 100);
                       }}
-                      className="px-3 py-1 bg-white/10 hover:bg-blue-500/30 border border-white/20 hover:border-blue-500/50 rounded-lg text-sm text-blue-100 hover:text-white transition-all"
+                      className="px-3 py-1 bg-white/10 hover:bg-blue-500/30 border border-slate-700 hover:border-blue-500/50 rounded-lg text-sm text-blue-100 hover:text-white transition-all"
                     >
                       {search}
                     </button>
@@ -655,11 +721,11 @@ export function VerusIDExplorer() {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Trending VerusIDs</h3>
               <div className="flex items-center space-x-2">
-                <Filter className="h-4 w-4 text-blue-300" />
+                <Funnel className="h-4 w-4 text-blue-300" />
                 <select
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value as any)}
-                  className="bg-white/10 border border-white/20 rounded px-2 py-1 text-sm text-white"
+                  className="bg-white/10 border border-slate-700 rounded px-2 py-1 text-sm text-white"
                 >
                   <option value="balance">Balance</option>
                   <option value="activity">Activity</option>
@@ -667,11 +733,11 @@ export function VerusIDExplorer() {
                 </select>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
               {trendingIdentities.map((identity, index) => (
                 <div
                   key={index}
-                  className="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors cursor-pointer"
+                  className="bg-slate-800 border border-slate-700 rounded-lg p-4 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => {
                     setIdentity(identity.name);
                     searchIdentity();
@@ -680,7 +746,7 @@ export function VerusIDExplorer() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
-                      <User className="h-4 w-4 text-purple-400" />
+                      <User className="h-4 w-4 text-verus-blue" />
                       <span className="font-medium">{identity.name}</span>
                       <span
                         className={`px-2 py-1 rounded-full text-xs ${
@@ -692,7 +758,7 @@ export function VerusIDExplorer() {
                         {identity.status}
                       </span>
                     </div>
-                    <ExternalLink className="h-4 w-4 text-blue-300" />
+                    <ArrowSquareOut className="h-4 w-4 text-blue-300" />
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
@@ -733,10 +799,10 @@ export function VerusIDExplorer() {
 
       {/* Empty State - Show when no search has been performed */}
       {!verusID && !loading && !error && (
-        <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 backdrop-blur-sm rounded-2xl p-12 border border-purple-500/20">
-          <div className="text-center max-w-2xl mx-auto">
+        <div className="bg-gradient-to-br from-verus-blue/10 to-verus-green/10 backdrop-blur-sm rounded-2xl p-12 border border-verus-blue/20">
+          <div className="text-center">
             <div className="mb-6">
-              <Users className="h-24 w-24 text-purple-300 mx-auto mb-4 opacity-70" />
+              <UsersThree className="h-24 w-24 text-purple-300 mx-auto mb-4 opacity-70" />
             </div>
             <h3 className="text-2xl font-bold text-white mb-3">
               Discover VerusID Identities
@@ -751,7 +817,7 @@ export function VerusIDExplorer() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <div className="bg-white/10 rounded-lg p-4 text-left">
                 <div className="flex items-center space-x-2 mb-2">
-                  <Search className="h-4 w-4 text-blue-300" />
+                  <MagnifyingGlass className="h-4 w-4 text-blue-300" />
                   <p className="text-sm font-medium text-blue-200">
                     Try searching with @:
                   </p>
@@ -762,7 +828,7 @@ export function VerusIDExplorer() {
               </div>
               <div className="bg-white/10 rounded-lg p-4 text-left">
                 <div className="flex items-center space-x-2 mb-2">
-                  <Search className="h-4 w-4 text-blue-300" />
+                  <MagnifyingGlass className="h-4 w-4 text-blue-300" />
                   <p className="text-sm font-medium text-blue-200">
                     Or with full name:
                   </p>
@@ -774,8 +840,8 @@ export function VerusIDExplorer() {
             </div>
 
             {/* Feature Highlights */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-              <div className="bg-white/5 rounded-lg p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
                 <Wallet className="h-6 w-6 text-green-400 mx-auto mb-2" />
                 <h4 className="text-sm font-semibold text-white mb-1">
                   Balance & Holdings
@@ -784,8 +850,8 @@ export function VerusIDExplorer() {
                   View VRSC balances across all addresses
                 </p>
               </div>
-              <div className="bg-white/5 rounded-lg p-4">
-                <BarChart3 className="h-6 w-6 text-yellow-400 mx-auto mb-2" />
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                <ChartBar className="h-6 w-6 text-green-400 mx-auto mb-2" />
                 <h4 className="text-sm font-semibold text-white mb-1">
                   Staking Analytics
                 </h4>
@@ -793,7 +859,7 @@ export function VerusIDExplorer() {
                   Track monthly rewards with interactive charts
                 </p>
               </div>
-              <div className="bg-white/5 rounded-lg p-4">
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
                 <Shield className="h-6 w-6 text-blue-400 mx-auto mb-2" />
                 <h4 className="text-sm font-semibold text-white mb-1">
                   Identity Details
@@ -811,11 +877,11 @@ export function VerusIDExplorer() {
       {verusID && (
         <div className="space-y-6">
           {/* Identity Header Card */}
-          <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30">
+          <div className="bg-gradient-to-r from-verus-blue/20 to-verus-green/20 backdrop-blur-sm rounded-2xl p-6 border border-verus-blue/30">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-lg bg-purple-500/30">
-                  <Users className="h-8 w-8 text-purple-300" />
+                <div className="p-3 rounded-lg bg-verus-blue/20">
+                  <UsersThree className="h-8 w-8 text-purple-300" />
                 </div>
                 <div>
                   <h3 className="text-3xl font-bold text-white mb-2">
@@ -859,7 +925,7 @@ export function VerusIDExplorer() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
               <div className="bg-white/10 rounded-lg p-4">
                 <div className="text-blue-200 text-sm mb-1">
                   Identity Address
@@ -877,13 +943,17 @@ export function VerusIDExplorer() {
               <div className="bg-white/10 rounded-lg p-4">
                 <div className="text-blue-200 text-sm mb-1">Transaction ID</div>
                 <div className="text-white font-mono text-sm break-all">
-                  <a
-                    className="underline decoration-blue-400/60 hover:decoration-blue-400"
-                    href={`/tx/${verusID.txid}`}
-                    title="Open transaction"
-                  >
-                    {verusID.txid.slice(0, 20)}...
-                  </a>
+                  {verusID.txid ? (
+                    <a
+                      className="underline decoration-blue-400/60 hover:decoration-blue-400"
+                      href={`/tx/${verusID.txid}`}
+                      title="Open transaction"
+                    >
+                      {verusID.txid.slice(0, 20)}...
+                    </a>
+                  ) : (
+                    <span className="text-gray-400">Not available</span>
+                  )}
                 </div>
               </div>
               <div className="bg-white/10 rounded-lg p-4">
@@ -903,14 +973,329 @@ export function VerusIDExplorer() {
             </div>
           </div>
 
-          {/* Collapsible Sections */}
-          <div className="space-y-4">
+          {/* Horizontal Tabs */}
+          <div className="bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden">
+            <Tabs
+              tabs={[
+                {
+                  id: 'overview',
+                  label: 'Overview',
+                  icon: <Eye className="h-4 w-4" />,
+                },
+                {
+                  id: 'staking',
+                  label: 'Staking Dashboard',
+                  icon: <ChartBar className="h-4 w-4" />,
+                },
+                {
+                  id: 'utxo',
+                  label: 'UTXO Analytics',
+                  icon: <Database className="h-4 w-4" />,
+                },
+                {
+                  id: 'achievements',
+                  label: 'Achievements',
+                  icon: <Medal className="h-4 w-4" />,
+                },
+                {
+                  id: 'identity',
+                  label: 'Identity Details',
+                  icon: <Shield className="h-4 w-4" />,
+                },
+              ]}
+              activeTab={detailsTab}
+              onTabChange={handleTabChange}
+            />
+
+            {/* Tab Content */}
+            <div className="p-6">
+              {/* Overview Tab */}
+              <TabPanel id="overview" activeTab={detailsTab}>
+                <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
+                  {/* Main Content */}
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-br from-verus-blue/10 to-verus-green/10 rounded-xl p-6 border border-blue-500/20">
+                      <h4 className="text-xl font-bold text-white mb-4">
+                        Welcome to {verusID.name}
+                      </h4>
+                      <p className="text-blue-200 mb-4">
+                        Explore comprehensive staking analytics, UTXO health
+                        metrics, and achievement progress.
+                      </p>
+                      <div className="grid grid-cols-2 gap-4">
+                        <button
+                          onClick={() => setDetailsTab('staking')}
+                          className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg p-4 text-left transition-colors"
+                        >
+                          <ChartBar className="h-6 w-6 text-blue-400 mb-2" />
+                          <div className="text-white font-medium">
+                            Staking Dashboard
+                          </div>
+                          <div className="text-xs text-blue-200 mt-1">
+                            View your staking performance
+                          </div>
+                        </button>
+                        <button
+                          onClick={() => setDetailsTab('utxo')}
+                          className="bg-verus-blue/20 hover:bg-verus-blue/20 border border-verus-blue/30 rounded-lg p-4 text-left transition-colors"
+                        >
+                          <Database className="h-6 w-6 text-verus-blue mb-2" />
+                          <div className="text-white font-medium">
+                            UTXO Analytics
+                          </div>
+                          <div className="text-xs text-purple-200 mt-1">
+                            Analyze your UTXOs
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sidebar */}
+                  <div className="space-y-4">
+                    {/* Balance Section - Compact */}
+                    {balance && (
+                      <div className="bg-slate-900 rounded-2xl border border-slate-700 p-4">
+                        <div className="flex items-center space-x-3 mb-4">
+                          <Wallet className="h-5 w-5 text-green-400" />
+                          <h4 className="text-lg font-semibold text-white">
+                            VRSC Balance
+                          </h4>
+                          {balanceLoading && (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          )}
+                        </div>
+                        <div className="space-y-3">
+                          <div className="text-center p-3 bg-green-500/10 rounded-lg border border-green-500/30">
+                            <div className="text-2xl font-bold text-green-400">
+                              {formatVRSC(balance.totalBalance)}
+                            </div>
+                            <div className="text-xs text-blue-200">
+                              Current Balance
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="text-center p-2 bg-slate-800 border border-slate-700 rounded">
+                              <div className="text-blue-300 font-semibold">
+                                {formatVRSCShort(balance.totalReceived)}
+                              </div>
+                              <div className="text-xs text-blue-200">
+                                Received
+                              </div>
+                            </div>
+                            <div className="text-center p-2 bg-slate-800 border border-slate-700 rounded">
+                              <div className="text-red-300 font-semibold">
+                                {formatVRSCShort(balance.totalSent)}
+                              </div>
+                              <div className="text-xs text-blue-200">Sent</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Authorities Section - Compact */}
+                    <div className="bg-slate-900 rounded-2xl border border-slate-700 p-4">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <Shield className="h-5 w-5 text-green-400" />
+                        <h4 className="text-lg font-semibold text-white">
+                          Authorities
+                        </h4>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <div className="text-xs text-blue-200 mb-1">
+                            Revocation Authority
+                          </div>
+                          <div className="text-white text-sm">
+                            {resolvedAuthorities.revocation ? (
+                              <div className="space-y-1">
+                                <div className="font-medium">
+                                  {resolvedAuthorities.revocation}
+                                </div>
+                                {verusID.revocationauthority && (
+                                  <div className="font-mono text-blue-200/80 text-xs">
+                                    {verusID.revocationauthority.slice(0, 16)}
+                                    ...
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="font-mono text-gray-400">
+                                {verusID.revocationauthority
+                                  ? verusID.revocationauthority.slice(0, 16) +
+                                    '...'
+                                  : 'None'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-blue-200 mb-1">
+                            Recovery Authority
+                          </div>
+                          <div className="text-white text-sm">
+                            {resolvedAuthorities.recovery ? (
+                              <div className="space-y-1">
+                                <div className="font-medium">
+                                  {resolvedAuthorities.recovery}
+                                </div>
+                                {verusID.recoveryauthority && (
+                                  <div className="font-mono text-blue-200/80 text-xs">
+                                    {verusID.recoveryauthority.slice(0, 16)}...
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="font-mono text-gray-400">
+                                {verusID.recoveryauthority
+                                  ? verusID.recoveryauthority.slice(0, 16) +
+                                    '...'
+                                  : 'None'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-blue-200 mb-1">
+                            Parent
+                          </div>
+                          <div className="text-white text-sm">
+                            {resolvedAuthorities.parent ? (
+                              <div className="space-y-1">
+                                <div className="font-medium">
+                                  {resolvedAuthorities.parent}
+                                </div>
+                                {verusID.parent && (
+                                  <div className="font-mono text-blue-200/80 text-xs">
+                                    {verusID.parent.slice(0, 16)}...
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="font-mono text-gray-400">
+                                {verusID.parent
+                                  ? verusID.parent.slice(0, 16) + '...'
+                                  : 'Root'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setDetailsTab('identity')}
+                        className="mt-3 text-xs text-blue-300 hover:text-blue-200 w-full text-center"
+                      >
+                        View full details →
+                      </button>
+                    </div>
+
+                    {/* Properties Section - Compact */}
+                    <div className="bg-slate-900 rounded-2xl border border-slate-700 p-4">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <Key className="h-5 w-5 text-blue-400" />
+                        <h4 className="text-lg font-semibold text-white">
+                          Properties
+                        </h4>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-blue-200 text-sm">
+                            Can Revoke:
+                          </span>
+                          <span className="text-white">
+                            {verusID.canrevoke ? (
+                              <span className="flex items-center space-x-1 text-green-400">
+                                <Check className="h-3 w-3" />
+                                <span className="text-sm">Yes</span>
+                              </span>
+                            ) : (
+                              <span className="flex items-center space-x-1 text-red-400">
+                                <WarningCircle className="h-3 w-3" />
+                                <span className="text-sm">No</span>
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-blue-200 text-sm">
+                            Time Lock:
+                          </span>
+                          <span className="text-white text-sm">
+                            {verusID.timelock}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-blue-200 text-sm">
+                            Version:
+                          </span>
+                          <span className="text-white text-sm">
+                            {verusID.version}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setDetailsTab('identity')}
+                        className="mt-3 text-xs text-blue-300 hover:text-blue-200 w-full text-center"
+                      >
+                        View all properties →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+
+              {/* Staking Dashboard Tab */}
+              {loadedTabs.has('staking') && (
+                <TabPanel id="staking" activeTab={detailsTab}>
+                  {verusID.identityaddress && (
+                    <VerusIDStakingDashboard
+                      iaddr={verusID.identityaddress}
+                      verusID={verusID.name}
+                    />
+                  )}
+                </TabPanel>
+              )}
+
+              {/* UTXO Analytics Tab */}
+              {loadedTabs.has('utxo') && (
+                <TabPanel id="utxo" activeTab={detailsTab}>
+                  {verusID.identityaddress && (
+                    <VerusIDUTXOAnalytics iaddr={verusID.identityaddress} />
+                  )}
+                </TabPanel>
+              )}
+
+              {/* Achievements Tab */}
+              {loadedTabs.has('achievements') && (
+                <TabPanel id="achievements" activeTab={detailsTab}>
+                  {verusID.identityaddress && (
+                    <VerusIDAchievements iaddr={verusID.identityaddress} />
+                  )}
+                </TabPanel>
+              )}
+
+              {/* Identity Details Tab */}
+              {loadedTabs.has('identity') && (
+                <TabPanel id="identity" activeTab={detailsTab}>
+                  <VerusIDIdentityDetails
+                    verusID={verusID}
+                    balance={balance}
+                    resolvedAuthorities={resolvedAuthorities}
+                  />
+                </TabPanel>
+              )}
+            </div>
+          </div>
+
+          {/* Collapsible Sections - Legacy (Hidden for now) */}
+          <div className="space-y-4 hidden">
             {/* Balance Section */}
             {balance && (
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
+              <div className="bg-slate-900 rounded-2xl border border-slate-700">
                 <button
                   onClick={() => toggleSection('balance')}
-                  className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
+                  className="w-full flex items-center justify-between p-6 hover:bg-slate-800 border border-slate-700 transition-colors"
                 >
                   <div className="flex items-center space-x-3">
                     <Wallet className="h-6 w-6 text-green-400" />
@@ -922,9 +1307,9 @@ export function VerusIDExplorer() {
                     )}
                   </div>
                   {isSectionExpanded('balance') ? (
-                    <ChevronDown className="h-5 w-5 text-blue-300" />
+                    <CaretDown className="h-5 w-5 text-blue-300" />
                   ) : (
-                    <ChevronRight className="h-5 w-5 text-blue-300" />
+                    <CaretRight className="h-5 w-5 text-blue-300" />
                   )}
                 </button>
                 {isSectionExpanded('balance') && (
@@ -960,24 +1345,26 @@ export function VerusIDExplorer() {
                       {/* Explanation of balance data */}
                       <div className="mt-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
                         <div className="text-xs text-blue-200">
-                          <strong>Note:</strong> &quot;Total Received&quot; shows all
-                          funds ever received by this address. &quot;Total Sent&quot; is
-                          calculated as (Received - Current Balance). This is
-                          normal for addresses with transaction history.
+                          <strong>Note:</strong> &quot;Total Received&quot;
+                          shows all funds ever received by this address.
+                          &quot;Total Sent&quot; is calculated as (Received -
+                          Current Balance). This is normal for addresses with
+                          transaction history.
                         </div>
                       </div>
 
-                      {balance.addressDetails && balance.addressDetails.length > 0 && (
-                        <div>
-                          <div className="mb-4">
-                            <div className="text-sm text-blue-200 mb-2 font-medium">
-                              Address Hierarchy:
-                            </div>
-                            <div className="text-xs text-gray-400 mb-3">
-                              I-Address (Identity) • Primary Addresses
-                              (Associated)
-                            </div>
-                            {/* 
+                      {balance.addressDetails &&
+                        balance.addressDetails.length > 0 && (
+                          <div>
+                            <div className="mb-4">
+                              <div className="text-sm text-blue-200 mb-2 font-medium">
+                                Address Hierarchy:
+                              </div>
+                              <div className="text-xs text-gray-400 mb-3">
+                                I-Address (Identity) • Primary Addresses
+                                (Associated)
+                              </div>
+                              {/* 
                               Verus Address Hierarchy:
                               1. I-Address: The VerusID's own identity address (iCDYc7VjE...)
                               2. Primary Addresses: Associated addresses linked to the VerusID (RFd31DGN7...)
@@ -986,57 +1373,57 @@ export function VerusIDExplorer() {
                               - "I-Address" for identity addresses
                               - "Primary Address" for associated addresses
                             */}
-                          </div>
-                          <div className="space-y-3">
-                            {balance.addressDetails.map((addr, index) => (
-                              <div
-                                key={index}
-                                className={`flex justify-between items-center rounded-lg p-4 ${
-                                  addr.isIdentityAddress
-                                    ? 'bg-green-500/20 border border-green-400/30 ring-1 ring-green-400/20'
-                                    : 'bg-white/5 border border-white/10'
-                                }`}
-                              >
-                                <div className="flex-1">
-                                  <div className="flex items-center space-x-3">
-                                    <div className="text-white font-mono text-sm break-all">
-                                      {addr.address}
+                            </div>
+                            <div className="space-y-3">
+                              {balance.addressDetails.map((addr, index) => (
+                                <div
+                                  key={index}
+                                  className={`flex justify-between items-center rounded-lg p-4 ${
+                                    addr.isIdentityAddress
+                                      ? 'bg-green-500/20 border border-green-400/30 ring-1 ring-green-400/20'
+                                      : 'bg-slate-800 border border-slate-700 border border-white/10'
+                                  }`}
+                                >
+                                  <div className="flex-1">
+                                    <div className="flex items-center space-x-3">
+                                      <div className="text-white font-mono text-sm break-all">
+                                        {addr.address}
+                                      </div>
+                                      {addr.isIdentityAddress ? (
+                                        <span className="px-2 py-1 bg-green-500/30 text-green-300 text-xs rounded-full">
+                                          I-Address
+                                        </span>
+                                      ) : (
+                                        <span className="px-2 py-1 bg-blue-500/30 text-blue-300 text-xs rounded-full">
+                                          Primary Address
+                                        </span>
+                                      )}
                                     </div>
-                                    {addr.isIdentityAddress ? (
-                                      <span className="px-2 py-1 bg-green-500/30 text-green-300 text-xs rounded-full">
-                                        I-Address
-                                      </span>
-                                    ) : (
-                                      <span className="px-2 py-1 bg-blue-500/30 text-blue-300 text-xs rounded-full">
-                                        Primary Address
-                                      </span>
+                                    {addr.error && (
+                                      <div className="text-red-400 text-xs mt-1">
+                                        Error: {addr.error}
+                                      </div>
                                     )}
                                   </div>
-                                  {addr.error && (
-                                    <div className="text-red-400 text-xs mt-1">
-                                      Error: {addr.error}
+                                  <div className="text-right ml-4">
+                                    <div
+                                      className={`font-semibold ${
+                                        addr.isIdentityAddress
+                                          ? 'text-green-300'
+                                          : 'text-green-400'
+                                      }`}
+                                    >
+                                      {formatVRSC(addr.balance)}
                                     </div>
-                                  )}
-                                </div>
-                                <div className="text-right ml-4">
-                                  <div
-                                    className={`font-semibold ${
-                                      addr.isIdentityAddress
-                                        ? 'text-green-300'
-                                        : 'text-green-400'
-                                    }`}
-                                  >
-                                    {formatVRSC(addr.balance)}
-                                  </div>
-                                  <div className="text-xs text-blue-200">
-                                    {formatVRSCShort(addr.received)} received
+                                    <div className="text-xs text-blue-200">
+                                      {formatVRSCShort(addr.received)} received
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
                 )}
@@ -1044,10 +1431,10 @@ export function VerusIDExplorer() {
             )}
 
             {/* Identity Properties Section */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
+            <div className="bg-slate-900 rounded-2xl border border-slate-700">
               <button
                 onClick={() => toggleSection('properties')}
-                className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between p-6 hover:bg-slate-800 border border-slate-700 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <Key className="h-6 w-6 text-blue-400" />
@@ -1056,9 +1443,9 @@ export function VerusIDExplorer() {
                   </h4>
                 </div>
                 {isSectionExpanded('properties') ? (
-                  <ChevronDown className="h-5 w-5 text-blue-300" />
+                  <CaretDown className="h-5 w-5 text-blue-300" />
                 ) : (
-                  <ChevronRight className="h-5 w-5 text-blue-300" />
+                  <CaretRight className="h-5 w-5 text-blue-300" />
                 )}
               </button>
               {isSectionExpanded('properties') && (
@@ -1075,7 +1462,7 @@ export function VerusIDExplorer() {
                             </span>
                           ) : (
                             <span className="flex items-center space-x-1 text-red-400">
-                              <AlertCircle className="h-4 w-4" />
+                              <WarningCircle className="h-4 w-4" />
                               <span>No</span>
                             </span>
                           )}
@@ -1114,28 +1501,28 @@ export function VerusIDExplorer() {
             </div>
 
             {/* Authorities Section */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
+            <div className="bg-slate-900 rounded-2xl border border-slate-700">
               <button
                 onClick={() => toggleSection('authorities')}
-                className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between p-6 hover:bg-slate-800 border border-slate-700 transition-colors"
               >
                 <div className="flex items-center space-x-3">
-                  <Shield className="h-6 w-6 text-yellow-400" />
+                  <Shield className="h-6 w-6 text-green-400" />
                   <h4 className="text-xl font-semibold text-white">
                     Authorities
                   </h4>
                 </div>
                 {isSectionExpanded('authorities') ? (
-                  <ChevronDown className="h-5 w-5 text-blue-300" />
+                  <CaretDown className="h-5 w-5 text-blue-300" />
                 ) : (
-                  <ChevronRight className="h-5 w-5 text-blue-300" />
+                  <CaretRight className="h-5 w-5 text-blue-300" />
                 )}
               </button>
               {isSectionExpanded('authorities') && (
                 <div className="px-6 pb-6 border-t border-white/10">
                   <div className="space-y-6 pt-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="bg-white/5 rounded-lg p-4">
+                      <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
                         <div className="text-blue-200 mb-2 font-medium">
                           Revocation Authority
                         </div>
@@ -1158,7 +1545,7 @@ export function VerusIDExplorer() {
                           )}
                         </div>
                       </div>
-                      <div className="bg-white/5 rounded-lg p-4">
+                      <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
                         <div className="text-blue-200 mb-2 font-medium">
                           Recovery Authority
                         </div>
@@ -1181,7 +1568,7 @@ export function VerusIDExplorer() {
                           )}
                         </div>
                       </div>
-                      <div className="bg-white/5 rounded-lg p-4">
+                      <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
                         <div className="text-blue-200 mb-2 font-medium">
                           Parent
                         </div>
@@ -1212,7 +1599,10 @@ export function VerusIDExplorer() {
 
             {/* Comprehensive Staking Statistics Dashboard */}
             {verusID.identityaddress && (
-              <VerusIDStakingDashboard iaddr={verusID.identityaddress} />
+              <VerusIDStakingDashboard
+                iaddr={verusID.identityaddress}
+                verusID={verusID.name}
+              />
             )}
           </div>
         </div>
@@ -1222,7 +1612,7 @@ export function VerusIDExplorer() {
       {error && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6">
           <div className="flex items-start space-x-3">
-            <AlertCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-1" />
+            <WarningCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-1" />
             <div className="flex-1">
               <div className="text-red-400 font-semibold text-lg">
                 {error.toLowerCase().includes('not found')

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Coins, Hammer } from '@phosphor-icons/react';
 
 export interface BlockIconProps {
   blocktype?: string;
@@ -17,22 +18,20 @@ export function getBlockIcon(blocktype?: string, className?: string) {
   if (blocktype === 'minted') {
     // Proof of Stake (PoS) - Staking/Coins icon
     return (
-      <span
+      <Coins
         className={`${iconClass} text-green-400`}
         title="Proof of Stake (PoS)"
-      >
-        🪙
-      </span>
+        weight="fill"
+      />
     );
   } else {
-    // Proof of Work (PoW) - Mining/Pickaxe icon
+    // Proof of Work (PoW) - Mining/Hammer icon
     return (
-      <span
+      <Hammer
         className={`${iconClass} text-yellow-400`}
         title="Proof of Work (PoW)"
-      >
-        ⛏️
-      </span>
+        weight="fill"
+      />
     );
   }
 }

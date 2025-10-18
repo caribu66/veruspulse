@@ -24,7 +24,7 @@ export class VerusIDComprehensiveSync {
   private utxoDb: UTXODatabaseService;
   private blockExtractor: BlockAnalyticsExtractor;
   private statsCalculator: StatisticsCalculator;
-  
+
   private progress: SyncProgress = {
     status: 'idle',
     total: 0,
@@ -33,7 +33,7 @@ export class VerusIDComprehensiveSync {
     percentComplete: 0,
     errors: [],
   };
-  
+
   private shouldStop = false;
   private shouldPause = false;
 
@@ -44,7 +44,7 @@ export class VerusIDComprehensiveSync {
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
     });
-    
+
     this.utxoDb = new UTXODatabaseService(databaseUrl);
     this.blockExtractor = new BlockAnalyticsExtractor(this.db);
     this.statsCalculator = new StatisticsCalculator(this.db);
@@ -90,16 +90,18 @@ export class VerusIDComprehensiveSync {
     try {
       const memUsage = process.memoryUsage();
       const usedPercent = (memUsage.heapUsed / memUsage.heapTotal) * 100;
-      
+
       if (usedPercent > 85) {
-        console.warn(`Memory usage high (${usedPercent.toFixed(1)}%), pausing...`);
+        console.warn(
+          `Memory usage high (${usedPercent.toFixed(1)}%), pausing...`
+        );
         this.shouldPause = true;
-        
+
         // Force garbage collection if available
         if (global.gc) {
           global.gc();
         }
-        
+
         // Wait for memory to clear
         await new Promise(resolve => setTimeout(resolve, 10000));
         this.shouldPause = false;
@@ -112,12 +114,14 @@ export class VerusIDComprehensiveSync {
   /**
    * Sync all active VerusIDs
    */
-  async syncAllVerusIDs(options: {
-    batchSize?: number;
-    delayBetweenBatches?: number;
-    specificId?: string;
-    incremental?: boolean;
-  } = {}): Promise<SyncProgress> {
+  async syncAllVerusIDs(
+    options: {
+      batchSize?: number;
+      delayBetweenBatches?: number;
+      specificId?: string;
+      incremental?: boolean;
+    } = {}
+  ): Promise<SyncProgress> {
     const {
       batchSize = 5,
       delayBetweenBatches = 10000,
@@ -143,7 +147,7 @@ export class VerusIDComprehensiveSync {
       const identities = specificId
         ? [await verusAPI.getIdentity(specificId)]
         : await verusAPI.listIdentities();
-      
+
       if (!identities || identities.length === 0) {
         console.log('No identities found');
         this.progress.status = 'completed';
@@ -165,7 +169,9 @@ export class VerusIDComprehensiveSync {
       let addressesToSync = addresses;
       if (incremental) {
         addressesToSync = await this.filterUpdatedAddresses(addresses);
-        console.log(`Incremental mode: ${addressesToSync.length} addresses need updating`);
+        console.log(
+          `Incremental mode: ${addressesToSync.length} addresses need updating`
+        );
         this.progress.total = addressesToSync.length;
       }
 
@@ -182,48 +188,64 @@ export class VerusIDComprehensiveSync {
         }
 
         const batch = addressesToSync.slice(i, i + batchSize);
-        console.log(`\nProcessing batch ${Math.floor(i / batchSize) + 1} (${batch.length} addresses)...`);
+        console.log(
+          `\nProcessing batch ${Math.floor(i / batchSize) + 1} (${batch.length} addresses)...`
+        );
 
         // Process batch in parallel
         await Promise.allSettled(
-          batch.map(address => this.syncSingleVerusID(address))
+          batch.map((address: string) => this.syncSingleVerusID(address))
         );
 
         // Update progress
-        this.progress.processed = Math.min(i + batchSize, addressesToSync.length);
-        this.progress.percentComplete = (this.progress.processed / this.progress.total) * 100;
-        
+        this.progress.processed = Math.min(
+          i + batchSize,
+          addressesToSync.length
+        );
+        this.progress.percentComplete =
+          (this.progress.processed / this.progress.total) * 100;
+
         // Calculate ETA
         if (this.progress.startTime) {
           const elapsed = Date.now() - this.progress.startTime.getTime();
           const avgTimePerID = elapsed / this.progress.processed;
-          const remaining = (this.progress.total - this.progress.processed) * avgTimePerID;
+          const remaining =
+            (this.progress.total - this.progress.processed) * avgTimePerID;
           this.progress.estimatedTimeRemaining = this.formatDuration(remaining);
         }
 
-        console.log(`Progress: ${this.progress.processed}/${this.progress.total} (${this.progress.percentComplete.toFixed(1)}%)`);
-        console.log(`ETA: ${this.progress.estimatedTimeRemaining || 'calculating...'}`);
+        console.log(
+          `Progress: ${this.progress.processed}/${this.progress.total} (${this.progress.percentComplete.toFixed(1)}%)`
+        );
+        console.log(
+          `ETA: ${this.progress.estimatedTimeRemaining || 'calculating...'}`
+        );
 
         // Check memory and pause if needed
         await this.checkMemoryAndPause();
 
         // Delay between batches to avoid overwhelming the system
         if (i + batchSize < addressesToSync.length) {
-          console.log(`Waiting ${delayBetweenBatches / 1000}s before next batch...`);
-          await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
+          console.log(
+            `Waiting ${delayBetweenBatches / 1000}s before next batch...`
+          );
+          await new Promise(resolve =>
+            setTimeout(resolve, delayBetweenBatches)
+          );
         }
       }
 
       this.progress.status = 'completed';
-      console.log(`\n✅ Sync completed: ${this.progress.processed} processed, ${this.progress.failed} failed`);
-      
+      console.log(
+        `\n✅ Sync completed: ${this.progress.processed} processed, ${this.progress.failed} failed`
+      );
+
       if (this.progress.errors.length > 0) {
         console.log(`\nErrors encountered:`);
         this.progress.errors.forEach(err => {
           console.log(`  - ${err.address}: ${err.error}`);
         });
       }
-
     } catch (error: any) {
       console.error('Sync error:', error);
       this.progress.status = 'error';
@@ -247,9 +269,11 @@ export class VerusIDComprehensiveSync {
       // Step 1: Get all stake events for this address (from existing UTXO database)
       console.log(`    [1/3] Fetching stake events from database...`);
       const stakeEvents = await this.utxoDb.getStakeEvents(address);
-      
+
       // Step 2: Extract block analytics for each stake block
-      console.log(`    [2/3] Extracting block analytics (${stakeEvents.length} blocks)...`);
+      console.log(
+        `    [2/3] Extracting block analytics (${stakeEvents.length} blocks)...`
+      );
       let blockAnalyticsExtracted = 0;
       for (const event of stakeEvents) {
         try {
@@ -258,16 +282,21 @@ export class VerusIDComprehensiveSync {
             'SELECT height FROM block_analytics WHERE height = $1',
             [event.blockHeight]
           );
-          
+
           if (existingQuery.rows.length === 0) {
-            const analytics = await this.blockExtractor.extractBlockAnalytics(event.blockHeight);
+            const analytics = await this.blockExtractor.extractBlockAnalytics(
+              event.blockHeight
+            );
             if (analytics) {
               await this.blockExtractor.storeBlockAnalytics(analytics);
               blockAnalyticsExtracted++;
             }
           }
         } catch (error) {
-          console.error(`      Error extracting block ${event.blockHeight}:`, error);
+          console.error(
+            `      Error extracting block ${event.blockHeight}:`,
+            error
+          );
           // Continue with other blocks
         }
 
@@ -276,7 +305,9 @@ export class VerusIDComprehensiveSync {
           await new Promise(resolve => setTimeout(resolve, 100));
         }
       }
-      console.log(`      Extracted ${blockAnalyticsExtracted} new block analytics`);
+      console.log(
+        `      Extracted ${blockAnalyticsExtracted} new block analytics`
+      );
 
       // Step 3: Calculate comprehensive statistics
       console.log(`    [3/3] Calculating statistics...`);
@@ -313,10 +344,11 @@ export class VerusIDComprehensiveSync {
           updated.push(address);
         } else {
           const lastCalculated = new Date(result.rows[0].last_calculated);
-          const hoursSinceUpdate = (Date.now() - lastCalculated.getTime()) / (1000 * 60 * 60);
-          
-          // Update if older than 24 hours
-          if (hoursSinceUpdate > 24) {
+          const hoursSinceUpdate =
+            (Date.now() - lastCalculated.getTime()) / (1000 * 60 * 60);
+
+          // Update if older than 6 hours (reduced from 24 hours for more frequent updates)
+          if (hoursSinceUpdate > 6) {
             updated.push(address);
           }
         }
@@ -351,4 +383,3 @@ export class VerusIDComprehensiveSync {
     await this.db.end();
   }
 }
-

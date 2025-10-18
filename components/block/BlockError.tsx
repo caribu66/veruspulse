@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, RefreshCw, Home } from 'lucide-react';
+import { WarningCircle, ArrowsClockwise, House } from '@phosphor-icons/react';
 import Link from 'next/link';
 
 interface BlockErrorProps {
@@ -16,7 +16,7 @@ export function BlockError({ error, onRetry, blockHash }: BlockErrorProps) {
         <div className="text-center py-12">
           <div className="flex justify-center mb-6">
             <div className="bg-red-500/10 border border-red-500/20 rounded-full p-4">
-              <AlertCircle className="h-12 w-12 text-red-400" />
+              <WarningCircle className="h-12 w-12 text-red-400" />
             </div>
           </div>
 
@@ -43,7 +43,7 @@ export function BlockError({ error, onRetry, blockHash }: BlockErrorProps) {
                 onClick={onRetry}
                 className="flex items-center space-x-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2 rounded-lg transition-colors"
               >
-                <RefreshCw className="h-4 w-4" />
+                <ArrowsClockwise className="h-4 w-4" />
                 <span>Retry</span>
               </button>
             )}
@@ -52,7 +52,7 @@ export function BlockError({ error, onRetry, blockHash }: BlockErrorProps) {
               href="/"
               className="flex items-center space-x-2 bg-gray-500/20 hover:bg-gray-500/30 text-gray-400 px-4 py-2 rounded-lg transition-colors"
             >
-              <Home className="h-4 w-4" />
+              <House className="h-4 w-4" />
               <span>Back to Blocks</span>
             </Link>
           </div>

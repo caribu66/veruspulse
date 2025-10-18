@@ -1,7 +1,7 @@
 'use client';
 
 import { BlockDetailRow } from './BlockDetailRow';
-import { Database, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Database, TrendUp, TrendDown, Minus } from '@phosphor-icons/react';
 import { Block } from '@/lib/types/block-types';
 
 interface ValuePoolsSectionProps {
@@ -22,8 +22,8 @@ export function ValuePoolsSection({ block }: ValuePoolsSectionProps) {
   };
 
   const getDeltaIcon = (delta: number) => {
-    if (delta > 0) return <TrendingUp className="h-4 w-4 text-green-400" />;
-    if (delta < 0) return <TrendingDown className="h-4 w-4 text-red-400" />;
+    if (delta > 0) return <TrendUp className="h-4 w-4 text-green-400" />;
+    if (delta < 0) return <TrendDown className="h-4 w-4 text-red-400" />;
     return <Minus className="h-4 w-4 text-gray-400" />;
   };
 

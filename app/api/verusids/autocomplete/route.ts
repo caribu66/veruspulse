@@ -20,18 +20,24 @@ export async function GET(request: NextRequest) {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: 'UTXO database not enabled',
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'UTXO database not enabled',
+        },
+        { status: 503 }
+      );
     }
 
     const db = getDbPool();
     if (!db) {
-      return NextResponse.json({
-        success: false,
-        error: 'Database connection failed',
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Database connection failed',
+        },
+        { status: 500 }
+      );
     }
 
     // Parse query parameters
@@ -92,7 +98,7 @@ export async function GET(request: NextRequest) {
     const result = await db.query(sqlQuery, [query, `%${query}%`, limit]);
 
     // Format suggestions
-    const suggestions = result.rows.map((row) => ({
+    const suggestions = result.rows.map(row => ({
       address: row.identity_address,
       name: row.base_name || 'unknown',
       friendlyName: row.friendly_name || `${row.base_name || 'unknown'}.VRSC@`,
@@ -100,11 +106,11 @@ export async function GET(request: NextRequest) {
       totalStakes: row.total_stakes || 0,
       networkRank: row.network_rank,
       // Highlight matching portion for UI
-      matchType: row.base_name?.toLowerCase().startsWith(query.toLowerCase()) 
-        ? 'starts' 
+      matchType: row.base_name?.toLowerCase().startsWith(query.toLowerCase())
+        ? 'starts'
         : row.identity_address?.toLowerCase().startsWith(query.toLowerCase())
-        ? 'address'
-        : 'contains',
+          ? 'address'
+          : 'contains',
     }));
 
     return NextResponse.json({
@@ -128,4 +134,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

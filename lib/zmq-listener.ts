@@ -39,9 +39,7 @@ export class VerusZMQListener extends EventEmitter {
   constructor(zmqAddress?: string) {
     super();
     this.zmqAddress =
-      zmqAddress ||
-      process.env.VERUS_ZMQ_ADDRESS ||
-      'tcp://127.0.0.1:28332';
+      zmqAddress || process.env.VERUS_ZMQ_ADDRESS || 'tcp://127.0.0.1:28332';
   }
 
   /**
@@ -57,9 +55,7 @@ export class VerusZMQListener extends EventEmitter {
         zmq = await import('zeromq');
         this.zmqAvailable = true;
       } catch (importError) {
-        logger.warn(
-          '⚠️  ZMQ package not installed. Run: npm install zeromq'
-        );
+        logger.warn('⚠️  ZMQ package not installed. Run: npm install zeromq');
         logger.info(
           '💡 ZMQ provides real-time updates but is optional. The app will work without it.'
         );
@@ -159,9 +155,7 @@ export class VerusZMQListener extends EventEmitter {
    */
   private scheduleReconnect() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      logger.error(
-        '❌ Max ZMQ reconnection attempts reached. ZMQ disabled.'
-      );
+      logger.error('❌ Max ZMQ reconnection attempts reached. ZMQ disabled.');
       return;
     }
 
@@ -226,4 +220,3 @@ if (process.env.NODE_ENV !== 'test') {
     logger.warn('⚠️  ZMQ auto-connect failed (optional feature):', err.message);
   });
 }
-

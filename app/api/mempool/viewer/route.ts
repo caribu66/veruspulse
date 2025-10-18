@@ -41,16 +41,16 @@ export async function GET(request: NextRequest) {
 
     if (includeTransactions && mempoolInfo.size > 0) {
       try {
-        // Get raw mempool
-        const rawMempool = await verusAPI.call('getrawmempool', [false]);
+        // Get raw mempool with verbose details
+        const rawMempool = await verusAPI.call('getrawmempool', [true]);
 
-        if (Array.isArray(rawMempool) && rawMempool.length > 0) {
+        if (rawMempool && typeof rawMempool === 'object') {
           // Get details for first N transactions
-          const txIds = rawMempool.slice(0, limit);
+          const txIds = Object.keys(rawMempool).slice(0, limit);
 
           for (const txId of txIds) {
             try {
-              const entry = await verusAPI.call('getmempoolentry', [txId]);
+              const entry = rawMempool[txId];
 
               if (entry) {
                 transactions.push({
@@ -74,7 +74,10 @@ export async function GET(request: NextRequest) {
                 totalFees += entry.fee || 0;
               }
             } catch (error: any) {
-              logger.warn(`⚠️  Failed to get entry for ${txId}:`, error.message);
+              logger.warn(
+                `⚠️  Failed to process entry for ${txId}:`,
+                error.message
+              );
             }
           }
 
@@ -109,8 +112,7 @@ export async function GET(request: NextRequest) {
       totalFees,
       avgFee,
       avgSize: Math.round(avgSize),
-      avgFeePerKB:
-        avgSize > 0 ? ((avgFee / avgSize) * 1000).toFixed(8) : 0,
+      avgFeePerKB: avgSize > 0 ? ((avgFee / avgSize) * 1000).toFixed(8) : 0,
     };
 
     // Build response
@@ -171,6 +173,3 @@ function calculateTimeAgo(timestamp: number): string {
     return `${Math.floor(diff / 86400)} days ago`;
   }
 }
-
-
-

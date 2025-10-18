@@ -7,11 +7,13 @@ This guide covers deploying your Verus Explorer from your **development laptop**
 ## 📋 Overview
 
 **Current Setup:**
+
 - Development: Your laptop
 - Daemon: PC at 192.168.86.89
 - RPC: Remote connection
 
 **After Deployment:**
+
 - Production: PC at 192.168.86.89 (same as daemon)
 - Daemon: Local on same machine
 - RPC: Local connection (faster!)
@@ -242,6 +244,7 @@ curl http://localhost:3000/api/health
 ```
 
 Expected response:
+
 ```json
 {
   "success": true,
@@ -256,6 +259,7 @@ curl http://localhost:3000/api/zmq/status
 ```
 
 Expected response:
+
 ```json
 {
   "zmq": {
@@ -407,6 +411,7 @@ sudo nano /etc/nginx/sites-available/verus-explorer
 ```
 
 Nginx config:
+
 ```nginx
 server {
     listen 80;
@@ -424,6 +429,7 @@ server {
 ```
 
 Enable and restart:
+
 ```bash
 sudo ln -s /etc/nginx/sites-available/verus-explorer /etc/nginx/sites-enabled/
 sudo nginx -t
@@ -518,6 +524,7 @@ Use this checklist when deploying:
 **Redis:** `localhost:6379`
 
 **Key Commands:**
+
 ```bash
 # Access PC
 ssh build@192.168.86.89
@@ -554,9 +561,7 @@ Your Verus Explorer is now running on the same machine as the daemon with:
 ---
 
 For questions or issues, refer to:
+
 - `IMPLEMENTATION-SUMMARY.md` - Feature documentation
 - `ZMQ-SETUP-GUIDE.md` - ZMQ details
 - `TROUBLESHOOTING.md` - Common issues (if exists)
-
-
-

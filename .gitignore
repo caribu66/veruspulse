@@ -62,3 +62,32 @@ dump.rdb
 .npm/
 .eslintcache
 
+# Local Verus dependencies (workaround for npm install issues)
+.verusid-local/
+
+# Development notes and summaries
+*-COMPLETE.md
+*-SUMMARY.md
+PHASE-*.md
+*-GUIDE.md
+*-REPORT.md
+*-ANALYSIS.md
+*-LEARNINGS.md
+*-CHECKLIST.md
+*-STRATEGY.md
+*-REFERENCE.md
+
+# Test data and scan results
+*.csv
+joanna-*.json
+*-scan.json
+
+# Test scripts (keep actual test suites in __tests__ and tests/)
+test-*.js
+debug-*.js
+calculate-*.js
+
+# Temporary images and files
+*.png
+!public/**/*.png
+

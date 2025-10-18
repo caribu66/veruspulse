@@ -103,7 +103,10 @@ export class StatisticsCalculator {
 
     // Calculate performance metrics
     if (stats.totalStakes > 0) {
-      const performance = await this.calculatePerformanceMetrics(address, stats);
+      const performance = await this.calculatePerformanceMetrics(
+        address,
+        stats
+      );
       Object.assign(stats, performance);
     }
 
@@ -135,7 +138,9 @@ export class StatisticsCalculator {
   /**
    * Get summary of stake events
    */
-  private async getStakeEventsSummary(address: string): Promise<Partial<ComprehensiveStats>> {
+  private async getStakeEventsSummary(
+    address: string
+  ): Promise<Partial<ComprehensiveStats>> {
     const query = `
       SELECT 
         COUNT(*) as total_stakes,
@@ -164,7 +169,9 @@ export class StatisticsCalculator {
   /**
    * Get UTXO health metrics
    */
-  private async getUTXOHealth(address: string): Promise<Partial<ComprehensiveStats>> {
+  private async getUTXOHealth(
+    address: string
+  ): Promise<Partial<ComprehensiveStats>> {
     const query = `
       SELECT 
         COUNT(*) as total_utxos,
@@ -179,7 +186,9 @@ export class StatisticsCalculator {
     `;
 
     // Get current block height for cooldown calculation
-    const blockchainInfo = await this.db.query('SELECT MAX(height) as current_height FROM block_analytics');
+    const blockchainInfo = await this.db.query(
+      'SELECT MAX(height) as current_height FROM block_analytics'
+    );
     const currentHeight = blockchainInfo.rows[0]?.current_height || 0;
 
     const result = await this.db.query(query, [address, currentHeight]);
@@ -228,7 +237,8 @@ export class StatisticsCalculator {
 
     // Calculate ROI
     if (baseStats.totalRewards && baseStats.totalValue) {
-      performance.roiAllTime = (baseStats.totalRewards / baseStats.totalValue) * 100;
+      performance.roiAllTime =
+        (baseStats.totalRewards / baseStats.totalValue) * 100;
     }
 
     return performance;
@@ -237,7 +247,10 @@ export class StatisticsCalculator {
   /**
    * Calculate APY for a specific period
    */
-  private async calculateAPY(address: string, days: number | null): Promise<number | null> {
+  private async calculateAPY(
+    address: string,
+    days: number | null
+  ): Promise<number | null> {
     const query = days
       ? `
         SELECT 
@@ -279,7 +292,8 @@ export class StatisticsCalculator {
     lastStake: Date,
     totalStakes: number
   ): Partial<ComprehensiveStats> {
-    const totalDays = (lastStake.getTime() - firstStake.getTime()) / (1000 * 60 * 60 * 24);
+    const totalDays =
+      (lastStake.getTime() - firstStake.getTime()) / (1000 * 60 * 60 * 24);
 
     if (totalDays === 0 || totalStakes <= 1) {
       return {};
@@ -299,7 +313,9 @@ export class StatisticsCalculator {
   /**
    * Get record statistics
    */
-  private async getRecords(address: string): Promise<Partial<ComprehensiveStats>> {
+  private async getRecords(
+    address: string
+  ): Promise<Partial<ComprehensiveStats>> {
     // Highest and lowest rewards
     const rewardsQuery = `
       SELECT 
@@ -329,19 +345,28 @@ export class StatisticsCalculator {
 
     return {
       highestReward: parseInt(rewardsRow.highest_reward) || 0,
-      highestRewardDate: rewardsRow.highest_reward_date ? new Date(rewardsRow.highest_reward_date) : undefined,
+      highestRewardDate: rewardsRow.highest_reward_date
+        ? new Date(rewardsRow.highest_reward_date)
+        : undefined,
       lowestReward: parseInt(rewardsRow.lowest_reward) || 0,
       bestMonth: months.length > 0 ? months[0].month : undefined,
-      bestMonthRewards: months.length > 0 ? parseInt(months[0].total_rewards) : 0,
-      worstMonth: months.length > 0 ? months[months.length - 1].month : undefined,
-      worstMonthRewards: months.length > 0 ? parseInt(months[months.length - 1].total_rewards) : 0,
+      bestMonthRewards:
+        months.length > 0 ? parseInt(months[0].total_rewards) : 0,
+      worstMonth:
+        months.length > 0 ? months[months.length - 1].month : undefined,
+      worstMonthRewards:
+        months.length > 0
+          ? parseInt(months[months.length - 1].total_rewards)
+          : 0,
     };
   }
 
   /**
    * Calculate trend indicators
    */
-  private async calculateTrends(address: string): Promise<Partial<ComprehensiveStats>> {
+  private async calculateTrends(
+    address: string
+  ): Promise<Partial<ComprehensiveStats>> {
     const trends: Partial<ComprehensiveStats> = {};
 
     // Reward trends
@@ -349,8 +374,16 @@ export class StatisticsCalculator {
     trends.rewardTrend30d = await this.calculateTrend(address, 'reward', 30);
 
     // Efficiency trends
-    trends.efficiencyTrend7d = await this.calculateTrend(address, 'efficiency', 7);
-    trends.efficiencyTrend30d = await this.calculateTrend(address, 'efficiency', 30);
+    trends.efficiencyTrend7d = await this.calculateTrend(
+      address,
+      'efficiency',
+      7
+    );
+    trends.efficiencyTrend30d = await this.calculateTrend(
+      address,
+      'efficiency',
+      30
+    );
 
     // APY trends
     trends.apyTrend7d = await this.calculateTrend(address, 'apy', 7);
@@ -564,4 +597,3 @@ export class StatisticsCalculator {
     await this.db.query(query, values);
   }
 }
-

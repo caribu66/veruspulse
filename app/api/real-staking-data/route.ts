@@ -10,29 +10,39 @@ export async function GET() {
 
     // Get comprehensive staking and mining data using cached client for better performance
     // Note: getstakinginfo is deprecated in Verus - using getwalletinfo and getmininginfo instead
-    const [walletInfo, miningInfo, blockchainInfo, networkHashPS, difficulty] =
-      await Promise.allSettled([
-        verusAPI.getWalletInfo().catch(err => {
-          logger.warn('Wallet info fetch failed:', err);
-          return null;
-        }),
-        CachedRPCClient.getMiningInfo().catch(err => {
-          logger.warn('Mining info fetch failed:', err);
-          return null;
-        }),
-        CachedRPCClient.getBlockchainInfo().catch(err => {
-          logger.warn('Blockchain info fetch failed:', err);
-          return null;
-        }),
-        verusAPI.getNetworkHashPS().catch(err => {
-          logger.warn('Network hash rate fetch failed:', err);
-          return null;
-        }),
-        verusAPI.getDifficulty().catch(err => {
-          logger.warn('Difficulty fetch failed:', err);
-          return null;
-        }),
-      ]);
+    const [
+      walletInfo,
+      miningInfo,
+      blockchainInfo,
+      networkHashPS,
+      difficulty,
+      txOutSetInfo,
+    ] = await Promise.allSettled([
+      verusAPI.getWalletInfo().catch(err => {
+        logger.warn('Wallet info fetch failed:', err);
+        return null;
+      }),
+      CachedRPCClient.getMiningInfo().catch(err => {
+        logger.warn('Mining info fetch failed:', err);
+        return null;
+      }),
+      CachedRPCClient.getBlockchainInfo().catch(err => {
+        logger.warn('Blockchain info fetch failed:', err);
+        return null;
+      }),
+      verusAPI.getNetworkHashPS().catch(err => {
+        logger.warn('Network hash rate fetch failed:', err);
+        return null;
+      }),
+      verusAPI.getDifficulty().catch(err => {
+        logger.warn('Difficulty fetch failed:', err);
+        return null;
+      }),
+      verusAPI.getTxOutSetInfo().catch(err => {
+        logger.warn('TxOutSet info fetch failed:', err);
+        return null;
+      }),
+    ]);
 
     // Process staking info using latest Verus API methods
     let processedStakingInfo = {};
@@ -42,6 +52,8 @@ export async function GET() {
       miningInfo.status === 'fulfilled' ? miningInfo.value : {};
     const blockchainData =
       blockchainInfo.status === 'fulfilled' ? blockchainInfo.value : {};
+    const txOutSetData =
+      txOutSetInfo.status === 'fulfilled' ? txOutSetInfo.value : {};
 
     // Extract staking information from multiple sources
     processedStakingInfo = {
@@ -52,8 +64,16 @@ export async function GET() {
       // Stake weight from wallet info (eligible_staking_balance is the current stake weight)
       weight: walletData.eligible_staking_balance || 0,
 
-      // Network stake weight from mining info (stakingsupply is total network stake)
-      netstakeweight: miningData.stakingsupply || 0,
+      // Network stake weight from multiple sources
+      // Try mining info first, then blockchain info, then txOutSet info
+      netstakeweight:
+        miningData.stakingsupply ||
+        miningData.netstakeweight ||
+        miningData.stakeweight ||
+        blockchainData.stakingsupply ||
+        blockchainData.netstakeweight ||
+        txOutSetData.total_amount ||
+        0,
 
       // Chain stake from blockchain info (chainstake converted from hex)
       chainstake: blockchainData.chainstake
@@ -75,6 +95,20 @@ export async function GET() {
       expectedtime: 0,
       errors: miningData.errors || null,
     };
+
+    // Debug logging to see what data we're getting
+    logger.info('🔍 Debug - Mining data fields:', Object.keys(miningData));
+    logger.info(
+      '🔍 Debug - Blockchain data fields:',
+      Object.keys(blockchainData)
+    );
+    logger.info('🔍 Debug - Wallet data fields:', Object.keys(walletData));
+    logger.info('🔍 Debug - TxOutSet data fields:', Object.keys(txOutSetData));
+    logger.info(
+      '🔍 Debug - Final netstakeweight:',
+      (processedStakingInfo as any).netstakeweight
+    );
+    logger.info('🔍 Debug - TxOutSet total_amount:', txOutSetData.total_amount);
 
     logger.info('✅ Staking data processed using latest API methods');
 

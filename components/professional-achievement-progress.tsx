@@ -1,0 +1,653 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import {
+  TrendUp,
+  Target,
+  Award,
+  Clock,
+  Star,
+  Crown,
+  CheckCircle,
+  Lock,
+  ChartBar,
+  PieChart,
+  Activity,
+  Calendar,
+  Funnel,
+  SortAsc,
+  SortDesc,
+} from '@phosphor-icons/react';
+
+export interface ProfessionalAchievementData {
+  slug: string;
+  name: string;
+  description: string;
+  icon: string;
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum' | 'legendary';
+  category: 'milestone' | 'performance' | 'consistency' | 'special' | 'elite';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  unlockedAt?: string;
+  unlockValue?: number;
+  current?: number;
+  target?: number;
+  percentage?: number;
+  earned?: boolean;
+}
+
+export interface ProfessionalAchievementProgressProps {
+  achievements: ProfessionalAchievementData[];
+  recentUnlocks: ProfessionalAchievementData[];
+  totalStats: {
+    earned: number;
+    available: number;
+    progress: number;
+  };
+  rarityStats: Record<string, number>;
+  className?: string;
+}
+
+type SortOption = 'unlockDate' | 'tier' | 'rarity' | 'progress' | 'name';
+type FilterCategory =
+  | 'all'
+  | 'milestone'
+  | 'performance'
+  | 'consistency'
+  | 'special'
+  | 'elite';
+type ViewMode = 'all' | 'earned' | 'progress' | 'locked';
+
+const categoryIcons = {
+  milestone: Target,
+  performance: TrendUp,
+  consistency: Clock,
+  special: Star,
+  elite: Crown,
+};
+
+const tierOrder = {
+  bronze: 1,
+  silver: 2,
+  gold: 3,
+  platinum: 4,
+  legendary: 5,
+};
+
+const rarityOrder = {
+  common: 1,
+  uncommon: 2,
+  rare: 3,
+  epic: 4,
+  legendary: 5,
+};
+
+const tierColors = {
+  bronze: {
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    text: 'text-amber-800',
+    accent: 'bg-amber-500',
+  },
+  silver: {
+    bg: 'bg-gray-50',
+    border: 'border-gray-200',
+    text: 'text-gray-800',
+    accent: 'bg-gray-500',
+  },
+  gold: {
+    bg: 'bg-yellow-50',
+    border: 'border-yellow-200',
+    text: 'text-yellow-800',
+    accent: 'bg-yellow-500',
+  },
+  platinum: {
+    bg: 'bg-purple-50',
+    border: 'border-purple-200',
+    text: 'text-purple-800',
+    accent: 'bg-purple-500',
+  },
+  legendary: {
+    bg: 'bg-gradient-to-br from-yellow-50 to-orange-50',
+    border: 'border-orange-200',
+    text: 'text-orange-800',
+    accent: 'bg-gradient-to-r from-yellow-500 to-orange-500',
+  },
+};
+
+const rarityColors = {
+  common: {
+    bg: 'bg-blue-50',
+    border: 'border-blue-200',
+    text: 'text-blue-800',
+  },
+  uncommon: {
+    bg: 'bg-green-50',
+    border: 'border-green-200',
+    text: 'text-green-800',
+  },
+  rare: {
+    bg: 'bg-purple-50',
+    border: 'border-purple-200',
+    text: 'text-purple-800',
+  },
+  epic: {
+    bg: 'bg-indigo-50',
+    border: 'border-indigo-200',
+    text: 'text-indigo-800',
+  },
+  legendary: {
+    bg: 'bg-gradient-to-br from-yellow-50 to-orange-50',
+    border: 'border-orange-200',
+    text: 'text-orange-800',
+  },
+};
+
+export function ProfessionalAchievementProgress({
+  achievements,
+  recentUnlocks,
+  totalStats,
+  rarityStats,
+  className = '',
+}: ProfessionalAchievementProgressProps) {
+  const [viewMode, setViewMode] = useState<ViewMode>('all');
+  const [filterCategory, setFilterCategory] = useState<FilterCategory>('all');
+  const [sortBy, setSortBy] = useState<SortOption>('tier');
+  const [sortAscending, setSortAscending] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // Enhanced filtering with smart options
+  const filteredAchievements = useMemo(() => {
+    let filtered = achievements;
+
+    // Funnel by search term
+    if (searchTerm) {
+      filtered = filtered.filter(
+        a =>
+          a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          a.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Funnel by view mode
+    switch (viewMode) {
+      case 'earned':
+        filtered = filtered.filter(a => a.earned);
+        break;
+      case 'progress':
+        filtered = filtered.filter(a => !a.earned && (a.percentage || 0) > 0);
+        break;
+      case 'locked':
+        filtered = filtered.filter(a => !a.earned);
+        break;
+      default:
+        // Show all
+        break;
+    }
+
+    // Funnel by category
+    if (filterCategory !== 'all') {
+      filtered = filtered.filter(a => a.category === filterCategory);
+    }
+
+    return filtered;
+  }, [achievements, viewMode, filterCategory, searchTerm]);
+
+  // Enhanced sorting with secondary sorts
+  const sortedAchievements = useMemo(() => {
+    const sorted = [...filteredAchievements].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortBy) {
+        case 'tier':
+          comparison = tierOrder[a.tier] - tierOrder[b.tier];
+          if (comparison === 0) {
+            comparison = rarityOrder[a.rarity] - rarityOrder[b.rarity];
+          }
+          break;
+        case 'rarity':
+          comparison = rarityOrder[a.rarity] - rarityOrder[b.rarity];
+          if (comparison === 0) {
+            comparison = tierOrder[a.tier] - tierOrder[b.tier];
+          }
+          break;
+        case 'progress':
+          if (a.earned && !b.earned) return 1;
+          if (!a.earned && b.earned) return -1;
+          comparison = (a.percentage || 0) - (b.percentage || 0);
+          break;
+        case 'unlockDate':
+          if (a.unlockedAt && b.unlockedAt) {
+            comparison =
+              new Date(b.unlockedAt).getTime() -
+              new Date(a.unlockedAt).getTime();
+          } else if (a.unlockedAt) {
+            comparison = -1;
+          } else if (b.unlockedAt) {
+            comparison = 1;
+          }
+          break;
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+      }
+
+      return sortAscending ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [filteredAchievements, sortBy, sortAscending]);
+
+  const handleSortChange = (value: SortOption) => {
+    if (value === sortBy) {
+      setSortAscending(!sortAscending);
+    } else {
+      setSortBy(value);
+      setSortAscending(false);
+    }
+  };
+
+  const getSortIcon = () => {
+    return sortAscending ? (
+      <SortAsc className="h-4 w-4" />
+    ) : (
+      <SortDesc className="h-4 w-4" />
+    );
+  };
+
+  const completionRate = Math.round(
+    (totalStats.earned / totalStats.available) * 100
+  );
+
+  return (
+    <div className={`space-y-8 ${className}`}>
+      {/* Executive Summary Dashboard */}
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+              <ChartBar className="h-5 w-5 text-blue-600" />
+              <span>Achievement Portfolio Summary</span>
+            </h3>
+            <div className="text-sm text-gray-500">
+              Last updated: {new Date().toLocaleDateString()}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {/* Key Performance Indicators */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="text-center">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="text-2xl font-bold text-green-800">
+                  {totalStats.earned}
+                </div>
+                <div className="text-sm text-green-600 font-medium">
+                  Achievements Earned
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-3">
+                  <Target className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="text-2xl font-bold text-blue-800">
+                  {totalStats.progress}
+                </div>
+                <div className="text-sm text-blue-600 font-medium">
+                  In Progress
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mx-auto mb-3">
+                  <PieChart className="h-6 w-6 text-purple-600" />
+                </div>
+                <div className="text-2xl font-bold text-purple-800">
+                  {completionRate}%
+                </div>
+                <div className="text-sm text-purple-600 font-medium">
+                  Completion Rate
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mx-auto mb-3">
+                  <Lock className="h-6 w-6 text-amber-600" />
+                </div>
+                <div className="text-2xl font-bold text-amber-800">
+                  {totalStats.available - totalStats.earned}
+                </div>
+                <div className="text-sm text-amber-600 font-medium">
+                  Remaining
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress Overview */}
+          <div className="bg-gray-50 rounded-lg p-6">
+            <h4 className="text-md font-semibold text-gray-900 mb-4">
+              Overall Progress
+            </h4>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">
+                  Portfolio Completion
+                </span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {completionRate}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-gradient-to-r from-verus-blue to-verus-green h-3 rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${completionRate}%` }}
+                ></div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>
+                  {totalStats.earned} of {totalStats.available} achievements
+                </span>
+                <span>
+                  {totalStats.available - totalStats.earned} remaining
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Rarity Distribution */}
+          <div className="mt-6">
+            <h4 className="text-md font-semibold text-gray-900 mb-4">
+              Achievement Distribution by Rarity
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {Object.entries(rarityStats).map(([rarity, count]) => (
+                <div
+                  key={rarity}
+                  className={`${rarityColors[rarity as keyof typeof rarityColors].bg} ${rarityColors[rarity as keyof typeof rarityColors].border} border rounded-lg p-3 text-center`}
+                >
+                  <div
+                    className={`text-lg font-bold ${rarityColors[rarity as keyof typeof rarityColors].text}`}
+                  >
+                    {count}
+                  </div>
+                  <div
+                    className={`text-xs font-medium capitalize ${rarityColors[rarity as keyof typeof rarityColors].text}`}
+                  >
+                    {rarity}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Achievements */}
+      {recentUnlocks.length > 0 && (
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+              <Calendar className="h-5 w-5 text-green-600" />
+              <span>Recent Achievements</span>
+            </h3>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recentUnlocks.slice(0, 6).map(achievement => (
+                <div
+                  key={achievement.slug}
+                  className={`${tierColors[achievement.tier].bg} ${tierColors[achievement.tier].border} border rounded-lg p-4`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div
+                      className={`flex-shrink-0 w-10 h-10 ${tierColors[achievement.tier].accent} rounded-lg flex items-center justify-center`}
+                    >
+                      <Award className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4
+                        className={`text-sm font-semibold ${tierColors[achievement.tier].text} truncate`}
+                      >
+                        {achievement.name}
+                      </h4>
+                      <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                        {achievement.description}
+                      </p>
+                      {achievement.unlockedAt && (
+                        <div className="text-xs text-gray-500 mt-2">
+                          {new Date(
+                            achievement.unlockedAt
+                          ).toLocaleDateString()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Controls */}
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Achievement Portfolio
+          </h3>
+        </div>
+        <div className="p-6">
+          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-6">
+            <div className="flex gap-2">
+              {(['all', 'earned', 'progress', 'locked'] as ViewMode[]).map(
+                mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      viewMode === mode
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  </button>
+                )
+              )}
+            </div>
+
+            <div className="flex gap-2 items-center flex-wrap">
+              {/* MagnifyingGlass */}
+              <input
+                type="text"
+                placeholder="MagnifyingGlass achievements..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-900 text-sm placeholder-gray-500 min-w-48 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+
+              {/* Category Funnel */}
+              <select
+                value={filterCategory}
+                onChange={e =>
+                  setFilterCategory(e.target.value as FilterCategory)
+                }
+                className="bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">All Categories</option>
+                <option value="milestone">Milestone</option>
+                <option value="performance">Performance</option>
+                <option value="consistency">Consistency</option>
+                <option value="special">Special</option>
+                <option value="elite">Elite</option>
+              </select>
+
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={e => handleSortChange(e.target.value as SortOption)}
+                className="bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="tier">Tier</option>
+                <option value="rarity">Rarity</option>
+                <option value="progress">Progress</option>
+                <option value="unlockDate">Date</option>
+                <option value="name">Name</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Category Tabs */}
+          <div className="flex gap-2 mb-6">
+            {Object.entries(categoryIcons).map(([category, Icon]) => (
+              <button
+                key={category}
+                onClick={() => setFilterCategory(category as FilterCategory)}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center ${
+                  filterCategory === category
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Icon className="h-4 w-4 mr-2" />
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          {/* Professional Achievement Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedAchievements
+              .filter(
+                a => filterCategory === 'all' || a.category === filterCategory
+              )
+              .map(achievement => (
+                <div
+                  key={achievement.slug}
+                  className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="p-6">
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div
+                        className={`flex-shrink-0 w-12 h-12 ${tierColors[achievement.tier].accent} rounded-lg flex items-center justify-center`}
+                      >
+                        <Award className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex flex-col items-end space-y-1">
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full font-medium ${tierColors[achievement.tier].bg} ${tierColors[achievement.tier].text}`}
+                        >
+                          {achievement.tier}
+                        </span>
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full font-medium ${rarityColors[achievement.rarity].bg} ${rarityColors[achievement.rarity].text}`}
+                        >
+                          {achievement.rarity}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-900 mb-1">
+                          {achievement.name}
+                        </h4>
+                        <p className="text-sm text-gray-600 line-clamp-3">
+                          {achievement.description}
+                        </p>
+                      </div>
+
+                      {/* Status */}
+                      {achievement.earned ? (
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                          <div className="flex items-center space-x-2">
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                            <span className="text-sm font-medium text-green-800">
+                              Achievement Unlocked
+                            </span>
+                          </div>
+                          {achievement.unlockedAt && (
+                            <div className="text-xs text-green-600 mt-1">
+                              {new Date(
+                                achievement.unlockedAt
+                              ).toLocaleDateString()}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {achievement.percentage &&
+                          achievement.percentage > 0 ? (
+                            <div>
+                              <div className="flex justify-between text-sm text-gray-700 mb-1">
+                                <span>Progress</span>
+                                <span>
+                                  {Math.round(achievement.percentage)}%
+                                </span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                                  style={{
+                                    width: `${achievement.percentage}%`,
+                                  }}
+                                ></div>
+                              </div>
+                              {achievement.current !== undefined &&
+                                achievement.target !== undefined && (
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {achievement.current.toLocaleString()} /{' '}
+                                    {achievement.target.toLocaleString()}
+                                  </div>
+                                )}
+                            </div>
+                          ) : (
+                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                              <div className="flex items-center space-x-2">
+                                <Lock className="h-5 w-5 text-gray-400" />
+                                <span className="text-sm font-medium text-gray-600">
+                                  Not Started
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+
+          {/* Empty State */}
+          {sortedAchievements.length === 0 && (
+            <div className="text-center py-12">
+              <Target className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No achievements found
+              </h3>
+              <p className="text-gray-500">
+                {filterCategory === 'all'
+                  ? 'No achievements match your current filters.'
+                  : `No ${filterCategory} achievements match your current filters.`}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -268,5 +268,3 @@ export function monitorISRGeneration(
 
 // Export the performance monitor for advanced usage
 export { PerformanceMonitor };
-
-

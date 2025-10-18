@@ -145,10 +145,7 @@ export class UTXODatabaseService {
     return this.mapRowToStakeEvent(result.rows[0]);
   }
 
-  async getStakeEvents(
-    address: string,
-    limit?: number
-  ): Promise<StakeEvent[]> {
+  async getStakeEvents(address: string, limit?: number): Promise<StakeEvent[]> {
     let query: string;
     let params: any[];
 

@@ -112,7 +112,8 @@ export async function POST(request: Request) {
         result,
       });
     } else if (action === 'toggle_fallback') {
-      const enabled = body.enabled ?? !verusClientWithFallback.isUsingFallback();
+      const enabled =
+        body.enabled ?? !verusClientWithFallback.isUsingFallback();
       verusClientWithFallback.setFallbackMode(enabled);
 
       return NextResponse.json({
@@ -143,6 +144,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-
-

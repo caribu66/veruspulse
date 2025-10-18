@@ -220,11 +220,14 @@ class ZMQBlockIndexer {
 export const zmqBlockIndexer = new ZMQBlockIndexer();
 
 // Auto-start in production
-if (process.env.NODE_ENV === 'production' && process.env.ENABLE_ZMQ !== 'false') {
+if (
+  process.env.NODE_ENV === 'production' &&
+  process.env.ENABLE_ZMQ !== 'false'
+) {
   zmqBlockIndexer.start().catch(err => {
-    logger.warn('⚠️  Could not start ZMQ indexer (optional feature):', err.message);
+    logger.warn(
+      '⚠️  Could not start ZMQ indexer (optional feature):',
+      err.message
+    );
   });
 }
-
-
-

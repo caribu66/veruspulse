@@ -1,5 +1,8 @@
 // Use performance API that works in both Node.js and Edge Runtime
-const performance = typeof globalThis !== 'undefined' && globalThis.performance ? globalThis.performance : Date;
+const performance =
+  typeof globalThis !== 'undefined' && globalThis.performance
+    ? globalThis.performance
+    : Date;
 
 // Simple color functions without chalk dependency
 const colors = {
@@ -15,7 +18,14 @@ const colors = {
 export interface LogEntry {
   timestamp: string;
   level: 'INFO' | 'WARN' | 'ERROR' | 'SUCCESS' | 'DEBUG';
-  category: 'API' | 'RPC' | 'DATABASE' | 'REQUEST' | 'SYSTEM' | 'CACHE' | 'STAKE';
+  category:
+    | 'API'
+    | 'RPC'
+    | 'DATABASE'
+    | 'REQUEST'
+    | 'SYSTEM'
+    | 'CACHE'
+    | 'STAKE';
   message: string;
   details?: any;
   duration?: number;
@@ -42,7 +52,10 @@ class EnhancedLogger {
     return now.toISOString().replace('T', ' ').substring(0, 23);
   }
 
-  private getEmoji(level: LogEntry['level'], category: LogEntry['category']): string {
+  private getEmoji(
+    level: LogEntry['level'],
+    category: LogEntry['category']
+  ): string {
     const emojiMap = {
       INFO: {
         API: '🔍',
@@ -133,36 +146,38 @@ class EnhancedLogger {
     const emoji = this.getEmoji(entry.level, entry.category);
     const color = this.getColor(entry.level);
     const timestamp = colors.gray(`[${entry.timestamp}]`);
-    
+
     let mainMessage = `${emoji} ${color(`[${entry.level}]`)} ${entry.message}`;
-    
+
     // Add method and endpoint info for API calls
     if (entry.method && entry.endpoint) {
       mainMessage += colors.blue(` ${entry.method} ${entry.endpoint}`);
     }
-    
+
     // Add status code
     if (entry.status) {
       mainMessage += ` ${this.formatStatus(entry.status)}`;
     }
-    
+
     // Add duration
     if (entry.duration) {
       mainMessage += ` ${this.formatDuration(entry.duration)}`;
     }
-    
+
     // Add address info for stake-related logs
     if (entry.address) {
       mainMessage += colors.magenta(` [${entry.address.substring(0, 8)}...]`);
     }
-    
+
     console.log(`${timestamp} ${mainMessage}`);
-    
+
     // Log details if present
     if (entry.details) {
-      console.log(colors.gray(`    Details: ${JSON.stringify(entry.details, null, 2)}`));
+      console.log(
+        colors.gray(`    Details: ${JSON.stringify(entry.details, null, 2)}`)
+      );
     }
-    
+
     // Log error stack if present
     if (entry.error) {
       console.log(colors.red(`    Error: ${entry.error.message}`));
@@ -170,7 +185,7 @@ class EnhancedLogger {
         console.log(colors.gray(entry.error.stack || ''));
       }
     }
-    
+
     // Update counters
     if (entry.level === 'ERROR') {
       this.errorCount++;
@@ -180,7 +195,7 @@ class EnhancedLogger {
     if (entry.category === 'REQUEST') {
       this.requestCount++;
     }
-    
+
     // Show stats every 10 requests
     if (this.requestCount % 10 === 0 && this.requestCount > 0) {
       this.showStats();
@@ -188,14 +203,16 @@ class EnhancedLogger {
   }
 
   public startTimer(id: string): void {
-    const now = typeof performance.now === 'function' ? performance.now() : Date.now();
+    const now =
+      typeof performance.now === 'function' ? performance.now() : Date.now();
     this.startTimes.set(id, now);
   }
 
   public endTimer(id: string): number {
     const startTime = this.startTimes.get(id);
     if (startTime) {
-      const now = typeof performance.now === 'function' ? performance.now() : Date.now();
+      const now =
+        typeof performance.now === 'function' ? performance.now() : Date.now();
       const duration = now - startTime;
       this.startTimes.delete(id);
       return duration;
@@ -203,7 +220,11 @@ class EnhancedLogger {
     return 0;
   }
 
-  public info(category: LogEntry['category'], message: string, details?: any): void {
+  public info(
+    category: LogEntry['category'],
+    message: string,
+    details?: any
+  ): void {
     this.log({
       timestamp: this.formatTimestamp(),
       level: 'INFO',
@@ -213,7 +234,11 @@ class EnhancedLogger {
     });
   }
 
-  public warn(category: LogEntry['category'], message: string, details?: any): void {
+  public warn(
+    category: LogEntry['category'],
+    message: string,
+    details?: any
+  ): void {
     this.log({
       timestamp: this.formatTimestamp(),
       level: 'WARN',
@@ -223,7 +248,12 @@ class EnhancedLogger {
     });
   }
 
-  public error(category: LogEntry['category'], message: string, error?: Error, details?: any): void {
+  public error(
+    category: LogEntry['category'],
+    message: string,
+    error?: Error,
+    details?: any
+  ): void {
     this.log({
       timestamp: this.formatTimestamp(),
       level: 'ERROR',
@@ -234,7 +264,11 @@ class EnhancedLogger {
     });
   }
 
-  public success(category: LogEntry['category'], message: string, details?: any): void {
+  public success(
+    category: LogEntry['category'],
+    message: string,
+    details?: any
+  ): void {
     this.log({
       timestamp: this.formatTimestamp(),
       level: 'SUCCESS',
@@ -244,7 +278,11 @@ class EnhancedLogger {
     });
   }
 
-  public debug(category: LogEntry['category'], message: string, details?: any): void {
+  public debug(
+    category: LogEntry['category'],
+    message: string,
+    details?: any
+  ): void {
     if (process.env.NODE_ENV === 'development') {
       this.log({
         timestamp: this.formatTimestamp(),
@@ -256,8 +294,19 @@ class EnhancedLogger {
     }
   }
 
-  public apiCall(method: string, endpoint: string, status?: number, duration?: number, details?: any): void {
-    const level = status && status >= 400 ? 'ERROR' : status && status >= 200 && status < 300 ? 'SUCCESS' : 'INFO';
+  public apiCall(
+    method: string,
+    endpoint: string,
+    status?: number,
+    duration?: number,
+    details?: any
+  ): void {
+    const level =
+      status && status >= 400
+        ? 'ERROR'
+        : status && status >= 200 && status < 300
+          ? 'SUCCESS'
+          : 'INFO';
     this.log({
       timestamp: this.formatTimestamp(),
       level,
@@ -271,8 +320,14 @@ class EnhancedLogger {
     });
   }
 
-  public rpcCall(method: string, status: 'success' | 'error' | 'retry', duration?: number, details?: any): void {
-    const level = status === 'error' ? 'ERROR' : status === 'success' ? 'SUCCESS' : 'WARN';
+  public rpcCall(
+    method: string,
+    status: 'success' | 'error' | 'retry',
+    duration?: number,
+    details?: any
+  ): void {
+    const level =
+      status === 'error' ? 'ERROR' : status === 'success' ? 'SUCCESS' : 'WARN';
     this.log({
       timestamp: this.formatTimestamp(),
       level,
@@ -283,7 +338,12 @@ class EnhancedLogger {
     });
   }
 
-  public stakeReward(address: string, reward: number, txid: string, blockHeight: number): void {
+  public stakeReward(
+    address: string,
+    reward: number,
+    txid: string,
+    blockHeight: number
+  ): void {
     this.log({
       timestamp: this.formatTimestamp(),
       level: 'SUCCESS',
@@ -298,7 +358,11 @@ class EnhancedLogger {
     });
   }
 
-  public databaseQuery(operation: string, duration?: number, error?: Error): void {
+  public databaseQuery(
+    operation: string,
+    duration?: number,
+    error?: Error
+  ): void {
     const level = error ? 'ERROR' : 'SUCCESS';
     this.log({
       timestamp: this.formatTimestamp(),
@@ -310,7 +374,13 @@ class EnhancedLogger {
     });
   }
 
-  public request(method: string, url: string, status?: number, duration?: number, details?: any): void {
+  public request(
+    method: string,
+    url: string,
+    status?: number,
+    duration?: number,
+    details?: any
+  ): void {
     const level = status && status >= 400 ? 'ERROR' : 'SUCCESS';
     this.log({
       timestamp: this.formatTimestamp(),
@@ -342,7 +412,7 @@ class EnhancedLogger {
 
   private showStartupBanner(): void {
     if (this.bannerShown || process.env.NODE_ENV !== 'development') return;
-    
+
     console.log('\n');
     console.log('🚀 ========================================');
     console.log('   VERUS EXPLORER - ENHANCED LOGGING');
@@ -356,7 +426,7 @@ class EnhancedLogger {
     console.log('========================================');
     console.log('🎯 Watch this console for detailed activity');
     console.log('========================================\n');
-    
+
     this.bannerShown = true;
   }
 }

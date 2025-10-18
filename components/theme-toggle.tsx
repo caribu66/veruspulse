@@ -1,17 +1,17 @@
 'use client';
 
 import React from 'react';
-import { Sun, Moon, Monitor, Contrast } from 'lucide-react';
+import { Sun, Moon, Monitor, Palette } from '@phosphor-icons/react';
 import {
   useTheme,
-  useHighContrast,
+  useHighPalette,
   useThemeActions,
 } from '@/lib/store/theme-store';
 
 export function ThemeToggle() {
   const theme = useTheme();
-  const highContrast = useHighContrast();
-  const { setTheme, setHighContrast } = useThemeActions();
+  const highPalette = useHighPalette();
+  const { setTheme, setHighPalette } = useThemeActions();
 
   const getThemeIcon = () => {
     switch (theme) {
@@ -58,18 +58,18 @@ export function ThemeToggle() {
         {getThemeIcon()}
       </button>
 
-      {/* High Contrast Toggle - Icon Only for Better Space Management */}
+      {/* High Palette Toggle - Icon Only for Better Space Management */}
       <button
-        onClick={() => setHighContrast(!highContrast)}
+        onClick={() => setHighPalette(!highPalette)}
         className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
-          highContrast
-            ? 'text-yellow-400 hover:text-yellow-300 bg-yellow-400/10'
+          highPalette
+            ? 'text-verus-teal hover:text-yellow-300 bg-yellow-400/10'
             : 'text-white/80 hover:text-white hover:bg-white/10'
         }`}
-        aria-label={`High contrast mode: ${highContrast ? 'enabled' : 'disabled'}. Click to toggle.`}
-        title={`High contrast: ${highContrast ? 'On' : 'Off'}`}
+        aria-label={`High contrast mode: ${highPalette ? 'enabled' : 'disabled'}. Click to toggle.`}
+        title={`High contrast: ${highPalette ? 'On' : 'Off'}`}
       >
-        <Contrast className="h-4 w-4" />
+        <Palette className="h-4 w-4" />
       </button>
     </div>
   );

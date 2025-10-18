@@ -1,5 +1,5 @@
 {
-  "name": "verus-explorer",
+  "name": "veruspulse",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,9 +17,20 @@
     "test:e2e:ui": "playwright test --ui",
     "analyze": "ANALYZE=true npm run build",
     "prepare": "husky install",
-    "run:migrate": "node scripts/run-migration.js"
+    "run:migrate": "node scripts/run-migration.js",
+    "db:health": "node scripts/check-database-health.js",
+    "db:integrity": "node scripts/verify-database-integrity.js",
+    "db:test": "node scripts/test-database-operations.js",
+    "db:check": "npm run db:health && npm run db:integrity && npm run db:test",
+    "test:integrity": "npm run test:integrity:blocks && npm run test:integrity:blockchain",
+    "test:integrity:blocks": "node scripts/test-block-integrity.js",
+    "test:integrity:blockchain": "node scripts/test-blockchain-info-accuracy.js",
+    "test:integrity:verusid": "node scripts/test-verusid-stake-accuracy.js",
+    "test:integrity:watch": "TEST_ITERATIONS=10 TEST_INTERVAL=60 node scripts/test-blockchain-info-accuracy.js"
   },
   "dependencies": {
+    "@bitgo/utxo-lib": "github:VerusCoin/BitGoJS#utxo-lib-verus",
+    "@phosphor-icons/react": "^2.1.7",
     "@playwright/test": "^1.55.1",
     "@radix-ui/react-progress": "^1.1.7",
     "@sentry/nextjs": "^10.17.0",
@@ -36,20 +47,19 @@
     "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
     "ioredis": "^5.8.0",
-    "lucide-react": "^0.263.1",
     "next": "15.5.4",
-    "pg": "^8.16.3",
     "node-fetch": "^2.7.0",
+    "pg": "^8.16.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "redis": "^5.8.3",
     "tailwind-merge": "^3.3.1",
+    "verus-typescript-primitives": "github:VerusCoin/verus-typescript-primitives",
+    "verusd-rpc-ts-client": "github:VerusCoin/verusd-rpc-ts-client",
+    "verusid-ts-client": "file:.verusid-local",
     "winston": "^3.18.3",
     "zeromq": "^6.5.0",
-    "zustand": "^5.0.8",
-    "verus-typescript-primitives": "https://github.com/VerusCoin/verus-typescript-primitives.git",
-    "verusd-rpc-ts-client": "git+https://github.com/VerusCoin/verusd-rpc-ts-client.git",
-    "verusid-ts-client": "git+https://github.com/VerusCoin/verusid-ts-client.git"
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.5.4",

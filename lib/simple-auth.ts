@@ -13,9 +13,9 @@ export interface User {
 export async function getUser(): Promise<User | null> {
   const cookieStore = await cookies();
   const userCookie = cookieStore.get('github_user');
-  
+
   if (!userCookie) return null;
-  
+
   try {
     return JSON.parse(userCookie.value);
   } catch {
@@ -35,4 +35,3 @@ export async function signOut() {
   cookieStore.delete('github_user');
   cookieStore.delete('github_token');
 }
-

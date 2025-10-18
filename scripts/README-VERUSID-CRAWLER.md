@@ -39,13 +39,13 @@ node scripts/populate-verusids.js
 
 ## Performance Estimates
 
-| Block Range | Expected VerusIDs | Time (Node.js) | Time (Bash) |
-|-------------|-------------------|----------------|-------------|
-| 1,000 blocks | ~10-50 | 2-5 min | 3-10 min |
-| 10,000 blocks | ~100-500 | 20-40 min | 30-60 min |
-| 50,000 blocks | ~500-2,500 | 2-3 hours | 3-5 hours |
-| 100,000 blocks | ~1,000-5,000 | 4-6 hours | 6-10 hours |
-| Full history | ~10,000+ | 20-40 hours | 30-60 hours |
+| Block Range    | Expected VerusIDs | Time (Node.js) | Time (Bash) |
+| -------------- | ----------------- | -------------- | ----------- |
+| 1,000 blocks   | ~10-50            | 2-5 min        | 3-10 min    |
+| 10,000 blocks  | ~100-500          | 20-40 min      | 30-60 min   |
+| 50,000 blocks  | ~500-2,500        | 2-3 hours      | 3-5 hours   |
+| 100,000 blocks | ~1,000-5,000      | 4-6 hours      | 6-10 hours  |
+| Full history   | ~10,000+          | 20-40 hours    | 30-60 hours |
 
 ## After Populating the Database
 
@@ -94,6 +94,7 @@ curl -s --user verus:verus \
 ```
 
 If this fails, check:
+
 1. Verus daemon is running
 2. RPC credentials are correct in `.env.local`
 3. RPC host/port are accessible
@@ -132,9 +133,9 @@ node scripts/populate-verusids.js --start $((CURRENT - 50000)) --end $CURRENT
 
 # 2. Check results
 PGPASSWORD=verus_secure_2024 psql -U verus_user -d verus_utxo_db -c \
-  "SELECT COUNT(*) as total, 
-          COUNT(DISTINCT identity_address) as unique_ids 
-   FROM identities 
+  "SELECT COUNT(*) as total,
+          COUNT(DISTINCT identity_address) as unique_ids
+   FROM identities
    WHERE identity_address LIKE 'i%';"
 
 # 3. Start mass scanner
@@ -147,7 +148,7 @@ echo "1" | ./scripts/start-mass-scan.sh
 ## Output Files
 
 - **Node.js script**: Outputs to stdout
-- **Bash script**: 
+- **Bash script**:
   - `verusid-crawl-YYYYMMDD-HHMMSS.log` - Progress log
   - `found-verusids.txt` - List of discovered I-addresses
 
@@ -162,8 +163,8 @@ echo "1" | ./scripts/start-mass-scan.sh
 ## Support
 
 For issues or questions:
+
 1. Check the logs: `tail -f verusid-crawl-*.log`
 2. Verify RPC and database connectivity
 3. Try smaller block ranges first
 4. Check system resources (disk space, memory)
-

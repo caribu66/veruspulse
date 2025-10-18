@@ -19,29 +19,26 @@ export async function POST(request: NextRequest) {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: 'UTXO database not enabled',
-        message: 'Set UTXO_DATABASE_ENABLED=true and DATABASE_URL in your environment',
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'UTXO database not enabled',
+          message:
+            'Set UTXO_DATABASE_ENABLED=true and DATABASE_URL in your environment',
+        },
+        { status: 503 }
+      );
     }
 
     const service = getSyncService();
     if (!service) {
-      return NextResponse.json({
-        success: false,
-        error: 'Sync service not available',
-      }, { status: 500 });
-    }
-
-    // Check if already running
-    const currentProgress = service.getProgress();
-    if (currentProgress.status === 'running') {
-      return NextResponse.json({
-        success: false,
-        error: 'Sync already in progress',
-        progress: currentProgress,
-      }, { status: 409 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Sync service not available',
+        },
+        { status: 500 }
+      );
     }
 
     // Parse options from request
@@ -51,30 +48,51 @@ export async function POST(request: NextRequest) {
     const specificId = searchParams.get('specific_id') || undefined;
     const incremental = searchParams.get('incremental') === 'true';
 
+    // Check if already running (only block if it's a general sync, not a specific VerusID)
+    const currentProgress = service.getProgress();
+    if (currentProgress.status === 'running' && !specificId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Sync already in progress',
+          progress: currentProgress,
+        },
+        { status: 409 }
+      );
+    }
+
     // Validate parameters
     if (batchSize < 1 || batchSize > 20) {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid batch_size (must be 1-20)',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid batch_size (must be 1-20)',
+        },
+        { status: 400 }
+      );
     }
 
     if (delay < 1000) {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid delay (must be >= 1000ms)',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid delay (must be >= 1000ms)',
+        },
+        { status: 400 }
+      );
     }
 
     // Start sync in background (don't await)
-    service.syncAllVerusIDs({
-      batchSize,
-      delayBetweenBatches: delay,
-      specificId,
-      incremental,
-    }).catch(error => {
-      console.error('Sync error:', error);
-    });
+    service
+      .syncAllVerusIDs({
+        batchSize,
+        delayBetweenBatches: delay,
+        specificId,
+        incremental,
+      })
+      .catch(error => {
+        console.error('Sync error:', error);
+      });
 
     // Return immediately with initial progress
     return NextResponse.json({
@@ -109,18 +127,24 @@ export async function GET(request: NextRequest) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: 'UTXO database not enabled',
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'UTXO database not enabled',
+        },
+        { status: 503 }
+      );
     }
 
     const service = getSyncService();
     if (!service) {
-      return NextResponse.json({
-        success: false,
-        error: 'Sync service not available',
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Sync service not available',
+        },
+        { status: 500 }
+      );
     }
 
     const progress = service.getProgress();
@@ -150,10 +174,13 @@ export async function DELETE(request: NextRequest) {
   try {
     const service = getSyncService();
     if (!service) {
-      return NextResponse.json({
-        success: false,
-        error: 'Sync service not available',
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Sync service not available',
+        },
+        { status: 500 }
+      );
     }
 
     service.stop();
@@ -184,10 +211,13 @@ export async function PATCH(request: NextRequest) {
   try {
     const service = getSyncService();
     if (!service) {
-      return NextResponse.json({
-        success: false,
-        error: 'Sync service not available',
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Sync service not available',
+        },
+        { status: 500 }
+      );
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -198,10 +228,13 @@ export async function PATCH(request: NextRequest) {
     } else if (action === 'resume') {
       service.resume();
     } else {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid action (use ?action=pause or ?action=resume)',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid action (use ?action=pause or ?action=resume)',
+        },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({
@@ -222,4 +255,3 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
-

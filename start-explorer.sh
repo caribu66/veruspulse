@@ -4,18 +4,35 @@
 echo "🚀 Starting Verus Explorer..."
 echo ""
 
-# Check if Next.js is running
-if pgrep -f "next dev" > /dev/null; then
-    echo "✅ Next.js server is already running"
-    PORT=$(ps aux | grep "next dev" | grep -o "port [0-9]*" | awk '{print $2}' | head -1)
-    if [ -z "$PORT" ]; then
-        PORT="3001"  # Default port
+# Check if lock file exists
+LOCK_FILE=".dev-server.lock"
+if [ -f "$LOCK_FILE" ]; then
+    # Check if the process in the lock file is still running
+    if [ -s "$LOCK_FILE" ]; then
+        PID=$(cat "$LOCK_FILE" 2>/dev/null | grep -o '"pid":[0-9]*' | cut -d':' -f2)
+        if [ -n "$PID" ] && kill -0 "$PID" 2>/dev/null; then
+            echo "✅ Next.js server is already running (PID: $PID)"
+            echo ""
+            echo "💡 To stop: npm run dev:stop"
+            echo ""
+            exit 0
+        fi
     fi
+fi
+
+# Start the dev server using the proper script
+echo "🔄 Starting Next.js development server..."
+npm run dev > /tmp/verus-explorer.log 2>&1 &
+SERVER_PID=$!
+sleep 3
+
+# Check if it started successfully
+if ps -p $SERVER_PID > /dev/null 2>&1; then
+    PORT="3000"  # Default dev port
+    echo "✅ Server started successfully!"
 else
-    echo "🔄 Starting Next.js development server..."
-    PORT="3001"
-    npm run dev > /tmp/verus-explorer.log 2>&1 &
-    sleep 3
+    echo "❌ Failed to start server. Check /tmp/verus-explorer.log"
+    exit 1
 fi
 
 # Get the actual URL
@@ -24,15 +41,15 @@ echo ""
 echo "🌐 Verus Explorer is available at:"
 echo "   $URL"
 echo ""
-echo "📊 Network Status:"
-echo "   - Daemon: 192.168.86.89:18843 ✅"
-echo "   - API Response: ~73ms ✅"
+echo "📊 Server Status:"
 echo "   - Server: Running on port $PORT ✅"
+echo "   - PID: $SERVER_PID"
+echo "   - Logs: /tmp/verus-explorer.log"
 echo ""
-echo "💡 Tips:"
-echo "   - The enhanced loading screen now shows real progress"
-echo "   - Data loads in ~73ms with progress indicators"
-echo "   - Check /tmp/verus-explorer.log for server logs"
+echo "💡 Useful Commands:"
+echo "   - Stop server: npm run dev:stop"
+echo "   - View logs: tail -f /tmp/verus-explorer.log"
+echo "   - Check status: ps aux | grep next"
 echo ""
 
 # Try to open in browser (if available)
@@ -44,5 +61,6 @@ elif command -v open > /dev/null; then
     open "$URL" 2>/dev/null &
 fi
 
-echo "Press Ctrl+C to stop the server"
-wait
+echo "✅ Server is running in background"
+echo "   Use 'npm run dev:stop' to stop the server"
+echo ""

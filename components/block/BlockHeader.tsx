@@ -11,6 +11,7 @@ import {
   Hammer,
 } from '@phosphor-icons/react';
 import { Block } from '@/lib/types/block-types';
+import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 
 interface BlockHeaderProps {
   block: Block;
@@ -24,6 +25,7 @@ export function BlockHeader({
   onToggleHeavyMetrics,
 }: BlockHeaderProps) {
   const [copied, setCopied] = useState(false);
+  const { goBack } = useNavigationHistory();
 
   const handleCopy = async (text: string) => {
     try {
@@ -31,7 +33,7 @@ export function BlockHeader({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
@@ -54,13 +56,13 @@ export function BlockHeader({
       {/* Main Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
         <div className="flex items-center space-x-3">
-          <Link
-            href="/"
+          <button
+            onClick={() => goBack()}
             className="text-blue-400 hover:underline flex items-center space-x-1"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to blocks</span>
-          </Link>
+          </button>
         </div>
 
         <div className="flex items-center space-x-3">

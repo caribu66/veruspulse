@@ -60,7 +60,6 @@ export function VerusIDUTXOAnalytics({ iaddr }: UTXOAnalyticsProps) {
         setError(data.error || 'Failed to fetch UTXO data');
       }
     } catch (err: any) {
-      console.error('Failed to fetch live UTXOs:', err.message);
       setError(err.message || 'Network error');
     } finally {
       setLoading(false);
@@ -241,7 +240,7 @@ export function VerusIDUTXOAnalytics({ iaddr }: UTXOAnalyticsProps) {
           <ReactEChartsCore
             echarts={echarts}
             option={utxoDistributionOption}
-            style={{ height: '300px' }}
+            style={{ height: '300px', width: '100%' }}
           />
         </div>
 
@@ -466,7 +465,7 @@ export function VerusIDUTXOAnalytics({ iaddr }: UTXOAnalyticsProps) {
                   },
                 ],
               }}
-              style={{ height: '300px' }}
+              style={{ height: '300px', width: '100%' }}
             />
           </div>
 

@@ -36,12 +36,11 @@ export async function GET(request: NextRequest) {
     for (let i = 0; i < limit; i++) {
       const height = currentHeight - offset - i;
       if (height > 0 && height <= currentHeight) {
-        console.log(`Fetching block at height ${height}`);
         blockPromises.push(
           verusAPI.getBlockHash(height).then(hash => verusAPI.getBlock(hash, 2))
         );
       } else {
-        console.log(
+        console.warn(
           `Skipping invalid height: ${height} (current: ${currentHeight})`
         );
       }
@@ -216,7 +215,7 @@ export async function GET(request: NextRequest) {
                 totalPayout: coinbaseResult?.totalPayout || 0,
               };
             } catch (error) {
-              console.warn(
+              console.error(
                 `Heavy metrics failed for block ${block.height}:`,
                 error
               );

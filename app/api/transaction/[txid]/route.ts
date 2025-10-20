@@ -70,7 +70,6 @@ export async function GET(
 
         fee = Math.max(0, totalInputValue - totalOutputValue);
       } catch (error) {
-        console.log('Could not calculate fee:', error);
       }
     }
 

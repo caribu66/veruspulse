@@ -14,7 +14,7 @@ import {
   Hash,
   User,
   Database,
-  Activity,
+  Pulse,
   TrendUp,
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
@@ -97,7 +97,7 @@ export function SmartSearch({
           setRecentSearches(JSON.parse(stored));
         }
       } catch (error) {
-        console.error('Failed to load recent searches:', error);
+        // Silent error handling for localStorage
       }
     }
   }, [showRecentSearches]);
@@ -116,7 +116,7 @@ export function SmartSearch({
         setRecentSearches(updated);
         localStorage.setItem('smart-search-recent', JSON.stringify(updated));
       } catch (error) {
-        console.error('Failed to save recent search:', error);
+        // Silent error handling for localStorage
       }
     },
     [recentSearches, showRecentSearches]
@@ -146,7 +146,6 @@ export function SmartSearch({
         setResults(mockResults);
       }
     } catch (error) {
-      console.error('MagnifyingGlass error:', error);
       // Fallback to mock data
       const mockResults = generateMockResults(searchQuery);
       setResults(mockResults);
@@ -300,7 +299,7 @@ export function SmartSearch({
       case 'block':
         return <Database className="h-4 w-4 text-blue-400" />;
       case 'transaction':
-        return <Activity className="h-4 w-4 text-verus-blue" />;
+        return <Pulse className="h-4 w-4 text-verus-blue" />;
       case 'address':
         return <User className="h-4 w-4 text-green-400" />;
       case 'verusid':
@@ -331,7 +330,7 @@ export function SmartSearch({
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="w-full pl-10 pr-10 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          className="w-full pl-10 pr-10 py-3 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           aria-expanded={isOpen}
           aria-autocomplete="list"
           aria-controls="search-results"
@@ -366,22 +365,22 @@ export function SmartSearch({
           ref={resultsRef}
           id="search-results"
           role="listbox"
-          className="absolute top-full mt-2 w-full bg-slate-900 border border-white/20 rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50"
+          className="absolute top-full mt-2 w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/20 rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50"
         >
           {/* Recent Searches */}
           {showRecentSearchesPanel && (
             <div className="p-2">
-              <div className="px-3 py-2 text-xs text-gray-400 font-semibold uppercase tracking-wider">
+              <div className="px-3 py-2 text-xs text-gray-600 dark:text-gray-400 font-semibold uppercase tracking-wider">
                 Recent Searches
               </div>
               {recentSearches.map((recentQuery, index) => (
                 <button
                   key={index}
                   onClick={() => handleSelectRecentSearch(recentQuery)}
-                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 rounded-lg transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors text-left"
                 >
-                  <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-sm text-white">{recentQuery}</span>
+                  <Clock className="h-4 w-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-900 dark:text-white">{recentQuery}</span>
                 </button>
               ))}
             </div>

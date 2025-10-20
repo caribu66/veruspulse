@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     // Build search condition
     let searchCondition = '';
-    let searchParams2: any[] = [limit, offset];
+    let queryParams: any[] = [limit, offset];
 
     if (search) {
       searchCondition = `WHERE (
@@ -58,27 +58,11 @@ export async function GET(request: NextRequest) {
         OR i.friendly_name ILIKE $3 
         OR i.identity_address ILIKE $3
       )`;
-      searchParams2.push(`%${search}%`);
+      queryParams.push(`%${search}%`);
     }
 
-    // Build order by clause
-    let orderByClause = 'ORDER BY i.base_name ASC NULLS LAST';
-    switch (sortBy) {
-      case 'activity':
-        orderByClause = 'ORDER BY i.last_refreshed_at DESC NULLS LAST';
-        break;
-      case 'stakes':
-        orderByClause =
-          'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
-        break;
-      case 'recent':
-        orderByClause = 'ORDER BY i.first_seen_block DESC NULLS LAST';
-        break;
-      case 'rewards':
-        orderByClause =
-          'ORDER BY COALESCE(s.total_rewards_satoshis, 0) DESC, i.base_name ASC';
-        break;
-    }
+    // Build order by clause - ALWAYS sort by stakes to show active stakers first
+    let orderByClause = 'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
 
     // Main query with left join to staking stats
     const query = `
@@ -101,7 +85,7 @@ export async function GET(request: NextRequest) {
       LIMIT $1 OFFSET $2
     `;
 
-    const result = await db.query(query, searchParams2);
+    const result = await db.query(query, queryParams);
 
     // Get total count for pagination
     const countQuery = `
@@ -113,7 +97,7 @@ export async function GET(request: NextRequest) {
     const countResult = await db.query(countQuery, countParams);
     const total = parseInt(countResult.rows[0]?.total) || 0;
 
-    // Format results
+    // Format results - USE THE DATABASE DATA DIRECTLY!
     const identities = result.rows.map(row => ({
       address: row.identity_address,
       name: row.base_name || 'unknown',
@@ -129,6 +113,7 @@ export async function GET(request: NextRequest) {
       lastStake: row.last_stake_time,
       apyAllTime: row.apy_all_time ? parseFloat(row.apy_all_time) : null,
       networkRank: row.network_rank,
+      totalValueVRSC: 0, // We'll get balance data separately if needed
     }));
 
     // Calculate pagination metadata

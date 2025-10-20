@@ -1,5 +1,13 @@
 'use client';
 
+/**
+ * @deprecated This component has been replaced by MinimalPriceIndicator
+ * for a more professional, enterprise-grade appearance.
+ * 
+ * This component will be removed in a future version.
+ * Use MinimalPriceIndicator instead.
+ */
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   TrendUp,
@@ -131,8 +139,8 @@ export function VerusPriceTicker({
   if (loading) {
     return (
       <div className={`flex items-center justify-center py-3 ${className}`}>
-        <ArrowsClockwise className="h-4 w-4 animate-spin text-white/60" />
-        <span className="text-sm text-white/60 ml-2">
+        <ArrowsClockwise className="h-4 w-4 animate-spin text-gray-600 dark:text-white/60" />
+        <span className="text-sm text-gray-600 dark:text-white/60 ml-2">
           Loading market data...
         </span>
       </div>
@@ -154,7 +162,7 @@ export function VerusPriceTicker({
 
   return (
     <div
-      className={`relative overflow-hidden bg-slate-900 border border-slate-700 rounded-lg ${className}`}
+      className={`relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg ${className}`}
     >
       {/* Live indicator */}
       <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10 flex items-center space-x-2">

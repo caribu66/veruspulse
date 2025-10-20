@@ -79,7 +79,7 @@ export function BlockRewardSection({ block }: BlockRewardSectionProps) {
               icon={getRewardIcon()}
             />
 
-            {block.stakeRewardInfo.stakeAmount && (
+            {block.stakeRewardInfo.stakeAmount && block.stakeRewardInfo.stakeAmount > 0 && (
               <BlockDetailRow
                 label="Stake Amount"
                 value={`${block.stakeRewardInfo.stakeAmount.toFixed(8)} VRSC`}
@@ -112,7 +112,7 @@ export function BlockRewardSection({ block }: BlockRewardSectionProps) {
           </>
         )}
 
-        {block.stakeAmount && (
+        {block.stakeAmount && block.stakeAmount > 0 && (
           <BlockDetailRow
             label="Stake Amount"
             value={`${block.stakeAmount.toFixed(8)} VRSC`}

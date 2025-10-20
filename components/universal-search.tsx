@@ -4,7 +4,7 @@ import { useState } from 'react';
 import {
   MagnifyingGlass,
   Database,
-  Activity,
+  Pulse,
   User,
   UsersThree,
   Hash,
@@ -14,6 +14,7 @@ import {
   ArrowSquareOut,
   WarningCircle,
   Info,
+  ArrowsLeftRight,
 } from '@phosphor-icons/react';
 
 interface SearchResult {
@@ -76,7 +77,7 @@ export function UniversalSearch() {
             searchResults.push({ type: 'verusid', data: result.data });
           }
         } catch (err) {
-          console.log('VerusID search failed:', err);
+          // Silent error handling
         }
       }
 
@@ -88,7 +89,7 @@ export function UniversalSearch() {
             searchResults.push({ type: 'transaction', data: result.data });
           }
         } catch (err) {
-          console.log('Transaction search failed:', err);
+          // Silent error handling
         }
       }
 
@@ -100,7 +101,7 @@ export function UniversalSearch() {
             searchResults.push({ type: 'block', data: result.data });
           }
         } catch (err) {
-          console.log('Block search failed:', err);
+          // Silent error handling
         }
       }
 
@@ -112,7 +113,7 @@ export function UniversalSearch() {
             searchResults.push({ type: 'address', data: result.data });
           }
         } catch (err) {
-          console.log('Address search failed:', err);
+          // Silent error handling
         }
       }
 
@@ -123,7 +124,6 @@ export function UniversalSearch() {
       }
     } catch (err) {
       setError('MagnifyingGlass failed. Please try again.');
-      console.error('MagnifyingGlass error:', err);
     } finally {
       setLoading(false);
     }
@@ -135,7 +135,7 @@ export function UniversalSearch() {
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
@@ -152,7 +152,7 @@ export function UniversalSearch() {
       case 'block':
         return Database;
       case 'transaction':
-        return Activity;
+        return ArrowsLeftRight;
       case 'address':
         return User;
       case 'verusid':
@@ -191,7 +191,7 @@ export function UniversalSearch() {
       </div>
 
       {/* MagnifyingGlass Input */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+      <div className="bg-gray-50 dark:bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-slate-300 dark:border-white/20">
         <div className="flex items-center space-x-4">
           <div className="flex-1">
             <input
@@ -199,7 +199,7 @@ export function UniversalSearch() {
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Enter block height, transaction hash, address, or VerusID..."
-              className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+              className="w-full px-6 py-4 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
               onKeyPress={e => e.key === 'Enter' && search()}
             />
           </div>
@@ -215,7 +215,7 @@ export function UniversalSearch() {
 
         {/* MagnifyingGlass Examples */}
         <div className="mt-6">
-          <div className="text-blue-200 text-sm mb-3">
+          <div className="text-blue-200 dark:text-blue-200 text-blue-600 text-sm mb-3">
             MagnifyingGlass Examples:
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">

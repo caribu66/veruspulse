@@ -28,6 +28,7 @@ const nextConfig = {
   // Performance optimizations
   experimental: {
     // optimizeCss: true, // Temporarily disabled to fix webpack issues
+    // instrumentationHook is now default in Next.js 15.5+
   },
   // Image optimization
   images: {
@@ -43,6 +44,22 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  // Memory optimization for development
+  ...(process.env.NODE_ENV === 'development' && {
+    webpack: (config, { dev }) => {
+      if (dev) {
+        // Reduce memory usage in dev mode
+        config.optimization = {
+          ...config.optimization,
+          moduleIds: 'named',
+          chunkIds: 'named',
+        };
+        // Disable source maps in dev if memory is critical
+        // config.devtool = false;
+      }
+      return config;
+    },
+  }),
 };
 
 module.exports = withBundleAnalyzer(nextConfig);

@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/check-port-and-dev.js",
+    "dev:stop": "node scripts/stop-dev-server.js",
     "build": "next build",
-    "start": "next start",
+    "start": "node scripts/check-port-and-start.js production",
+    "stop": "node scripts/stop-server.js",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "format": "prettier --write .",
@@ -26,7 +28,21 @@
     "test:integrity:blocks": "node scripts/test-block-integrity.js",
     "test:integrity:blockchain": "node scripts/test-blockchain-info-accuracy.js",
     "test:integrity:verusid": "node scripts/test-verusid-stake-accuracy.js",
-    "test:integrity:watch": "TEST_ITERATIONS=10 TEST_INTERVAL=60 node scripts/test-blockchain-info-accuracy.js"
+    "test:integrity:watch": "TEST_ITERATIONS=10 TEST_INTERVAL=60 node scripts/test-blockchain-info-accuracy.js",
+    "test:load": "load-tests/run-load-tests.sh load",
+    "test:load:quick": "load-tests/quick-test.sh",
+    "test:load:spike": "load-tests/run-load-tests.sh spike",
+    "test:load:stress": "load-tests/run-load-tests.sh stress",
+    "test:load:all": "load-tests/run-load-tests.sh all",
+    "monitor": "load-tests/monitor-during-test.sh",
+    "rpc:check": "node scripts/check-rpc-load.js",
+    "rpc:monitor": "node scripts/monitor-rpc-usage.js",
+    "rpc:verify": "node scripts/verify-rate-limiter-singleton.js",
+    "services:status": "bash scripts/status-all-services.sh",
+    "services:stop": "bash scripts/stop-all-services.sh",
+    "zmq:check": "bash scripts/check-zmq-status.sh",
+    "audit": "bash scripts/comprehensive-audit.sh",
+    "staking:status": "bash scripts/check-staking-status.sh"
   },
   "dependencies": {
     "@bitgo/utxo-lib": "github:VerusCoin/BitGoJS#utxo-lib-verus",
@@ -36,6 +52,7 @@
     "@sentry/nextjs": "^10.17.0",
     "@types/ioredis": "^4.28.10",
     "@types/pg": "^8.15.5",
+    "better-sqlite3": "^11.10.0",
     "clsx": "^2.1.1",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
@@ -58,7 +75,8 @@
     "verusd-rpc-ts-client": "github:VerusCoin/verusd-rpc-ts-client",
     "verusid-ts-client": "file:.verusid-local",
     "winston": "^3.18.3",
-    "zeromq": "^6.5.0",
+    "zeromq": "6.5.0",
+    "zod": "^4.1.12",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
@@ -96,5 +114,9 @@
     "*.{json,md,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "base-x": "^4.0.0",
+    "bs58": "^5.0.0"
   }
 }

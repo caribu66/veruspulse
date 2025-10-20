@@ -215,8 +215,18 @@ export class VerusZMQListener extends EventEmitter {
 export const zmqListener = new VerusZMQListener();
 
 // Auto-connect on module load (gracefully fails if ZMQ not available)
-if (process.env.NODE_ENV !== 'test') {
+// Can be controlled via ENABLE_ZMQ environment variable
+// Set ENABLE_ZMQ=false to disable in development if memory is a concern
+const shouldEnableZMQ =
+  process.env.ENABLE_ZMQ !== 'false' &&
+  (process.env.NODE_ENV === 'production' || process.env.ENABLE_ZMQ === 'true');
+
+if (shouldEnableZMQ) {
   zmqListener.connect().catch(err => {
     logger.warn('⚠️  ZMQ auto-connect failed (optional feature):', err.message);
   });
+} else {
+  logger.info(
+    '💡 ZMQ disabled. Set ENABLE_ZMQ=true to enable real-time blockchain updates.'
+  );
 }

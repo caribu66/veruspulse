@@ -4,12 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import {
   TrendUp,
   TrendDown,
-  Activity,
+  Pulse,
   Hash,
   Clock,
   Lightning,
   ChartBar,
-  LineChart,
+  ChartLine,
 } from '@phosphor-icons/react';
 
 interface ChartDataPoint {
@@ -70,12 +70,17 @@ export function MiniChart({
   // Generate path points
   const points = data
     .map((point, index) => {
-      const x = padding + (index / (data.length - 1)) * chartWidth;
+      const x = padding + (data.length > 1 ? (index / (data.length - 1)) * chartWidth : chartWidth / 2);
       const y =
         padding +
         chartHeight -
         ((point.value - minValue) / valueRange) * chartHeight;
-      return `${x},${y}`;
+      
+      // Ensure x and y are valid numbers
+      const validX = isNaN(x) ? padding + chartWidth / 2 : x;
+      const validY = isNaN(y) ? padding + chartHeight / 2 : y;
+      
+      return `${validX},${validY}`;
     })
     .join(' ');
 
@@ -143,18 +148,22 @@ export function MiniChart({
 
         {/* Data points */}
         {data.map((point, index) => {
-          const x = padding + (index / (data.length - 1)) * chartWidth;
+          const x = padding + (data.length > 1 ? (index / (data.length - 1)) * chartWidth : chartWidth / 2);
           const y =
             padding +
             chartHeight -
             ((point.value - minValue) / valueRange) * chartHeight;
           const isHovered = hoveredPoint === index;
 
+          // Ensure x and y are valid numbers
+          const validX = isNaN(x) ? padding + chartWidth / 2 : x;
+          const validY = isNaN(y) ? padding + chartHeight / 2 : y;
+
           return (
             <circle
               key={index}
-              cx={x}
-              cy={y}
+              cx={validX}
+              cy={validY}
               r={isHovered ? 4 : 2}
               fill={color}
               stroke="white"
@@ -174,7 +183,7 @@ export function MiniChart({
           ) : trend < 0 ? (
             <TrendDown className="h-3 w-3 text-red-400" />
           ) : (
-            <Activity className="h-3 w-3 text-gray-400" />
+            <Pulse className="h-3 w-3 text-gray-400" />
           )}
           <span
             className={`text-xs font-medium ${
@@ -255,7 +264,7 @@ export function ChartStatsCard({
           {trend === 'up' && <TrendUp className="h-3 w-3 text-green-400" />}
           {trend === 'down' && <TrendDown className="h-3 w-3 text-red-400" />}
           {trend === 'neutral' && (
-            <Activity className="h-3 w-3 text-gray-400" />
+            <Pulse className="h-3 w-3 text-gray-400" />
           )}
           <span
             className={`font-medium ${
@@ -311,7 +320,7 @@ export function NetworkMetricsChart({
     },
     mempool: {
       label: 'Mempool Size',
-      icon: Activity,
+      icon: Pulse,
       color: 'text-blue-400',
       bgColor: 'bg-blue-500/20',
       data: mempoolData,
@@ -334,7 +343,7 @@ export function NetworkMetricsChart({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-blue-500/20">
-            <LineChart className="h-6 w-6 text-blue-400" />
+            <ChartLine className="h-6 w-6 text-blue-400" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-white">Network Metrics</h3>

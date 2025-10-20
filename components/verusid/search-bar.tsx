@@ -38,7 +38,7 @@ export function VerusIDSearchBar({
           setRecentSearches(JSON.parse(saved));
         }
       } catch (error) {
-        console.error('Failed to load recent searches:', error);
+        // Silent error handling for localStorage
       }
     }
   }, [showRecentSearches]);
@@ -56,7 +56,7 @@ export function VerusIDSearchBar({
       setRecentSearches(updated);
       localStorage.setItem('verusid-recent-searches', JSON.stringify(updated));
     } catch (error) {
-      console.error('Failed to save recent search:', error);
+      // Silent error handling for localStorage
     }
   };
 

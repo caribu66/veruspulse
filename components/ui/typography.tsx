@@ -165,10 +165,10 @@ export function Text({
 
   // Color classes
   const colorClass = dimmed
-    ? 'text-gray-500'
+    ? 'text-gray-500 dark:text-gray-400'
     : muted
-      ? 'text-gray-400'
-      : 'text-white';
+      ? 'text-gray-400 dark:text-gray-500'
+      : 'text-gray-900 dark:text-white';
 
   return React.createElement(
     Component,
@@ -213,7 +213,7 @@ export function Code({
     return (
       <pre
         className={cn(
-          'bg-black/40 border border-white/10 rounded-lg p-4 overflow-x-auto',
+          'bg-gray-100 dark:bg-black/40 border border-gray-300 dark:border-white/10 rounded-lg p-4 overflow-x-auto',
           'text-sm font-mono',
           className
         )}
@@ -227,8 +227,8 @@ export function Code({
   return (
     <code
       className={cn(
-        'bg-black/30 border border-white/10 rounded px-1.5 py-0.5',
-        'text-sm font-mono text-gray-300',
+        'bg-gray-200 dark:bg-black/30 border border-gray-300 dark:border-white/10 rounded px-1.5 py-0.5',
+        'text-sm font-mono text-gray-700 dark:text-gray-300',
         className
       )}
       {...props}

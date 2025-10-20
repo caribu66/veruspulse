@@ -75,14 +75,12 @@ export function VerusIDExplorerRefactored() {
             setBalance(balanceData.data);
           }
         } catch (balanceError) {
-          console.warn('Balance fetch failed:', balanceError);
           // Non-critical, continue without balance
         }
       } else {
         throw new Error(identityData.error || 'VerusID not found');
       }
     } catch (err: any) {
-      console.error('VerusID search error:', err);
       setError(err);
     } finally {
       setLoading(false);

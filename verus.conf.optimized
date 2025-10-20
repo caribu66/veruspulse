@@ -1,0 +1,204 @@
+# ============================================================================
+# OPTIMIZED VERUS.CONF FOR BLOCKCHAIN EXPLORER
+# Hardware: 32 CPU cores, 31GB RAM
+# Purpose: High-performance blockchain explorer with real-time updates
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# BLOCKCHAIN EXPLORER INDEXES (Required - DO NOT DISABLE)
+# ----------------------------------------------------------------------------
+# These indexes enable fast blockchain queries for the explorer
+insightexplorer=1      # Enable Insight API compatibility
+txindex=1              # Index all transactions (required for explorer)
+addressindex=1         # Index addresses (fast balance lookups)
+idindex=1              # Index VerusIDs (identity lookups)
+timestampindex=1       # Index timestamps (time-based queries)
+spentindex=1           # Index spent outputs (UTXO tracking)
+identityindex=1        # Additional identity indexing
+
+# ----------------------------------------------------------------------------
+# RPC SERVER CONFIGURATION
+# ----------------------------------------------------------------------------
+server=1
+rpcport=18843
+rpchost=0.0.0.0        # Listen on all interfaces
+rpcuser=verus
+rpcpassword=verus      # ⚠️  SECURITY: Change this in production!
+
+# RPC Access Control
+rpcallowip=127.0.0.1    # Localhost (explorer app)
+rpcallowip=192.168.86.0/24  # Local network (narrowed from /16 for security)
+rpcallowip=172.17.0.0/16    # Docker network
+
+# ----------------------------------------------------------------------------
+# RPC PERFORMANCE TUNING (Optimized for 32 cores)
+# ----------------------------------------------------------------------------
+# Work queue size - handles concurrent RPC requests
+rpcworkqueue=2048       # Increased from 1024 (more buffer for explorer queries)
+
+# RPC threads - optimized for your 32 cores
+rpcthreads=24           # Increased from 16 (75% of cores, leaves headroom)
+
+# RPC timeout for slow operations
+rpcservertimeout=120    # 2 minutes for heavy queries (getTxOutSetInfo, etc.)
+
+# ----------------------------------------------------------------------------
+# MEMORY OPTIMIZATION (31GB RAM available)
+# ----------------------------------------------------------------------------
+# Database cache - speeds up block validation and queries
+dbcache=4096            # Increased from 2048 MB → 4GB (you have 31GB RAM)
+                        # Recommended: 25-50% of available RAM for dedicated server
+                        # 4GB is conservative, could go up to 8GB-12GB
+
+# Mempool configuration
+maxmempool=1024         # Increased from 512 MB → 1GB (more tx history)
+mempoolexpiry=336       # Keep transactions for 14 days (336 hours)
+
+# ----------------------------------------------------------------------------
+# NETWORK CONFIGURATION
+# ----------------------------------------------------------------------------
+listen=1                # Accept incoming connections
+bind=0.0.0.0           # Bind to all interfaces
+
+# Connection limits
+maxconnections=125      # Increased from 40 (better network health)
+                        # More connections = better block propagation
+                        # Recommended: 100-200 for well-connected node
+
+# Connection timeouts
+timeout=30000           # 30 seconds connection timeout
+
+# ----------------------------------------------------------------------------
+# ZMQ REAL-TIME NOTIFICATIONS (✅ Already enabled - GREAT!)
+# ----------------------------------------------------------------------------
+# These provide real-time push notifications to your explorer
+# No polling needed - instant block/tx notifications!
+
+# ZMQ endpoints for localhost
+zmqpubhashblock=tcp://127.0.0.1:28332    # New block hash notifications
+zmqpubrawblock=tcp://127.0.0.1:28333     # Full block data notifications
+zmqpubhashtx=tcp://127.0.0.1:28334       # Transaction hash notifications
+zmqpubrawtx=tcp://127.0.0.1:28335        # Full transaction notifications
+
+# Note: Each notification type uses a different port
+# This prevents message queue conflicts
+
+# ----------------------------------------------------------------------------
+# PERFORMANCE & STABILITY
+# ----------------------------------------------------------------------------
+# Number of script verification threads (for transaction validation)
+par=16                  # Use half your cores for parallel verification
+                        # Speeds up initial sync and block processing
+
+# Maintain full mempool
+persistmempool=1        # Save mempool across restarts
+                        # Useful for explorer to track pending transactions
+
+# Prune mode (DISABLED for explorer - need full blockchain)
+# prune=0               # Ensure full node (default, but explicit is good)
+
+# ----------------------------------------------------------------------------
+# BLOCKCHAIN SIZE & PRUNING (Explorer needs full chain)
+# ----------------------------------------------------------------------------
+# Keep full blockchain - required for explorer functionality
+prune=0                 # Do not prune (need full history)
+
+# Block file size
+maxblockfilesize=256    # 256 MB per block file (default, optimal)
+
+# ----------------------------------------------------------------------------
+# LOGGING & DEBUGGING (Production settings)
+# ----------------------------------------------------------------------------
+# Log to debug.log
+debug=0                 # Disable verbose debugging (production)
+# debug=rpc             # Uncomment to debug RPC issues
+# debug=zmq             # Uncomment to debug ZMQ issues
+
+# Log timestamps
+logtimestamps=1         # Include timestamps in logs
+
+# Shrink debug.log on startup if over 10MB
+shrinkdebugfile=1
+
+# ----------------------------------------------------------------------------
+# MINING & STAKING (Optional - if you want to stake)
+# ----------------------------------------------------------------------------
+# Uncomment these if you want to stake with this node:
+# gen=0                 # CPU mining disabled (use external miner)
+# genproclimit=-1       # Use all cores for mining if enabled
+
+# ----------------------------------------------------------------------------
+# SECURITY RECOMMENDATIONS
+# ----------------------------------------------------------------------------
+# ⚠️  IMPORTANT: Change these before production deployment!
+# 
+# 1. Change rpcuser and rpcpassword to strong credentials:
+#    rpcuser=your_secure_username
+#    rpcpassword=your_very_long_random_password_here
+#
+# 2. If explorer runs on same machine, restrict RPC to localhost only:
+#    rpcallowip=127.0.0.1
+#    (Remove the 192.168.x.x lines)
+#
+# 3. Consider using rpcauth instead of rpcpassword for better security
+#
+# 4. Set up firewall rules to block external access to RPC port 18843
+
+# ----------------------------------------------------------------------------
+# OPTIONAL: ADVANCED TUNING
+# ----------------------------------------------------------------------------
+# Uncomment these for even more performance (test first!)
+
+# Block size limits
+# blockmaxsize=8000000  # 8MB max block size
+# blockprioritysize=0   # Don't prioritize by fee/priority
+
+# Signature cache size (speeds up validation)
+# maxsigcachesize=200   # 200 MB signature cache (default 40)
+
+# Connection management
+# maxreceivebuffer=10000  # 10MB receive buffer per connection
+# maxsendbuffer=5000      # 5MB send buffer per connection
+
+# Ban management
+# banscore=100          # Threshold before banning misbehaving peers
+# bantime=86400         # Ban for 24 hours (86400 seconds)
+
+# ----------------------------------------------------------------------------
+# MONITORING & HEALTH
+# ----------------------------------------------------------------------------
+# Check disk space
+# alertnotify=echo %s | mail -s "Verus Alert" admin@example.com
+
+# ============================================================================
+# CONFIGURATION SUMMARY
+# ============================================================================
+# 
+# What's optimized:
+# ✅ RPC threads: 24 (75% of 32 cores)
+# ✅ DB cache: 4GB (13% of 31GB RAM) - can increase to 8-12GB
+# ✅ Mempool: 1GB (3% of RAM)
+# ✅ Connections: 125 (better network health)
+# ✅ Work queue: 2048 (handles burst traffic)
+# ✅ ZMQ: Enabled on separate ports (no conflicts)
+# ✅ All explorer indexes enabled
+# 
+# Expected improvements:
+# - Faster RPC responses (more threads + bigger cache)
+# - Better handling of concurrent explorer queries
+# - Real-time updates via ZMQ (no polling lag)
+# - More reliable network connections
+# - Faster block validation and sync
+# 
+# Recommended next steps:
+# 1. Backup current config: cp ~/.komodo/VRSC/VRSC.conf ~/.komodo/VRSC/VRSC.conf.backup
+# 2. Update config with these settings
+# 3. Change rpcpassword to something secure
+# 4. Restart daemon: ./verus stop && ./verus -daemon
+# 5. Monitor performance and adjust dbcache if needed
+# 
+# ============================================================================
+
+
+
+

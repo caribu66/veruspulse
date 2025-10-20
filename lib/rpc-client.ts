@@ -765,6 +765,13 @@ class RPCClient {
       return false;
     }
   }
+
+  /**
+   * Get current rate limiter statistics
+   */
+  getRateLimiterStats() {
+    return this.rateLimiter.getDetailedStats();
+  }
 }
 
 export const rpcClient = new RPCClient();

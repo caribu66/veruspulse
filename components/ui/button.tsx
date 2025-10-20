@@ -61,11 +61,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     // Variant styles
     const variantStyles = {
       primary:
-        'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 active:bg-blue-800',
+        'bg-verus-blue text-white hover:bg-verus-blue-dark focus:ring-verus-blue active:bg-verus-blue-dark',
       secondary:
-        'bg-slate-800 border border-slate-700 text-white hover:bg-white/20 focus:ring-white/50 border border-white/20',
+        'bg-gray-200 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-white/20 focus:ring-gray-500 dark:focus:ring-white/50',
       ghost:
-        'bg-transparent text-white hover:bg-slate-800 border border-slate-700 focus:ring-white/50',
+        'bg-transparent text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800 border border-gray-300 dark:border-slate-700 focus:ring-gray-500 dark:focus:ring-white/50',
       danger:
         'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 active:bg-red-800',
       success:

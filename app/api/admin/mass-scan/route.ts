@@ -54,7 +54,6 @@ export async function POST(request: NextRequest) {
             limitAddresses: options?.limitAddresses,
           })
           .then(() => {
-            console.log('[Mass Scan API] Scan completed successfully!');
           })
           .catch(error => {
             console.error('[Mass Scan API] Scan failed:', error);
@@ -177,7 +176,6 @@ export async function POST(request: NextRequest) {
           limitAddresses: body.limitAddresses,
         })
         .then(() => {
-          console.log('[Mass Scan API] Recent scan completed!');
         })
         .catch(error => {
           console.error('[Mass Scan API] Recent scan failed:', error);
@@ -212,7 +210,6 @@ export async function POST(request: NextRequest) {
           limitAddresses: body.limitAddresses || 10000, // Default 10k limit
         })
         .then(() => {
-          console.log('[Mass Scan API] Full historical scan completed!');
         })
         .catch(error => {
           console.error('[Mass Scan API] Full historical scan failed:', error);

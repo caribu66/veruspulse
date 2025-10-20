@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import {
   ChartBar,
-  Activity,
+  Pulse,
   UsersThree,
   TrendUp,
   Fire,
@@ -32,13 +32,13 @@ export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
     {
       id: 'network' as DashboardTab,
       label: 'Network Stats',
-      icon: Activity,
+      icon: Pulse,
       description: 'Detailed statistics',
     },
     {
       id: 'activity' as DashboardTab,
       label: 'Recent Activity',
-      icon: Activity,
+      icon: Pulse,
       description: 'Latest blocks & txs',
     },
     {
@@ -56,7 +56,7 @@ export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
   ];
 
   return (
-    <div className="border-b border-white/10 bg-white/5 backdrop-blur-sm">
+    <div className="border-b border-slate-300 dark:border-white/10 bg-gray-50 dark:bg-white/5 backdrop-blur-sm">
       <div className="flex overflow-x-auto scrollbar-hide">
         {tabs.map(tab => {
           const Icon = tab.icon;
@@ -68,8 +68,8 @@ export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
               onClick={() => onTabChange(tab.id)}
               className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-all whitespace-nowrap ${
                 isActive
-                  ? 'border-blue-400 text-white bg-slate-800 border border-slate-700'
-                  : 'border-transparent text-gray-400 hover:text-white hover:bg-white/5'
+                  ? 'border-blue-500 text-white bg-blue-500 border border-blue-500'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5'
               }`}
             >
               <Icon className={`h-5 w-5 ${isActive ? 'text-blue-400' : ''}`} />

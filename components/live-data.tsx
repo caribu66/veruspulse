@@ -7,7 +7,7 @@ import {
 } from '@/lib/utils/number-formatting';
 import {
   Database,
-  Activity,
+  Pulse,
   Clock,
   Hash,
   Coins,
@@ -176,7 +176,6 @@ export function LiveData() {
 
       setError(null);
     } catch (err) {
-      console.error('Error fetching live data:', err);
       setError('Failed to fetch live data');
     } finally {
       setLoading(false);
@@ -202,7 +201,7 @@ export function LiveData() {
     fetchLiveData();
 
     if (autoRefresh) {
-      const interval = setInterval(fetchLiveData, 10000); // Poll every 10 seconds
+      const interval = setInterval(fetchLiveData, 30000); // Poll every 30 seconds
       return () => clearInterval(interval);
     }
   }, [autoRefresh, fetchLiveData]);
@@ -213,7 +212,7 @@ export function LiveData() {
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
@@ -242,7 +241,7 @@ export function LiveData() {
       case 'outgoing':
         return <ArrowUpRight className="h-4 w-4 text-red-400" />;
       default:
-        return <Activity className="h-4 w-4 text-blue-400" />;
+        return <Pulse className="h-4 w-4 text-blue-400" />;
     }
   };
 
@@ -323,7 +322,7 @@ export function LiveData() {
           {
             key: 'transactions',
             label: 'Recent Transactions',
-            icon: Activity,
+            icon: Pulse,
           },
           { key: 'mempool', label: 'Mempool', icon: Clock },
         ].map(section => (
@@ -361,7 +360,7 @@ export function LiveData() {
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
               <div className="flex items-center space-x-3">
-                <Activity className="h-6 w-6 text-green-400" />
+                <Pulse className="h-6 w-6 text-green-400" />
                 <div>
                   <div className="text-3xl font-bold text-white">
                     {stats.transactions.toLocaleString()}

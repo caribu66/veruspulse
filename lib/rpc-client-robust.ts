@@ -1,7 +1,8 @@
 import { logger } from './utils/logger';
 import { enhancedLogger } from './utils/enhanced-logger';
 import { RPCErrorHandler } from './utils/rpc-error-handler';
-import { ListIdentitiesParams } from './types/verus-rpc-types';
+import { ListIdentitiesParams, RateLimitConfig } from './types/verus-rpc-types';
+import { RateLimiter, defaultRateLimiter } from './utils/rate-limiter';
 
 interface RPCResponse {
   result?: any;
@@ -14,11 +15,14 @@ interface RPCResponse {
 class VerusAPIClient {
   private baseUrl: string;
   private timeout: number;
-  private rateLimiter: Map<string, number> = new Map();
+  private rateLimiter: RateLimiter;
 
-  constructor() {
+  constructor(rateLimitConfig?: Partial<RateLimitConfig>) {
     this.baseUrl = process.env.VERUS_RPC_HOST || 'http://127.0.0.1:18843';
     this.timeout = parseInt(process.env.VERUS_RPC_TIMEOUT || '15000'); // 15 seconds default
+    this.rateLimiter = rateLimitConfig
+      ? new RateLimiter(rateLimitConfig)
+      : defaultRateLimiter;
   }
 
   private async sleep(ms: number): Promise<void> {
@@ -89,17 +93,8 @@ class VerusAPIClient {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        // Rate limiting per method
-        const now = Date.now();
-        const lastCall = this.rateLimiter.get(method) || 0;
-        const timeSinceLastCall = now - lastCall;
-
-        // Minimum 100ms between calls for the same method
-        if (timeSinceLastCall < 100) {
-          await this.sleep(100 - timeSinceLastCall);
-        }
-
-        this.rateLimiter.set(method, Date.now());
+        // Use centralized rate limiter with proper tracking
+        await this.rateLimiter.waitForAllow();
 
         // Validate parameters before making the call
         if (!RPCErrorHandler.validateRPCParams(method, params)) {
@@ -234,15 +229,7 @@ class VerusAPIClient {
       });
 
       // Rate limiting for batch calls
-      const now = Date.now();
-      const lastCall = this.rateLimiter.get('batch') || 0;
-      const timeSinceLastCall = now - lastCall;
-
-      if (timeSinceLastCall < 100) {
-        await this.sleep(100 - timeSinceLastCall);
-      }
-
-      this.rateLimiter.set('batch', Date.now());
+      await this.rateLimiter.waitForAllow();
 
       const response = await fetch(`${this.baseUrl}`, {
         method: 'POST',
@@ -627,6 +614,13 @@ class VerusAPIClient {
 
   async getNotarizationDataByPBaaS(pbaasId: string, signal?: AbortSignal) {
     return this.call('getnotarizationdatabypbaas', [pbaasId], signal);
+  }
+
+  /**
+   * Get current rate limiter statistics
+   */
+  getRateLimiterStats() {
+    return this.rateLimiter.getDetailedStats();
   }
 }
 

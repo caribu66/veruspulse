@@ -176,7 +176,6 @@ export function AddressExplorer() {
       }
     } catch (err) {
       setError('Network error while fetching address data');
-      console.error('Error fetching address data:', err);
     } finally {
       setLoading(false);
     }
@@ -188,7 +187,7 @@ export function AddressExplorer() {
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
@@ -220,7 +219,7 @@ export function AddressExplorer() {
       </div>
 
       {/* MagnifyingGlass */}
-      <div className="bg-slate-900 rounded-2xl p-6 border border-slate-700">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-700">
         <div className="flex items-center space-x-4">
           <div className="flex-1">
             <input
@@ -228,7 +227,7 @@ export function AddressExplorer() {
               value={address}
               onChange={e => setAddress(e.target.value)}
               placeholder="Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs"
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onKeyDown={e => e.key === 'Enter' && searchAddress()}
             />
           </div>
@@ -247,7 +246,7 @@ export function AddressExplorer() {
       {balance && (
         <div className="space-y-6">
           {/* Address Header */}
-          <div className="bg-slate-900 rounded-2xl p-6 border border-slate-700">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-700">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">
                 {verusID ? 'VerusID & Address Details' : 'Address Details'}
@@ -320,7 +319,7 @@ export function AddressExplorer() {
 
           {/* Balance Summary */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-700">
               <div className="flex items-center space-x-3">
                 <div className="p-2 rounded-lg bg-green-500/20">
                   <Coins className="h-5 w-5 text-green-400" />
@@ -334,7 +333,7 @@ export function AddressExplorer() {
               </div>
             </div>
 
-            <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-700">
               <div className="flex items-center space-x-3">
                 <div className="p-2 rounded-lg bg-blue-500/20">
                   <TrendUp className="h-5 w-5 text-blue-400" />
@@ -348,7 +347,7 @@ export function AddressExplorer() {
               </div>
             </div>
 
-            <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-700">
               <div className="flex items-center space-x-3">
                 <div className="p-2 rounded-lg bg-red-500/20">
                   <TrendDown className="h-5 w-5 text-red-400" />
@@ -362,7 +361,7 @@ export function AddressExplorer() {
               </div>
             </div>
 
-            <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-700">
               <div className="flex items-center space-x-3">
                 <div className="p-2 rounded-lg bg-verus-blue/20">
                   <Hash className="h-5 w-5 text-verus-blue" />
@@ -376,7 +375,7 @@ export function AddressExplorer() {
           </div>
 
           {/* Tabs */}
-          <div className="bg-slate-900 rounded-2xl p-6 border border-slate-700">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-700">
             <div className="flex space-x-1 mb-6">
               {[
                 { key: 'overview', label: 'Overview', icon: ChartBar },

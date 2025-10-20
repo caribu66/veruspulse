@@ -31,6 +31,11 @@ export function HealthScoreGauge({
   const progress = (animatedScore / 100) * circumference;
   const center = size / 2;
 
+  // Guard against NaN values
+  if (isNaN(radius) || isNaN(center) || isNaN(circumference)) {
+    return null;
+  }
+
   // Determine color based on score
   const getColor = (score: number) => {
     if (score >= 80) return '#10b981'; // green

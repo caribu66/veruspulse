@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 import {
   Database,
   Clock,
@@ -18,7 +19,7 @@ import {
   CaretRight,
   Funnel,
   DownloadSimple,
-  ArrowUpDown,
+  ArrowsDownUp,
   TrendUp,
   TrendDown,
 } from '@phosphor-icons/react';
@@ -123,6 +124,7 @@ type FilterType = 'all' | 'pow' | 'pos';
 export function BlocksExplorer() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { addToHistory } = useNavigationHistory();
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -180,7 +182,6 @@ export function BlocksExplorer() {
         }
       } catch (err) {
         setError('Network error while fetching blocks');
-        console.error('Error fetching blocks:', err);
       } finally {
         setLoading(false);
       }
@@ -229,7 +230,7 @@ export function BlocksExplorer() {
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
@@ -501,44 +502,44 @@ export function BlocksExplorer() {
   }
 
   return (
-    <div className="space-y-6 text-white">
+    <div className="space-y-6 text-gray-900 dark:text-white">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">Blocks Explorer</h2>
-          <p className="text-blue-200 text-sm mt-1">
+          <p className="text-blue-200 dark:text-blue-200 text-blue-600 text-sm mt-1">
             Explore the Verus blockchain blocks and transactions
           </p>
         </div>
-        <div className="text-blue-200 text-sm">
+        <div className="text-blue-200 dark:text-blue-200 text-blue-600 text-sm">
           Total Blocks: {formatBlockHeight(totalBlocks)}
         </div>
       </div>
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-blue-500/20">
               <Database className="h-5 w-5 text-blue-400" />
             </div>
             <div>
-              <div className="text-white font-semibold">Total Blocks</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-gray-900 dark:text-white font-semibold">Total Blocks</div>
+              <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {formatBlockHeight(totalBlocks)}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-green-500/20">
               <Hash className="h-5 w-5 text-green-400" />
             </div>
             <div>
-              <div className="text-white font-semibold">Average Size</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-gray-900 dark:text-white font-semibold">Average Size</div>
+              <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {blocks.length > 0
                   ? formatFileSize(
                       blocks.reduce((sum, block) => sum + block.size, 0) /
@@ -550,14 +551,14 @@ export function BlocksExplorer() {
           </div>
         </div>
 
-        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-verus-blue/20">
               <Coins className="h-5 w-5 text-verus-blue" />
             </div>
             <div>
-              <div className="text-white font-semibold">Total Size</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-gray-900 dark:text-white font-semibold">Total Size</div>
+              <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {blocks.length > 0
                   ? formatFileSize(
                       blocks.reduce((sum, block) => sum + block.size, 0)
@@ -568,28 +569,28 @@ export function BlocksExplorer() {
           </div>
         </div>
 
-        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-verus-teal/20">
               <Clock className="h-5 w-5 text-verus-teal" />
             </div>
             <div>
-              <div className="text-white font-semibold">Latest Block</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-gray-900 dark:text-white font-semibold">Latest Block</div>
+              <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {blocks.length > 0 ? formatTime(blocks[0]?.time || 0) : 'N/A'}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-verus-teal/20">
               <Coins className="h-5 w-5 text-verus-teal" />
             </div>
             <div>
-              <div className="text-white font-semibold">Total Rewards</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-gray-900 dark:text-white font-semibold">Total Rewards</div>
+              <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {blocks.length > 0
                   ? `${blocks
                       .filter(b => b.reward && b.reward > 0)
@@ -603,9 +604,9 @@ export function BlocksExplorer() {
       </div>
 
       {/* Blocks Table */}
-      <div className="bg-slate-900 rounded-2xl p-6 border border-slate-700">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-white">Recent Blocks</h3>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Recent Blocks</h3>
 
           {/* Controls */}
           <div className="flex items-center space-x-3">
@@ -615,7 +616,7 @@ export function BlocksExplorer() {
               <select
                 value={filterType}
                 onChange={e => setFilterType(e.target.value as FilterType)}
-                className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-sm text-gray-900 dark:text-white"
               >
                 <option value="all">All Blocks</option>
                 <option value="pow">PoW Only</option>
@@ -625,11 +626,11 @@ export function BlocksExplorer() {
 
             {/* Sort Controls */}
             <div className="flex items-center space-x-2">
-              <ArrowUpDown className="h-4 w-4 text-blue-400" />
+              <ArrowsDownUp className="h-4 w-4 text-blue-400" />
               <select
                 value={sortField}
                 onChange={e => setSortField(e.target.value as SortField)}
-                className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-sm text-gray-900 dark:text-white"
               >
                 <option value="height">Height</option>
                 <option value="time">Time</option>
@@ -641,7 +642,7 @@ export function BlocksExplorer() {
                 onClick={() =>
                   setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
                 }
-                className="p-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded transition-colors"
+                className="p-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
                 title={`Sort ${sortDirection === 'asc' ? 'Descending' : 'Ascending'}`}
               >
                 {sortDirection === 'asc' ? (
@@ -659,7 +660,7 @@ export function BlocksExplorer() {
                 className={`px-3 py-1 text-xs rounded transition-colors ${
                   heavyMetrics
                     ? 'bg-verus-blue/20 text-verus-blue border border-verus-blue/30'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
+                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700'
                 }`}
                 title="Enable heavy metrics (fees, miner identity, etc.)"
               >
@@ -709,8 +710,13 @@ export function BlocksExplorer() {
                 return (
                   <div
                     key={`blocks-explorer-${block.hash}`}
-                    className="bg-slate-800 rounded-lg p-4 cursor-pointer transition-colors hover:bg-slate-700 border border-slate-700 hover:border-verus-blue/60"
-                    onClick={() => router.push(`/block/${block.hash}`)}
+                    className="bg-white dark:bg-slate-800 rounded-lg p-4 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60"
+                    onClick={() => {
+                      // Add current page to navigation history before navigating
+                      const currentUrl = window.location.pathname + window.location.search;
+                      addToHistory(currentUrl);
+                      router.push(`/block/${block.hash}`);
+                    }}
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-3">
@@ -721,16 +727,19 @@ export function BlocksExplorer() {
                               onClick={e => {
                                 e.stopPropagation();
                                 const prevBlock = sortedBlocks[index + 1];
-                                if (prevBlock)
+                                if (prevBlock) {
+                                  const currentUrl = window.location.pathname + window.location.search;
+                                  addToHistory(currentUrl);
                                   router.push(`/block/${prevBlock.hash}`);
+                                }
                               }}
-                              className="p-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded transition-colors"
+                              className="p-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
                               title={`Previous Block #${sortedBlocks[index + 1]?.height}`}
                             >
                               <CaretLeft className="h-3 w-3" />
                             </button>
                           )}
-                          <div className="text-white font-semibold">
+                          <div className="text-gray-900 dark:text-white font-semibold">
                             #{block.height}
                           </div>
                           {index > 0 && (
@@ -738,10 +747,13 @@ export function BlocksExplorer() {
                               onClick={e => {
                                 e.stopPropagation();
                                 const nextBlock = sortedBlocks[index - 1];
-                                if (nextBlock)
+                                if (nextBlock) {
+                                  const currentUrl = window.location.pathname + window.location.search;
+                                  addToHistory(currentUrl);
                                   router.push(`/block/${nextBlock.hash}`);
+                                }
                               }}
-                              className="p-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded transition-colors"
+                              className="p-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
                               title={`Next Block #${sortedBlocks[index - 1]?.height}`}
                             >
                               <CaretRight className="h-3 w-3" />
@@ -784,7 +796,7 @@ export function BlocksExplorer() {
                                 `height-${index}`
                               );
                             }}
-                            className="flex items-center space-x-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded transition-colors"
+                            className="flex items-center space-x-1 px-2 py-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
                             title="Copy Height"
                           >
                             {copied === `height-${index}` ? (
@@ -799,7 +811,7 @@ export function BlocksExplorer() {
                               e.stopPropagation();
                               copyToClipboard(block.hash, `hash-${index}`);
                             }}
-                            className="flex items-center space-x-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded transition-colors"
+                            className="flex items-center space-x-1 px-2 py-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
                             title="Copy Hash"
                           >
                             {copied === `hash-${index}` ? (
@@ -1007,7 +1019,7 @@ export function BlocksExplorer() {
                                   {analysis.coinbaseCount} CB
                                 </span>
                                 <span className="text-gray-500">•</span>
-                                <span className="text-white">
+                                <span className="text-gray-900 dark:text-white">
                                   {analysis.nonCoinbaseCount} reg
                                 </span>
                               </div>
@@ -1034,19 +1046,19 @@ export function BlocksExplorer() {
                             <div className="flex items-center space-x-4 text-xs text-gray-400">
                               <div className="flex items-center space-x-1">
                                 <span>Density:</span>
-                                <span className="text-white">
+                                <span className="text-gray-900 dark:text-white">
                                   {txDensity} tx/kB
                                 </span>
                               </div>
                               <div className="flex items-center space-x-1">
                                 <span>Avg Tx Size:</span>
-                                <span className="text-white">
+                                <span className="text-gray-900 dark:text-white">
                                   {formatFileSize(avgTxSize)}
                                 </span>
                               </div>
                               <div className="flex items-center space-x-1">
                                 <span>Unique Addr:</span>
-                                <span className="text-white">
+                                <span className="text-gray-900 dark:text-white">
                                   {analysis.uniqueAddresses.size}
                                 </span>
                               </div>
@@ -1085,22 +1097,22 @@ export function BlocksExplorer() {
 
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
                       <div>
-                        <div className="text-blue-200 mb-1">Hash</div>
-                        <div className="text-white font-mono text-xs break-all">
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">Hash</div>
+                        <div className="text-gray-900 dark:text-white font-mono text-xs break-all">
                           {block.hash}
                         </div>
                       </div>
 
                       <div>
-                        <div className="text-blue-200 mb-1">Transactions</div>
-                        <div className="text-white">
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">Transactions</div>
+                        <div className="text-gray-900 dark:text-white">
                           {formatTransactionCount(block.nTx)}
                         </div>
                       </div>
 
                       <div>
-                        <div className="text-blue-200 mb-1">Block Reward</div>
-                        <div className="text-white">
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">Block Reward</div>
+                        <div className="text-gray-900 dark:text-white">
                           {block.reward !== undefined && block.reward > 0 ? (
                             <div className="flex flex-col space-y-1">
                               <div className="flex items-center space-x-1">
@@ -1109,22 +1121,6 @@ export function BlocksExplorer() {
                                   {block.reward.toFixed(8)} VRSC
                                 </span>
                               </div>
-                              {block.hasStakeReward &&
-                                block.stakeRewardInfo && (
-                                  <div className="text-xs text-blue-300 bg-blue-500/20 px-2 py-1 rounded">
-                                    <div>
-                                      Stake: {block.stakeAmount?.toFixed(6)}{' '}
-                                      VRSC
-                                    </div>
-                                    <div>
-                                      Reward:{' '}
-                                      {block.stakeRewardAmount?.toFixed(6)} VRSC
-                                    </div>
-                                    {block.stakeAge && block.stakeAge > 0 && (
-                                      <div>Age: {block.stakeAge} blocks</div>
-                                    )}
-                                  </div>
-                                )}
                             </div>
                           ) : (
                             <div className="flex items-center space-x-1 text-gray-400">
@@ -1136,15 +1132,15 @@ export function BlocksExplorer() {
                       </div>
 
                       <div>
-                        <div className="text-blue-200 mb-1">Size</div>
-                        <div className="text-white">
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">Size</div>
+                        <div className="text-gray-900 dark:text-white">
                           {formatFileSize(block.size)}
                         </div>
                       </div>
 
                       <div>
-                        <div className="text-blue-200 mb-1">Difficulty</div>
-                        <div className="text-white">
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">Difficulty</div>
+                        <div className="text-gray-900 dark:text-white">
                           {formatDifficulty(block.difficulty)}
                         </div>
                       </div>
@@ -1165,7 +1161,7 @@ export function BlocksExplorer() {
               <button
                 onClick={() => updatePage(0)}
                 disabled={currentPage === 0}
-                className="flex items-center space-x-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex items-center space-x-2 px-3 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm text-gray-900 dark:text-white"
                 title="Go to first page (latest blocks)"
               >
                 <span>First</span>
@@ -1173,7 +1169,7 @@ export function BlocksExplorer() {
               <button
                 onClick={() => updatePage(Math.max(0, currentPage - 1))}
                 disabled={currentPage === 0}
-                className="flex items-center space-x-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex items-center space-x-2 px-3 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm text-gray-900 dark:text-white"
               >
                 <ArrowRight className="h-4 w-4 rotate-180" />
                 <span>Previous</span>
@@ -1206,7 +1202,7 @@ export function BlocksExplorer() {
                       className={`px-2 py-1 text-xs rounded transition-colors ${
                         currentPage === pageNum
                           ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
+                          : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700'
                       }`}
                     >
                       {pageNum + 1}
@@ -1222,7 +1218,7 @@ export function BlocksExplorer() {
                   updatePage(Math.min(totalPages - 1, currentPage + 1))
                 }
                 disabled={currentPage >= totalPages - 1}
-                className="flex items-center space-x-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex items-center space-x-2 px-3 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm text-gray-900 dark:text-white"
               >
                 <span>Next</span>
                 <ArrowRight className="h-4 w-4" />
@@ -1230,7 +1226,7 @@ export function BlocksExplorer() {
               <button
                 onClick={() => updatePage(totalPages - 1)}
                 disabled={currentPage >= totalPages - 1}
-                className="flex items-center space-x-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex items-center space-x-2 px-3 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm text-gray-900 dark:text-white"
                 title="Go to last page (earliest blocks including genesis)"
               >
                 <span>Last</span>

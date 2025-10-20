@@ -23,8 +23,8 @@ const dbConfig = {
 };
 
 const db = new Pool(dbConfig);
-const BATCH_SIZE = 50; // Blocks per batch
-const PROGRESS_INTERVAL = 1000; // Show progress every N blocks
+const BATCH_SIZE = 100; // Blocks per batch (optimized for speed without overloading RPC)
+const PROGRESS_INTERVAL = 500; // Show progress every N blocks (more frequent updates)
 
 let stats = {
   totalVerusIDs: 0,
@@ -282,8 +282,8 @@ async function scanBlocks(startHeight, endHeight, targetAddresses) {
       }
     }
 
-    // Small delay between batches
-    await new Promise(resolve => setTimeout(resolve, 10));
+    // Small delay between batches (balanced for speed and RPC stability)
+    await new Promise(resolve => setTimeout(resolve, 2));
   }
 
   // Final save

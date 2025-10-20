@@ -284,7 +284,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
     },
     loading: {
       icon: <CircleNotch className="h-5 w-5 animate-spin" />,
-      className: 'bg-slate-900 border-slate-500 text-slate-100',
+      className: 'bg-white dark:bg-slate-900 border-slate-500 text-slate-100',
       iconColor: 'text-slate-400',
     },
   };

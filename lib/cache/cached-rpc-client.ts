@@ -50,6 +50,21 @@ export class CachedRPCClient {
   }
 
   /**
+   * Get transaction output set info with caching
+   */
+  static async getTxOutSetInfo() {
+    const cached = await CacheManager.get('txoutset:info');
+    if (cached !== null) {
+      return cached;
+    }
+    return await this._fetchAndCache(
+      'txoutset:info',
+      CACHE_TTL.BLOCKCHAIN_INFO, // Use same TTL as blockchain info since it's related
+      () => verusAPI.getTxOutSetInfo()
+    );
+  }
+
+  /**
    * Get block data with caching
    */
   static async getBlock(hash: string, verbose: number | boolean = true) {

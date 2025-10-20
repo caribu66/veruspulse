@@ -1,0 +1,177 @@
+# Verus Mainnet Configuration - Custom for Your Setup
+# Optimized for fast sync with your existing RPC settings
+# Copy to: ~/.komodo/VRSC/verus.conf
+
+# ============================================================
+# YOUR EXISTING RPC CONFIGURATION
+# ============================================================
+rpcuser=verus
+rpcpassword=1CvFqDVqdPlznV4pksyoiyZ1eKhLoRKb
+rpcallowip=127.0.0.1
+rpcbind=127.0.0.1
+rpcport=18843
+rpcthreads=4
+
+# ============================================================
+# NETWORK CONFIGURATION (OPTIMIZED)
+# ============================================================
+maxconnections=125                  # Maximum peer connections
+listen=1                            # Accept incoming connections
+server=1                            # Act as a full node
+port=27485                          # P2P port (default, must be open in firewall)
+
+# ============================================================
+# OFFICIAL VERUS FOUNDATION SEED NODES
+# ============================================================
+addnode=185.25.48.236:27485         # Verus Foundation seed 1
+addnode=185.64.105.111:27485        # Verus Foundation seed 2
+addnode=149.56.29.163:27485         # Verus Foundation seed 3
+addnode=24.54.206.138:27485         # Verus Foundation seed 4
+addnode=185.25.51.56:27485          # Verus Foundation seed 5
+addnode=136.243.227.142:27485       # Verus Foundation seed 6
+
+# ============================================================
+# RELIABLE COMMUNITY NODES (High-Performance)
+# ============================================================
+addnode=5.9.102.210:27485           # Germany - Hetzner
+addnode=80.240.20.198:27485         # Netherlands
+addnode=51.38.132.153:27485         # France - OVH
+addnode=94.130.169.205:27485        # Germany - Hetzner
+addnode=88.99.212.81:27485          # Germany - Hetzner
+addnode=116.203.120.91:27485        # Germany - Hetzner
+addnode=95.217.43.33:27485          # Finland - Hetzner
+addnode=168.119.236.241:27485       # Germany - Hetzner
+addnode=135.181.60.217:27485        # Finland - Hetzner
+addnode=168.119.155.45:27485        # Germany - Hetzner
+
+# ============================================================
+# PERFORMANCE TUNING (Optimized for sync speed)
+# ============================================================
+# Database cache - More RAM = Faster sync
+# Adjust based on your available RAM:
+# - 4GB RAM system: dbcache=1024
+# - 8GB RAM system: dbcache=2048
+# - 16GB+ RAM system: dbcache=4096
+dbcache=2048                        # 2GB cache (recommended)
+
+# Memory pool
+maxmempool=512                      # 512MB mempool
+
+# CPU optimization
+par=4                               # Parallel script verification (adjust to your CPU cores)
+                                    # Use number of CPU cores - 1, or leave at 4 for safety
+
+# Connection optimization
+maxorphantx=100                     # Max orphan transactions
+maxsendbuffer=8192                  # 8MB send buffer
+maxreceivebuffer=8192               # 8MB receive buffer
+
+# ============================================================
+# NETWORK TIMEOUTS
+# ============================================================
+timeout=60000                       # 60 second connection timeout
+maxtimeadjustment=3600              # Max time adjustment (1 hour)
+
+# ============================================================
+# MEMPOOL & RELAY SETTINGS
+# ============================================================
+minrelaytxfee=0.000001             # Minimum relay fee
+blockmintxfee=0.000001             # Minimum fee for block inclusion
+limitancestorcount=50              # Ancestor transaction limit
+limitdescendantcount=50            # Descendant transaction limit
+
+# ============================================================
+# SYNC OPTIMIZATION
+# ============================================================
+checkblocks=288                     # Check last 288 blocks on startup
+checklevel=3                        # Block verification level (0-4, 3 is good balance)
+
+# ============================================================
+# LOGGING (Minimal for production)
+# ============================================================
+shrinkdebugfile=1                   # Shrink debug.log on startup
+logips=0                            # Don't log IP addresses
+
+# Optional debug logging (uncomment if needed):
+# debug=net                         # Network debug
+# debug=mempool                     # Mempool debug
+# debug=rpc                         # RPC debug
+# printtoconsole=1                  # Print to console
+
+# ============================================================
+# BLOCKCHAIN INDEXING (Optional but recommended for explorer)
+# ============================================================
+txindex=1                           # Enable transaction index (required for explorer)
+addressindex=1                      # Enable address index (required for address lookup)
+timestampindex=1                    # Enable timestamp index (for time-based queries)
+spentindex=1                        # Enable spent index (for UTXO tracking)
+
+# ============================================================
+# ZMQ NOTIFICATIONS (For real-time updates)
+# ============================================================
+# Uncomment if you want real-time blockchain notifications
+# zmqpubhashblock=tcp://127.0.0.1:28332
+# zmqpubrawtx=tcp://127.0.0.1:28332
+# zmqpubhashtx=tcp://127.0.0.1:28332
+# zmqpubrawblock=tcp://127.0.0.1:28332
+
+# ============================================================
+# WALLET SETTINGS
+# ============================================================
+# Uncomment if you're using wallet features
+# walletbroadcast=1                 # Broadcast transactions
+# spendzeroconfchange=1             # Spend unconfirmed change
+
+# ============================================================
+# SYSTEM RESOURCES
+# ============================================================
+# Adjust these based on your system:
+# - Set lower if you have limited resources
+# - Set higher if you have powerful hardware
+
+# For 4GB RAM system:
+# dbcache=1024
+# par=2
+# maxconnections=80
+
+# For 8GB RAM system (RECOMMENDED):
+# dbcache=2048      # Already set above
+# par=4             # Already set above
+# maxconnections=125 # Already set above
+
+# For 16GB+ RAM system:
+# dbcache=4096
+# par=8
+# maxconnections=250
+
+# ============================================================
+# NOTES & INSTRUCTIONS
+# ============================================================
+# 1. Copy this file to: ~/.komodo/VRSC/verus.conf
+#    Command: cp verus.conf.custom ~/.komodo/VRSC/verus.conf
+#
+# 2. Open firewall port 27485:
+#    Ubuntu: sudo ufw allow 27485/tcp
+#    CentOS: sudo firewall-cmd --permanent --add-port=27485/tcp && sudo firewall-cmd --reload
+#
+# 3. If behind router, forward port 27485 to your server
+#
+# 4. Restart daemon:
+#    verus stop
+#    sleep 10
+#    verusd &
+#
+# 5. Monitor sync:
+#    ./scripts/monitor-verus-sync.sh
+#
+# 6. Check connections after 5 minutes:
+#    verus getconnectioncount
+#    (Should see 50-125 connections)
+#
+# 7. Check if listening:
+#    netstat -tuln | grep 27485
+#    (Should show LISTEN)
+#
+# Expected sync speed improvement: 10-20x faster!
+# ============================================================
+

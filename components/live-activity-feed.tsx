@@ -7,7 +7,7 @@ import {
   User,
   CurrencyDollar,
   Clock,
-  Activity,
+  Pulse,
   Lightning,
   Hash,
   ArrowUpRight,
@@ -230,73 +230,77 @@ export function LiveActivityFeed({
     filter === 'all' ? events : events.filter(e => e.type === filter);
 
   return (
-    <div className="bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full max-h-[800px]">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700 overflow-hidden flex flex-col h-full max-h-[800px]">
       {/* Header */}
-      <div className="p-4 border-b border-white/10">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-blue-400" />
-            <h3 className="text-lg font-bold text-white">Live Activity</h3>
-            <div className="flex items-center gap-1">
-              <Circle
-                className={`h-2 w-2 ${isLive ? 'fill-verus-green text-verus-green' : 'fill-slate-400 text-slate-400'} animate-pulse`}
-              />
-              <span className="text-xs text-slate-400">
-                {isLive ? 'LIVE' : 'PAUSED'}
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={() => setIsLive(!isLive)}
-            className="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors border border-slate-700"
-          >
-            {isLive ? 'Pause' : 'Resume'}
-          </button>
-        </div>
-
-        {/* Next Block Countdown */}
-        <div className="bg-slate-800 rounded-lg p-3 border border-verus-blue/40">
-          <div className="flex items-center justify-between">
+      <div className="border-b border-slate-300 dark:border-white/10">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-blue-400" />
-              <span className="text-sm text-blue-200">Next Block</span>
+              <Pulse className="h-5 w-5 text-blue-400" />
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Live Activity</h3>
+              <div className="flex items-center gap-1">
+                <Circle
+                  className={`h-2 w-2 ${isLive ? 'fill-verus-green text-verus-green' : 'fill-slate-400 text-slate-400'} animate-pulse`}
+                />
+                <span className="text-xs text-gray-600 dark:text-slate-400">
+                  {isLive ? 'LIVE' : 'PAUSED'}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-white tabular-nums">
-                {nextBlockCountdown}s
-              </span>
-            </div>
-          </div>
-          <div className="mt-2 h-1 bg-slate-700 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-verus-blue transition-all duration-1000"
-              style={{ width: `${(nextBlockCountdown / 60) * 100}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="flex gap-2 mt-4 overflow-x-auto">
-          {[
-            { key: 'all', label: 'All', icon: Activity },
-            { key: 'block', label: 'Blocks', icon: Database },
-            { key: 'transaction', label: 'Transactions', icon: CurrencyDollar },
-            { key: 'verusid', label: 'VerusIDs', icon: User },
-            { key: 'staking', label: 'Staking', icon: TrendUp },
-          ].map(({ key, label, icon: Icon }) => (
             <button
-              key={key}
-              onClick={() => setFilter(key as any)}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
-                filter === key
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
-              }`}
+              onClick={() => setIsLive(!isLive)}
+              className="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-slate-800 hover:bg-gray-300 dark:hover:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-white"
             >
-              <Icon className="h-3 w-3" />
-              {label}
+              {isLive ? 'Pause' : 'Resume'}
             </button>
-          ))}
+          </div>
+
+          {/* Next Block Countdown */}
+          <div className="bg-gray-100 dark:bg-slate-800 rounded-lg p-3 border border-gray-300 dark:border-verus-blue/40">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-blue-400" />
+                <span className="text-sm text-blue-600 dark:text-blue-200">Next Block</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
+                  {nextBlockCountdown}s
+                </span>
+              </div>
+            </div>
+            <div className="mt-2 h-1 bg-gray-300 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-verus-blue transition-all duration-1000"
+                style={{ width: `${(nextBlockCountdown / 60) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Filters - Full Width Container with Horizontal Scroll */}
+        <div className="px-2 pb-4">
+          <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500 pb-2">
+            {[
+              { key: 'all', label: 'All', icon: Pulse },
+              { key: 'block', label: 'Blocks', icon: Database },
+              { key: 'transaction', label: 'Transactions', icon: CurrencyDollar },
+              { key: 'verusid', label: 'VerusIDs', icon: User },
+              { key: 'staking', label: 'Staking', icon: TrendUp },
+            ].map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => setFilter(key as any)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap flex-shrink-0 min-w-fit ${
+                  filter === key
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-300 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-700'
+                }`}
+              >
+                <Icon className="h-3 w-3" />
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -310,8 +314,8 @@ export function LiveActivityFeed({
             ))}
           </>
         ) : filteredEvents.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
-            <Activity className="h-12 w-12 mx-auto mb-2 opacity-50" />
+          <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+            <Pulse className="h-12 w-12 mx-auto mb-2 opacity-50" />
             <p>No recent activity</p>
             <p className="text-xs mt-1">New events will appear here</p>
           </div>
@@ -323,8 +327,8 @@ export function LiveActivityFeed({
       </div>
 
       {/* Footer Stats */}
-      <div className="p-3 border-t border-slate-700 bg-slate-800">
-        <div className="flex items-center justify-between text-xs text-gray-400">
+      <div className="p-3 border-t border-slate-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
           <span>{filteredEvents.length} events</span>
           <span>
             Updated {formatDistanceToNow(new Date(), { addSuffix: true })}
@@ -342,31 +346,31 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
       case 'block':
         return {
           icon: Database,
-          color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+          color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
           label: event.data.miner === 'Staked' ? 'Block Staked' : 'Block Mined',
         };
       case 'transaction':
         return {
           icon: CurrencyDollar,
-          color: 'text-green-400 bg-green-500/10 border-green-500/20',
+          color: 'text-green-600 dark:text-green-400 bg-white dark:bg-green-500/10 border-slate-300 dark:border-green-500/20',
           label: 'Large Transaction',
         };
       case 'verusid':
         return {
           icon: User,
-          color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+          color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
           label: 'VerusID Registered',
         };
       case 'staking':
         return {
           icon: TrendUp,
-          color: 'text-green-400 bg-green-500/10 border-green-500/20',
+          color: 'text-green-600 dark:text-green-400 bg-white dark:bg-green-500/10 border-slate-300 dark:border-green-500/20',
           label: 'Staking Reward',
         };
       default:
         return {
-          icon: Activity,
-          color: 'text-gray-400 bg-gray-500/10 border-gray-500/20',
+          icon: Pulse,
+          color: 'text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-500/10 border-slate-300 dark:border-gray-500/20',
           label: 'Activity',
         };
     }
@@ -377,7 +381,7 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
 
   return (
     <div
-      className={`group relative bg-slate-800 hover:bg-slate-700 rounded-lg p-3 border transition-all duration-300 cursor-pointer ${config.color} ${
+      className={`group relative bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg p-3 border transition-all duration-300 cursor-pointer ${config.color} ${
         event.highlighted ? 'ring-2 ring-yellow-400/50' : ''
       }`}
       style={{
@@ -394,17 +398,17 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
 
       <div className="flex items-start gap-3">
         {/* Icon */}
-        <div className="p-2 rounded-lg bg-slate-900 border border-slate-700 group-hover:scale-110 transition-transform">
+        <div className="p-2 rounded-lg bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 group-hover:scale-110 transition-transform">
           <Icon className="h-4 w-4" />
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-sm font-medium text-white">
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
               {config.label}
             </span>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-600 dark:text-gray-400">
               {formatDistanceToNow(event.timestamp, { addSuffix: true })}
             </span>
           </div>
@@ -413,7 +417,7 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
           {event.type === 'block' && (
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-400">Height:</span>
+                <span className="text-gray-600 dark:text-gray-400">Height:</span>
                 <Link
                   href={`/block/${event.data.hash}`}
                   className="text-blue-400 hover:text-blue-300 font-mono flex items-center gap-1"
@@ -422,7 +426,7 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
                   <ArrowUpRight className="h-3 w-3" />
                 </Link>
               </div>
-              <div className="flex items-center gap-4 text-xs text-gray-400">
+              <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
                 <span>{event.data.txCount} txs</span>
                 <span>{event.data.reward.toFixed(2)} VRSC</span>
               </div>
@@ -432,12 +436,12 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
           {event.type === 'transaction' && (
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-400">Amount:</span>
+                <span className="text-gray-600 dark:text-gray-400">Amount:</span>
                 <span className="text-green-400 font-bold">
                   {event.data.amount.toLocaleString()} VRSC
                 </span>
               </div>
-              <div className="text-xs text-gray-400 font-mono truncate">
+              <div className="text-xs text-gray-600 dark:text-gray-400 font-mono truncate">
                 {event.data.txid.slice(0, 16)}...
               </div>
             </div>
@@ -446,8 +450,8 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
           {event.type === 'staking' && (
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-400">Block:</span>
-                <span className="text-white font-mono">
+                <span className="text-gray-600 dark:text-gray-400">Block:</span>
+                <span className="text-gray-900 dark:text-white font-mono">
                   #{event.data.blockHeight}
                 </span>
               </div>
@@ -460,7 +464,7 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
           {event.type === 'verusid' && (
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-400">Name:</span>
+                <span className="text-gray-600 dark:text-gray-400">Name:</span>
                 <Link
                   href={`/verusid/${event.data.address}`}
                   className="text-blue-400 hover:text-blue-400-light font-bold flex items-center gap-1"
@@ -469,7 +473,7 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
                   <ArrowUpRight className="h-3 w-3" />
                 </Link>
               </div>
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-gray-600 dark:text-gray-400">
                 Block #{event.data.firstSeenBlock?.toLocaleString() || 'N/A'}
               </div>
             </div>

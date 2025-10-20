@@ -36,7 +36,7 @@ describe('AddressExplorer', () => {
         'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
       )
     ).toBeInTheDocument();
-    expect(screen.getByText('Search')).toBeInTheDocument();
+    expect(screen.getByText('MagnifyingGlass')).toBeInTheDocument();
   });
 
   it('displays loading state when searching', async () => {
@@ -59,7 +59,7 @@ describe('AddressExplorer', () => {
     const input = screen.getByPlaceholderText(
       'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
     );
-    const button = screen.getByText('Search');
+    const button = screen.getByText('MagnifyingGlass');
 
     fireEvent.change(input, { target: { value: 'R9vqQz8test123' } });
     fireEvent.click(button);
@@ -98,7 +98,7 @@ describe('AddressExplorer', () => {
     const input = screen.getByPlaceholderText(
       'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
     );
-    const button = screen.getByText('Search');
+    const button = screen.getByText('MagnifyingGlass');
 
     fireEvent.change(input, { target: { value: 'R9vqQz8test123' } });
     fireEvent.click(button);
@@ -152,7 +152,7 @@ describe('AddressExplorer', () => {
     const input = screen.getByPlaceholderText(
       'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
     );
-    const button = screen.getByText('Search');
+    const button = screen.getByText('MagnifyingGlass');
 
     fireEvent.change(input, { target: { value: 'test@' } });
     fireEvent.click(button);
@@ -190,7 +190,7 @@ describe('AddressExplorer', () => {
     const input = screen.getByPlaceholderText(
       'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
     );
-    const button = screen.getByText('Search');
+    const button = screen.getByText('MagnifyingGlass');
 
     fireEvent.change(input, { target: { value: 'test@' } });
     fireEvent.click(button);
@@ -212,7 +212,7 @@ describe('AddressExplorer', () => {
     const input = screen.getByPlaceholderText(
       'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
     );
-    const button = screen.getByText('Search');
+    const button = screen.getByText('MagnifyingGlass');
 
     fireEvent.change(input, { target: { value: 'test@' } });
     fireEvent.click(button);
@@ -238,7 +238,7 @@ describe('AddressExplorer', () => {
     const input = screen.getByPlaceholderText(
       'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
     );
-    const button = screen.getByText('Search');
+    const button = screen.getByText('MagnifyingGlass');
 
     fireEvent.change(input, { target: { value: 'invalid_address' } });
     fireEvent.click(button);
@@ -297,7 +297,7 @@ describe('AddressExplorer', () => {
     const input = screen.getByPlaceholderText(
       'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
     );
-    const button = screen.getByText('Search');
+    const button = screen.getByText('MagnifyingGlass');
 
     fireEvent.change(input, { target: { value: 'test@' } });
     fireEvent.click(button);
@@ -315,7 +315,7 @@ describe('AddressExplorer', () => {
     const input = screen.getByPlaceholderText(
       'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
     );
-    const button = screen.getByText('Search');
+    const button = screen.getByText('MagnifyingGlass');
 
     fireEvent.change(input, { target: { value: '' } });
     fireEvent.click(button);

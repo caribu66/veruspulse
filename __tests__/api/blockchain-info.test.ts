@@ -1,11 +1,9 @@
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/blockchain-info/route';
 import { CachedRPCClient } from '@/lib/cache/cached-rpc-client';
-import { verusAPI } from '@/lib/rpc-client-robust';
 
 // Mock the dependencies
 jest.mock('@/lib/cache/cached-rpc-client');
-jest.mock('@/lib/rpc-client-robust');
 jest.mock('@/lib/utils/logger', () => ({
   logger: {
     info: jest.fn(),
@@ -17,7 +15,6 @@ jest.mock('@/lib/utils/logger', () => ({
 const mockCachedRPCClient = CachedRPCClient as jest.Mocked<
   typeof CachedRPCClient
 >;
-const mockVerusAPI = verusAPI as jest.Mocked<typeof verusAPI>;
 
 describe('/api/blockchain-info', () => {
   beforeEach(() => {
@@ -77,7 +74,7 @@ describe('/api/blockchain-info', () => {
         mockBlockchainInfo
       );
       mockCachedRPCClient.getNetworkInfo.mockResolvedValue(mockNetworkInfo);
-      mockVerusAPI.getTxOutSetInfo.mockResolvedValue(mockTxOutInfo);
+      mockCachedRPCClient.getTxOutSetInfo.mockResolvedValue(mockTxOutInfo);
 
       const response = await GET();
       const data = await response.json();
@@ -106,7 +103,7 @@ describe('/api/blockchain-info', () => {
     it('should handle blockchain info fetch failure', async () => {
       mockCachedRPCClient.getBlockchainInfo.mockResolvedValue(null);
       mockCachedRPCClient.getNetworkInfo.mockResolvedValue({});
-      mockVerusAPI.getTxOutSetInfo.mockResolvedValue({});
+      mockCachedRPCClient.getTxOutSetInfo.mockResolvedValue({});
 
       const response = await GET();
       const data = await response.json();
@@ -121,7 +118,7 @@ describe('/api/blockchain-info', () => {
         new Error('RPC connection failed')
       );
       mockCachedRPCClient.getNetworkInfo.mockResolvedValue({});
-      mockVerusAPI.getTxOutSetInfo.mockResolvedValue({});
+      mockCachedRPCClient.getTxOutSetInfo.mockResolvedValue({});
 
       const response = await GET();
       const data = await response.json();
@@ -171,7 +168,7 @@ describe('/api/blockchain-info', () => {
         mockBlockchainInfo
       );
       mockCachedRPCClient.getNetworkInfo.mockResolvedValue(mockNetworkInfo);
-      mockVerusAPI.getTxOutSetInfo.mockResolvedValue(mockTxOutInfo);
+      mockCachedRPCClient.getTxOutSetInfo.mockResolvedValue(mockTxOutInfo);
 
       const response = await GET();
       const data = await response.json();
@@ -217,7 +214,7 @@ describe('/api/blockchain-info', () => {
         mockBlockchainInfo
       );
       mockCachedRPCClient.getNetworkInfo.mockResolvedValue(mockNetworkInfo);
-      mockVerusAPI.getTxOutSetInfo.mockResolvedValue(mockTxOutInfo);
+      mockCachedRPCClient.getTxOutSetInfo.mockResolvedValue(mockTxOutInfo);
 
       const response = await GET();
       const data = await response.json();

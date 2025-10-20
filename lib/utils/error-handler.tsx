@@ -7,7 +7,7 @@ import {
   Info,
   ArrowsClockwise,
   ArrowLeft,
-  HelpCircle,
+  Question,
   ArrowSquareOut,
 } from '@phosphor-icons/react';
 import { Button, ButtonGroup } from '@/components/ui/button';
@@ -295,7 +295,7 @@ export function SmartError({
       refresh: <ArrowsClockwise className="h-4 w-4" />,
       'go-back': <ArrowLeft className="h-4 w-4" />,
       'search-again': <ArrowLeft className="h-4 w-4" />,
-      'contact-support': <HelpCircle className="h-4 w-4" />,
+      'contact-support': <Question className="h-4 w-4" />,
       'check-status': <ArrowSquareOut className="h-4 w-4" />,
       'go-home': <ArrowLeft className="h-4 w-4" />,
     };

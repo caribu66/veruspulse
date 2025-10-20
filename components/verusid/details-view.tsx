@@ -137,7 +137,7 @@ export function VerusIDDetailsView({
       {/* Tabs for Different Views */}
       <div className="space-y-6">
         {/* Tab Navigation */}
-        <div className="flex border-b border-white/10 overflow-x-auto scrollbar-thin">
+        <div className="flex border-b border-slate-300 dark:border-white/10 overflow-x-auto scrollbar-thin">
           {[
             {
               value: 'overview',
@@ -170,8 +170,8 @@ export function VerusIDDetailsView({
               onClick={() => setActiveTab(tab.value as any)}
               className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === tab.value
-                  ? 'border-blue-500 text-white'
-                  : 'border-transparent text-gray-400 hover:text-white'
+                  ? 'border-blue-500 text-white bg-blue-500'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
               role="tab"
               aria-selected={activeTab === tab.value}

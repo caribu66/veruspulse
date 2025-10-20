@@ -4,19 +4,19 @@ import React, { useState, useMemo } from 'react';
 import {
   TrendUp,
   Target,
-  Award,
+  Medal,
   Clock,
   Star,
   Crown,
   CheckCircle,
   Lock,
   ChartBar,
-  PieChart,
-  Activity,
+  ChartPie,
+  Pulse,
   Calendar,
   Funnel,
-  SortAsc,
-  SortDesc,
+  SortAscending,
+  SortDescending,
 } from '@phosphor-icons/react';
 
 export interface ProfessionalAchievementData {
@@ -83,62 +83,62 @@ const rarityOrder = {
 
 const tierColors = {
   bronze: {
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    text: 'text-amber-800',
-    accent: 'bg-amber-500',
+    bg: 'bg-slate-800/50',
+    border: 'border-slate-600/50',
+    text: 'text-slate-200',
+    accent: 'bg-slate-500',
   },
   silver: {
-    bg: 'bg-gray-50',
-    border: 'border-gray-200',
-    text: 'text-gray-800',
+    bg: 'bg-gray-800/50',
+    border: 'border-gray-600/50',
+    text: 'text-gray-200',
     accent: 'bg-gray-500',
   },
   gold: {
-    bg: 'bg-yellow-50',
-    border: 'border-yellow-200',
-    text: 'text-yellow-800',
-    accent: 'bg-yellow-500',
+    bg: 'bg-yellow-900/30',
+    border: 'border-verus-teal/50',
+    text: 'text-verus-teal',
+    accent: 'bg-verus-teal',
   },
   platinum: {
-    bg: 'bg-purple-50',
-    border: 'border-purple-200',
-    text: 'text-purple-800',
-    accent: 'bg-purple-500',
+    bg: 'bg-blue-900/30',
+    border: 'border-verus-blue/50',
+    text: 'text-verus-blue',
+    accent: 'bg-verus-blue',
   },
   legendary: {
-    bg: 'bg-gradient-to-br from-yellow-50 to-orange-50',
-    border: 'border-orange-200',
-    text: 'text-orange-800',
-    accent: 'bg-gradient-to-r from-yellow-500 to-orange-500',
+    bg: 'bg-gradient-to-br from-verus-blue/20 via-verus-green/20 to-verus-teal/20',
+    border: 'border-verus-blue/50',
+    text: 'text-white',
+    accent: 'bg-gradient-to-r from-verus-blue to-verus-green',
   },
 };
 
 const rarityColors = {
   common: {
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    text: 'text-blue-800',
+    bg: 'bg-blue-900/30',
+    border: 'border-blue-500/50',
+    text: 'text-blue-300',
   },
   uncommon: {
-    bg: 'bg-green-50',
-    border: 'border-green-200',
-    text: 'text-green-800',
+    bg: 'bg-green-900/30',
+    border: 'border-green-500/50',
+    text: 'text-green-300',
   },
   rare: {
-    bg: 'bg-purple-50',
-    border: 'border-purple-200',
-    text: 'text-purple-800',
+    bg: 'bg-purple-900/30',
+    border: 'border-purple-500/50',
+    text: 'text-purple-300',
   },
   epic: {
-    bg: 'bg-indigo-50',
-    border: 'border-indigo-200',
-    text: 'text-indigo-800',
+    bg: 'bg-verus-blue/20',
+    border: 'border-verus-blue/50',
+    text: 'text-verus-blue',
   },
   legendary: {
-    bg: 'bg-gradient-to-br from-yellow-50 to-orange-50',
-    border: 'border-orange-200',
-    text: 'text-orange-800',
+    bg: 'bg-gradient-to-br from-verus-blue/20 via-verus-green/20 to-verus-teal/20',
+    border: 'border-verus-teal/50',
+    text: 'text-verus-teal',
   },
 };
 
@@ -248,9 +248,9 @@ export function ProfessionalAchievementProgress({
 
   const getSortIcon = () => {
     return sortAscending ? (
-      <SortAsc className="h-4 w-4" />
+      <SortAscending className="h-4 w-4" />
     ) : (
-      <SortDesc className="h-4 w-4" />
+      <SortDescending className="h-4 w-4" />
     );
   };
 
@@ -261,14 +261,14 @@ export function ProfessionalAchievementProgress({
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Executive Summary Dashboard */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-white/10">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-              <ChartBar className="h-5 w-5 text-blue-600" />
+            <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+              <ChartBar className="h-5 w-5 text-verus-blue" />
               <span>Achievement Portfolio Summary</span>
             </h3>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-blue-200">
               Last updated: {new Date().toLocaleDateString()}
             </div>
           </div>
@@ -278,56 +278,56 @@ export function ProfessionalAchievementProgress({
           {/* Key Performance Indicators */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="text-center">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="bg-white/5 border border-green-500/30 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-green-500/20 rounded-full mx-auto mb-3">
+                  <CheckCircle className="h-6 w-6 text-green-400" />
                 </div>
-                <div className="text-2xl font-bold text-green-800">
+                <div className="text-2xl font-bold text-white">
                   {totalStats.earned}
                 </div>
-                <div className="text-sm text-green-600 font-medium">
+                <div className="text-sm text-green-300 font-medium">
                   Achievements Earned
                 </div>
               </div>
             </div>
 
             <div className="text-center">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-3">
-                  <Target className="h-6 w-6 text-blue-600" />
+              <div className="bg-white/5 border border-blue-500/30 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-blue-500/20 rounded-full mx-auto mb-3">
+                  <Target className="h-6 w-6 text-blue-400" />
                 </div>
-                <div className="text-2xl font-bold text-blue-800">
+                <div className="text-2xl font-bold text-white">
                   {totalStats.progress}
                 </div>
-                <div className="text-sm text-blue-600 font-medium">
+                <div className="text-sm text-blue-300 font-medium">
                   In Progress
                 </div>
               </div>
             </div>
 
             <div className="text-center">
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mx-auto mb-3">
-                  <PieChart className="h-6 w-6 text-purple-600" />
+              <div className="bg-white/5 border border-verus-blue/30 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-verus-blue/20 rounded-full mx-auto mb-3">
+                  <ChartPie className="h-6 w-6 text-verus-blue" />
                 </div>
-                <div className="text-2xl font-bold text-purple-800">
+                <div className="text-2xl font-bold text-white">
                   {completionRate}%
                 </div>
-                <div className="text-sm text-purple-600 font-medium">
+                <div className="text-sm text-blue-200 font-medium">
                   Completion Rate
                 </div>
               </div>
             </div>
 
             <div className="text-center">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mx-auto mb-3">
-                  <Lock className="h-6 w-6 text-amber-600" />
+              <div className="bg-white/5 border border-slate-500/30 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-slate-500/20 rounded-full mx-auto mb-3">
+                  <Lock className="h-6 w-6 text-slate-400" />
                 </div>
-                <div className="text-2xl font-bold text-amber-800">
+                <div className="text-2xl font-bold text-white">
                   {totalStats.available - totalStats.earned}
                 </div>
-                <div className="text-sm text-amber-600 font-medium">
+                <div className="text-sm text-slate-300 font-medium">
                   Remaining
                 </div>
               </div>
@@ -335,26 +335,26 @@ export function ProfessionalAchievementProgress({
           </div>
 
           {/* Progress Overview */}
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h4 className="text-md font-semibold text-gray-900 mb-4">
+          <div className="bg-white/5 rounded-lg p-6 border border-white/10">
+            <h4 className="text-md font-semibold text-white mb-4">
               Overall Progress
             </h4>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-blue-200">
                   Portfolio Completion
                 </span>
-                <span className="text-sm font-semibold text-gray-900">
+                <span className="text-sm font-semibold text-white">
                   {completionRate}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-white/10 rounded-full h-3">
                 <div
                   className="bg-gradient-to-r from-verus-blue to-verus-green h-3 rounded-full transition-all duration-1000 ease-out"
                   style={{ width: `${completionRate}%` }}
                 ></div>
               </div>
-              <div className="flex justify-between text-xs text-gray-500">
+              <div className="flex justify-between text-xs text-blue-300">
                 <span>
                   {totalStats.earned} of {totalStats.available} achievements
                 </span>
@@ -395,10 +395,10 @@ export function ProfessionalAchievementProgress({
 
       {/* Recent Achievements */}
       {recentUnlocks.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-green-600" />
+        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-sm">
+          <div className="px-6 py-4 border-b border-white/10">
+            <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+              <Calendar className="h-5 w-5 text-verus-green" />
               <span>Recent Achievements</span>
             </h3>
           </div>
@@ -413,7 +413,7 @@ export function ProfessionalAchievementProgress({
                     <div
                       className={`flex-shrink-0 w-10 h-10 ${tierColors[achievement.tier].accent} rounded-lg flex items-center justify-center`}
                     >
-                      <Award className="h-5 w-5 text-white" />
+                      <Medal className="h-5 w-5 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4
@@ -441,9 +441,9 @@ export function ProfessionalAchievementProgress({
       )}
 
       {/* Controls */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-white/10">
+          <h3 className="text-lg font-semibold text-white">
             Achievement Portfolio
           </h3>
         </div>
@@ -474,7 +474,7 @@ export function ProfessionalAchievementProgress({
                 placeholder="MagnifyingGlass achievements..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                className="bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-900 text-sm placeholder-gray-500 min-w-48 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="bg-white/10 border border-white/20 rounded-md px-3 py-2 text-white text-sm placeholder-blue-300 min-w-48 focus:ring-2 focus:ring-verus-blue focus:border-verus-blue"
               />
 
               {/* Category Funnel */}
@@ -483,7 +483,7 @@ export function ProfessionalAchievementProgress({
                 onChange={e =>
                   setFilterCategory(e.target.value as FilterCategory)
                 }
-                className="bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="bg-white/10 border border-white/20 rounded-md px-3 py-2 text-white text-sm focus:ring-2 focus:ring-verus-blue focus:border-verus-blue"
               >
                 <option value="all">All Categories</option>
                 <option value="milestone">Milestone</option>
@@ -497,7 +497,7 @@ export function ProfessionalAchievementProgress({
               <select
                 value={sortBy}
                 onChange={e => handleSortChange(e.target.value as SortOption)}
-                className="bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="bg-white/10 border border-white/20 rounded-md px-3 py-2 text-white text-sm focus:ring-2 focus:ring-verus-blue focus:border-verus-blue"
               >
                 <option value="tier">Tier</option>
                 <option value="rarity">Rarity</option>
@@ -535,7 +535,7 @@ export function ProfessionalAchievementProgress({
               .map(achievement => (
                 <div
                   key={achievement.slug}
-                  className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-sm hover:shadow-md hover:border-verus-blue/50 transition-all"
                 >
                   <div className="p-6">
                     {/* Header */}
@@ -543,7 +543,7 @@ export function ProfessionalAchievementProgress({
                       <div
                         className={`flex-shrink-0 w-12 h-12 ${tierColors[achievement.tier].accent} rounded-lg flex items-center justify-center`}
                       >
-                        <Award className="h-6 w-6 text-white" />
+                        <Medal className="h-6 w-6 text-white" />
                       </div>
                       <div className="flex flex-col items-end space-y-1">
                         <span
@@ -562,25 +562,25 @@ export function ProfessionalAchievementProgress({
                     {/* Content */}
                     <div className="space-y-3">
                       <div>
-                        <h4 className="text-lg font-semibold text-gray-900 mb-1">
+                        <h4 className="text-lg font-semibold text-white mb-1">
                           {achievement.name}
                         </h4>
-                        <p className="text-sm text-gray-600 line-clamp-3">
+                        <p className="text-sm text-blue-200 line-clamp-3">
                           {achievement.description}
                         </p>
                       </div>
 
                       {/* Status */}
                       {achievement.earned ? (
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-3">
                           <div className="flex items-center space-x-2">
-                            <CheckCircle className="h-5 w-5 text-green-600" />
-                            <span className="text-sm font-medium text-green-800">
+                            <CheckCircle className="h-5 w-5 text-green-400" />
+                            <span className="text-sm font-medium text-green-300">
                               Achievement Unlocked
                             </span>
                           </div>
                           {achievement.unlockedAt && (
-                            <div className="text-xs text-green-600 mt-1">
+                            <div className="text-xs text-green-300 mt-1">
                               {new Date(
                                 achievement.unlockedAt
                               ).toLocaleDateString()}
@@ -592,15 +592,15 @@ export function ProfessionalAchievementProgress({
                           {achievement.percentage &&
                           achievement.percentage > 0 ? (
                             <div>
-                              <div className="flex justify-between text-sm text-gray-700 mb-1">
+                              <div className="flex justify-between text-sm text-blue-200 mb-1">
                                 <span>Progress</span>
                                 <span>
                                   {Math.round(achievement.percentage)}%
                                 </span>
                               </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="w-full bg-white/10 rounded-full h-2">
                                 <div
-                                  className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                                  className="bg-verus-blue h-2 rounded-full transition-all duration-500"
                                   style={{
                                     width: `${achievement.percentage}%`,
                                   }}
@@ -608,17 +608,17 @@ export function ProfessionalAchievementProgress({
                               </div>
                               {achievement.current !== undefined &&
                                 achievement.target !== undefined && (
-                                  <div className="text-xs text-gray-500 mt-1">
+                                  <div className="text-xs text-blue-300 mt-1">
                                     {achievement.current.toLocaleString()} /{' '}
                                     {achievement.target.toLocaleString()}
                                   </div>
                                 )}
                             </div>
                           ) : (
-                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                            <div className="bg-white/5 border border-white/10 rounded-lg p-3">
                               <div className="flex items-center space-x-2">
-                                <Lock className="h-5 w-5 text-gray-400" />
-                                <span className="text-sm font-medium text-gray-600">
+                                <Lock className="h-5 w-5 text-slate-400" />
+                                <span className="text-sm font-medium text-slate-300">
                                   Not Started
                                 </span>
                               </div>
@@ -635,11 +635,11 @@ export function ProfessionalAchievementProgress({
           {/* Empty State */}
           {sortedAchievements.length === 0 && (
             <div className="text-center py-12">
-              <Target className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <Target className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-white mb-2">
                 No achievements found
               </h3>
-              <p className="text-gray-500">
+              <p className="text-blue-200">
                 {filterCategory === 'all'
                   ? 'No achievements match your current filters.'
                   : `No ${filterCategory} achievements match your current filters.`}

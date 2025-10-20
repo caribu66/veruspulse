@@ -9,7 +9,7 @@ import {
   Warning,
   CheckCircle,
   XCircle,
-  Loader2,
+  CircleNotch,
 } from '@phosphor-icons/react';
 
 interface ConnectionStatus {
@@ -83,14 +83,14 @@ export function SmartStatusIndicator({
     };
 
     checkConnection();
-    const interval = setInterval(checkConnection, 10000); // More frequent updates
+    const interval = setInterval(checkConnection, 30000); // Check every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
   const getStatusInfo = () => {
     if (isLoading) {
       return {
-        icon: Loader2,
+        icon: CircleNotch,
         color: 'text-verus-teal',
         bgColor: 'bg-verus-teal/20',
         borderColor: 'border-yellow-500/30',
@@ -210,13 +210,24 @@ export function SmartStatusIndicator({
         </div>
 
         {showDetails && status.connected && (
-          <div className="flex items-center space-x-3 text-xs text-white/60 mt-1">
-            <span>{status.blockHeight.toLocaleString()} blocks</span>
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-3 text-xs text-white/60">
+              <span>{status.blockHeight.toLocaleString()} blocks</span>
+              {status.syncProgress > 0 && status.syncProgress < 100 && (
+                <span>{status.syncProgress}% synced</span>
+              )}
+              <span>{formatLatency(status.latency)}</span>
+              <span>{formatTime(status.lastUpdate)}</span>
+            </div>
+            {/* Progress Bar for Syncing */}
             {status.syncProgress > 0 && status.syncProgress < 100 && (
-              <span>{status.syncProgress}% synced</span>
+              <div className="w-48 h-1.5 bg-slate-900/50 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-500"
+                  style={{ width: `${status.syncProgress}%` }}
+                />
+              </div>
             )}
-            <span>{formatLatency(status.latency)}</span>
-            <span>{formatTime(status.lastUpdate)}</span>
           </div>
         )}
       </div>

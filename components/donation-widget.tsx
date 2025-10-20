@@ -52,13 +52,12 @@ export function DonationWidget({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
   const handleSubmitRecognition = async () => {
     // TODO: Send recognition data to API
-    console.log('Recognition form data:', formData);
     setShowRecognitionForm(false);
     setIsOpen(false);
     // Show success toast

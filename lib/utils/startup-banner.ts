@@ -24,9 +24,11 @@ export function showStartupBanner() {
   );
 
   // Initialize Smart VerusID Updater if database is available
+  // Only in production or if explicitly enabled
   if (
     process.env.DATABASE_URL &&
-    process.env.UTXO_DATABASE_ENABLED === 'true'
+    process.env.UTXO_DATABASE_ENABLED === 'true' &&
+    (process.env.NODE_ENV === 'production' || process.env.ENABLE_SMART_UPDATER === 'true')
   ) {
     initializeSmartVerusIDUpdater(process.env.DATABASE_URL)
       .then(() => {
@@ -45,7 +47,7 @@ export function showStartupBanner() {
   } else {
     enhancedLogger.info(
       'SYSTEM',
-      'Smart VerusID Updater disabled (no database URL or UTXO_DATABASE_ENABLED=false)'
+      'Smart VerusID Updater disabled (set ENABLE_SMART_UPDATER=true to enable in dev)'
     );
   }
 }

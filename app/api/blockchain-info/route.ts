@@ -10,7 +10,7 @@ export async function GET() {
     const [bcResult, netResult, txoResult] = await Promise.allSettled([
       CachedRPCClient.getBlockchainInfo(),
       CachedRPCClient.getNetworkInfo(),
-      verusAPI.getTxOutSetInfo(), // This method doesn't exist in cached client yet
+      CachedRPCClient.getTxOutSetInfo(), // Now using cached version
     ]);
 
     // Handle daemon warmup: if blockchain info is not yet available due to -28,

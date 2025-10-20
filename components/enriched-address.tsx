@@ -6,7 +6,7 @@ import {
   Shield,
   Coins,
   HardDrives,
-  HelpCircle,
+  Question,
   ArrowSquareOut,
 } from '@phosphor-icons/react';
 
@@ -54,7 +54,7 @@ export function EnrichedAddress({
           setKnownAddress(data.data[0]);
         }
       } catch (error) {
-        console.error('Failed to fetch known address:', error);
+        // Silent error handling for known address lookup
       } finally {
         setLoading(false);
       }
@@ -76,7 +76,7 @@ export function EnrichedAddress({
       case 'service':
         return Shield;
       default:
-        return HelpCircle;
+        return Question;
     }
   };
 
@@ -183,7 +183,7 @@ export function EnrichedAddress({
 
       {showTooltip && knownAddress.description && (
         <div className="group relative inline-block">
-          <HelpCircle className="h-3 w-3 text-gray-400 cursor-help" />
+          <Question className="h-3 w-3 text-gray-400 cursor-help" />
           <div className="invisible group-hover:visible absolute z-50 w-64 p-2 mt-1 text-xs bg-gray-900 text-white rounded border border-gray-700 shadow-lg">
             {knownAddress.description}
             <div className="text-xs text-gray-400 mt-1 font-mono">

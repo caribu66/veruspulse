@@ -5,6 +5,7 @@ import { logger } from '@/lib/utils/logger';
 import { enhancedLogger } from '@/lib/utils/enhanced-logger';
 import { SearchDatabaseService } from '@/lib/services/search-database';
 import { getCachedIdentity, cacheIdentity } from '@/lib/verusid-cache';
+import { needsPriorityScan } from '@/lib/services/priority-verusid-scanner';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -146,6 +147,34 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
       return addSecurityHeaders(response);
+    }
+
+    // 🚀 PRIORITY SCANNING: Check if this VerusID needs priority scanning
+    const identityAddress = result.identity.identity?.identityaddress;
+    if (identityAddress) {
+      try {
+        const needsScan = await needsPriorityScan(identityAddress);
+        if (needsScan) {
+          enhancedLogger.info('SYSTEM', `Triggering priority scan for: ${identity} (${identityAddress})`);
+          
+          // Trigger priority scan in background (don't wait for completion)
+          fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid/priority-scan`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identityAddress }),
+          }).catch(error => {
+            enhancedLogger.warn('SYSTEM', 'Failed to trigger priority scan', {
+              error: error.message,
+            });
+          });
+        } else {
+          enhancedLogger.info('SYSTEM', `No priority scan needed for: ${identity} (${identityAddress})`);
+        }
+      } catch (error) {
+        enhancedLogger.warn('SYSTEM', 'Error checking priority scan status', {
+          error: (error as Error).message,
+        });
+      }
     }
 
     enhancedLogger.info('REQUEST', `VerusID lookup successful: ${identity}`);

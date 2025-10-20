@@ -127,7 +127,7 @@ export function VerusIDLoadingWithSync({
           }
         }
       } catch (error) {
-        console.error('Error polling sync progress:', error);
+        // Silent error handling for sync progress polling
       }
     }, 2000); // Poll every 2 seconds
 

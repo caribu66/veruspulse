@@ -11,7 +11,7 @@ import {
   MagnifyingGlass,
   Eye,
   Lock,
-  Unlock,
+  LockOpen,
   Network,
   Hash,
   TrendUp,
@@ -144,7 +144,6 @@ export function VerusFeaturesDashboard() {
         }
       }
     } catch (error: any) {
-      console.error('Error fetching Verus data:', error);
       setError('Failed to fetch Verus blockchain data');
     } finally {
       setLoading(false);

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
-  Activity,
+  Pulse,
   HardDrives,
   Network,
   Database,
@@ -420,7 +420,7 @@ export function DaemonMonitorDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
+                <Pulse className="h-5 w-5" />
                 Mempool Health
               </CardTitle>
             </CardHeader>

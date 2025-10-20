@@ -4,13 +4,13 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   UsersThree,
   TrendUp,
-  Award,
+  Medal,
   Star,
   CaretLeft,
   CaretRight,
   Crown,
   Lightning,
-  Activity,
+  Pulse,
   ArrowRight,
   ArrowSquareOut,
 } from '@phosphor-icons/react';
@@ -104,13 +104,13 @@ export function FeaturedVerusIDsCarousel({
                   : index === 1
                     ? {
                         label: '#2 Staker',
-                        icon: Award,
+                        icon: Medal,
                         color: 'bg-gray-300 text-gray-800',
                       }
                     : index === 2
                       ? {
                           label: '#3 Staker',
-                          icon: Award,
+                          icon: Medal,
                           color: 'bg-verus-cyan text-white',
                         }
                       : {
@@ -161,7 +161,7 @@ export function FeaturedVerusIDsCarousel({
           category: 'most-active',
           badge: {
             label: 'Active',
-            icon: Activity,
+            icon: Pulse,
             color: 'bg-cyan-500 text-white',
           },
         },
@@ -171,7 +171,6 @@ export function FeaturedVerusIDsCarousel({
       saveToCache(featured); // Cache results
       setIsLoading(false);
     } catch (error) {
-      console.error('Error fetching featured VerusIDs:', error);
       setIsLoading(false);
     }
   }, [saveToCache]);
@@ -337,7 +336,7 @@ export function FeaturedVerusIDsCarousel({
                       Achievements
                     </div>
                     <div className="text-lg font-bold text-verus-teal flex items-center gap-1">
-                      <Award className="h-4 w-4" />
+                      <Medal className="h-4 w-4" />
                       {currentID.stats.achievements}
                     </div>
                   </div>
@@ -410,7 +409,7 @@ export function FeaturedVerusIDsCarousel({
             {
               key: 'most-active',
               label: 'Most Active',
-              icon: Activity,
+              icon: Pulse,
               color: 'text-cyan-400',
             },
             {
@@ -447,14 +446,14 @@ export function FeaturedVerusIDsCarousel({
         </div>
       </div>
 
-      {/* Footer - View All Link */}
+      {/* Footer - Explore All Link */}
       <div className="px-6 pb-6">
         <Link
           href="/?tab=verusids"
-          className="group w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-lg border border-white/10 hover:border-verus-cyan/50 transition-all"
+          className="group w-full flex items-center justify-center gap-2 px-4 py-3 bg-verus-blue/10 hover:bg-verus-blue/20 text-verus-blue hover:text-white rounded-lg border border-verus-blue/30 hover:border-verus-blue/60 transition-all"
         >
           <UsersThree className="h-4 w-4" />
-          <span className="font-medium">Explore All VerusIDs</span>
+          <span className="font-medium">Browse All VerusIDs</span>
           <ArrowSquareOut className="h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
         </Link>
       </div>
@@ -491,7 +490,6 @@ export function FeaturedVerusIDsCompact() {
         }
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching top VerusIDs:', error);
         setIsLoading(false);
       }
     };
@@ -550,12 +548,12 @@ export function FeaturedVerusIDsCompact() {
         </Link>
       ))}
 
-      {/* View All */}
+      {/* Browse All */}
       <Link
         href="/?tab=verusids"
-        className="block text-center text-sm text-verus-cyan hover:text-verus-cyan-light py-2 transition-colors"
+        className="block text-center text-sm text-verus-blue hover:text-verus-blue-light py-2 transition-colors font-medium"
       >
-        View All VerusIDs →
+        Browse All VerusIDs →
       </Link>
     </div>
   );

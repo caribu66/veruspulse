@@ -106,6 +106,8 @@ npm run dev
 
 Visit `http://localhost:3000` to see your explorer!
 
+> 🛡️ **Duplicate Prevention**: The system automatically prevents multiple instances from running. If you see "already running" errors, use `npm run services:status` to check running services and `npm run services:stop` to stop them cleanly.
+
 ### Quick Configuration
 
 ```env
@@ -289,6 +291,24 @@ We welcome contributions from the Verus community!
 - **[Deployment Guide](./DEPLOYMENT-GUIDE.md)** - Production deployment
 - **[Database Setup](./database-setup-guide.md)** - PostgreSQL configuration
 - **[Remote Daemon Setup](./remote-daemon-guide.md)** - Connect to remote Verus node
+- **[Duplicate Prevention](./DUPLICATE-PREVENTION.md)** - Service management and lock mechanism
+- **[Service Reference](./QUICK-SERVICE-REFERENCE.md)** - Quick command reference
+
+### Service Management
+
+```bash
+# Check running services
+npm run services:status
+
+# Stop all services
+npm run services:stop
+
+# Start/stop specific services
+npm run dev          # Start dev server
+npm run dev:stop     # Stop dev server
+npm run start        # Start production server
+npm run stop         # Stop any server
+```
 
 ---
 

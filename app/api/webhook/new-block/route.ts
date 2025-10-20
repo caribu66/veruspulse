@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[Webhook] New block notification: ${block}`);
 
     // Broadcast to WebSocket clients
     try {

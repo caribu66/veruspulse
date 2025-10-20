@@ -11,7 +11,6 @@ const db = new Pool({
 
 export async function POST() {
   try {
-    console.log('[Schema] Applying enhanced database schema...');
 
     // Add missing columns to existing tables
     await db.query(`
@@ -269,7 +268,6 @@ export async function POST() {
       ON stake_competition(block_height DESC)
     `);
 
-    console.log('[Schema] Enhanced database schema applied successfully!');
 
     return NextResponse.json({
       success: true,

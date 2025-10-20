@@ -42,9 +42,19 @@ class EnhancedLogger {
   private errorCount = 0;
   private successCount = 0;
   private bannerShown = false;
+  private logLevel: 'error' | 'warn' | 'info' | 'debug' = 'info'; // Default to info
 
   constructor() {
+    // Set log level from environment variable
+    const envLogLevel = process.env.NEXT_PUBLIC_LOG_LEVEL || process.env.LOG_LEVEL || 'info';
+    this.logLevel = envLogLevel as 'error' | 'warn' | 'info' | 'debug';
     this.showStartupBanner();
+  }
+
+  private shouldLog(level: LogEntry['level']): boolean {
+    const levels = { DEBUG: 0, SUCCESS: 1, INFO: 1, WARN: 2, ERROR: 3 };
+    const configLevels = { debug: 0, info: 1, warn: 2, error: 3 };
+    return levels[level] >= configLevels[this.logLevel];
   }
 
   private formatTimestamp(): string {
@@ -143,6 +153,11 @@ class EnhancedLogger {
   }
 
   private log(entry: LogEntry): void {
+    // Check if we should log based on level
+    if (!this.shouldLog(entry.level)) {
+      return;
+    }
+
     const emoji = this.getEmoji(entry.level, entry.category);
     const color = this.getColor(entry.level);
     const timestamp = colors.gray(`[${entry.timestamp}]`);
@@ -171,8 +186,8 @@ class EnhancedLogger {
 
     console.log(`${timestamp} ${mainMessage}`);
 
-    // Log details if present
-    if (entry.details) {
+    // Only show details for errors and warnings, or in debug mode
+    if (entry.details && (entry.level === 'ERROR' || entry.level === 'WARN' || this.logLevel === 'debug')) {
       console.log(
         colors.gray(`    Details: ${JSON.stringify(entry.details, null, 2)}`)
       );
@@ -181,7 +196,7 @@ class EnhancedLogger {
     // Log error stack if present
     if (entry.error) {
       console.log(colors.red(`    Error: ${entry.error.message}`));
-      if (entry.level === 'DEBUG') {
+      if (this.logLevel === 'debug') {
         console.log(colors.gray(entry.error.stack || ''));
       }
     }
@@ -194,11 +209,6 @@ class EnhancedLogger {
     }
     if (entry.category === 'REQUEST') {
       this.requestCount++;
-    }
-
-    // Show stats every 10 requests
-    if (this.requestCount % 10 === 0 && this.requestCount > 0) {
-      this.showStats();
     }
   }
 
@@ -414,18 +424,9 @@ class EnhancedLogger {
     if (this.bannerShown || process.env.NODE_ENV !== 'development') return;
 
     console.log('\n');
-    console.log('🚀 ========================================');
-    console.log('   VERUS EXPLORER - ENHANCED LOGGING');
-    console.log('========================================');
-    console.log('📊 Real-time monitoring active');
-    console.log('🔍 API calls tracked');
-    console.log('💰 Staking rewards monitored');
-    console.log('🔗 RPC calls logged');
-    console.log('⚠️  Errors highlighted');
-    console.log('📈 Performance metrics enabled');
-    console.log('========================================');
-    console.log('🎯 Watch this console for detailed activity');
-    console.log('========================================\n');
+    console.log(colors.blue('🚀 VERUS EXPLORER'));
+    console.log(colors.gray(`   Log Level: ${this.logLevel.toUpperCase()}`));
+    console.log(colors.gray('   Set NEXT_PUBLIC_LOG_LEVEL=debug for verbose logs\n'));
 
     this.bannerShown = true;
   }

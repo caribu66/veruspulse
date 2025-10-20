@@ -193,7 +193,6 @@ export async function GET(
 
         // Validate dates
         if (isNaN(firstDate.getTime()) || isNaN(lastDate.getTime())) {
-          console.warn('Invalid dates for APY calculation:', {
             calculatedFirstStake,
             calculatedLastStake,
           });
@@ -212,7 +211,6 @@ export async function GET(
           }
         }
       } catch (error) {
-        console.warn('Error calculating APY:', error);
         calculatedAPY = null;
       }
     }

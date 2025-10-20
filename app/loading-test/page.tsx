@@ -15,15 +15,15 @@ export default function LoadingTestPage() {
   const [errorMessage, setErrorMessage] = useState('Statistics not found');
 
   const handleSyncComplete = () => {
-    console.log('Sync completed successfully!');
+    // Sync completed
   };
 
   const handleSyncError = (error: string) => {
-    console.error('Sync error:', error);
+    // Silent error handling
   };
 
   const handleRetry = () => {
-    console.log('Retry clicked');
+    // Retry action
   };
 
   return (

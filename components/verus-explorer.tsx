@@ -30,6 +30,8 @@ import { useScreenReaderAnnouncement } from '@/lib/hooks/use-screen-reader-annou
 import { useApiFetch } from '@/lib/hooks/use-retryable-fetch';
 import { useRouter } from 'next/navigation';
 import { EnhancedNavigationBar } from './enhanced-navigation-bar';
+import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
+import { BlockchainSyncProgress } from './blockchain-sync-progress';
 
 // Lazy-loaded components for better performance (code splitting)
 const NetworkDashboard = lazy(() =>
@@ -62,8 +64,8 @@ const PerformanceMonitor = lazy(() =>
 function ComponentSkeleton() {
   return (
     <div className="animate-pulse space-y-4">
-      <div className="h-8 bg-white/10 rounded w-1/4"></div>
-      <div className="h-64 bg-white/5 rounded-xl"></div>
+      <div className="h-8 bg-gray-200 dark:bg-white/10 rounded w-1/4"></div>
+      <div className="h-64 bg-gray-100 dark:bg-white/5 rounded-xl"></div>
     </div>
   );
 }
@@ -103,6 +105,7 @@ function normalizeLegacyTab(tab: string): ExplorerTab {
 export function VerusExplorer() {
   const [activeTab, setActiveTab] = useState<ExplorerTab>('dashboard');
   const router = useRouter();
+  const { addToHistory, initializeHistory } = useNavigationHistory();
 
   // Performance monitoring
   const { startRender, endRender, measureAsync } =
@@ -148,8 +151,13 @@ export function VerusExplorer() {
     // Update URL without triggering a page reload
     const url = new URL(window.location.href);
     url.searchParams.set('tab', tab);
-    window.history.pushState({ tab }, '', url.toString());
-  }, []);
+    const newUrl = url.toString();
+    
+    // Add to navigation history for proper back navigation
+    addToHistory(newUrl);
+    
+    window.history.pushState({ tab }, '', newUrl);
+  }, [addToHistory]);
 
   // Handle browser back/forward navigation
   useEffect(() => {
@@ -171,15 +179,19 @@ export function VerusExplorer() {
       }
     }
 
+    // Initialize navigation history with current URL
+    const currentUrl = window.location.pathname + window.location.search;
+    initializeHistory(currentUrl);
+
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [initializeHistory]);
 
   // const navigation = [
   //   { key: 'dashboard', label: 'Dashboard', icon: ChartBar },
   //   { key: 'search', label: 'MagnifyingGlass', icon: MagnifyingGlass },
   //   { key: 'blocks', label: 'Blocks', icon: Database },
-  //   { key: 'transactions', label: 'Transactions', icon: Activity },
+  //   { key: 'transactions', label: 'Transactions', icon: Pulse },
   //   { key: 'addresses', label: 'Addresses', icon: User },
   //   { key: 'verusids', label: 'VerusIDs', icon: UsersThree },
   //   { key: 'live', label: 'Live Data', icon: Clock },
@@ -194,8 +206,9 @@ export function VerusExplorer() {
 
   // Request deduplication - prevent multiple simultaneous requests
   const [isFetching, setIsFetching] = useState(false);
+  const [isBackgroundRefreshing, setIsBackgroundRefreshing] = useState(false);
 
-  const fetchRealStats = useCallback(async () => {
+  const fetchRealStats = useCallback(async (isInitialLoad = false) => {
     // Prevent multiple simultaneous requests
     if (isFetching) {
       return;
@@ -203,8 +216,16 @@ export function VerusExplorer() {
 
     try {
       setIsFetching(true);
-      setLocalLoading(true);
-      setLoading(true);
+      
+      // Only show loading screen on initial load or when explicitly requested
+      if (isInitialLoad) {
+        setLocalLoading(true);
+        setLoading(true);
+      } else {
+        // For background refreshes, show subtle indicator
+        setIsBackgroundRefreshing(true);
+      }
+      
       clearError();
 
       // Use the consolidated API for better performance and reliability (use apiFetch which has retries)
@@ -214,11 +235,7 @@ export function VerusExplorer() {
           `/api/consolidated-data?t=${Date.now()}`
         );
       } catch (err: any) {
-        // Log and fall back to individual endpoints below
-        console.warn(
-          '[VerusExplorer] Consolidated fetch failed, falling back to individual endpoints:',
-          err?.message || err
-        );
+        // Fall back to individual endpoints below
         consolidatedResult = null;
       }
 
@@ -300,19 +317,9 @@ export function VerusExplorer() {
       if (bcRes?.status === 'fulfilled') {
         const bcData = bcRes.value;
         if (bcData && bcData.success) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Setting network stats:', bcData.data);
-          }
           setLocalNetworkStats(bcData.data);
           setNetworkStats(bcData.data);
-        } else {
-          console.warn('Blockchain data fetch failed:', bcData);
         }
-      } else if (bcRes) {
-        console.warn(
-          'Blockchain data fetch error:',
-          bcRes.reason?.message || bcRes.reason
-        );
       }
 
       // Mempool
@@ -322,14 +329,7 @@ export function VerusExplorer() {
         if (mpData && mpData.success) {
           setLocalMempoolStats(mpData.data);
           setMempoolStats(mpData.data);
-        } else {
-          console.warn('Mempool data fetch failed:', mpData);
         }
-      } else if (mpRes) {
-        console.warn(
-          'Mempool data fetch error:',
-          mpRes.reason?.message || mpRes.reason
-        );
       }
 
       // Mining
@@ -339,14 +339,7 @@ export function VerusExplorer() {
         if (miningData && miningData.success) {
           setLocalMiningStats(miningData.data);
           setMiningStats(miningData.data);
-        } else {
-          console.warn('Mining data fetch failed:', miningData);
         }
-      } else if (miningRes) {
-        console.warn(
-          'Mining data fetch error:',
-          miningRes.reason?.message || miningRes.reason
-        );
       }
 
       // Staking
@@ -356,14 +349,7 @@ export function VerusExplorer() {
         if (stakingData && stakingData.success) {
           setLocalStakingStats(stakingData.data.staking);
           setStakingStats(stakingData.data.staking);
-        } else {
-          console.warn('Staking data fetch failed:', stakingData);
         }
-      } else if (stakingRes) {
-        console.warn(
-          'Staking data fetch error:',
-          stakingRes.reason?.message || stakingRes.reason
-        );
       }
 
       // PBaaS Chains
@@ -372,27 +358,25 @@ export function VerusExplorer() {
         const pbaasData = pbaasRes.value;
         if (pbaasData && pbaasData.success) {
           setPbaasChains(pbaasData.data.pbaasChains || []);
-        } else {
-          console.warn('PBaaS chains data fetch failed:', pbaasData);
         }
-      } else if (pbaasRes) {
-        console.warn(
-          'PBaaS chains data fetch error:',
-          pbaasRes.reason?.message || pbaasRes.reason
-        );
       }
 
       setLastUpdate(new Date());
       announceSuccess('Network data updated successfully');
     } catch (error) {
-      console.error('Error fetching real stats:', error);
       const errorMessage = 'Failed to load network data. Please try again.';
       setError(errorMessage);
       announceError(errorMessage);
     } finally {
       setIsFetching(false);
-      setLocalLoading(false);
-      setLoading(false);
+      // Only clear loading states if this was an initial load
+      if (isInitialLoad) {
+        setLocalLoading(false);
+        setLoading(false);
+      } else {
+        // Clear background refresh indicator
+        setIsBackgroundRefreshing(false);
+      }
     }
   }, [
     isFetching,
@@ -410,21 +394,19 @@ export function VerusExplorer() {
     announceError,
   ]);
   // Smart interval for auto-refresh - disabled immediate to prevent request spam
-  useSmartInterval(fetchRealStats, 60000, {
+  useSmartInterval(() => fetchRealStats(false), 60000, {
     immediate: false, // Changed from true to false to prevent immediate execution
     pauseOnError: true,
     maxRetries: 3,
-    onError: error => {
-      console.error('Smart interval error:', error);
+    onError: () => {
       announceError('Auto-refresh failed. Click refresh to try again.');
     },
   });
 
   // Manual initial fetch to avoid immediate interval execution
   useEffect(() => {
-    // Force immediate data fetch
-    fetchRealStats().catch(error => {
-      console.error('Initial fetch failed:', error);
+    // Force immediate data fetch with initial load flag
+    fetchRealStats(true).catch(() => {
       // Set some default data to prevent infinite loading
       setLocalLoading(false);
       setLoading(false);
@@ -466,7 +448,7 @@ export function VerusExplorer() {
       { key: 'dashboard', label: 'Dashboard', icon: ChartBar },
       { key: 'search', label: 'MagnifyingGlass', icon: MagnifyingGlass },
       { key: 'blocks', label: 'Blocks', icon: Database },
-      { key: 'transactions', label: 'Transactions', icon: Activity },
+      { key: 'transactions', label: 'Transactions', icon: Pulse },
       { key: 'addresses', label: 'Addresses', icon: User },
       { key: 'verusids', label: 'VerusIDs', icon: UsersThree },
       { key: 'mempool', label: 'Mempool', icon: Network },
@@ -492,19 +474,11 @@ export function VerusExplorer() {
                   pbaasChains={pbaasChains}
                   loading={localLoading || loading}
                   lastUpdate={lastUpdate}
-                  fetchAllData={fetchRealStats}
+                  fetchAllData={() => fetchRealStats(true)}
+                  isRefreshing={isBackgroundRefreshing}
+                  onMainTabChange={handleTabChange}
                 />
               </Suspense>
-              {/* Debug: Show what data we actually have */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="bg-green-500/10 p-4 rounded-lg text-xs text-green-200">
-                  <div>Local Network: {localNetworkStats ? '✅' : '❌'}</div>
-                  <div>Store Network: {networkStats ? '✅' : '❌'}</div>
-                  <div>Local Mining: {localMiningStats ? '✅' : '❌'}</div>
-                  <div>Store Mining: {miningStats ? '✅' : '❌'}</div>
-                  <div>Loading: {String(localLoading || loading)}</div>
-                </div>
-              )}
             </div>
           );
 
@@ -513,7 +487,7 @@ export function VerusExplorer() {
           return (
             <div className="space-y-6">
               {/* Universal MagnifyingGlass - Prominently featured */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+              <div className="bg-gray-50 dark:bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-slate-300 dark:border-white/10">
                 <Suspense fallback={<ComponentSkeleton />}>
                   <UniversalSearch />
                 </Suspense>
@@ -525,11 +499,11 @@ export function VerusExplorer() {
                   onClick={() => {
                     /* Show blocks */
                   }}
-                  className="p-6 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-xl border border-white/10 transition-all text-left group"
+                  className="p-6 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm rounded-xl border border-slate-300 dark:border-white/10 transition-all text-left group"
                 >
                   <Database className="h-8 w-8 mb-3 text-blue-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1">Blocks</h3>
-                  <p className="text-sm text-gray-400">
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Blocks</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Browse blockchain blocks
                   </p>
                 </button>
@@ -538,11 +512,11 @@ export function VerusExplorer() {
                   onClick={() => {
                     /* Show transactions */
                   }}
-                  className="p-6 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-xl border border-white/10 transition-all text-left group"
+                  className="p-6 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm rounded-xl border border-slate-300 dark:border-white/10 transition-all text-left group"
                 >
                   <Pulse className="h-8 w-8 mb-3 text-verus-blue group-hover:scale-110 transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1">Transactions</h3>
-                  <p className="text-sm text-gray-400">
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Transactions</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     View transaction history
                   </p>
                 </button>
@@ -551,11 +525,11 @@ export function VerusExplorer() {
                   onClick={() => {
                     /* Show addresses */
                   }}
-                  className="p-6 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-xl border border-white/10 transition-all text-left group"
+                  className="p-6 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm rounded-xl border border-slate-300 dark:border-white/10 transition-all text-left group"
                 >
                   <User className="h-8 w-8 mb-3 text-green-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1">Addresses</h3>
-                  <p className="text-sm text-gray-400">
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Addresses</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Explore wallet addresses
                   </p>
                 </button>
@@ -586,7 +560,9 @@ export function VerusExplorer() {
                 pbaasChains={pbaasChains}
                 loading={localLoading || loading}
                 lastUpdate={lastUpdate}
-                fetchAllData={fetchRealStats}
+                fetchAllData={() => fetchRealStats(true)}
+                isRefreshing={isBackgroundRefreshing}
+                onMainTabChange={handleTabChange}
               />
             </Suspense>
           );
@@ -615,7 +591,7 @@ export function VerusExplorer() {
   ]);
 
   return (
-    <div className="min-h-screen theme-bg-primary">
+    <div className="min-h-screen bg-transparent dark:bg-slate-950">
       {/* Semantic Header with Navigation */}
       <header role="banner" aria-label="Site header">
         <EnhancedNavigationBar
@@ -630,39 +606,17 @@ export function VerusExplorer() {
         aria-label="Network status"
         className="max-w-7xl mx-auto px-6 pt-6"
       >
-        {/* Sync Progress */}
-        {networkStats && networkStats.verificationProgress < 0.999 && (
-          <div className="bg-blue-500/10 backdrop-blur-sm rounded-lg p-4 border border-blue-500/20 mb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-400"></div>
-                <div className="text-white font-semibold">
-                  Wallet is synchronizing...
-                </div>
-              </div>
-              <div className="text-white text-sm font-semibold">
-                {(networkStats.verificationProgress * 100).toFixed(2)}%
-              </div>
-            </div>
-            <div className="mt-2 h-2 bg-white/10 rounded-full">
-              <div
-                className="h-2 bg-blue-400 rounded-full transition-all duration-300"
-                style={{
-                  width: `${networkStats.verificationProgress * 100}%`,
-                }}
-              ></div>
-            </div>
-          </div>
-        )}
+        {/* Blockchain Sync Progress */}
+        <BlockchainSyncProgress className="mb-4" />
 
         {/* Error State */}
         {error && (
           <div className="bg-red-500/10 backdrop-blur-sm rounded-lg p-4 border border-red-500/20 mb-4">
             <div className="flex items-center space-x-3">
               <WarningCircle className="h-5 w-5 text-red-400" />
-              <div className="text-white font-semibold">{error}</div>
+              <div className="text-gray-900 dark:text-white font-semibold">{error}</div>
               <button
-                onClick={fetchRealStats}
+                onClick={() => fetchRealStats(true)}
                 className="ml-auto px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-200 rounded-md transition-colors text-sm"
               >
                 Retry
@@ -671,27 +625,6 @@ export function VerusExplorer() {
           </div>
         )}
 
-        {/* Success State */}
-        {!loading && !error && networkStats && (
-          <div className="bg-green-500/10 backdrop-blur-sm rounded-lg p-3 border border-green-500/20 mb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <CheckCircle className="h-4 w-4 text-green-400" />
-                <div className="text-white text-sm">
-                  Network connected • {networkStats.connections} peers
-                </div>
-              </div>
-              {lastUpdate && (
-                <div className="text-green-200 text-xs">
-                  Updated{' '}
-                  {lastUpdate instanceof Date
-                    ? lastUpdate.toLocaleTimeString()
-                    : new Date(lastUpdate).toLocaleTimeString()}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </aside>
 
       {/* Main Content Area with Landmark */}
@@ -702,32 +635,21 @@ export function VerusExplorer() {
         className="max-w-7xl mx-auto px-6 py-12"
       >
         <div className="space-y-8">
-          {/* Breadcrumb Navigation */}
-          <nav
-            className="flex items-center space-x-2 text-sm theme-text-secondary"
-            aria-label="Breadcrumb"
-          >
-            <span>VerusPulse</span>
-            <CaretRight className="h-4 w-4" />
-            <span className="theme-text-primary font-medium">
-              {navigationItems.find(nav => nav.key === activeTab)?.label}
-            </span>
-          </nav>
-
           {/* Tab Content */}
           <div className="min-h-[600px]">{renderTabContent()}</div>
         </div>
       </main>
 
+
       {/* Footer */}
-      <footer className="bg-black/20 backdrop-blur-sm border-t border-white/10 mt-16">
+      <footer className="bg-gray-50/50 dark:bg-black/20 backdrop-blur-sm border-t border-slate-300 dark:border-white/10 mt-16">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             <div className="flex items-center space-x-4">
               <div className="theme-text-secondary text-sm">
                 VerusPulse - Powered by Verus Protocol
               </div>
-              <div className="hidden md:block w-px h-4 bg-white/20"></div>
+              <div className="hidden md:block w-px h-4 bg-gray-300 dark:bg-white/20"></div>
               <div className="theme-text-secondary text-xs">
                 The Internet of Value
               </div>

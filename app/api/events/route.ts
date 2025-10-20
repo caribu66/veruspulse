@@ -11,7 +11,6 @@ export const dynamic = 'force-dynamic';
  * const eventSource = new EventSource('/api/events');
  * eventSource.addEventListener('new-block', (e) => {
  *   const data = JSON.parse(e.data);
- *   console.log('New block:', data.block);
  * });
  */
 export async function GET(request: NextRequest) {
@@ -21,7 +20,6 @@ export async function GET(request: NextRequest) {
 
   const stream = new ReadableStream({
     start(controller) {
-      console.log(`[SSE] Client ${clientId} connected`);
 
       // Send initial connection message
       const welcomeMessage = `data: ${JSON.stringify({
@@ -48,7 +46,6 @@ export async function GET(request: NextRequest) {
 
       // Cleanup on close
       request.signal.addEventListener('abort', () => {
-        console.log(`[SSE] Client ${clientId} disconnected`);
         clearInterval(heartbeatInterval);
         removeListener(clientId);
         try {

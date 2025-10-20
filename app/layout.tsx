@@ -3,7 +3,7 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { GlobalErrorFallback } from '@/components/global-error-fallback';
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/contexts/theme-context';
 import { SkipNavigation } from '@/components/skip-navigation';
 import { MobileViewportFix } from '@/components/mobile-optimizations';
 import { ToastProvider } from '@/components/ui/toast';

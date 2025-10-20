@@ -144,7 +144,7 @@ export function VerusIDExplorer() {
         setRecentSearches(JSON.parse(saved));
       }
     } catch (error) {
-      console.error('Failed to load recent searches:', error);
+      // Silent error handling for localStorage
     }
   }, []);
 
@@ -217,22 +217,20 @@ export function VerusIDExplorer() {
         },
       ]);
     } catch (error) {
-      console.error('Failed to load trending identities:', error);
+      // Silent error handling for trending identities
     }
   };
 
   const fetchBalance = async (verusid: string, signal?: AbortSignal) => {
     try {
       setBalanceLoading(true);
-      console.log('Fetching balance for VerusID:', verusid);
       // Use apiFetch which has retry logic and better error handling
       const result = await apiFetch('/api/verusid-balance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ verusid }),
         signal,
-      }).catch((err: any) => {
-        console.error('Balance fetch failed:', err);
+      }).catch(() => {
         return null;
       });
 
@@ -240,15 +238,10 @@ export function VerusIDExplorer() {
         setBalance(null);
         return;
       }
-      console.log('Balance API response:', result);
 
       if (result.success && result.data) {
         setBalance(result.data);
       } else {
-        console.error(
-          'Error fetching balance:',
-          result.error || 'Unknown error'
-        );
         setBalance(null);
       }
     } catch (error) {
@@ -256,7 +249,6 @@ export function VerusIDExplorer() {
         // Request cancelled by user; do not update balance state
         return;
       }
-      console.error('Error fetching balance:', error);
       setBalance(null);
     } finally {
       setBalanceLoading(false);
@@ -265,10 +257,6 @@ export function VerusIDExplorer() {
 
   // Accept an optional input override to avoid stale state when triggered by key events
   const searchIdentity = async (inputOverride?: string) => {
-    console.log(
-      '[VerusID Debug] searchIdentity called with override:',
-      inputOverride
-    );
     const searchInput = (
       typeof inputOverride === 'string' ? inputOverride : identity
     ).trim();
@@ -295,8 +283,7 @@ export function VerusIDExplorer() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ input: searchInput }),
         signal: controller.signal,
-      }).catch(err => {
-        console.error('Lookup fetch failed:', err);
+      }).catch(() => {
         return null;
       });
 
@@ -372,7 +359,7 @@ export function VerusIDExplorer() {
               JSON.stringify(limited)
             );
           } catch (error) {
-            console.error('Failed to save recent searches:', error);
+            // Silent error handling for localStorage
           }
           return limited;
         });
@@ -453,7 +440,6 @@ export function VerusIDExplorer() {
         return;
       }
       setError('Network error while fetching identity');
-      console.error('Error fetching identity:', err);
     } finally {
       setLoading(false);
     }
@@ -465,7 +451,7 @@ export function VerusIDExplorer() {
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
@@ -518,18 +504,6 @@ export function VerusIDExplorer() {
   };
 
   const toggleSection = (section: string) => {
-    console.log(
-      `[VerusID Debug] toggleSection called for section: "${section}"`
-    );
-    console.log(
-      `[VerusID Debug] Current expanded sections:`,
-      Array.from(expandedSections)
-    );
-    console.log(
-      `[VerusID Debug] Current stakingLoading state:`,
-      stakingLoading
-    );
-
     const newExpanded = new Set(expandedSections);
     if (newExpanded.has(section)) {
       newExpanded.delete(section);
@@ -597,7 +571,7 @@ export function VerusIDExplorer() {
         )}
 
         {/* Enhanced Header with Tabs */}
-        <div className="bg-slate-900 rounded-2xl p-8 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center justify-between mb-8">
             <div>
               {/* Breadcrumb added for accessibility and tests */}
@@ -618,13 +592,13 @@ export function VerusIDExplorer() {
               </p>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="bg-slate-800 border border-slate-700 rounded-xl p-2">
+              <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-2">
                 <button
                   onClick={() => setActiveTab('search')}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
                     activeTab === 'search'
                       ? 'bg-blue-500 text-white'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
                   }`}
                 >
                   <MagnifyingGlass className="h-4 w-4" />
@@ -635,7 +609,7 @@ export function VerusIDExplorer() {
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
                     activeTab === 'browse'
                       ? 'bg-blue-500 text-white'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
                   }`}
                 >
                   <Eye className="h-4 w-4" />
@@ -646,7 +620,7 @@ export function VerusIDExplorer() {
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
                     activeTab === 'trending'
                       ? 'bg-blue-500 text-white'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
                   }`}
                 >
                   <TrendUp className="h-4 w-4" />
@@ -691,8 +665,8 @@ export function VerusIDExplorer() {
 
             {/* Recent Searches */}
             {recentSearches.length > 0 && (
-              <div className="bg-slate-800 border border-slate-700 rounded-lg p-3 border border-white/10">
-                <p className="text-xs text-blue-200 mb-2 flex items-center">
+              <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-3">
+                <p className="text-xs text-gray-600 dark:text-blue-200 mb-2 flex items-center">
                   <Clock className="h-3 w-3 mr-1" />
                   Recent Searches:
                 </p>
@@ -704,7 +678,7 @@ export function VerusIDExplorer() {
                         setIdentity(search);
                         setTimeout(() => void searchIdentity(search), 100);
                       }}
-                      className="px-3 py-1 bg-white/10 hover:bg-blue-500/30 border border-slate-700 hover:border-blue-500/50 rounded-lg text-sm text-blue-100 hover:text-white transition-all"
+                      className="px-3 py-1 bg-gray-100 dark:bg-white/10 hover:bg-blue-100 dark:hover:bg-blue-500/30 border border-gray-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500/50 rounded-lg text-sm text-gray-700 dark:text-blue-100 hover:text-blue-800 dark:hover:text-white transition-all"
                     >
                       {search}
                     </button>
@@ -790,9 +764,12 @@ export function VerusIDExplorer() {
             <p className="text-blue-200 mb-6">
               Browse through all registered VerusIDs on the network
             </p>
-            <button className="px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors">
+            <a 
+              href="/verusid/browse"
+              className="inline-block px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+            >
               Load All Identities
-            </button>
+            </a>
           </div>
         )}
       </div>
@@ -841,30 +818,30 @@ export function VerusIDExplorer() {
 
             {/* Feature Highlights */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
-              <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                <Wallet className="h-6 w-6 text-green-400 mx-auto mb-2" />
-                <h4 className="text-sm font-semibold text-white mb-1">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                <Wallet className="h-6 w-6 text-verus-green mx-auto mb-2" />
+                <h4 className="text-sm font-semibold text-gray-900 mb-1">
                   Balance & Holdings
                 </h4>
-                <p className="text-xs text-blue-200">
+                <p className="text-xs text-gray-600">
                   View VRSC balances across all addresses
                 </p>
               </div>
-              <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                <ChartBar className="h-6 w-6 text-green-400 mx-auto mb-2" />
-                <h4 className="text-sm font-semibold text-white mb-1">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                <ChartBar className="h-6 w-6 text-verus-green mx-auto mb-2" />
+                <h4 className="text-sm font-semibold text-gray-900 mb-1">
                   Staking Analytics
                 </h4>
-                <p className="text-xs text-blue-200">
+                <p className="text-xs text-gray-600">
                   Track monthly rewards with interactive charts
                 </p>
               </div>
-              <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                <Shield className="h-6 w-6 text-blue-400 mx-auto mb-2" />
-                <h4 className="text-sm font-semibold text-white mb-1">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                <Shield className="h-6 w-6 text-verus-blue mx-auto mb-2" />
+                <h4 className="text-sm font-semibold text-gray-900 mb-1">
                   Identity Details
                 </h4>
-                <p className="text-xs text-blue-200">
+                <p className="text-xs text-gray-600">
                   Explore authorities, addresses & properties
                 </p>
               </div>
@@ -877,14 +854,14 @@ export function VerusIDExplorer() {
       {verusID && (
         <div className="space-y-6">
           {/* Identity Header Card */}
-          <div className="bg-gradient-to-r from-verus-blue/20 to-verus-green/20 backdrop-blur-sm rounded-2xl p-6 border border-verus-blue/30">
+          <div className="bg-gradient-to-r from-verus-blue/20 to-verus-green/20 dark:from-verus-blue/20 dark:to-verus-green/20 from-blue-100 to-green-100 backdrop-blur-sm rounded-2xl p-6 border border-verus-blue/30 dark:border-verus-blue/30 border-blue-200">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
                 <div className="p-3 rounded-lg bg-verus-blue/20">
                   <UsersThree className="h-8 w-8 text-purple-300" />
                 </div>
                 <div>
-                  <h3 className="text-3xl font-bold text-white mb-2">
+                  <h3 className="text-3xl font-bold text-white dark:text-white text-slate-900 mb-2">
                     {verusID.name}
                   </h3>
                   <div className="flex items-center space-x-4">
@@ -974,7 +951,7 @@ export function VerusIDExplorer() {
           </div>
 
           {/* Horizontal Tabs */}
-          <div className="bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700 overflow-hidden">
             <Tabs
               tabs={[
                 {
@@ -1055,7 +1032,7 @@ export function VerusIDExplorer() {
                   <div className="space-y-4">
                     {/* Balance Section - Compact */}
                     {balance && (
-                      <div className="bg-slate-900 rounded-2xl border border-slate-700 p-4">
+                      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700 p-4">
                         <div className="flex items-center space-x-3 mb-4">
                           <Wallet className="h-5 w-5 text-green-400" />
                           <h4 className="text-lg font-semibold text-white">
@@ -1292,7 +1269,7 @@ export function VerusIDExplorer() {
           <div className="space-y-4 hidden">
             {/* Balance Section */}
             {balance && (
-              <div className="bg-slate-900 rounded-2xl border border-slate-700">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700">
                 <button
                   onClick={() => toggleSection('balance')}
                   className="w-full flex items-center justify-between p-6 hover:bg-slate-800 border border-slate-700 transition-colors"

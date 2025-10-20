@@ -78,7 +78,7 @@ export function VerusIDIdentityDetails({
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
@@ -116,7 +116,7 @@ export function VerusIDIdentityDetails({
       </div>
 
       {/* Authorities Section */}
-      <div className="bg-slate-900 rounded-2xl border border-slate-700">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700">
         <button
           onClick={() => toggleSection('authorities')}
           className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
@@ -146,7 +146,7 @@ export function VerusIDIdentityDetails({
                         {resolvedAuthorities.revocation}
                       </div>
                       {verusID.revocationauthority && (
-                        <div className="font-mono text-blue-200/80 text-xs bg-black/20 p-2 rounded">
+                        <div className="font-mono text-blue-600 dark:text-blue-200/80 text-xs bg-gray-200 dark:bg-black/20 p-2 rounded">
                           {verusID.revocationauthority}
                         </div>
                       )}
@@ -170,7 +170,7 @@ export function VerusIDIdentityDetails({
                         {resolvedAuthorities.recovery}
                       </div>
                       {verusID.recoveryauthority && (
-                        <div className="font-mono text-blue-200/80 text-xs bg-black/20 p-2 rounded">
+                        <div className="font-mono text-blue-600 dark:text-blue-200/80 text-xs bg-gray-200 dark:bg-black/20 p-2 rounded">
                           {verusID.recoveryauthority}
                         </div>
                       )}
@@ -194,7 +194,7 @@ export function VerusIDIdentityDetails({
                         {resolvedAuthorities.parent}
                       </div>
                       {verusID.parent && (
-                        <div className="font-mono text-blue-200/80 text-xs bg-black/20 p-2 rounded">
+                        <div className="font-mono text-blue-600 dark:text-blue-200/80 text-xs bg-gray-200 dark:bg-black/20 p-2 rounded">
                           {verusID.parent}
                         </div>
                       )}
@@ -212,7 +212,7 @@ export function VerusIDIdentityDetails({
       </div>
 
       {/* Properties Section */}
-      <div className="bg-slate-900 rounded-2xl border border-slate-700">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700">
         <button
           onClick={() => toggleSection('properties')}
           className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
@@ -285,7 +285,7 @@ export function VerusIDIdentityDetails({
       {balance &&
         balance.addressDetails &&
         balance.addressDetails.length > 0 && (
-          <div className="bg-slate-900 rounded-2xl border border-slate-700">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700">
             <button
               onClick={() => toggleSection('addresses')}
               className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
@@ -394,7 +394,7 @@ export function VerusIDIdentityDetails({
 
       {/* ContentMap Section */}
       {verusID.contentmap && Object.keys(verusID.contentmap).length > 0 && (
-        <div className="bg-slate-900 rounded-2xl border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700">
           <button
             onClick={() => toggleSection('contentmap')}
             className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
@@ -412,7 +412,7 @@ export function VerusIDIdentityDetails({
           {expandedSections.has('contentmap') && (
             <div className="px-6 pb-6 border-t border-white/10">
               <div className="pt-6">
-                <pre className="bg-black/30 rounded-lg p-4 text-xs text-gray-300 overflow-x-auto">
+                <pre className="bg-gray-200 dark:bg-black/30 rounded-lg p-4 text-xs text-gray-300 overflow-x-auto">
                   {JSON.stringify(verusID.contentmap, null, 2)}
                 </pre>
               </div>

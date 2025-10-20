@@ -4,11 +4,9 @@ import { useState } from 'react';
 import {
   MagnifyingGlass,
   UsersThree,
-  Activity,
+  Pulse,
   Database,
-  TrendUp,
-  Hash,
-  Clock,
+  QuestionMark,
   Lightning,
   ArrowRight,
   ArrowSquareOut,
@@ -29,69 +27,40 @@ interface QuickAction {
 
 interface QuickActionsBarProps {
   onTabChange: (tab: string) => void;
-  onSearchFocus?: () => void;
 }
 
 export function QuickActionsBar({
   onTabChange,
-  onSearchFocus,
 }: QuickActionsBarProps) {
   const [hoveredAction, setHoveredAction] = useState<string | null>(null);
 
   const quickActions: QuickAction[] = [
     {
       id: 'search',
-      label: 'MagnifyingGlass',
+      label: 'Search',
       description: 'Find blocks, transactions, addresses',
       icon: MagnifyingGlass,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-500/20',
-      action: () => onTabChange('search'),
+      color: 'text-verus-blue',
+      bgColor: 'bg-verus-blue/20',
+      action: () => onTabChange('explorer'),
     },
     {
-      id: 'top-stakers',
-      label: 'Top Stakers',
-      description: 'View staking leaderboard',
-      icon: TrendUp,
-      color: 'text-green-400',
-      bgColor: 'bg-green-500/20',
-      action: () => onTabChange('verusids'),
-    },
-    {
-      id: 'live-mempool',
-      label: 'Live Mempool',
-      description: 'Real-time transaction pool',
-      icon: Activity,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-500/20',
-      action: () => onTabChange('mempool'),
-    },
-    {
-      id: 'latest-blocks',
+      id: 'blocks',
       label: 'Latest Blocks',
       description: 'Recent blockchain activity',
       icon: Database,
-      color: 'text-green-400',
-      bgColor: 'bg-green-500/20',
-      action: () => onTabChange('blocks'),
+      color: 'text-verus-green',
+      bgColor: 'bg-verus-green/20',
+      action: () => onTabChange('explorer'),
     },
     {
       id: 'verusids',
       label: 'VerusIDs',
       description: 'Identity system explorer',
       icon: UsersThree,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-500/20',
+      color: 'text-verus-blue',
+      bgColor: 'bg-verus-blue/20',
       action: () => onTabChange('verusids'),
-    },
-    {
-      id: 'network-stats',
-      label: 'Network Stats',
-      description: 'Detailed network metrics',
-      icon: Hash,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-500/20',
-      action: () => onTabChange('network'),
     },
   ];
 
@@ -179,49 +148,32 @@ export function QuickActionsBar({
           </div>
         </div>
 
-        {/* MagnifyingGlass Focus Button */}
-        {onSearchFocus && (
-          <button
-            onClick={onSearchFocus}
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-sm text-white"
-          >
-            <MagnifyingGlass className="h-4 w-4" />
-            <span className="hidden sm:inline">Quick MagnifyingGlass</span>
-          </button>
-        )}
       </div>
 
       {/* Actions Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         {quickActions.map(action => (
           <QuickActionButton key={action.id} action={action} />
         ))}
       </div>
 
-      {/* Footer - Additional Links */}
+      {/* Footer - Essential Links */}
       <div className="mt-6 pt-4 border-t border-white/10">
         <div className="flex flex-wrap gap-4 text-sm">
           <Link
             href="/api/docs"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-gray-400 hover:text-verus-blue transition-colors"
           >
             <ArrowSquareOut className="h-4 w-4" />
             API Documentation
           </Link>
           <Link
             href="/help"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-gray-400 hover:text-verus-blue transition-colors"
           >
-            <Clock className="h-4 w-4" />
+            <QuestionMark className="h-4 w-4" />
             Help & Support
           </Link>
-          <button
-            onClick={() => onTabChange('live')}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-          >
-            <Activity className="h-4 w-4" />
-            Live Data
-          </button>
         </div>
       </div>
     </div>
@@ -237,27 +189,21 @@ export function QuickActionsCompact({
   const compactActions = [
     {
       id: 'search',
-      label: 'MagnifyingGlass',
+      label: 'Search',
       icon: MagnifyingGlass,
-      action: () => onTabChange('search'),
+      action: () => onTabChange('explorer'),
     },
     {
       id: 'blocks',
       label: 'Blocks',
       icon: Database,
-      action: () => onTabChange('blocks'),
+      action: () => onTabChange('explorer'),
     },
     {
       id: 'verusids',
       label: 'VerusIDs',
       icon: UsersThree,
       action: () => onTabChange('verusids'),
-    },
-    {
-      id: 'mempool',
-      label: 'Mempool',
-      icon: Activity,
-      action: () => onTabChange('mempool'),
     },
   ];
 

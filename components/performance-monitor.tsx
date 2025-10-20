@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Activity, Memory, Clock, Lightning } from '@phosphor-icons/react';
+import { Pulse, Memory, Clock, Lightning } from '@phosphor-icons/react';
 
 interface PerformanceMetrics {
   memoryUsage: number;
@@ -80,7 +80,7 @@ export function PerformanceMonitor() {
         className="fixed bottom-4 right-4 p-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 rounded-full transition-colors"
         title="Show Performance Monitor"
       >
-        <Activity className="h-4 w-4" />
+        <Pulse className="h-4 w-4" />
       </button>
     );
   }
@@ -98,15 +98,15 @@ export function PerformanceMonitor() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg p-4 border border-white/20 min-w-[200px]">
+    <div className="fixed bottom-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm rounded-lg p-4 border border-slate-300 dark:border-white/20 min-w-[200px]">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-white text-sm font-semibold flex items-center">
-          <Activity className="h-4 w-4 mr-2" />
+        <h3 className="text-gray-900 dark:text-gray-900 dark:text-white text-sm font-semibold flex items-center">
+          <Pulse className="h-4 w-4 mr-2" />
           Performance
         </h3>
         <button
           onClick={() => setIsVisible(false)}
-          className="text-white/60 hover:text-white transition-colors"
+          className="text-gray-600 dark:text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-gray-900 dark:text-white transition-colors"
         >
           ×
         </button>
@@ -114,7 +114,7 @@ export function PerformanceMonitor() {
 
       <div className="space-y-2 text-xs">
         <div className="flex items-center justify-between">
-          <div className="flex items-center text-white/80">
+          <div className="flex items-center text-gray-700 dark:text-gray-900 dark:text-white/80">
             <Memory className="h-3 w-3 mr-1" />
             Memory
           </div>
@@ -130,7 +130,7 @@ export function PerformanceMonitor() {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center text-white/80">
+          <div className="flex items-center text-gray-700 dark:text-gray-900 dark:text-white/80">
             <Clock className="h-3 w-3 mr-1" />
             Response
           </div>
@@ -138,14 +138,14 @@ export function PerformanceMonitor() {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center text-white/80">
+          <div className="flex items-center text-gray-700 dark:text-gray-900 dark:text-white/80">
             <Lightning className="h-3 w-3 mr-1" />
             API Calls
           </div>
           <span className="text-verus-blue">{metrics.apiCalls}</span>
         </div>
 
-        <div className="text-white/60 text-[10px] pt-1 border-t border-white/10">
+        <div className="text-gray-900 dark:text-white/60 text-[10px] pt-1 border-t border-white/10">
           Updated: {metrics.lastUpdate.toLocaleTimeString()}
         </div>
       </div>

@@ -132,6 +132,48 @@ export class RateLimiter {
   }
 
   /**
+   * Get detailed statistics about rate limiter usage
+   */
+  getDetailedStats() {
+    const now = Date.now();
+    this.refillBurstTokens(now);
+    this.cleanOldRequests(now);
+
+    const requestsInSecond = this.getRequestsInLastSecond(now);
+    const requestsInMinute = this.requestTimes.length;
+    const requestsInHour = this.getRequestsInLastHour(now);
+
+    return {
+      current: {
+        perSecond: requestsInSecond,
+        perMinute: requestsInMinute,
+        perHour: requestsInHour,
+      },
+      limits: {
+        perSecond: this.config.maxRequestsPerSecond,
+        perMinute: this.config.maxRequestsPerMinute,
+        perHour: this.config.maxRequestsPerHour,
+        burst: this.config.burstLimit,
+      },
+      usage: {
+        perSecond: (requestsInSecond / this.config.maxRequestsPerSecond) * 100,
+        perMinute: (requestsInMinute / this.config.maxRequestsPerMinute) * 100,
+        perHour: (requestsInHour / this.config.maxRequestsPerHour) * 100,
+      },
+      available: {
+        perSecond: Math.max(0, this.config.maxRequestsPerSecond - requestsInSecond),
+        perMinute: Math.max(0, this.config.maxRequestsPerMinute - requestsInMinute),
+        perHour: Math.max(0, this.config.maxRequestsPerHour - requestsInHour),
+        burst: Math.max(0, this.burstTokens),
+      },
+      totalTracked: this.requestTimes.length,
+      isHealthy: requestsInSecond < this.config.maxRequestsPerSecond * 0.8 &&
+                 requestsInMinute < this.config.maxRequestsPerMinute * 0.8 &&
+                 requestsInHour < this.config.maxRequestsPerHour * 0.8,
+    };
+  }
+
+  /**
    * Reset rate limiter state
    */
   reset(): void {

@@ -1,0 +1,286 @@
+
+> veruspulse@0.1.0 test
+> jest
+
+PASS __tests__/lib/staking-edge-cases.test.ts
+PASS __tests__/services/achievement-service.test.ts
+PASS tests/unit/aggregate-rewards.test.ts
+PASS __tests__/api/cache.test.ts
+PASS __tests__/api/verusid-stats.test.ts
+PASS __tests__/lib/validation.test.ts
+PASS __tests__/api/block.test.ts
+  ● Console
+
+    console.error
+      Error fetching block details: Error: RPC connection failed
+          at Object.<anonymous> (/home/explorer/verus-dapp/__tests__/api/block.test.ts:135:9)
+          at Promise.finally.completed (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:95:5)
+          at _runTest (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/home/explorer/verus-dapp/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/home/explorer/verus-dapp/node_modules/jest-runner/build/testWorker.js:275:16)
+          at runTest (/home/explorer/verus-dapp/node_modules/jest-runner/build/testWorker.js:343:7)
+          at Object.worker (/home/explorer/verus-dapp/node_modules/jest-runner/build/testWorker.js:497:12)
+
+      146 |     });
+      147 |   } catch (error) {
+    > 148 |     console.error('Error fetching block details:', error);
+          |             ^
+      149 |
+      150 |     return NextResponse.json(
+      151 |       {
+
+      at error (app/api/block/[hash]/route.ts:148:13)
+      at Object.<anonymous> (__tests__/api/block.test.ts:143:24)
+
+    console.warn
+      Heavy metrics failed for block 0000000000571c2075bdfcd9ab8447fae18906f2e097c3fc5b866696b5e756ab: Error: Metrics calculation failed
+          at Object.<anonymous> (/home/explorer/verus-dapp/__tests__/api/block.test.ts:225:9)
+          at Promise.finally.completed (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:95:5)
+          at _runTest (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/home/explorer/verus-dapp/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/home/explorer/verus-dapp/node_modules/jest-runner/build/testWorker.js:275:16)
+          at runTest (/home/explorer/verus-dapp/node_modules/jest-runner/build/testWorker.js:343:7)
+          at Object.worker (/home/explorer/verus-dapp/node_modules/jest-runner/build/testWorker.js:497:12)
+
+      111 |         });
+      112 |       } catch (error) {
+    > 113 |         console.warn(`Heavy metrics failed for block ${block.hash}:`, error);
+          |                 ^
+      114 |         // Return base data with error flags
+      115 |         return NextResponse.json({
+      116 |           success: true,
+
+      at warn (app/api/block/[hash]/route.ts:113:17)
+      at Object.<anonymous> (__tests__/api/block.test.ts:233:24)
+
+    console.warn
+      Heavy metrics failed for block 0000000000571c2075bdfcd9ab8447fae18906f2e097c3fc5b866696b5e756ab: Error: Metrics calculation failed
+          at Object.<anonymous> (/home/explorer/verus-dapp/__tests__/api/block.test.ts:225:9)
+          at Promise.finally.completed (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:95:5)
+          at _runTest (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/home/explorer/verus-dapp/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/home/explorer/verus-dapp/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/home/explorer/verus-dapp/node_modules/jest-runner/build/testWorker.js:275:16)
+          at runTest (/home/explorer/verus-dapp/node_modules/jest-runner/build/testWorker.js:343:7)
+          at Object.worker (/home/explorer/verus-dapp/node_modules/jest-runner/build/testWorker.js:497:12)
+
+      111 |         });
+      112 |       } catch (error) {
+    > 113 |         console.warn(`Heavy metrics failed for block ${block.hash}:`, error);
+          |                 ^
+      114 |         // Return base data with error flags
+      115 |         return NextResponse.json({
+      116 |           success: true,
+
+      at warn (app/api/block/[hash]/route.ts:113:17)
+      at Object.<anonymous> (__tests__/api/block.test.ts:254:24)
+
+PASS __tests__/lib/validation-security.test.ts
+FAIL __tests__/lib/verusid-utils.edge-cases.test.ts
+  ● VerusID Utils Edge Cases › formatVRSCAmount › handles negative values
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "-100.00"
+    Received: "< 0.01"
+
+      148 |
+      149 |     test('handles negative values', () => {
+    > 150 |       expect(formatVRSCAmount(-100)).toBe('-100.00');
+          |                                      ^
+      151 |     });
+      152 |   });
+      153 |
+
+      at Object.toBe (__tests__/lib/verusid-utils.edge-cases.test.ts:150:38)
+
+PASS __tests__/lib/rpc-client.test.ts
+PASS __tests__/services/utxo-database.test.ts
+PASS __tests__/api/blockchain-info.test.ts
+PASS .verusid-local/src/__tests__/fixtures/verusid.ts
+PASS __tests__/services/statistics-calculator.test.ts
+PASS __tests__/api/address.test.ts
+FAIL __tests__/lib/formatting-edge-cases.test.ts
+  ● Formatting Edge Cases › formatFileSize › formats KB
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "1 KB"
+    Received: "1.00 KB"
+
+      69 |
+      70 |     test('formats KB', () => {
+    > 71 |       expect(formatFileSize(1024)).toBe('1 KB');
+         |                                    ^
+      72 |     });
+      73 |
+      74 |     test('formats MB', () => {
+
+      at Object.toBe (__tests__/lib/formatting-edge-cases.test.ts:71:36)
+
+  ● Formatting Edge Cases › formatFileSize › formats MB
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "1 MB"
+    Received: "1.00 MB"
+
+      73 |
+      74 |     test('formats MB', () => {
+    > 75 |       expect(formatFileSize(1048576)).toBe('1 MB');
+         |                                       ^
+      76 |     });
+      77 |
+      78 |     test('formats GB', () => {
+
+      at Object.toBe (__tests__/lib/formatting-edge-cases.test.ts:75:39)
+
+  ● Formatting Edge Cases › formatFileSize › formats GB
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "1 GB"
+    Received: "1.00 GB"
+
+      77 |
+      78 |     test('formats GB', () => {
+    > 79 |       expect(formatFileSize(1073741824)).toBe('1 GB');
+         |                                          ^
+      80 |     });
+      81 |
+      82 |     test('handles zero', () => {
+
+      at Object.toBe (__tests__/lib/formatting-edge-cases.test.ts:79:42)
+
+PASS __tests__/lib/cache-utils.test.ts
+  ● Console
+
+    console.log
+      [90m[2025-10-19 19:13:13.785][0m ❌ [31m[ERROR][0m ❌ Cache GET error for key invalid:key:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+
+    console.log
+      [90m[2025-10-19 19:13:13.821][0m ❌ [31m[ERROR][0m ❌ Cache GET error for key error:key:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+
+    console.log
+      [90m[2025-10-19 19:13:13.825][0m ❌ [31m[ERROR][0m ❌ Cache SET error for key error:key:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+
+    console.log
+      [90m[2025-10-19 19:13:13.830][0m ❌ [31m[ERROR][0m ❌ Cache DELETE error for key error:key:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+
+    console.log
+      [90m[2025-10-19 19:13:13.835][0m ❌ [31m[ERROR][0m ❌ Cache DELETE PATTERN error for error:*:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+
+    console.log
+      [90m[2025-10-19 19:13:13.840][0m ❌ [31m[ERROR][0m ❌ Cache EXISTS error for key error:key:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+
+    console.log
+      [90m[2025-10-19 19:13:13.845][0m ❌ [31m[ERROR][0m ❌ Cache TTL error for key error:key:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+
+    console.log
+      [90m[2025-10-19 19:13:13.850][0m ❌ [31m[ERROR][0m ❌ Cache INCREMENT error for key error:key:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+
+    console.log
+      [90m[2025-10-19 19:13:13.855][0m ❌ [31m[ERROR][0m ❌ Error getting cache stats:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+
+    console.log
+      [90m[2025-10-19 19:13:13.859][0m ❌ [31m[ERROR][0m ❌ Error clearing cache:
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:187:13)
+
+    console.log
+      [90m    Details: {}[0m
+
+      at EnhancedLogger.log (lib/utils/enhanced-logger.ts:191:15)
+

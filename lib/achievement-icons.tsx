@@ -9,7 +9,7 @@ import {
   Diamond,
   Lightning,
   TrendUp,
-  Activity,
+  ArrowsLeftRight,
   Fire,
   CalendarCheck,
   Sparkle,
@@ -40,7 +40,7 @@ export const achievementIcons = {
   // Performance icons
   zap: Lightning,
   'trending-up': TrendUp,
-  activity: Activity,
+  activity: ArrowsLeftRight,
   flame: Fire,
   'calendar-check': CalendarCheck,
   sparkles: Sparkle,

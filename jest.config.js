@@ -13,6 +13,7 @@ const customJestConfig = {
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
     '<rootDir>/tests/e2e/',
+    '<rootDir>/.verusid-local/src/__tests__/live/', // Skip wallet signing tests (upstream @bitgo/utxo-lib bug)
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',

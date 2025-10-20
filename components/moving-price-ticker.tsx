@@ -1,5 +1,13 @@
 'use client';
 
+/**
+ * @deprecated This component has been replaced by MinimalPriceIndicator
+ * for a more professional, enterprise-grade appearance.
+ * 
+ * This component will be removed in a future version.
+ * Use MinimalPriceIndicator instead.
+ */
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   TrendUp,

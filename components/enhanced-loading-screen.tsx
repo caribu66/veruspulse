@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   CheckCircle,
-  Activity,
+  Pulse,
   Database,
   Network,
   Clock,
@@ -36,7 +36,7 @@ export function EnhancedLoadingScreen() {
     {
       id: 'mining',
       label: 'Fetching Mining Statistics',
-      icon: <Activity className="h-4 w-4" />,
+      icon: <Pulse className="h-4 w-4" />,
       completed: false,
     },
     {

@@ -10,7 +10,9 @@ import {
   WifiHigh,
   WifiSlash,
 } from '@phosphor-icons/react';
-import { MovingPriceTicker } from './moving-price-ticker';
+import { MinimalPriceIndicator } from './minimal-price-indicator';
+import { ThemeToggleCompact } from './theme-toggle';
+import { useTheme } from '@/contexts/theme-context';
 
 // Ultra-compact navigation - 3 core sections
 type ExplorerTab =
@@ -28,6 +30,7 @@ export function CompactNavigationBar({
   onTabChange,
 }: CompactNavigationBarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme } = useTheme();
 
   // Ultra-compact navigation items
   const navigationItems = useMemo(
@@ -92,7 +95,7 @@ export function CompactNavigationBar({
           <div className="flex items-center flex-shrink-0">
             <div className="relative w-[300px] h-10">
               <Image
-                src="/verus-icon-slogan-white.svg"
+                src={theme === 'light' ? '/verus-icon-slogan-blue.svg' : '/verus-icon-slogan-white.svg'}
                 alt="Verus - Truth and Privacy for All"
                 width={300}
                 height={40}
@@ -138,23 +141,26 @@ export function CompactNavigationBar({
             </nav>
           </div>
 
-          {/* Right: Price Ticker and Mobile List */}
+          {/* Right: Price Ticker, Theme Toggle and Mobile List */}
           <div className="flex items-center space-x-2 flex-shrink-0">
-            {/* Moving Price Ticker (Desktop) */}
+            {/* Minimal Price Indicator (Desktop) */}
             <div className="hidden lg:flex">
-              <MovingPriceTicker
-                refreshInterval={8000}
-                showMultipleAssets={true}
+              <MinimalPriceIndicator
+                refreshInterval={10000}
+                maxAssets={6}
               />
             </div>
 
-            {/* Moving Price Ticker (Tablet) */}
+            {/* Minimal Price Indicator (Tablet) */}
             <div className="hidden md:flex lg:hidden">
-              <MovingPriceTicker
-                refreshInterval={8000}
-                showMultipleAssets={false}
+              <MinimalPriceIndicator
+                refreshInterval={10000}
+                maxAssets={5}
               />
             </div>
+
+            {/* Theme Toggle */}
+            <ThemeToggleCompact />
 
             {/* Mobile List Toggle */}
             <button
@@ -185,11 +191,11 @@ export function CompactNavigationBar({
             aria-modal="true"
             aria-label="Mobile navigation menu"
           >
-            {/* Moving Price Ticker (Mobile) */}
+            {/* Minimal Price Indicator (Mobile) */}
             <div className="mb-4">
-              <MovingPriceTicker
-                refreshInterval={8000}
-                showMultipleAssets={false}
+              <MinimalPriceIndicator
+                refreshInterval={10000}
+                maxAssets={4}
               />
             </div>
 

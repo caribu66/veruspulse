@@ -15,7 +15,9 @@ import {
   Cpu,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { formatHashRate, formatStake } from '@/lib/utils/number-formatting';
+import { useTheme } from '@/contexts/theme-context';
 
 interface HeroSectionProps {
   networkStats?: {
@@ -39,6 +41,7 @@ export function HeroSection({
 }: HeroSectionProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [currentFeature, setCurrentFeature] = useState(0);
+  const { theme } = useTheme();
 
   // Fade in animation on mount
   useEffect(() => {
@@ -98,9 +101,9 @@ export function HeroSection({
   ];
 
   return (
-    <div className="relative overflow-hidden bg-slate-950">
+    <div className="relative overflow-hidden bg-white dark:bg-slate-950">
       {/* Subtle Pattern Overlay - Optional */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5 dark:opacity-5 opacity-10"></div>
 
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-28">
@@ -111,11 +114,23 @@ export function HeroSection({
         >
           {/* Main Heading */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+            {/* Verus Logo */}
+            <div className="flex justify-center mb-8">
+              <Image
+                src={theme === 'light' ? '/verus-icon-slogan-blue.svg' : '/verus-icon-slogan-white.svg'}
+                alt="Verus Protocol"
+                width={200}
+                height={80}
+                className="h-16 w-auto md:h-20"
+                priority
+              />
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
               The <span className="text-verus-blue">Internet of Value</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-4">
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-4">
               Explore the Verus Protocol ecosystem - where blockchain innovation
               meets real-world utility
             </p>
@@ -134,7 +149,7 @@ export function HeroSection({
                     }`}
                   >
                     <Icon className="h-5 w-5 text-blue-400" />
-                    <span className="text-blue-200 font-medium">
+                    <span className="text-blue-600 dark:text-blue-200 font-medium">
                       {feature.text}
                     </span>
                   </div>
@@ -150,7 +165,7 @@ export function HeroSection({
               return (
                 <div
                   key={index}
-                  className={`bg-slate-900 rounded-xl p-4 md:p-6 border border-slate-700 
+                  className={`bg-gray-50 dark:bg-slate-900 rounded-xl p-4 md:p-6 border border-slate-300 dark:border-slate-700 
                     transform transition-all duration-300 hover:border-verus-blue/60 hover:shadow-lg
                     ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
                   style={{ transitionDelay: `${index * 100}ms` }}
@@ -160,10 +175,10 @@ export function HeroSection({
                     <div className="flex items-center justify-between w-full">
                       <Icon className={`h-5 w-5 ${stat.color}`} />
                     </div>
-                    <div className="text-2xl md:text-3xl font-bold text-white tabular-nums data-value">
+                    <div className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white tabular-nums data-value">
                       {stat.value}
                     </div>
-                    <div className="text-xs md:text-sm text-slate-400">
+                    <div className="text-xs md:text-sm text-gray-600 dark:text-slate-400">
                       {stat.label}
                     </div>
                   </div>
@@ -172,38 +187,22 @@ export function HeroSection({
             })}
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+          {/* Primary CTA Button */}
+          <div className="flex items-center justify-center mb-16">
             <Link
-              href="/?tab=explorer"
-              className="group px-8 py-4 bg-verus-blue hover:bg-verus-blue-dark text-white font-semibold rounded-xl transition-all flex items-center gap-2 shadow-lg border border-verus-blue-light"
-            >
-              <MagnifyingGlass className="h-5 w-5" />
-              Start Exploring
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-
-            <Link
-              href="/?tab=verusids"
-              className="group px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl border border-slate-700 hover:border-verus-blue/60 transition-all flex items-center gap-2"
-            >
-              <UsersThree className="h-5 w-5" />
-              Explore VerusIDs
-            </Link>
-
-            <a
               href="https://verus.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="group px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl border border-slate-700 hover:border-slate-600 transition-all flex items-center gap-2"
+              className="group px-10 py-5 bg-verus-blue hover:bg-verus-blue-dark text-white font-bold text-lg rounded-xl transition-all flex items-center gap-3 shadow-xl border border-verus-blue-light hover:shadow-2xl hover:scale-105"
             >
-              Learn More
-              <ArrowSquareOut className="h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </a>
+              <MagnifyingGlass className="h-6 w-6" />
+              Start Exploring
+              <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
           {/* Key Features Grid */}
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-4">
             {[
               {
                 icon: Globe,
@@ -236,20 +235,20 @@ export function HeroSection({
               return (
                 <div
                   key={index}
-                  className={`group bg-slate-900 rounded-2xl p-6 border border-slate-700 
+                  className={`group bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-300 dark:border-slate-700
                     hover:border-verus-blue/60 transition-all duration-300 hover:shadow-lg
                     ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
                   style={{ transitionDelay: `${index * 150 + 400}ms` }}
                 >
                   <div
-                    className={`w-12 h-12 rounded-xl ${feature.bgColor} border ${feature.borderColor} flex items-center justify-center mb-4 transition-transform`}
+                    className={`w-10 h-10 rounded-xl ${feature.bgColor} border ${feature.borderColor} flex items-center justify-center mb-3 transition-transform`}
                   >
-                    <Icon className={`h-6 w-6 ${feature.iconColor}`} />
+                    <Icon className={`h-5 w-5 ${feature.iconColor}`} />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
                     {feature.title}
                   </h3>
-                  <p className="text-slate-400">{feature.description}</p>
+                  <p className="text-gray-600 dark:text-slate-400 text-sm">{feature.description}</p>
                 </div>
               );
             })}

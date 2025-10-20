@@ -112,7 +112,7 @@ export function SlidePanel({
       {/* Backdrop */}
       {showBackdrop && (
         <div
-          className="fixed inset-0 bg-black/60  z-40 animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/40 dark:bg-black/60 z-40 animate-in fade-in duration-200"
           onClick={handleBackdropClick}
           aria-hidden="true"
         />
@@ -121,8 +121,8 @@ export function SlidePanel({
       {/* Panel */}
       <div
         className={cn(
-          'fixed right-0 top-0 h-full bg-slate-900 shadow-2xl z-50',
-          'border-l border-white/10',
+          'fixed right-0 top-0 h-full bg-white dark:bg-slate-900 shadow-2xl z-50',
+          'border-l border-slate-300 dark:border-white/10',
           'flex flex-col',
           'animate-in slide-in-from-right duration-300',
           widthStyles[width],
@@ -133,19 +133,19 @@ export function SlidePanel({
         aria-labelledby="panel-title"
       >
         {/* Header */}
-        <div className="flex-shrink-0 bg-slate-900/95  border-b border-white/10 p-4 md:p-6 sticky top-0 z-10">
+        <div className="flex-shrink-0 bg-white/95 dark:bg-slate-900/95 border-b border-slate-300 dark:border-white/10 p-4 md:p-6 sticky top-0 z-10">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <button
                 onClick={onClose}
-                className="flex-shrink-0 p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="flex-shrink-0 p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
                 aria-label="Close panel"
               >
                 <CaretLeft className="h-5 w-5 text-gray-400" />
               </button>
               <h2
                 id="panel-title"
-                className="text-lg md:text-xl font-bold text-white truncate"
+                className="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate"
               >
                 {title}
               </h2>
@@ -155,7 +155,7 @@ export function SlidePanel({
               {headerActions}
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
                 aria-label="Close panel"
               >
                 <X className="h-5 w-5 text-gray-400" />
@@ -169,7 +169,7 @@ export function SlidePanel({
 
         {/* Footer */}
         {footer && (
-          <div className="flex-shrink-0 bg-slate-900/95  border-t border-white/10 p-4 md:p-6 sticky bottom-0">
+          <div className="flex-shrink-0 bg-white/95 dark:bg-slate-900/95 border-t border-slate-300 dark:border-white/10 p-4 md:p-6 sticky bottom-0">
             {footer}
           </div>
         )}
@@ -220,9 +220,9 @@ export function SlidePanelStack({
       {/* Stack controls */}
       {panels.length > 1 && (
         <div className="fixed top-4 right-4 z-50">
-          <div className="bg-slate-900 border border-white/20 rounded-lg p-3 shadow-xl">
+          <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/20 rounded-lg p-3 shadow-xl">
             <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 {panels.length} panels open
               </span>
               <button

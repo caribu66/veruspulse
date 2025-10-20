@@ -22,12 +22,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`\n========================================`);
-    console.log(`🔍 Getting balance for VerusID: ${verusid}`);
-    console.log(`========================================\n`);
 
     // Try to get from cache first (avoids RPC call if already cached)
-    console.log(`[1/3] Checking cache for ${verusid}...`);
     let cachedIdentity = await getCachedIdentity(verusid);
 
     // If not in cache OR cached but primary addresses field is undefined/null, fetch from RPC
@@ -42,7 +38,6 @@ export async function POST(request: NextRequest) {
           `⚠️  Cache entry found but incomplete (primary addresses not populated)`
         );
       } else {
-        console.log(`❌ Cache MISS - identity not in cache`);
       }
 
       console.log(
@@ -54,7 +49,6 @@ export async function POST(request: NextRequest) {
       );
 
       // Update cache with complete data
-      console.log(`[3/3] 💾 Storing in cache for next time...`);
       cacheIdentity(
         cachedIdentity.identityAddress,
         cachedIdentity.name,
@@ -62,9 +56,6 @@ export async function POST(request: NextRequest) {
         cachedIdentity.primaryAddresses
       ).catch(err => console.error('Cache error:', err));
     } else {
-      console.log(`✅ Cache HIT! Identity found in cache`);
-      console.log(`   - Identity Address: ${cachedIdentity.identityAddress}`);
-      console.log(`   - Friendly Name: ${cachedIdentity.friendlyName}`);
       console.log(
         `   - Primary Addresses: ${cachedIdentity.primaryAddresses.length} found`
       );
@@ -77,7 +68,6 @@ export async function POST(request: NextRequest) {
     const identityAddress = cachedIdentity.identityAddress;
     const primaryAddresses = cachedIdentity.primaryAddresses;
 
-    console.log(`\n[3/3] 💰 Fetching balances...`);
     console.log(
       `   Identity has ${primaryAddresses.length} primary address(es): ${primaryAddresses.join(', ')}`
     );
@@ -86,11 +76,9 @@ export async function POST(request: NextRequest) {
     const allAddresses = [identityAddress, ...primaryAddresses];
 
     if (primaryAddresses.length === 0) {
-      console.log(`⚠️  No primary addresses - checking identity address only`);
     }
 
     // Check cache first for all addresses
-    console.log(
       `   💾 Checking balance cache for ${allAddresses.length} address(es)...`
     );
     const cachedBalances = await getCachedBalances(allAddresses);
@@ -101,11 +89,9 @@ export async function POST(request: NextRequest) {
     );
 
     if (uncachedAddresses.length > 0) {
-      console.log(
         `   🌐 Calling RPC: getaddressbalance for ${uncachedAddresses.length} uncached address(es)...`
       );
     } else {
-      console.log(`   ⚡ ALL BALANCES IN CACHE - NO RPC CALLS NEEDED!`);
     }
 
     // Fetch balances for uncached addresses only
@@ -211,11 +197,6 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    console.log(`\n✅ Balance lookup complete for ${verusid}:`);
-    console.log(`   Total Balance: ${totalBalance} VRSC`);
-    console.log(`   Total Received: ${totalReceived} VRSC`);
-    console.log(`   Total Sent: ${totalSent} VRSC`);
-    console.log(`========================================\n`);
 
     return NextResponse.json({
       success: true,

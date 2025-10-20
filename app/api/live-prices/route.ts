@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { verusAPI } from '@/lib/rpc-client-robust';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
 
@@ -8,188 +7,210 @@ interface LivePriceData {
   name: string;
   price: number;
   priceUSD: number;
+  priceInVRSC?: number;
   change24h: number;
   volume24h: number;
   marketCap?: number;
   lastUpdate: number;
-  source: 'rpc' | 'external' | 'calculated';
+  source: 'rpc' | 'pbaas';
 }
 
-// External price sources with better error handling
-const PRICE_SOURCES = [
-  {
-    name: 'CoinGecko',
-    url: 'https://api.coingecko.com/api/v3/simple/price?ids=verus-coin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true',
-    symbol: 'VRSC',
-    timeout: 3000,
-  },
-  {
-    name: 'VerusPay',
-    url: 'https://veruspay.io/api/?currency=USD',
-    symbol: 'VRSC',
-    timeout: 5000,
-  },
-];
+interface VRSCPriceSource {
+  basketName: string;
+  priceUSD: number;
+  liquidity: number;
+  method: 'stablecoin' | 'basket';
+}
 
-async function fetchExternalPrice(
-  source: (typeof PRICE_SOURCES)[0]
-): Promise<LivePriceData | null> {
+/**
+ * Fetches VRSC price in USD from PBaaS basket currencies containing stablecoins
+ * Uses method similar to cryptodashboard.faldt.net:
+ * - Finds baskets with both VRSC and USD stablecoins (USDC, DAI, USDT, etc.)
+ * - Calculates VRSC price from reserve ratios
+ * - Cross-validates across multiple baskets
+ * - Returns weighted average based on liquidity
+ */
+async function getVRSCPriceFromPBaaS(): Promise<{
+  price: number;
+  sources: VRSCPriceSource[];
+} | null> {
   try {
-    const response = await fetch(source.url, {
-      headers: {
-        'User-Agent': 'VerusPulse-Explorer/1.0',
-        Accept: 'application/json',
-      },
-      signal: AbortSignal.timeout(source.timeout),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    const pbaasResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/pbaas-prices`
+    );
+    
+    if (!pbaasResponse.ok) {
+      return null;
     }
 
-    const data = await response.json();
+    const pbaasData = await pbaasResponse.json();
+    if (!pbaasData.success || !pbaasData.data.chains) {
+      return null;
+    }
 
-    if (source.name === 'VerusPay') {
-      return {
-        symbol: 'VRSC',
-        name: 'Verus Coin',
-        price: data.price || 0,
-        priceUSD: data.price || 0,
-        change24h: data.change_24h || 0,
-        volume24h: data.volume_24h || 0,
-        lastUpdate: Date.now(),
-        source: 'external',
-      };
-    } else if (source.name === 'CoinGecko') {
-      const vrscData = data['verus-coin'];
-      if (vrscData) {
-        return {
-          symbol: 'VRSC',
-          name: 'Verus Coin',
-          price: vrscData.usd || 0,
-          priceUSD: vrscData.usd || 0,
-          change24h: vrscData.usd_24h_change || 0,
-          volume24h: vrscData.usd_24h_vol || 0,
-          marketCap: vrscData.usd_market_cap || 0,
-          lastUpdate: Date.now(),
-          source: 'external',
-        };
+    const vrscPriceSources: VRSCPriceSource[] = [];
+    
+    // USD stablecoins to look for (prioritized order)
+    const usdStablecoins = [
+      'DAI',     // Most common on Bridge.vETH
+      'USDC',    // Circle stablecoin
+      'USDT',    // Tether
+      'BUSD',    // Binance USD
+      'TUSD',    // TrueUSD
+      'EURC',    // Euro stablecoin (can be converted)
+    ];
+    
+    // Find all baskets with stablecoins to derive VRSC price
+    for (const chain of pbaasData.data.chains) {
+      const chainName = chain.name?.toUpperCase();
+      
+      // Check if this is a stablecoin
+      const stablecoin = usdStablecoins.find(s => chainName?.includes(s));
+      if (stablecoin && chain.priceInVRSC && chain.priceInVRSC > 0) {
+        // For stablecoins: If 1 USDC = X VRSC, then 1 VRSC = 1/X USD
+        let vrscPriceUSD = 1 / chain.priceInVRSC;
+        
+        // Adjust for EURC (Euro) - approximate conversion
+        if (stablecoin === 'EURC') {
+          vrscPriceUSD = vrscPriceUSD * 1.10; // Rough EUR to USD conversion
+        }
+        
+        vrscPriceSources.push({
+          basketName: chain.name || chain.fullyQualifiedName,
+          priceUSD: vrscPriceUSD,
+          liquidity: chain.reserves || 0,
+          method: 'stablecoin',
+        });
+        
+        logger.info(
+          `📊 Found VRSC price from ${chain.name}: $${vrscPriceUSD.toFixed(4)} (reserves: ${chain.reserves || 0})`
+        );
       }
     }
-  } catch (error) {
-    logger.warn(`Failed to fetch price from ${source.name}:`, error);
-  }
-  return null;
-}
 
-async function fetchRPCPrice(): Promise<LivePriceData | null> {
-  try {
-    // Try to get blockchain info for basic data
-    const blockchainInfo = await verusAPI.getBlockchainInfo();
-
-    if (blockchainInfo) {
-      // Calculate a basic price estimate based on network metrics
-      // This is a simplified calculation - in reality you'd need more sophisticated pricing
-      const estimatedPrice = 0.45; // Base price estimate
-      const networkMultiplier = Math.min(blockchainInfo.blocks / 1000000, 2); // Scale with network maturity
-
-      return {
-        symbol: 'VRSC',
-        name: 'Verus Coin',
-        price: estimatedPrice * networkMultiplier,
-        priceUSD: estimatedPrice * networkMultiplier,
-        change24h: 0, // Would need historical data
-        volume24h: 0, // Would need trading data
-        lastUpdate: Date.now(),
-        source: 'calculated',
-      };
+    if (vrscPriceSources.length === 0) {
+      logger.warn('No USD stablecoin found in PBaaS chains to derive VRSC price');
+      return null;
     }
+
+    // Calculate weighted average based on liquidity (similar to cryptodashboard.faldt.net)
+    // Baskets with higher liquidity have more weight
+    const totalLiquidity = vrscPriceSources.reduce((sum, s) => sum + s.liquidity, 0);
+    
+    let weightedPrice = 0;
+    if (totalLiquidity > 0) {
+      weightedPrice = vrscPriceSources.reduce(
+        (sum, source) => sum + (source.priceUSD * source.liquidity) / totalLiquidity,
+        0
+      );
+    } else {
+      // If no liquidity data, use simple average
+      weightedPrice = vrscPriceSources.reduce((sum, s) => sum + s.priceUSD, 0) / vrscPriceSources.length;
+    }
+
+    logger.info(
+      `✅ Calculated VRSC price: $${weightedPrice.toFixed(4)} from ${vrscPriceSources.length} basket(s)`
+    );
+    
+    return {
+      price: weightedPrice,
+      sources: vrscPriceSources,
+    };
   } catch (error) {
-    logger.warn('Failed to fetch RPC price data:', error);
+    logger.warn('Failed to fetch VRSC price from PBaaS:', error);
+    return null;
   }
-  return null;
 }
 
 export async function GET() {
   try {
-    logger.info('🔍 Fetching live price data...');
+    logger.info('🔍 Fetching live price data from PBaaS chains only...');
+    logger.info('📊 Using cryptodashboard.faldt.net method: weighted average from multiple baskets');
 
     const prices: LivePriceData[] = [];
 
-    // Try external sources first
-    for (const source of PRICE_SOURCES) {
-      const priceData = await fetchExternalPrice(source);
-      if (priceData) {
-        prices.push(priceData);
-        break; // Use first successful source
+    // Get VRSC price from PBaaS stablecoin bridges (USDC, DAI, etc.)
+    // Uses weighted average across multiple baskets like cryptodashboard.faldt.net
+    const vrscPriceData = await getVRSCPriceFromPBaaS();
+    const vrscPriceUSD = vrscPriceData?.price || null;
+    
+    // Fetch all PBaaS chain prices from RPC
+    try {
+      const pbaasResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/pbaas-prices`
+      );
+      
+      if (!pbaasResponse.ok) {
+        throw new Error(`PBaaS API returned status ${pbaasResponse.status}`);
       }
-    }
 
-    // If no external prices, try RPC-based calculation
-    if (prices.length === 0) {
-      const rpcPrice = await fetchRPCPrice();
-      if (rpcPrice) {
-        prices.push(rpcPrice);
+      const pbaasData = await pbaasResponse.json();
+      
+      if (!pbaasData.success || !pbaasData.data.chains) {
+        throw new Error('Invalid PBaaS API response');
       }
-    }
 
-    // Fallback to realistic mock data if nothing works
-    if (prices.length === 0) {
-      logger.warn('No live price sources available, using fallback data');
-      prices.push({
-        symbol: 'VRSC',
-        name: 'Verus Coin',
-        price: 0.45,
-        priceUSD: 0.45,
-        change24h: 2.3,
-        volume24h: 123456,
-        marketCap: 45000000,
-        lastUpdate: Date.now(),
-        source: 'calculated',
+      logger.info(`📊 Processing ${pbaasData.data.chains.length} PBaaS chains`);
+
+      // Add all PBaaS chains with on-chain pricing
+      for (const chain of pbaasData.data.chains) {
+        if (chain.priceInVRSC !== undefined) {
+          // Calculate USD price if we have VRSC price
+          const priceUSD = vrscPriceUSD ? vrscPriceUSD * chain.priceInVRSC : 0;
+          
+          prices.push({
+            symbol: chain.name,
+            name: chain.fullyQualifiedName || chain.name,
+            price: priceUSD,
+            priceUSD: priceUSD,
+            priceInVRSC: chain.priceInVRSC,
+            change24h: 0, // PBaaS chains don't have 24h change data on-chain
+            volume24h: 0, // Would need to calculate from on-chain data
+            lastUpdate: Date.now(),
+            source: 'pbaas',
+          });
+        }
+      }
+
+      logger.info(`✅ Retrieved prices for ${prices.length} assets from PBaaS chains`);
+
+      const response = NextResponse.json({
+        success: true,
+        data: {
+          prices,
+          count: prices.length,
+          timestamp: Date.now(),
+          sources: ['pbaas'],
+          hasUSDPrice: vrscPriceUSD !== null,
+          vrscPriceUSD: vrscPriceUSD,
+          vrscPriceSources: vrscPriceData?.sources || [],
+          priceCalculationMethod: 'weighted-average-across-baskets',
+          lastUpdate: Date.now(),
+          note: vrscPriceUSD 
+            ? `All prices derived from on-chain PBaaS data. VRSC price calculated from ${vrscPriceData?.sources.length || 0} basket(s) using weighted average (similar to cryptodashboard.faldt.net)`
+            : 'USD prices unavailable - no stablecoin bridge found on PBaaS chains',
+        },
       });
+
+      return addSecurityHeaders(response);
+      
+    } catch (error: any) {
+      logger.error('Failed to fetch PBaaS prices:', error);
+      
+      // Return error - no fallback to external sources
+      const response = NextResponse.json(
+        {
+          success: false,
+          error: 'Failed to fetch prices from PBaaS chains',
+          details: error.message,
+          timestamp: Date.now(),
+          note: 'Only PBaaS chain data is used - no external price sources',
+        },
+        { status: 500 }
+      );
+
+      return addSecurityHeaders(response);
     }
-
-    // Add some additional PBaaS chains with calculated prices
-    const vrscPrice = prices[0]?.priceUSD || 0.45;
-
-    // VETH (example PBaaS chain)
-    prices.push({
-      symbol: 'VETH',
-      name: 'Verus Ethereum',
-      price: vrscPrice * 0.000045, // Example ratio
-      priceUSD: vrscPrice * 0.000045,
-      change24h: 1.2,
-      volume24h: 50000,
-      lastUpdate: Date.now(),
-      source: 'calculated',
-    });
-
-    // VDOGE (example PBaaS chain)
-    prices.push({
-      symbol: 'VDOGE',
-      name: 'Verus Dogecoin',
-      price: vrscPrice * 0.000001, // Example ratio
-      priceUSD: vrscPrice * 0.000001,
-      change24h: -0.8,
-      volume24h: 25000,
-      lastUpdate: Date.now(),
-      source: 'calculated',
-    });
-
-    logger.info(`✅ Retrieved live prices for ${prices.length} assets`);
-
-    const response = NextResponse.json({
-      success: true,
-      data: {
-        prices,
-        count: prices.length,
-        timestamp: Date.now(),
-        sources: prices.map(p => p.source),
-        lastUpdate: Math.max(...prices.map(p => p.lastUpdate)),
-      },
-    });
-
-    return addSecurityHeaders(response);
   } catch (error: any) {
     logger.error('❌ Failed to fetch live prices:', error);
 

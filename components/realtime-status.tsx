@@ -8,7 +8,7 @@ import {
   ArrowsClockwise,
   CheckCircle,
   Clock,
-  Activity,
+  Pulse,
 } from '@phosphor-icons/react';
 import { useRealtimeUpdates } from '@/lib/hooks/use-realtime-updates';
 
@@ -109,7 +109,7 @@ export function RealtimeStatus({
       {showDetails && (
         <div className="flex items-center gap-4 text-xs text-gray-400">
           <div className="flex items-center gap-1">
-            <Activity className="h-3 w-3" />
+            <Pulse className="h-3 w-3" />
             <span>{updateCount} updates</span>
           </div>
           <div className="flex items-center gap-1">

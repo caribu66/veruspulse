@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Activity,
+  Pulse,
   Clock,
   Hash,
   Coins,
@@ -84,7 +84,6 @@ export function TransactionsExplorer() {
       }
     } catch (err) {
       setError('Network error while fetching transactions');
-      console.error('Error fetching transactions:', err);
     } finally {
       setLoading(false);
     }
@@ -100,7 +99,7 @@ export function TransactionsExplorer() {
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
@@ -178,26 +177,26 @@ export function TransactionsExplorer() {
   }
 
   return (
-    <div className="space-y-6 text-white">
+    <div className="space-y-6 text-white dark:text-white text-slate-900">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">Transactions Explorer</h2>
-          <p className="text-blue-200 text-sm mt-1">
+          <p className="text-blue-200 dark:text-blue-200 text-blue-600 text-sm mt-1">
             Explore Verus blockchain transactions and UTXO movements
           </p>
         </div>
-        <div className="text-blue-200 text-sm">
+        <div className="text-blue-200 dark:text-blue-200 text-blue-600 text-sm">
           Total Transactions: {formatTransactionCount(totalTransactions)}
         </div>
       </div>
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-blue-500/20">
-              <Activity className="h-5 w-5 text-blue-400" />
+              <Pulse className="h-5 w-5 text-blue-400" />
             </div>
             <div>
               <div className="text-white font-semibold">Total Transactions</div>
@@ -208,7 +207,7 @@ export function TransactionsExplorer() {
           </div>
         </div>
 
-        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-green-500/20">
               <Coins className="h-5 w-5 text-green-400" />
@@ -229,7 +228,7 @@ export function TransactionsExplorer() {
           </div>
         </div>
 
-        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-verus-blue/20">
               <Hash className="h-5 w-5 text-verus-blue" />
@@ -248,7 +247,7 @@ export function TransactionsExplorer() {
           </div>
         </div>
 
-        <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-verus-teal/20">
               <Clock className="h-5 w-5 text-verus-teal" />
@@ -266,8 +265,8 @@ export function TransactionsExplorer() {
       </div>
 
       {/* Transactions Table */}
-      <div className="bg-slate-900 rounded-2xl p-6 border border-slate-700">
-        <h3 className="text-xl font-bold text-white mb-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
           Recent Transactions
         </h3>
 

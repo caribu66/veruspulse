@@ -121,6 +121,18 @@ export function ConnectionStatus({ className = '' }: ConnectionStatusProps) {
             <span>{status.latency}ms</span>
           </div>
 
+          {/* Inline Mini Progress Bar for Syncing */}
+          {status.syncProgress > 0 && status.syncProgress < 100 && (
+            <div className="hidden sm:flex items-center space-x-2">
+              <div className="w-24 h-1.5 bg-slate-900/50 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-500"
+                  style={{ width: `${status.syncProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+
           <div className="text-xs text-white/50">
             {formatTime(status.lastUpdate)}
           </div>

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { WarningCircle, ArrowsClockwise } from '@phosphor-icons/react';
-import { useRouter } from 'next/navigation';
+import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 
 export default function Error({
   error,
@@ -11,22 +11,12 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const router = useRouter();
+  const { goBack } = useNavigationHistory();
 
   useEffect(() => {
     // Log the error to an error reporting service
     console.error('Application error:', error);
   }, [error]);
-
-  const handleGoBack = () => {
-    // Check if there's history to go back to
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      // Fallback to home if no history
-      router.push('/');
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-verus-blue/20 to-verus-green/20">
@@ -68,7 +58,7 @@ export default function Error({
             </button>
 
             <button
-              onClick={handleGoBack}
+              onClick={() => goBack()}
               className="flex items-center justify-center space-x-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-white font-medium"
             >
               <span>Go Back</span>

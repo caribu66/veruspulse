@@ -12,6 +12,7 @@ import { ValuePoolsSection } from '@/components/block/ValuePoolsSection';
 import { BlockNavigation } from '@/components/block/BlockNavigation';
 import { BlockSkeleton } from '@/components/block/BlockSkeleton';
 import { BlockError } from '@/components/block/BlockError';
+import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 
 const BlockDetailsPage = ({
   params,
@@ -25,6 +26,7 @@ const BlockDetailsPage = ({
   const [hash, setHash] = useState<string | null>(null);
   const [heavyMetrics, setHeavyMetrics] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const { initializeHistory } = useNavigationHistory();
 
   useEffect(() => {
     const unwrapParams = async () => {
@@ -33,6 +35,11 @@ const BlockDetailsPage = ({
     };
     unwrapParams();
   }, [params]);
+
+  // Initialize navigation history if empty (for direct URL access)
+  useEffect(() => {
+    initializeHistory('/');
+  }, [initializeHistory]);
 
   const fetchBlock = useCallback(async () => {
     if (!hash) return;
@@ -53,7 +60,6 @@ const BlockDetailsPage = ({
       }
     } catch (err) {
       setError('Network error while fetching block details');
-      console.error('Error fetching block:', err);
     } finally {
       setLoading(false);
     }
@@ -376,6 +382,7 @@ const BlockDetailsPage = ({
           </div>
         </div>
       </div>
+
     </div>
   );
 };

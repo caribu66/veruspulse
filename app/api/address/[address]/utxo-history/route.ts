@@ -44,7 +44,6 @@ export async function GET(
       : undefined;
 
     // Get UTXO timeline from database
-    console.log(`Getting UTXO history for ${address}`);
 
     // Get stake events for this address
     const stakeEvents = await dbService.getStakeEvents(address);

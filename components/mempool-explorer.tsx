@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 import {
   Clock,
   Hash,
@@ -11,10 +12,10 @@ import {
   WarningCircle,
   ArrowsClockwise,
   DownloadSimple,
-  ArrowUpDown,
+  ArrowsDownUp,
   TrendUp,
   TrendDown,
-  Activity,
+  Pulse,
   CurrencyDollar,
 } from '@phosphor-icons/react';
 import {
@@ -41,6 +42,7 @@ type SortDirection = 'asc' | 'desc';
 
 export function MempoolExplorer() {
   const router = useRouter();
+  const { addToHistory } = useNavigationHistory();
   const [transactions, setTransactions] = useState<MempoolTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +68,6 @@ export function MempoolExplorer() {
       }
     } catch (err) {
       setError('Network error while fetching mempool');
-      console.error('Error fetching mempool:', err);
     } finally {
       setLoading(false);
     }
@@ -76,13 +77,13 @@ export function MempoolExplorer() {
     fetchMempool();
   }, []);
 
-  // Auto-refresh every 10 seconds
+  // Auto-refresh every 20 seconds
   useEffect(() => {
     if (!autoRefresh) return;
 
     const interval = setInterval(() => {
       fetchMempool();
-    }, 10000);
+    }, 20000);
 
     return () => clearInterval(interval);
   }, [autoRefresh]);
@@ -93,7 +94,7 @@ export function MempoolExplorer() {
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Silent error handling for clipboard
     }
   };
 
@@ -213,7 +214,7 @@ export function MempoolExplorer() {
                 : 'bg-white/10 text-gray-400 hover:bg-white/20'
             }`}
           >
-            <Activity
+            <Pulse
               className={`h-4 w-4 ${autoRefresh ? 'animate-pulse' : ''}`}
             />
             <span className="text-sm">
@@ -238,7 +239,7 @@ export function MempoolExplorer() {
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-blue-500/20">
-              <Activity className="h-5 w-5 text-blue-400" />
+              <Pulse className="h-5 w-5 text-blue-400" />
             </div>
             <div>
               <div className="text-white font-semibold">Total Transactions</div>
@@ -317,7 +318,7 @@ export function MempoolExplorer() {
           <div className="flex items-center space-x-3">
             {/* Sort Controls */}
             <div className="flex items-center space-x-2">
-              <ArrowUpDown className="h-4 w-4 text-blue-400" />
+              <ArrowsDownUp className="h-4 w-4 text-blue-400" />
               <select
                 value={sortField}
                 onChange={e => setSortField(e.target.value as SortField)}
@@ -387,7 +388,11 @@ export function MempoolExplorer() {
                           )}
                         </button>
                         <button
-                          onClick={() => router.push(`/transaction/${tx.txid}`)}
+                          onClick={() => {
+                            const currentUrl = window.location.pathname + window.location.search;
+                            addToHistory(currentUrl);
+                            router.push(`/transaction/${tx.txid}`);
+                          }}
                           className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
                         >
                           View Details →
@@ -428,7 +433,7 @@ export function MempoolExplorer() {
                       </div>
 
                       <div className="flex items-center space-x-2">
-                        <Activity className="h-4 w-4 text-gray-400" />
+                        <Pulse className="h-4 w-4 text-gray-400" />
                         <div>
                           <div className="text-gray-400 text-xs">Priority</div>
                           <div className="text-white text-sm">
@@ -452,7 +457,7 @@ export function MempoolExplorer() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <Pulse className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-400">No transactions in mempool</p>
           </div>
         )}

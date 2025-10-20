@@ -6,9 +6,9 @@ import {
   Fire,
   Eye,
   MagnifyingGlass,
-  UsersThreeThree,
+  UsersThree,
   Database,
-  Activity,
+  Pulse,
   ArrowUpRight,
   Clock,
   Hash,
@@ -65,7 +65,7 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
         };
       case 'transaction':
         return {
-          icon: Activity,
+          icon: Pulse,
           color: 'text-blue-400',
           bgColor: 'bg-blue-500/10',
           borderColor: 'border-blue-500/20',
@@ -79,7 +79,7 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
         };
       default:
         return {
-          icon: Activity,
+          icon: Pulse,
           color: 'text-gray-400',
           bgColor: 'bg-gray-500/10',
           borderColor: 'border-gray-500/20',
@@ -94,7 +94,7 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
   return (
     <Link
       href={item.link}
-      className={`group relative bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-verus-blue/60 rounded-xl p-4 border transition-all duration-300 ${config.borderColor} hover:border-white/30 ${
+      className={`group relative bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60 rounded-xl p-4 border transition-all duration-300 ${config.borderColor} hover:border-gray-300 dark:hover:border-white/30 ${
         isTopThree ? 'ring-1 ring-orange-400/30' : ''
       }`}
     >
@@ -160,11 +160,11 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
                 +{item.trend}%
               </span>
             </div>
-            <span className="text-xs text-gray-400">trending</span>
+            <span className="text-xs text-gray-600 dark:text-gray-400">trending</span>
 
             {/* Metadata */}
             {item.metadata && (
-              <div className="text-xs text-gray-400 ml-auto">
+              <div className="text-xs text-gray-600 dark:text-gray-400 ml-auto">
                 {item.metadata.height &&
                   `Height: ${item.metadata.height.toLocaleString()}`}
                 {item.metadata.stakes && `${item.metadata.stakes} stakes`}
@@ -174,7 +174,7 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
           </div>
 
           {/* Progress Bar (Trend Visualization) */}
-          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="mt-3 h-1 bg-gray-300 dark:bg-slate-700 rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-1000 ${
                 item.trend > 50
@@ -390,25 +390,25 @@ export function TrendingSection({
   const currentItems = getCurrentItems();
 
   return (
-    <div className="bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700 overflow-hidden">
       {/* Header */}
-      <div className="p-6 border-b border-slate-700">
+      <div className="p-6 border-b border-slate-300 dark:border-slate-700">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-gradient-to-br from-orange-500 to-red-500">
               <Fire className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 Trending Now
                 <Sparkle className="h-5 w-5 text-green-400 animate-pulse" />
               </h3>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 What&apos;s hot on Verus blockchain
               </p>
             </div>
           </div>
-          <div className="text-xs text-gray-400 flex items-center gap-1">
+          <div className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
             <Clock className="h-3 w-3" />
             Live
           </div>
@@ -448,7 +448,7 @@ export function TrendingSection({
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
                 activeTab === key
                   ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
-                  : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                  : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -485,10 +485,10 @@ export function TrendingSection({
       {/* Popular MagnifyingGlasses Footer */}
       {trendingData.searches.length > 0 && (
         <div className="px-6 pb-6">
-          <div className="bg-white/5 rounded-lg p-4 border border-slate-700">
+          <div className="bg-gray-50 dark:bg-white/5 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
             <div className="flex items-center gap-2 mb-3">
-              <MagnifyingGlass className="h-4 w-4 text-blue-400" />
-              <span className="text-sm font-semibold text-white">
+              <MagnifyingGlass className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">
                 Popular MagnifyingGlasses
               </span>
             </div>
@@ -497,7 +497,7 @@ export function TrendingSection({
                 <Link
                   key={search.id}
                   href={search.link}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-verus-blue/60 rounded-full text-xs text-blue-300 hover:text-blue-200 transition-all flex items-center gap-1"
+                  className="px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-verus-blue/60 rounded-full text-xs text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 transition-all flex items-center gap-1"
                 >
                   <span>&quot;{search.name}&quot;</span>
                   <CaretRight className="h-3 w-3" />
@@ -512,7 +512,7 @@ export function TrendingSection({
       <div className="px-6 pb-6">
         <Link
           href="/?tab=explorer"
-          className="group w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-verus-blue/60 text-white rounded-lg border border-slate-700 hover:border-verus-blue/50 transition-all"
+          className="group w-full flex items-center justify-center gap-2 px-4 py-3 bg-verus-blue hover:bg-verus-blue-dark border border-verus-blue hover:border-verus-blue-dark text-white rounded-lg transition-all"
         >
           <TrendUp className="h-4 w-4" />
           <span className="font-medium">Explore All Trending</span>
@@ -557,17 +557,17 @@ export function TrendingWidget() {
   }, []);
 
   return (
-    <div className="bg-slate-900 rounded-xl p-4 border border-slate-700">
+    <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-300 dark:border-slate-700">
       <div className="flex items-center gap-2 mb-3">
         <Fire className="h-4 w-4 text-blue-400" />
-        <h4 className="text-sm font-bold text-white">Trending</h4>
+        <h4 className="text-sm font-bold text-gray-900 dark:text-white">Trending</h4>
       </div>
       <div className="space-y-2">
         {topItems.map((item, index) => (
           <Link
             key={item.id}
             href={item.link}
-            className="group flex items-center justify-between p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-verus-blue/60 transition-all"
+            className="group flex items-center justify-between p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-700 hover:border-verus-blue/60 transition-all"
           >
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <span
@@ -577,7 +577,7 @@ export function TrendingWidget() {
               >
                 #{index + 1}
               </span>
-              <span className="text-sm text-white truncate">{item.name}</span>
+              <span className="text-sm text-gray-900 dark:text-white truncate">{item.name}</span>
             </div>
             <div className="flex items-center gap-1">
               <TrendUp className="h-3 w-3 text-green-400" />
@@ -589,11 +589,11 @@ export function TrendingWidget() {
         ))}
       </div>
       <Link
-        href="/?tab=verusids"
-        className="mt-3 text-xs text-blue-400 hover:text-blue-400-light flex items-center justify-center gap-1 transition-colors"
+        href="/?tab=explorer"
+        className="mt-3 text-sm text-verus-blue hover:text-verus-blue-light flex items-center justify-center gap-2 transition-colors font-medium"
       >
-        View All Trending
-        <CaretRight className="h-3 w-3" />
+        Explore All Data
+        <ArrowUpRight className="h-4 w-4" />
       </Link>
     </div>
   );

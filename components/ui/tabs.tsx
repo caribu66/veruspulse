@@ -23,7 +23,7 @@ export function Tabs({
   className = '',
 }: TabsProps) {
   return (
-    <div className={`border-b border-white/20 ${className}`}>
+    <div className={`border-b border-slate-300 dark:border-white/20 ${className}`}>
       <div className="flex space-x-1 overflow-x-auto">
         {tabs.map(tab => (
           <button
@@ -34,8 +34,8 @@ export function Tabs({
               border-b-2 whitespace-nowrap
               ${
                 activeTab === tab.id
-                  ? 'border-blue-500 text-white bg-white/10'
-                  : 'border-transparent text-blue-200 hover:text-white hover:bg-white/5'
+                  ? 'border-blue-500 text-white bg-blue-500'
+                  : 'border-transparent text-gray-600 dark:text-blue-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5'
               }
             `}
           >
@@ -45,7 +45,7 @@ export function Tabs({
               <span
                 className={`
                 px-2 py-0.5 rounded-full text-xs font-semibold
-                ${activeTab === tab.id ? 'bg-blue-500 text-white' : 'bg-white/20 text-blue-200'}
+                ${activeTab === tab.id ? 'bg-white text-blue-500' : 'bg-gray-200 dark:bg-white/20 text-gray-600 dark:text-blue-200'}
               `}
               >
                 {tab.badge}

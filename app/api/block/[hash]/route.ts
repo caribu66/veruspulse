@@ -110,7 +110,6 @@ export async function GET(
           metrics: true,
         });
       } catch (error) {
-        console.warn(`Heavy metrics failed for block ${block.hash}:`, error);
         // Return base data with error flags
         return NextResponse.json({
           success: true,

@@ -3,7 +3,6 @@ import { verusAPI } from '@/lib/rpc-client-robust';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Fetching network participation metrics...');
 
     // Get basic network metrics
     const [blockchainInfo, txOutInfo, miningInfo] = await Promise.all([

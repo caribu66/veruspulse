@@ -44,7 +44,7 @@ export function TruncatedAddress({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      // Silent error handling for clipboard
     }
   };
 
@@ -108,14 +108,14 @@ export function TruncatedHash({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      // Silent error handling for clipboard
     }
   };
 
   return (
     <div className={cn('flex items-center gap-2 min-w-0', className)}>
       <code
-        className="truncate text-sm bg-black/20 px-2 py-1 rounded"
+        className="truncate text-sm bg-gray-200 dark:bg-black/20 px-2 py-1 rounded"
         title={hash}
       >
         {truncateHash(hash, maxLength)}

@@ -26,7 +26,7 @@ export function UTXOBubbleChart({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const { bubbles, maxValue, minValue } = useMemo(() => {
-    if (!utxos || utxos.length === 0) {
+    if (!utxos || utxos.length === 0 || !width || !height || width <= 0 || height <= 0) {
       return { bubbles: [], maxValue: 0, minValue: 0 };
     }
 
@@ -70,9 +70,9 @@ export function UTXOBubbleChart({
 
       return {
         ...utxo,
-        x: Math.max(radius, Math.min(width - radius, x)),
-        y: Math.max(radius, Math.min(height - radius, y)),
-        radius,
+        x: isNaN(x) ? width * 0.5 : Math.max(radius, Math.min(width - radius, x)),
+        y: isNaN(y) ? height * 0.5 : Math.max(radius, Math.min(height - radius, y)),
+        radius: isNaN(radius) ? 10 : radius,
       };
     });
 
@@ -95,11 +95,12 @@ export function UTXOBubbleChart({
     }
   };
 
-  if (bubbles.length === 0) {
+  // Guard against invalid dimensions or empty data
+  if (bubbles.length === 0 || !width || !height || width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
     return (
       <div
         className={`${className} flex items-center justify-center bg-gray-800/30 rounded-lg`}
-        style={{ width, height }}
+        style={{ width: width || 600, height: height || 400 }}
       >
         <p className="text-gray-400">No UTXO data available</p>
       </div>
@@ -211,9 +212,9 @@ export function UTXOBubbleChart({
               className="cursor-pointer transition-all"
             >
               <circle
-                cx={bubble.x}
-                cy={bubble.y}
-                r={bubble.radius}
+                cx={isNaN(bubble.x) ? width / 2 : bubble.x}
+                cy={isNaN(bubble.y) ? height / 2 : bubble.y}
+                r={isNaN(bubble.radius) ? 10 : bubble.radius}
                 fill={colors.fill}
                 stroke={colors.stroke}
                 strokeWidth={isHovered ? 3 : 1.5}
@@ -232,7 +233,7 @@ export function UTXOBubbleChart({
               </circle>
 
               {/* Show value label on larger bubbles */}
-              {bubble.radius > 15 && (
+              {bubble.radius > 15 && !isNaN(bubble.x) && !isNaN(bubble.y) && (
                 <text
                   x={bubble.x}
                   y={bubble.y}

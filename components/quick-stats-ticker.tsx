@@ -1,10 +1,15 @@
 'use client';
 
+/**
+ * QuickStatsTicker - Displays blockchain statistics in a ticker format
+ * Shows key metrics like block height, hash rate, difficulty, mempool, and more
+ */
+
 import { useEffect, useState, useRef } from 'react';
 import {
   TrendUp,
   UsersThree,
-  Activity,
+  Pulse,
   Lightning,
   Database,
   Globe,
@@ -60,15 +65,6 @@ export function QuickStatsTicker({
         24,
         0.02
       ),
-      'hash-rate':
-        realtimeCharts.hashRate.length > 0
-          ? realtimeCharts.hashRate
-          : generateMockChartData(
-              miningStats?.networkhashps || 40000000,
-              24,
-              0.15
-            ),
-      'block-time': generateMockChartData(60, 24, 0.2),
       mempool:
         realtimeCharts.mempool.length > 0
           ? realtimeCharts.mempool
@@ -83,14 +79,11 @@ export function QuickStatsTicker({
         24,
         0.1
       ),
-      difficulty:
-        realtimeCharts.difficulty.length > 0
-          ? realtimeCharts.difficulty
-          : generateMockChartData(
-              miningStats?.difficulty || 300000000,
-              24,
-              0.1
-            ),
+      connections: generateMockChartData(
+        networkStats?.connections || 8,
+        24,
+        0.2
+      ),
     };
     setChartData(data);
   }, [miningStats, mempoolStats, networkStats, stakingStats, realtimeCharts]);
@@ -110,33 +103,15 @@ export function QuickStatsTicker({
     });
   }
 
-  // Generate stats array
+  // Generate stats array - Reduced to 5 essential metrics
   const stats: QuickStat[] = [
     {
       id: 'block-height',
       label: 'Block Height',
       value: networkStats?.blocks?.toLocaleString() || '...',
       icon: Database,
-      color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+      color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
       trend: 'up',
-    },
-    {
-      id: 'hash-rate',
-      label: 'Network Hash',
-      value: miningStats?.networkhashps
-        ? formatHashRate(miningStats.networkhashps)
-        : '...',
-      icon: Cpu,
-      color: 'text-verus-blue bg-verus-blue/10 border-verus-blue/20',
-      trend: 'neutral',
-    },
-    {
-      id: 'block-time',
-      label: 'Block Time',
-      value: '~60s',
-      icon: Clock,
-      color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-      trend: 'neutral',
     },
     {
       id: 'mempool',
@@ -147,8 +122,8 @@ export function QuickStatsTicker({
           : miningStats?.pooledtx !== undefined
             ? miningStats.pooledtx
             : '...',
-      icon: Activity,
-      color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+      icon: Pulse,
+      color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
       trend: 'neutral',
     },
     {
@@ -158,7 +133,7 @@ export function QuickStatsTicker({
         ? `${(networkStats.circulatingSupply / 1000000).toFixed(2)}M`
         : '...',
       icon: CurrencyDollar,
-      color: 'text-green-400 bg-green-500/10 border-green-500/20',
+      color: 'text-green-600 dark:text-green-400 bg-white dark:bg-green-500/10 border-slate-300 dark:border-green-500/20',
       suffix: 'VRSC',
     },
     {
@@ -169,30 +144,28 @@ export function QuickStatsTicker({
           ? formatStake(stakingStats.netstakeweight)
           : '...',
       icon: TrendUp,
-      color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+      color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
       trend: 'up',
     },
     {
-      id: 'difficulty',
-      label: 'Difficulty',
-      value: miningStats?.difficulty
-        ? formatDifficulty(miningStats.difficulty)
-        : '...',
-      icon: Hash,
-      color: 'text-verus-blue bg-verus-blue/10 border-verus-blue/20',
+      id: 'connections',
+      label: 'Connections',
+      value: networkStats?.connections || '...',
+      icon: Network,
+      color: 'text-blue-600 dark:text-verus-blue bg-white dark:bg-verus-blue/10 border-slate-300 dark:border-verus-blue/20',
       trend: 'neutral',
     },
   ];
 
   return (
-    <div className="quick-stats-ticker-container relative w-full bg-slate-900 border-y border-slate-700 py-4 md:py-6">
+    <div className="quick-stats-ticker-container relative w-full bg-gray-50 dark:bg-slate-900 border-y border-slate-300 dark:border-slate-700 py-4 md:py-6">
       {/* Desktop: Grid Layout */}
       <div className="hidden md:block w-full px-6">
         <div
           ref={scrollContainerRef}
-          className="grid grid-cols-7 gap-4 w-full"
+          className="grid grid-cols-5 gap-4 w-full"
           style={{
-            gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
+            gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
           }}
         >
           {stats.map((stat, index) => {
@@ -203,7 +176,7 @@ export function QuickStatsTicker({
                 className={`quick-stats-card flex flex-col items-center gap-1.5 sm:gap-2 md:gap-3 px-2 sm:px-3 md:px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl border ${stat.color} 
                 transition-all duration-300 active:scale-95 hover:brightness-110 group cursor-pointer 
                 w-full min-h-[80px] max-w-full
-                bg-slate-900 shadow-md hover:shadow-lg touch-manipulation`}
+                bg-white dark:bg-slate-900 shadow-md hover:shadow-lg touch-manipulation`}
                 style={{
                   animationDelay: `${index * 100}ms`,
                   WebkitTapHighlightColor: 'transparent',
@@ -220,10 +193,10 @@ export function QuickStatsTicker({
 
                 {/* Content */}
                 <div className="flex flex-col items-center text-center min-w-0 w-full overflow-hidden">
-                  <div className="text-[9px] sm:text-xs opacity-70 whitespace-nowrap truncate font-medium mb-0.5 md:mb-1 leading-tight w-full">
+                  <div className="text-[9px] sm:text-xs opacity-70 dark:opacity-70 opacity-60 whitespace-nowrap truncate font-medium mb-0.5 md:mb-1 leading-tight w-full text-slate-300 dark:text-slate-300 text-slate-600">
                     {stat.label}
                   </div>
-                  <div className="text-xs sm:text-sm md:text-sm font-bold whitespace-nowrap flex items-center justify-center gap-1 leading-tight min-h-[16px] w-full">
+                  <div className="text-xs sm:text-sm md:text-sm font-bold whitespace-nowrap flex items-center justify-center gap-1 leading-tight min-h-[16px] w-full text-white dark:text-white text-slate-900">
                     {stat.prefix && (
                       <span className="opacity-60 flex-shrink-0">
                         {stat.prefix}

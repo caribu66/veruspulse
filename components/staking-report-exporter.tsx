@@ -61,7 +61,6 @@ export function StakingReportExporter({
 
       setShowExportMenu(false);
     } catch (error) {
-      console.error('Error exporting CSV:', error);
       alert('Failed to export CSV. Please try again.');
     } finally {
       setExporting(false);
@@ -113,7 +112,6 @@ export function StakingReportExporter({
 
       setShowExportMenu(false);
     } catch (error) {
-      console.error('Error exporting tax report:', error);
       alert('Failed to export tax report. Please try again.');
     } finally {
       setExporting(false);
@@ -156,7 +154,7 @@ export function StakingReportExporter({
           ></div>
 
           {/* Menu */}
-          <div className="absolute top-full right-0 mt-2 w-72 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl z-50 overflow-hidden">
+          <div className="absolute top-full right-0 mt-2 w-72 bg-gray-100 dark:bg-gray-900 border border-gray-700 rounded-lg shadow-2xl z-50 overflow-hidden">
             {/* Header */}
             <div className="bg-blue-500/20 border-b border-gray-700 p-4 flex items-center justify-between">
               <div className="flex items-center space-x-2">

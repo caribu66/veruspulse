@@ -9,7 +9,7 @@ import {
   ArrowSquareOut,
   ArrowsClockwise,
   CaretRight,
-  Activity,
+  Pulse,
   TrendUp,
   X,
   Sparkle,
@@ -332,7 +332,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
       >
         <div className="flex items-center space-x-3">
           <div className="p-2 rounded-lg bg-red-500/20">
-            <Activity className="h-5 w-5 text-red-400" />
+            <Pulse className="h-5 w-5 text-red-400" />
           </div>
           <div>
             <div className="text-red-400 font-semibold">
@@ -347,7 +347,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
 
   return (
     <div
-      className={`bg-slate-900 rounded-xl border border-slate-700 p-6 transition-all duration-500 ease-in-out ${className}`}
+      className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 p-6 transition-all duration-500 ease-in-out ${className}`}
     >
       {/* Enhanced New Block Notification */}
       {activeTab === 'blocks' && newBlockNotification && (
@@ -561,7 +561,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                             <span>{formatTime(block.time)}</span>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <Activity className="h-3 w-3" />
+                            <Pulse className="h-3 w-3" />
                             <span>{block.nTx} tx</span>
                           </div>
                           <div className="flex items-center space-x-1">
@@ -625,7 +625,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                       {isNewestTransaction ? (
                         <Lightning className="h-3 w-3 transition-all duration-300 ease-in-out sparkle-icon" />
                       ) : (
-                        <Activity className="h-3 w-3" />
+                        <Pulse className="h-3 w-3" />
                       )}
                     </div>
 
@@ -633,7 +633,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2">
                         <span
-                          className={`font-semibold transition-all duration-300 ease-in-out ${isNewestTransaction ? 'text-blue-400' : 'text-white'}`}
+                          className={`font-semibold transition-all duration-300 ease-in-out ${isNewestTransaction ? 'text-blue-500 dark:text-blue-400' : 'text-gray-900 dark:text-white'}`}
                         >
                           {formatShortHash(tx.txid, 12)}
                         </span>
@@ -697,11 +697,11 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
       {/* Footer */}
       <div className="mt-6 pt-4 border-t border-white/10">
         <Link
-          href={activeTab === 'blocks' ? '/blocks' : '/mempool'}
-          className="flex items-center justify-center space-x-2 text-blue-400 hover:text-blue-300 transition-all duration-300 ease-in-out group hover:scale-105"
+          href="/?tab=explorer"
+          className="flex items-center justify-center space-x-2 text-verus-blue hover:text-verus-blue-light transition-all duration-300 ease-in-out group hover:scale-105"
         >
           <span className="text-sm font-medium transition-all duration-300 ease-in-out">
-            View All {activeTab === 'blocks' ? 'Blocks' : 'Mempool'}
+            Search {activeTab === 'blocks' ? 'Blocks' : 'Transactions'}
           </span>
           <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-all duration-300 ease-in-out" />
         </Link>
@@ -709,18 +709,18 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
 
       {/* Block Detail Modal */}
       {selectedBlock && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-gray-900 border border-gray-600 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto transform transition-all duration-500 ease-out animate-in zoom-in-95">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-600 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto transform transition-all duration-500 ease-out animate-in zoom-in-95">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-white">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Block #{selectedBlock.height}
                 </h3>
                 <button
                   onClick={() => setSelectedBlock(null)}
-                  className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all duration-300 ease-in-out hover:scale-110"
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-700 transition-all duration-300 ease-in-out hover:scale-110"
                 >
-                  <X className="h-5 w-5 text-gray-400 transition-all duration-300 ease-in-out" />
+                  <X className="h-5 w-5 text-gray-600 dark:text-gray-400 transition-all duration-300 ease-in-out" />
                 </button>
               </div>
 
@@ -785,7 +785,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
       {/* Transaction Detail Modal */}
       {selectedTransaction && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-gray-900 border border-gray-600 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto transform transition-all duration-500 ease-out animate-in zoom-in-95">
+          <div className="bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-600 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto transform transition-all duration-500 ease-out animate-in zoom-in-95">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-white">

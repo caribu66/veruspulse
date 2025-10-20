@@ -65,6 +65,8 @@ export const CACHE_KEYS = {
   currencyList: () => 'currencies:list',
 
   healthCheck: () => 'health:check',
+  
+  circulatingSupply: () => 'blockchain:circulating_supply',
 };
 
 // Generic cache operations

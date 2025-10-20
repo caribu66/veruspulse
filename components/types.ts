@@ -106,3 +106,48 @@ export interface EnhancedTransaction {
   value?: number;
   fee?: number;
 }
+
+export interface NetworkParticipationData {
+  address: string;
+  participationPercentage: number;
+  participationFormatted: string;
+  expectedStakeTimeSeconds: number;
+  expectedStakeTimeFormatted: string;
+  yourWeight: number;
+  yourWeightFormatted: string;
+  networkWeight: number;
+  networkWeightFormatted: string;
+  status: 'active' | 'not_staking' | 'low_participation' | 'data_unavailable';
+  eligibleUTXOs: number;
+  totalUTXOs: number;
+  utxoEfficiency: number;
+  lastUpdated: string;
+}
+
+export interface StakingMomentumData {
+  address: string;
+  yourWeight: number;
+  networkWeight: number;
+  currentFrequency: number;
+  expectedFrequency: number;
+  performanceRatio: number;
+  performanceRating: string;
+  momentum: {
+    score: number;
+    color: string;
+    frequencyTrend: 'increasing' | 'stable' | 'decreasing';
+    frequencyChange: number;
+    rewardTrend: 'increasing' | 'stable' | 'decreasing';
+    rewardChange: number;
+    frequencyTrendFormatted: string;
+    rewardTrendFormatted: string;
+    frequencyChangeFormatted: string;
+    rewardChangeFormatted: string;
+    last7d: number;
+    previous7d: number;
+    last30d: number;
+    lastStakeDays: number | null;
+    isActive: boolean;
+  } | null;
+  lastUpdated: string;
+}

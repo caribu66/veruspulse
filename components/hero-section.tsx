@@ -117,7 +117,7 @@ export function HeroSection({
             {/* Verus Logo */}
             <div className="flex justify-center mb-8">
               <Image
-                src={theme === 'light' ? '/verus-icon-slogan-blue.svg' : '/verus-icon-slogan-white.svg'}
+                src="/verus-icon-slogan-blue.svg"
                 alt="Verus Protocol"
                 width={200}
                 height={80}
@@ -125,7 +125,7 @@ export function HeroSection({
                 priority
               />
             </div>
-            
+
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
               The <span className="text-verus-blue">Internet of Value</span>
             </h1>
@@ -248,7 +248,9 @@ export function HeroSection({
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-slate-400 text-sm">{feature.description}</p>
+                  <p className="text-gray-600 dark:text-slate-400 text-sm">
+                    {feature.description}
+                  </p>
                 </div>
               );
             })}

@@ -95,7 +95,7 @@ export function CompactNavigationBar({
           <div className="flex items-center flex-shrink-0">
             <div className="relative w-[300px] h-10">
               <Image
-                src={theme === 'light' ? '/verus-icon-slogan-blue.svg' : '/verus-icon-slogan-white.svg'}
+                src="/verus-icon-slogan-blue.svg"
                 alt="Verus - Truth and Privacy for All"
                 width={300}
                 height={40}
@@ -145,18 +145,12 @@ export function CompactNavigationBar({
           <div className="flex items-center space-x-2 flex-shrink-0">
             {/* Minimal Price Indicator (Desktop) */}
             <div className="hidden lg:flex">
-              <MinimalPriceIndicator
-                refreshInterval={10000}
-                maxAssets={6}
-              />
+              <MinimalPriceIndicator refreshInterval={10000} maxAssets={6} />
             </div>
 
             {/* Minimal Price Indicator (Tablet) */}
             <div className="hidden md:flex lg:hidden">
-              <MinimalPriceIndicator
-                refreshInterval={10000}
-                maxAssets={5}
-              />
+              <MinimalPriceIndicator refreshInterval={10000} maxAssets={5} />
             </div>
 
             {/* Theme Toggle */}
@@ -193,10 +187,7 @@ export function CompactNavigationBar({
           >
             {/* Minimal Price Indicator (Mobile) */}
             <div className="mb-4">
-              <MinimalPriceIndicator
-                refreshInterval={10000}
-                maxAssets={4}
-              />
+              <MinimalPriceIndicator refreshInterval={10000} maxAssets={4} />
             </div>
 
             <nav

@@ -24,7 +24,7 @@ export function EnhancedNavigationBar({
   onTabChange,
 }: EnhancedNavigationBarProps) {
   const { theme } = useTheme();
-  
+
   // Navigation items with icons
   const navigationItems = useMemo(
     () => [
@@ -58,7 +58,7 @@ export function EnhancedNavigationBar({
                 {/* Logo Image */}
                 <div className="relative h-12 w-12">
                   <Image
-                    src={theme === 'light' ? '/verus-icon-blue.svg' : '/verus-icon-white.svg'}
+                    src="/verus-icon-blue.svg"
                     alt="Verus"
                     width={48}
                     height={48}
@@ -68,7 +68,9 @@ export function EnhancedNavigationBar({
                 </div>
 
                 {/* Logo Text */}
-                <span className="text-gray-900 dark:text-white font-bold text-3xl">Verus</span>
+                <span className="text-gray-900 dark:text-white font-bold text-3xl">
+                  Verus
+                </span>
               </div>
             </div>
           </div>
@@ -77,18 +79,12 @@ export function EnhancedNavigationBar({
           <div className="flex items-center space-x-3 flex-shrink-0">
             {/* Minimal Price Indicator (Desktop) */}
             <div className="hidden lg:flex">
-              <MinimalPriceIndicator
-                refreshInterval={10000}
-                maxAssets={3}
-              />
+              <MinimalPriceIndicator refreshInterval={10000} maxAssets={3} />
             </div>
 
             {/* Minimal Price Indicator (Tablet) */}
             <div className="hidden md:flex lg:hidden">
-              <MinimalPriceIndicator
-                refreshInterval={10000}
-                maxAssets={2}
-              />
+              <MinimalPriceIndicator refreshInterval={10000} maxAssets={2} />
             </div>
 
             {/* Theme Toggle */}

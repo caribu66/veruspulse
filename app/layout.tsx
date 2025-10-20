@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/verus-icon-white.svg" type="image/svg+xml" />
+        <link rel="icon" href="/verus-icon-blue.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/favicon.ico" />
         <meta name="theme-color" content="#3165d4" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

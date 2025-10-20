@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-
     // Try to get from cache first (avoids RPC call if already cached)
     let cachedIdentity = await getCachedIdentity(verusid);
 
@@ -79,6 +78,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check cache first for all addresses
+    console.log(
       `   💾 Checking balance cache for ${allAddresses.length} address(es)...`
     );
     const cachedBalances = await getCachedBalances(allAddresses);
@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
     );
 
     if (uncachedAddresses.length > 0) {
+      console.log(
         `   🌐 Calling RPC: getaddressbalance for ${uncachedAddresses.length} uncached address(es)...`
       );
     } else {
@@ -196,7 +197,6 @@ export async function POST(request: NextRequest) {
         });
       }
     });
-
 
     return NextResponse.json({
       success: true,

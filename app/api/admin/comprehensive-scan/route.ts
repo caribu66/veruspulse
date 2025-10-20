@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
             // Calculate network rankings
             await calculator!.calculateNetworkRankings();
 
+            console.log(
               '[Comprehensive Scan] All statistics calculated successfully!'
             );
           })
@@ -210,6 +211,7 @@ export async function POST(request: NextRequest) {
             addresses,
           })
           .then(async () => {
+            console.log(
               '[Recent Scan] Block scanning complete, calculating statistics...'
             );
 
@@ -230,6 +232,7 @@ export async function POST(request: NextRequest) {
 
             await calculator!.calculateNetworkRankings();
 
+            console.log(
               '[Recent Scan] Recent statistics calculated successfully!'
             );
           })

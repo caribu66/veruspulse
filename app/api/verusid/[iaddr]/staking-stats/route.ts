@@ -193,6 +193,7 @@ export async function GET(
 
         // Validate dates
         if (isNaN(firstDate.getTime()) || isNaN(lastDate.getTime())) {
+          console.log({
             calculatedFirstStake,
             calculatedLastStake,
           });

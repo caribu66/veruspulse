@@ -7,7 +7,7 @@ on:
     branches: [main, develop]
 
 env:
-  NODE_VERSION: '20.x'
+  NODE_VERSION: '18.x'
 
 jobs:
   # Job 1: Lint & Format Check

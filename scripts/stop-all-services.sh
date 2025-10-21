@@ -104,6 +104,18 @@ kill_by_name "monitor-new-stakes.js" "Stake Monitor"
 kill_by_name "scan-all-verusids" "VerusID Scanner"
 kill_by_name "auto-update-utxos.js" "UTXO Auto-Updater"
 
+# Stop npm processes related to this project
+if pgrep -f "npm.*verus-dapp" > /dev/null; then
+    echo -e "${YELLOW}Found npm processes for verus-dapp${NC}"
+    pkill -TERM -f "npm.*verus-dapp" 2>/dev/null
+    sleep 1
+    if pgrep -f "npm.*verus-dapp" > /dev/null; then
+        pkill -9 -f "npm.*verus-dapp" 2>/dev/null
+    fi
+    echo -e "${GREEN}  ✓ Stopped npm processes${NC}"
+    STOPPED=$((STOPPED + 1))
+fi
+
 echo ""
 echo "═══════════════════════════════════════════════════════════════"
 echo ""

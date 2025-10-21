@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# ============================================
+# Cursor Cleanup Hook
+# ============================================
+# This file can be sourced in your ~/.bashrc
+# to automatically cleanup processes when
+# closing the terminal
+# ============================================
+
+# Add this to your ~/.bashrc:
+# if [ -f ~/verus-dapp/.cursor-cleanup-hook ]; then
+#     trap 'bash ~/verus-dapp/scripts/cleanup-on-cursor-exit.sh 2>/dev/null' EXIT
+# fi
+
+# Or run manually before closing Cursor:
+# npm run cleanup
+

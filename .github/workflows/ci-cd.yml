@@ -131,7 +131,7 @@ jobs:
         run: npm audit --audit-level=high || echo "Vulnerabilities found, review required"
 
       - name: Run Snyk security scan
-        if: ${{ secrets.SNYK_TOKEN != '' }}
+        if: ${{ env.SNYK_TOKEN != '' }}
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

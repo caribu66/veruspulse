@@ -8,18 +8,18 @@ Your VerusPulse application has been tested with **100 concurrent users**. The l
 
 **Test Date:** October 18, 2025  
 **Concurrent Users:** 100  
-**Duration:** 3 minutes  
+**Duration:** 3 minutes
 
 ### Key Metrics
 
-| Metric | Result | Status |
-|--------|--------|--------|
-| Total Requests | 1,391 | ✅ |
-| Failed Requests | 49 (3.5%) | ⚠️ |
+| Metric                | Result           | Status               |
+| --------------------- | ---------------- | -------------------- |
+| Total Requests        | 1,391            | ✅                   |
+| Failed Requests       | 49 (3.5%)        | ⚠️                   |
 | Average Response Time | 10,178 ms (~10s) | ⚠️ Needs improvement |
-| P95 Response Time | 19,923 ms (~20s) | ⚠️ Needs improvement |
-| Max Response Time | 37,075 ms (~37s) | ⚠️ Critical |
-| Throughput | 7.32 req/s | ℹ️ |
+| P95 Response Time     | 19,923 ms (~20s) | ⚠️ Needs improvement |
+| Max Response Time     | 37,075 ms (~37s) | ⚠️ Critical          |
+| Throughput            | 7.32 req/s       | ℹ️                   |
 
 **Full report:** [`load-tests/results/LOAD-TEST-SUMMARY.md`](load-tests/results/LOAD-TEST-SUMMARY.md)
 
@@ -47,6 +47,7 @@ npm run test:load:all
 ### Monitor Server During Tests
 
 Open a second terminal and run:
+
 ```bash
 npm run monitor
 ```
@@ -97,10 +98,11 @@ load-tests/
 ### Priority 1: Immediate Actions
 
 1. **Implement Aggressive Caching**
+
    ```typescript
    // In your API routes
    export const revalidate = 30; // Cache for 30 seconds
-   
+
    // Or use Redis caching
    const cached = await redis.get(cacheKey);
    if (cached) return JSON.parse(cached);
@@ -151,13 +153,13 @@ load-tests/
 
 After optimizations, aim for:
 
-| Metric | Current | Target |
-|--------|---------|--------|
-| Avg Response Time | 10,178 ms | <1,000 ms |
-| P95 Response Time | 19,923 ms | <2,000 ms |
-| Error Rate | 3.5% | <1% |
-| Throughput | 7.32 req/s | >50 req/s |
-| Concurrent Users | 100 | 200+ |
+| Metric            | Current    | Target    |
+| ----------------- | ---------- | --------- |
+| Avg Response Time | 10,178 ms  | <1,000 ms |
+| P95 Response Time | 19,923 ms  | <2,000 ms |
+| Error Rate        | 3.5%       | <1%       |
+| Throughput        | 7.32 req/s | >50 req/s |
+| Concurrent Users  | 100        | 200+      |
 
 ## 🔍 Understanding the Results
 
@@ -264,6 +266,7 @@ The load test simulates realistic user behavior:
 ### k6 Not Found
 
 If you get "k6 not found":
+
 ```bash
 # Add k6 to PATH
 export PATH="$HOME/bin:$PATH"
@@ -280,6 +283,7 @@ chmod +x ~/bin/k6
 ### Server Not Responding
 
 Make sure your server is running:
+
 ```bash
 # Development
 npm run dev
@@ -292,6 +296,7 @@ npm start
 ### High Error Rates
 
 Check:
+
 1. Server logs for errors
 2. Redis is running: `redis-cli ping`
 3. Database connections
@@ -300,6 +305,7 @@ Check:
 ### Permission Denied
 
 Make scripts executable:
+
 ```bash
 chmod +x load-tests/*.sh
 ```
@@ -332,9 +338,10 @@ chmod +x load-tests/*.sh
 
 ## 🎉 Conclusion
 
-Your VerusPulse application successfully handled 100 concurrent users! While there's room for improvement in response times, the foundation is solid. 
+Your VerusPulse application successfully handled 100 concurrent users! While there's room for improvement in response times, the foundation is solid.
 
 **Key Takeaways:**
+
 - ✅ Server is stable under load
 - ✅ Load testing infrastructure is ready
 - ⚠️ Response times need optimization
@@ -342,9 +349,9 @@ Your VerusPulse application successfully handled 100 concurrent users! While the
 - 🚀 With caching and optimization, 200+ concurrent users is achievable
 
 **Get Started:**
+
 ```bash
 npm run test:load
 ```
 
 Good luck with your optimizations! 🚀
-

@@ -51,11 +51,15 @@ class ProcessLock {
       pid: info.pid || process.pid,
       processName: this.processName,
       started: new Date().toISOString(),
-      ...info
+      ...info,
     };
 
     try {
-      fs.writeFileSync(this.lockFile, JSON.stringify(lockData, null, 2), 'utf8');
+      fs.writeFileSync(
+        this.lockFile,
+        JSON.stringify(lockData, null, 2),
+        'utf8'
+      );
       return true;
     } catch (err) {
       console.error(`Failed to create lock file: ${err.message}`);
@@ -99,7 +103,7 @@ class ProcessLock {
    */
   stop(signal = 'SIGTERM') {
     const processInfo = this.isRunning();
-    
+
     if (!processInfo) {
       console.log(`ℹ️  No ${this.processName} is currently running.`);
       return false;
@@ -107,12 +111,16 @@ class ProcessLock {
 
     try {
       process.kill(processInfo.pid, signal);
-      console.log(`✅ ${this.processName} (PID: ${processInfo.pid}) stopped successfully!`);
+      console.log(
+        `✅ ${this.processName} (PID: ${processInfo.pid}) stopped successfully!`
+      );
       this.removeLock();
       return true;
     } catch (err) {
       if (err.code === 'ESRCH') {
-        console.log(`ℹ️  Process not found (may have already stopped). Cleaning up lock file...`);
+        console.log(
+          `ℹ️  Process not found (may have already stopped). Cleaning up lock file...`
+        );
         this.removeLock();
         return true;
       } else {
@@ -124,7 +132,3 @@ class ProcessLock {
 }
 
 module.exports = ProcessLock;
-
-
-
-

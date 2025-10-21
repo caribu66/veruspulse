@@ -1,3 +1,4 @@
+// @ts-nocheck - Mock types conflict with pg Pool types
 import { Pool } from 'pg';
 import {
   AchievementService,
@@ -9,12 +10,12 @@ import {
 // Mock pg Pool
 jest.mock('pg', () => {
   const mockPool = {
-    query: jest.fn(),
-    connect: jest.fn(),
-    end: jest.fn(),
+    query: jest.fn() as any,
+    connect: jest.fn() as any,
+    end: jest.fn() as any,
   };
   return {
-    Pool: jest.fn(() => mockPool),
+    Pool: jest.fn(() => mockPool) as any,
   };
 });
 
@@ -74,17 +75,17 @@ describe('AchievementService', () => {
         rowCount: 2,
         oid: 0,
         fields: [],
-      });
+      } as any);
 
       const result = await service.getAchievementDefinitions();
 
       expect(result).toEqual(mockDefinitions);
       expect(mockPool.query).toHaveBeenCalledWith(
         expect.stringContaining('achievement_definitions')
-      );
+      ) as any;
       expect(mockPool.query).toHaveBeenCalledWith(
         expect.stringContaining('is_active = true')
-      );
+      ) as any;
     });
 
     it('should handle empty definitions', async () => {
@@ -94,7 +95,7 @@ describe('AchievementService', () => {
         rowCount: 0,
         oid: 0,
         fields: [],
-      });
+      } as any);
 
       const result = await service.getAchievementDefinitions();
 
@@ -102,11 +103,13 @@ describe('AchievementService', () => {
     });
 
     it('should handle database errors', async () => {
-      mockPool.query.mockRejectedValue(new Error('Database connection failed'));
-
-      await expect(service.getAchievementDefinitions()).rejects.toThrow(
-        'Database connection failed'
+      mockPool.query.mockRejectedValue(
+        new Error('Database connection failed') as any
       );
+
+      (await expect(service.getAchievementDefinitions()).rejects.toThrow(
+        'Database connection failed'
+      )) as any;
     });
   });
 
@@ -134,7 +137,7 @@ describe('AchievementService', () => {
         rowCount: 1,
         oid: 0,
         fields: [],
-      });
+      } as any);
 
       const result = await service.getEarnedAchievements('iTest123');
 
@@ -142,7 +145,7 @@ describe('AchievementService', () => {
       expect(mockPool.query).toHaveBeenCalledWith(
         expect.stringContaining('verusid_achievements'),
         ['iTest123']
-      );
+      ) as any;
     });
 
     it('should return empty array for identity with no achievements', async () => {
@@ -152,7 +155,7 @@ describe('AchievementService', () => {
         rowCount: 0,
         oid: 0,
         fields: [],
-      });
+      } as any);
 
       const result = await service.getEarnedAchievements('iNewUser');
 
@@ -162,9 +165,9 @@ describe('AchievementService', () => {
     it('should handle database errors', async () => {
       mockPool.query.mockRejectedValue(new Error('Query timeout'));
 
-      await expect(service.getEarnedAchievements('iTest123')).rejects.toThrow(
+      (await expect(service.getEarnedAchievements('iTest123')).rejects.toThrow(
         'Query timeout'
-      );
+      )) as any;
     });
   });
 
@@ -192,7 +195,7 @@ describe('AchievementService', () => {
         rowCount: 1,
         oid: 0,
         fields: [],
-      });
+      } as any);
 
       const result = await service.getAchievementProgress('iTest123');
 
@@ -200,7 +203,7 @@ describe('AchievementService', () => {
       expect(mockPool.query).toHaveBeenCalledWith(
         expect.stringContaining('achievement_progress'),
         ['iTest123']
-      );
+      ) as any;
     });
 
     it('should order progress by percentage and tier', async () => {
@@ -210,14 +213,14 @@ describe('AchievementService', () => {
         rowCount: 0,
         oid: 0,
         fields: [],
-      });
+      } as any);
 
       await service.getAchievementProgress('iTest123');
 
       expect(mockPool.query).toHaveBeenCalledWith(
         expect.stringContaining('ORDER BY ap.percentage DESC, ad.tier'),
         ['iTest123']
-      );
+      ) as any;
     });
   });
 
@@ -235,7 +238,7 @@ describe('AchievementService', () => {
           rowCount: 1,
           oid: 0,
           fields: [],
-        })
+        } as any)
         .mockResolvedValueOnce({
           // getEarnedAchievements
           rows: earnedAchievements,
@@ -243,7 +246,7 @@ describe('AchievementService', () => {
           rowCount: 0,
           oid: 0,
           fields: [],
-        })
+        } as any)
         .mockResolvedValueOnce({
           // unlockBadge INSERT
           rows: [{ id: 1 }],
@@ -251,13 +254,13 @@ describe('AchievementService', () => {
           rowCount: 1,
           oid: 0,
           fields: [],
-        });
+        } as any);
 
-      const result = await service.evaluateAchievements(
+      const result = (await service.evaluateAchievements(
         'iTest123',
         mockStakingStats, // has 50 stakes, requirement is 1
         mockStakingHistory
-      );
+      )) as any;
 
       // With 50 stakes and requirement of 1, should unlock
       expect(result.unlocked).toContain('first-stake');
@@ -282,20 +285,20 @@ describe('AchievementService', () => {
           rowCount: 1,
           oid: 0,
           fields: [],
-        })
+        } as any)
         .mockResolvedValueOnce({
           rows: earnedAchievements,
           command: 'SELECT',
           rowCount: 1,
           oid: 0,
           fields: [],
-        });
+        } as any);
 
-      const result = await service.evaluateAchievements(
+      const result = (await service.evaluateAchievements(
         'iTest123',
         mockStakingStats,
         mockStakingHistory
-      );
+      )) as any;
 
       expect(result.unlocked).toHaveLength(0);
       expect(result.progress).toHaveLength(0);
@@ -318,7 +321,7 @@ describe('AchievementService', () => {
           rowCount: 1,
           oid: 0,
           fields: [],
-        })
+        } as any)
         .mockResolvedValueOnce({
           // getEarnedAchievements
           rows: [],
@@ -326,7 +329,7 @@ describe('AchievementService', () => {
           rowCount: 0,
           oid: 0,
           fields: [],
-        })
+        } as any)
         .mockResolvedValueOnce({
           // updateProgress INSERT/UPDATE
           rows: [{ id: 1 }],
@@ -334,13 +337,13 @@ describe('AchievementService', () => {
           rowCount: 1,
           oid: 0,
           fields: [],
-        });
+        } as any);
 
-      const result = await service.evaluateAchievements(
+      const result = (await service.evaluateAchievements(
         'iTest123',
         mockStakingStats, // has 50 stakes
         mockStakingHistory
-      );
+      )) as any;
 
       expect(result.unlocked).toHaveLength(0);
       expect(result.progress.length).toBeGreaterThan(0);
@@ -374,20 +377,20 @@ describe('AchievementService', () => {
           rowCount: 0,
           oid: 0,
           fields: [],
-        })
+        } as any)
         .mockResolvedValueOnce({
           rows: [],
           command: 'SELECT',
           rowCount: 0,
           oid: 0,
           fields: [],
-        });
+        } as any);
 
-      const result = await service.evaluateAchievements(
+      const result = (await service.evaluateAchievements(
         'iNewUser',
         zeroStats,
         []
-      );
+      )) as any;
 
       expect(result.unlocked).toHaveLength(0);
       expect(result.progress).toHaveLength(0);
@@ -406,20 +409,20 @@ describe('AchievementService', () => {
           rowCount: 0,
           oid: 0,
           fields: [],
-        })
+        } as any)
         .mockResolvedValueOnce({
           rows: [],
           command: 'SELECT',
           rowCount: 0,
           oid: 0,
           fields: [],
-        });
+        } as any);
 
-      const result = await service.evaluateAchievements(
+      const result = (await service.evaluateAchievements(
         'iWhale',
         largeStats,
         mockStakingHistory
-      );
+      )) as any;
 
       expect(result).toBeDefined();
     });
@@ -432,20 +435,20 @@ describe('AchievementService', () => {
           rowCount: 0,
           oid: 0,
           fields: [],
-        })
+        } as any)
         .mockResolvedValueOnce({
           rows: [],
           command: 'SELECT',
           rowCount: 0,
           oid: 0,
           fields: [],
-        });
+        } as any);
 
-      const result = await service.evaluateAchievements(
+      const result = (await service.evaluateAchievements(
         'iTest123',
         mockStakingStats,
         []
-      );
+      )) as any;
 
       expect(result).toBeDefined();
       expect(Array.isArray(result.unlocked)).toBe(true);
@@ -457,19 +460,19 @@ describe('AchievementService', () => {
     it('should handle connection timeouts', async () => {
       mockPool.query.mockRejectedValue(new Error('Connection timeout'));
 
-      await expect(service.getAchievementDefinitions()).rejects.toThrow(
+      (await expect(service.getAchievementDefinitions()).rejects.toThrow(
         'Connection timeout'
-      );
+      )) as any;
     });
 
     it('should handle query syntax errors', async () => {
       mockPool.query.mockRejectedValue(
         new Error('syntax error at or near "FROM"')
-      );
+      ) as any;
 
-      await expect(service.getEarnedAchievements('iTest123')).rejects.toThrow(
+      (await expect(service.getEarnedAchievements('iTest123')).rejects.toThrow(
         'syntax error'
-      );
+      )) as any;
     });
 
     it('should handle null results gracefully', async () => {
@@ -479,7 +482,7 @@ describe('AchievementService', () => {
         rowCount: 0,
         oid: 0,
         fields: [],
-      });
+      } as any);
 
       const result = await service.getAchievementDefinitions();
 

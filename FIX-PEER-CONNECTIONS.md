@@ -74,6 +74,7 @@ sudo firewall-cmd --reload
 Forward port **27485** (TCP) to your server's local IP address.
 
 Example for common routers:
+
 1. Log into router (usually 192.168.1.1 or 192.168.0.1)
 2. Find "Port Forwarding" section
 3. Add rule:
@@ -118,10 +119,12 @@ verus getpeerinfo | jq '.[] | {addr, inbound}'
 ## 📊 Expected Results
 
 **Before:**
+
 - 5 connections (all outbound)
 - Slow sync
 
 **After:**
+
 - 50-125 connections (mix of inbound/outbound)
 - Much faster sync
 - Contributing to network health
@@ -178,18 +181,22 @@ verus getconnectioncount
 ### Still Only 5 Connections?
 
 **Check 1: Is daemon listening?**
+
 ```bash
 netstat -tuln | grep 27485
 ```
+
 Should show port 27485 in LISTEN state.
 
 **Check 2: Is firewall blocking?**
+
 ```bash
 sudo ufw status | grep 27485  # Ubuntu
 sudo iptables -L -n | grep 27485  # Generic
 ```
 
 **Check 3: Can others reach you?**
+
 ```bash
 # From another machine, test:
 telnet YOUR_PUBLIC_IP 27485
@@ -198,6 +205,7 @@ nc -zv YOUR_PUBLIC_IP 27485
 ```
 
 **Check 4: Behind NAT?**
+
 - Check if you have a public IP: `curl ifconfig.me`
 - If it doesn't match `ip addr`, you're behind NAT
 - **Must configure router port forwarding**
@@ -205,6 +213,7 @@ nc -zv YOUR_PUBLIC_IP 27485
 ### VPS/Cloud Servers
 
 Most VPS providers require security group rules:
+
 - **AWS:** Edit EC2 Security Group, add inbound rule for port 27485
 - **GCP:** Edit Firewall Rules, add rule for port 27485
 - **Azure:** Edit Network Security Group, add inbound rule
@@ -235,11 +244,13 @@ timeout=60000              # Connection timeout
 ## 📈 Monitor Improvements
 
 Use the super monitor script:
+
 ```bash
 ./scripts/monitor-verus-sync.sh
 ```
 
 It will show:
+
 - Connection count updates
 - Sync rate improvements
 - Network statistics
@@ -272,4 +283,3 @@ It will show:
 ---
 
 **After following these steps, you should see 50-125 connections and much faster sync!**
-

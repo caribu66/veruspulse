@@ -155,20 +155,29 @@ export async function POST(request: NextRequest) {
       try {
         const needsScan = await needsPriorityScan(identityAddress);
         if (needsScan) {
-          enhancedLogger.info('SYSTEM', `Triggering priority scan for: ${identity} (${identityAddress})`);
-          
+          enhancedLogger.info(
+            'SYSTEM',
+            `Triggering priority scan for: ${identity} (${identityAddress})`
+          );
+
           // Trigger priority scan in background (don't wait for completion)
-          fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid/priority-scan`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identityAddress }),
-          }).catch(error => {
+          fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid/priority-scan`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ identityAddress }),
+            }
+          ).catch(error => {
             enhancedLogger.warn('SYSTEM', 'Failed to trigger priority scan', {
               error: error.message,
             });
           });
         } else {
-          enhancedLogger.info('SYSTEM', `No priority scan needed for: ${identity} (${identityAddress})`);
+          enhancedLogger.info(
+            'SYSTEM',
+            `No priority scan needed for: ${identity} (${identityAddress})`
+          );
         }
       } catch (error) {
         enhancedLogger.warn('SYSTEM', 'Error checking priority scan status', {

@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-
     // Broadcast to WebSocket clients
     try {
       await broadcastNewBlock(block);

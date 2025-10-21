@@ -21,7 +21,7 @@ export async function GET(
       yourWeight: 8312.32852846, // Known weight for joanna@
       networkWeight: 31166374.48057635, // Approximate network weight
       currentFrequency: 0.14, // 1 stake per 7 days
-      expectedFrequency: 0.20, // Expected frequency
+      expectedFrequency: 0.2, // Expected frequency
       performanceRatio: 0.7,
       performanceRating: 'Good',
       momentum: {
@@ -39,7 +39,7 @@ export async function GET(
         previous7d: 0,
         last30d: 3,
         lastStakeDays: 6, // Approximately 6 days ago
-        isActive: true // FIXED: Based on last7d > 0
+        isActive: true, // FIXED: Based on last7d > 0
       },
       lastUpdated: new Date().toISOString(),
     };

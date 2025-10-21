@@ -7,17 +7,20 @@ Your Verus DApp now **automatically prevents duplicate instances** from running.
 ## 🎯 Quick Commands
 
 ### Check What's Running
+
 ```bash
 npm run services:status
 ```
 
 ### Start Services
+
 ```bash
 npm run dev              # Development server
 npm start                # Production server (after npm run build)
 ```
 
 ### Stop Services
+
 ```bash
 npm run dev:stop         # Stop dev server
 npm run stop             # Stop any server
@@ -27,6 +30,7 @@ npm run services:stop    # Stop ALL services
 ## 💡 What Happens Now
 
 ### Before (Old Behavior)
+
 ```bash
 $ npm run dev
 # Server starts on port 3000
@@ -37,6 +41,7 @@ $ npm run dev  # In another terminal
 ```
 
 ### After (New Behavior)
+
 ```bash
 $ npm run dev
 # Server starts on port 3000
@@ -86,18 +91,21 @@ npm run dev:stop
 ## 🔧 Troubleshooting
 
 ### "Already running" but nothing seems to be running?
+
 ```bash
 npm run services:status  # Check actual status
 npm run services:stop    # Stop everything
 ```
 
 ### Port still in use?
+
 ```bash
 lsof -i :3000           # See what's using port 3000
 npm run services:stop   # Clean stop
 ```
 
 ### Clean slate?
+
 ```bash
 npm run services:stop   # Stop all services
 rm .*.lock              # Remove any stale locks
@@ -110,7 +118,7 @@ rm .*.lock              # Remove any stale locks
 ✅ **Easy to see what's running**  
 ✅ **Simple start/stop commands**  
 ✅ **Automatic cleanup**  
-✅ **Works across all services**  
+✅ **Works across all services**
 
 ## 🎬 Quick Start
 
@@ -133,7 +141,3 @@ The system **automatically handles** duplicate prevention!
 **Ready to test?** Run `./scripts/demo-duplicate-prevention.sh` for a live demonstration!
 
 🎉 **Enjoy your duplicate-free development experience!**
-
-
-
-

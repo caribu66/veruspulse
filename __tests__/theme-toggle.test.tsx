@@ -38,7 +38,7 @@ describe('ThemeToggle Component', () => {
 
   it('should render with default props', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle />
@@ -53,7 +53,7 @@ describe('ThemeToggle Component', () => {
 
   it('should render with custom className', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle className="custom-class" />
@@ -66,7 +66,7 @@ describe('ThemeToggle Component', () => {
 
   it('should render with different sizes', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     const { rerender } = render(
       <ThemeProvider>
         <ThemeToggle size="sm" />
@@ -97,7 +97,7 @@ describe('ThemeToggle Component', () => {
 
   it('should show label when showLabel is true', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle showLabel={true} />
@@ -111,7 +111,7 @@ describe('ThemeToggle Component', () => {
 
   it('should toggle theme when clicked', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle />
@@ -128,7 +128,7 @@ describe('ThemeToggle Component', () => {
 
   it('should have correct aria-label for dark theme', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle />
@@ -141,7 +141,7 @@ describe('ThemeToggle Component', () => {
 
   it('should have correct aria-label for light theme', async () => {
     localStorageMock.getItem.mockReturnValue('light');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle />
@@ -154,7 +154,7 @@ describe('ThemeToggle Component', () => {
 
   it('should have correct styling for dark theme', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle />
@@ -162,12 +162,16 @@ describe('ThemeToggle Component', () => {
     );
 
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-gradient-to-br', 'from-slate-700', 'to-slate-800');
+    expect(button).toHaveClass(
+      'bg-gradient-to-br',
+      'from-slate-700',
+      'to-slate-800'
+    );
   });
 
   it('should have correct styling for light theme', async () => {
     localStorageMock.getItem.mockReturnValue('light');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle />
@@ -175,7 +179,11 @@ describe('ThemeToggle Component', () => {
     );
 
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-gradient-to-br', 'from-yellow-400', 'to-orange-500');
+    expect(button).toHaveClass(
+      'bg-gradient-to-br',
+      'from-yellow-400',
+      'to-orange-500'
+    );
   });
 });
 
@@ -188,7 +196,7 @@ describe('ThemeToggleCompact Component', () => {
 
   it('should render with default props', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggleCompact />
@@ -203,7 +211,7 @@ describe('ThemeToggleCompact Component', () => {
 
   it('should render with custom className', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggleCompact className="custom-class" />
@@ -216,7 +224,7 @@ describe('ThemeToggleCompact Component', () => {
 
   it('should toggle theme when clicked', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggleCompact />
@@ -233,7 +241,7 @@ describe('ThemeToggleCompact Component', () => {
 
   it('should have correct styling for dark theme', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggleCompact />
@@ -246,7 +254,7 @@ describe('ThemeToggleCompact Component', () => {
 
   it('should have correct styling for light theme', async () => {
     localStorageMock.getItem.mockReturnValue('light');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggleCompact />
@@ -259,7 +267,7 @@ describe('ThemeToggleCompact Component', () => {
 
   it('should handle hydration gracefully', async () => {
     localStorageMock.getItem.mockReturnValue(null);
-    
+
     render(
       <ThemeProvider>
         <ThemeToggleCompact />
@@ -281,7 +289,7 @@ describe('Theme Toggle Integration', () => {
 
   it('should update document class when theme changes', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle />
@@ -302,7 +310,7 @@ describe('Theme Toggle Integration', () => {
 
   it('should persist theme changes', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle />
@@ -319,7 +327,7 @@ describe('Theme Toggle Integration', () => {
 
   it('should handle multiple rapid clicks', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <ThemeToggle />
@@ -327,7 +335,7 @@ describe('Theme Toggle Integration', () => {
     );
 
     const button = screen.getByRole('button');
-    
+
     // Click multiple times rapidly
     fireEvent.click(button);
     fireEvent.click(button);
@@ -335,7 +343,10 @@ describe('Theme Toggle Integration', () => {
 
     await waitFor(() => {
       // Should end up in light theme (dark -> light -> dark -> light)
-      expect(localStorageMock.setItem).toHaveBeenLastCalledWith('theme', 'light');
+      expect(localStorageMock.setItem).toHaveBeenLastCalledWith(
+        'theme',
+        'light'
+      );
     });
   });
 });

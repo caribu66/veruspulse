@@ -167,41 +167,41 @@ jobs:
           VERUS_RPC_USER=${{ secrets.PROD_VERUS_RPC_USER }}
           VERUS_RPC_PASSWORD=${{ secrets.PROD_VERUS_RPC_PASSWORD }}
           VERUS_RPC_TIMEOUT=15000
-          
+
           # ZMQ Configuration
           VERUS_ZMQ_ADDRESS=tcp://127.0.0.1:28332
           ENABLE_ZMQ=true
-          
+
           # PostgreSQL
           DATABASE_URL=${{ secrets.DATABASE_URL }}
-          
+
           # VerusID Service
           SERVICE_PORT=4001
           SYNC_INTERVAL_MS=120000
           NEXT_PUBLIC_VERUSID_SERVICE_URL=http://localhost:4001
           VERUSID_SERVICE_URL=http://localhost:4001
-          
+
           # Application
           NODE_ENV=production
           NEXT_PUBLIC_APP_URL=https://www.veruspulse.com
-          
+
           # Rate limiting
           RATE_LIMIT_WINDOW_MS=900000
           RATE_LIMIT_MAX_REQUESTS=200
-          
+
           # PostgreSQL pool
           PG_POOL_MAX=10
-          
+
           # Security
           JWT_SECRET=${{ secrets.JWT_SECRET }}
-          
+
           # Cache Configuration
           CACHE_TTL_BLOCKCHAIN=30
           CACHE_TTL_BLOCK=300
           CACHE_TTL_TRANSACTION=120
           CACHE_TTL_ADDRESS=60
           CACHE_TTL_MEMPOOL=10
-          
+
           # Performance
           ENABLE_CACHE=true
           ENABLE_RATE_LIMITING=true
@@ -269,4 +269,3 @@ jobs:
         run: |
           echo "✅ Staging deployment successful!"
           echo "📦 Commit: ${{ github.sha }}"
-

@@ -108,7 +108,9 @@ export function MinimalPriceIndicator({
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
         <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-white/40 rounded-full animate-pulse" />
-        <span className="text-xs text-gray-600 dark:text-white/40">Loading...</span>
+        <span className="text-xs text-gray-600 dark:text-white/40">
+          Loading...
+        </span>
       </div>
     );
   }
@@ -117,7 +119,9 @@ export function MinimalPriceIndicator({
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
         <WifiSlash className="h-3 w-3 text-white/40" />
-        <span className="text-xs text-gray-600 dark:text-white/40">Prices unavailable</span>
+        <span className="text-xs text-gray-600 dark:text-white/40">
+          Prices unavailable
+        </span>
       </div>
     );
   }
@@ -167,7 +171,9 @@ export function MinimalPriceIndicator({
 
               {/* Separator (except for last item) */}
               {index < prices.length - 1 && (
-                <span className="text-gray-300 dark:text-white/20 text-xs mx-1">|</span>
+                <span className="text-gray-300 dark:text-white/20 text-xs mx-1">
+                  |
+                </span>
               )}
             </div>
           );

@@ -160,7 +160,9 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
                 +{item.trend}%
               </span>
             </div>
-            <span className="text-xs text-gray-600 dark:text-gray-400">trending</span>
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              trending
+            </span>
 
             {/* Metadata */}
             {item.metadata && (
@@ -560,7 +562,9 @@ export function TrendingWidget() {
     <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-300 dark:border-slate-700">
       <div className="flex items-center gap-2 mb-3">
         <Fire className="h-4 w-4 text-blue-400" />
-        <h4 className="text-sm font-bold text-gray-900 dark:text-white">Trending</h4>
+        <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+          Trending
+        </h4>
       </div>
       <div className="space-y-2">
         {topItems.map((item, index) => (
@@ -577,7 +581,9 @@ export function TrendingWidget() {
               >
                 #{index + 1}
               </span>
-              <span className="text-sm text-gray-900 dark:text-white truncate">{item.name}</span>
+              <span className="text-sm text-gray-900 dark:text-white truncate">
+                {item.name}
+              </span>
             </div>
             <div className="flex items-center gap-1">
               <TrendUp className="h-3 w-3 text-green-400" />

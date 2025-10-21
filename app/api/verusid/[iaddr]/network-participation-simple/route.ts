@@ -19,7 +19,7 @@ export async function GET(
     const yourWeight = 8312.32852846; // Known weight for joanna@
     const networkWeight = 33581857; // Network weight from the image
     const participationPercentage = (yourWeight / networkWeight) * 100;
-    
+
     const result = {
       address: iaddr,
       yourWeight: yourWeight,
@@ -28,7 +28,7 @@ export async function GET(
       participationFormatted: `${participationPercentage.toFixed(3)}%`,
       expectedStakeTime: {
         seconds: 414720, // Approximately 4.8 days in seconds
-        formatted: '4.8 days'
+        formatted: '4.8 days',
       },
       expectedStakeTimeFormatted: '4.8 days',
       status: 'active', // FIXED: joanna@ is actively staking

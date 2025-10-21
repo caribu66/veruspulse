@@ -146,18 +146,21 @@ export function VerusExplorer() {
   const { apiFetch } = useApiFetch();
 
   // Handle tab navigation with browser history
-  const handleTabChange = useCallback((tab: ExplorerTab) => {
-    setActiveTab(tab);
-    // Update URL without triggering a page reload
-    const url = new URL(window.location.href);
-    url.searchParams.set('tab', tab);
-    const newUrl = url.toString();
-    
-    // Add to navigation history for proper back navigation
-    addToHistory(newUrl);
-    
-    window.history.pushState({ tab }, '', newUrl);
-  }, [addToHistory]);
+  const handleTabChange = useCallback(
+    (tab: ExplorerTab) => {
+      setActiveTab(tab);
+      // Update URL without triggering a page reload
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', tab);
+      const newUrl = url.toString();
+
+      // Add to navigation history for proper back navigation
+      addToHistory(newUrl);
+
+      window.history.pushState({ tab }, '', newUrl);
+    },
+    [addToHistory]
+  );
 
   // Handle browser back/forward navigation
   useEffect(() => {
@@ -208,191 +211,194 @@ export function VerusExplorer() {
   const [isFetching, setIsFetching] = useState(false);
   const [isBackgroundRefreshing, setIsBackgroundRefreshing] = useState(false);
 
-  const fetchRealStats = useCallback(async (isInitialLoad = false) => {
-    // Prevent multiple simultaneous requests
-    if (isFetching) {
-      return;
-    }
-
-    try {
-      setIsFetching(true);
-      
-      // Only show loading screen on initial load or when explicitly requested
-      if (isInitialLoad) {
-        setLocalLoading(true);
-        setLoading(true);
-      } else {
-        // For background refreshes, show subtle indicator
-        setIsBackgroundRefreshing(true);
-      }
-      
-      clearError();
-
-      // Use the consolidated API for better performance and reliability (use apiFetch which has retries)
-      let consolidatedResult: any = null;
-      try {
-        consolidatedResult = await apiFetch(
-          `/api/consolidated-data?t=${Date.now()}`
-        );
-      } catch (err: any) {
-        // Fall back to individual endpoints below
-        consolidatedResult = null;
-      }
-
-      if (consolidatedResult && consolidatedResult.success) {
-        const { blockchain, mining, mempool, network, staking } =
-          consolidatedResult.data;
-
-        // Set all the data from the consolidated response
-        if (blockchain) {
-          // Combine blockchain and network data for networkStats
-          const combinedNetworkData = {
-            ...blockchain,
-            connections: network?.connections || 0,
-            networkActive: network?.connections > 0,
-            verificationProgress: blockchain.verificationprogress,
-            chainwork: blockchain.chainwork,
-            sizeOnDisk: blockchain.size_on_disk,
-            circulatingSupply: blockchain.circulatingSupply || 0,
-            valuePools: blockchain.valuePools || [],
-          };
-          setLocalNetworkStats(combinedNetworkData);
-          setNetworkStats(combinedNetworkData);
-        }
-
-        if (mining) {
-          setLocalMiningStats(mining);
-          setMiningStats(mining);
-        }
-
-        if (mempool) {
-          setLocalMempoolStats(mempool);
-          setMempoolStats(mempool);
-        }
-
-        // Use dedicated staking data if available, otherwise fall back to mining data
-        if (staking) {
-          setLocalStakingStats(staking);
-          setStakingStats(staking);
-        } else if (mining) {
-          setLocalStakingStats(mining);
-          setStakingStats(mining);
-        }
-
-        setLastUpdate(new Date());
-        announceSuccess('Network data loaded successfully');
-
-        // Clear loading state immediately after data is set
-        setLocalLoading(false);
-        setLoading(false);
+  const fetchRealStats = useCallback(
+    async (isInitialLoad = false) => {
+      // Prevent multiple simultaneous requests
+      if (isFetching) {
         return;
       }
 
-      // Fallback to individual APIs if consolidated fails (or returned no/invalid data)
-      const endpoints: Record<string, string> = {
-        blockchain: `/api/blockchain-info?t=${Date.now()}`,
-        mempool: `/api/mempool/size?t=${Date.now()}`,
-        mining: `/api/mining-info?t=${Date.now()}`,
-        staking: `/api/real-staking-data?t=${Date.now()}`,
-        pbaas: `/api/verus-pbaas?t=${Date.now()}`,
-      };
+      try {
+        setIsFetching(true);
 
-      const promises = Object.entries(endpoints).map(([key, ep]) =>
-        apiFetch(ep)
-          .then(data => ({ status: 'fulfilled' as const, key, value: data }))
-          .catch((reason: any) => ({
-            status: 'rejected' as const,
-            key,
-            reason,
-          }))
-      );
+        // Only show loading screen on initial load or when explicitly requested
+        if (isInitialLoad) {
+          setLocalLoading(true);
+          setLoading(true);
+        } else {
+          // For background refreshes, show subtle indicator
+          setIsBackgroundRefreshing(true);
+        }
 
-      const results = await Promise.all(promises);
+        clearError();
 
-      // Helper to find result by key
-      const find = (k: string) => results.find(r => r.key === k) as any;
+        // Use the consolidated API for better performance and reliability (use apiFetch which has retries)
+        let consolidatedResult: any = null;
+        try {
+          consolidatedResult = await apiFetch(
+            `/api/consolidated-data?t=${Date.now()}`
+          );
+        } catch (err: any) {
+          // Fall back to individual endpoints below
+          consolidatedResult = null;
+        }
 
-      // Blockchain
-      const bcRes = find('blockchain');
-      if (bcRes?.status === 'fulfilled') {
-        const bcData = bcRes.value;
-        if (bcData && bcData.success) {
-          setLocalNetworkStats(bcData.data);
-          setNetworkStats(bcData.data);
+        if (consolidatedResult && consolidatedResult.success) {
+          const { blockchain, mining, mempool, network, staking } =
+            consolidatedResult.data;
+
+          // Set all the data from the consolidated response
+          if (blockchain) {
+            // Combine blockchain and network data for networkStats
+            const combinedNetworkData = {
+              ...blockchain,
+              connections: network?.connections || 0,
+              networkActive: network?.connections > 0,
+              verificationProgress: blockchain.verificationprogress,
+              chainwork: blockchain.chainwork,
+              sizeOnDisk: blockchain.size_on_disk,
+              circulatingSupply: blockchain.circulatingSupply || 0,
+              valuePools: blockchain.valuePools || [],
+            };
+            setLocalNetworkStats(combinedNetworkData);
+            setNetworkStats(combinedNetworkData);
+          }
+
+          if (mining) {
+            setLocalMiningStats(mining);
+            setMiningStats(mining);
+          }
+
+          if (mempool) {
+            setLocalMempoolStats(mempool);
+            setMempoolStats(mempool);
+          }
+
+          // Use dedicated staking data if available, otherwise fall back to mining data
+          if (staking) {
+            setLocalStakingStats(staking);
+            setStakingStats(staking);
+          } else if (mining) {
+            setLocalStakingStats(mining);
+            setStakingStats(mining);
+          }
+
+          setLastUpdate(new Date());
+          announceSuccess('Network data loaded successfully');
+
+          // Clear loading state immediately after data is set
+          setLocalLoading(false);
+          setLoading(false);
+          return;
+        }
+
+        // Fallback to individual APIs if consolidated fails (or returned no/invalid data)
+        const endpoints: Record<string, string> = {
+          blockchain: `/api/blockchain-info?t=${Date.now()}`,
+          mempool: `/api/mempool/size?t=${Date.now()}`,
+          mining: `/api/mining-info?t=${Date.now()}`,
+          staking: `/api/real-staking-data?t=${Date.now()}`,
+          pbaas: `/api/verus-pbaas?t=${Date.now()}`,
+        };
+
+        const promises = Object.entries(endpoints).map(([key, ep]) =>
+          apiFetch(ep)
+            .then(data => ({ status: 'fulfilled' as const, key, value: data }))
+            .catch((reason: any) => ({
+              status: 'rejected' as const,
+              key,
+              reason,
+            }))
+        );
+
+        const results = await Promise.all(promises);
+
+        // Helper to find result by key
+        const find = (k: string) => results.find(r => r.key === k) as any;
+
+        // Blockchain
+        const bcRes = find('blockchain');
+        if (bcRes?.status === 'fulfilled') {
+          const bcData = bcRes.value;
+          if (bcData && bcData.success) {
+            setLocalNetworkStats(bcData.data);
+            setNetworkStats(bcData.data);
+          }
+        }
+
+        // Mempool
+        const mpRes = find('mempool');
+        if (mpRes?.status === 'fulfilled') {
+          const mpData = mpRes.value;
+          if (mpData && mpData.success) {
+            setLocalMempoolStats(mpData.data);
+            setMempoolStats(mpData.data);
+          }
+        }
+
+        // Mining
+        const miningRes = find('mining');
+        if (miningRes?.status === 'fulfilled') {
+          const miningData = miningRes.value;
+          if (miningData && miningData.success) {
+            setLocalMiningStats(miningData.data);
+            setMiningStats(miningData.data);
+          }
+        }
+
+        // Staking
+        const stakingRes = find('staking');
+        if (stakingRes?.status === 'fulfilled') {
+          const stakingData = stakingRes.value;
+          if (stakingData && stakingData.success) {
+            setLocalStakingStats(stakingData.data.staking);
+            setStakingStats(stakingData.data.staking);
+          }
+        }
+
+        // PBaaS Chains
+        const pbaasRes = find('pbaas');
+        if (pbaasRes?.status === 'fulfilled') {
+          const pbaasData = pbaasRes.value;
+          if (pbaasData && pbaasData.success) {
+            setPbaasChains(pbaasData.data.pbaasChains || []);
+          }
+        }
+
+        setLastUpdate(new Date());
+        announceSuccess('Network data updated successfully');
+      } catch (error) {
+        const errorMessage = 'Failed to load network data. Please try again.';
+        setError(errorMessage);
+        announceError(errorMessage);
+      } finally {
+        setIsFetching(false);
+        // Only clear loading states if this was an initial load
+        if (isInitialLoad) {
+          setLocalLoading(false);
+          setLoading(false);
+        } else {
+          // Clear background refresh indicator
+          setIsBackgroundRefreshing(false);
         }
       }
-
-      // Mempool
-      const mpRes = find('mempool');
-      if (mpRes?.status === 'fulfilled') {
-        const mpData = mpRes.value;
-        if (mpData && mpData.success) {
-          setLocalMempoolStats(mpData.data);
-          setMempoolStats(mpData.data);
-        }
-      }
-
-      // Mining
-      const miningRes = find('mining');
-      if (miningRes?.status === 'fulfilled') {
-        const miningData = miningRes.value;
-        if (miningData && miningData.success) {
-          setLocalMiningStats(miningData.data);
-          setMiningStats(miningData.data);
-        }
-      }
-
-      // Staking
-      const stakingRes = find('staking');
-      if (stakingRes?.status === 'fulfilled') {
-        const stakingData = stakingRes.value;
-        if (stakingData && stakingData.success) {
-          setLocalStakingStats(stakingData.data.staking);
-          setStakingStats(stakingData.data.staking);
-        }
-      }
-
-      // PBaaS Chains
-      const pbaasRes = find('pbaas');
-      if (pbaasRes?.status === 'fulfilled') {
-        const pbaasData = pbaasRes.value;
-        if (pbaasData && pbaasData.success) {
-          setPbaasChains(pbaasData.data.pbaasChains || []);
-        }
-      }
-
-      setLastUpdate(new Date());
-      announceSuccess('Network data updated successfully');
-    } catch (error) {
-      const errorMessage = 'Failed to load network data. Please try again.';
-      setError(errorMessage);
-      announceError(errorMessage);
-    } finally {
-      setIsFetching(false);
-      // Only clear loading states if this was an initial load
-      if (isInitialLoad) {
-        setLocalLoading(false);
-        setLoading(false);
-      } else {
-        // Clear background refresh indicator
-        setIsBackgroundRefreshing(false);
-      }
-    }
-  }, [
-    isFetching,
-    setLoading,
-    clearError,
-    setNetworkStats,
-    setMempoolStats,
-    setMiningStats,
-    setStakingStats,
-    setPbaasChains,
-    setLastUpdate,
-    setError,
-    apiFetch,
-    announceSuccess,
-    announceError,
-  ]);
+    },
+    [
+      isFetching,
+      setLoading,
+      clearError,
+      setNetworkStats,
+      setMempoolStats,
+      setMiningStats,
+      setStakingStats,
+      setPbaasChains,
+      setLastUpdate,
+      setError,
+      apiFetch,
+      announceSuccess,
+      announceError,
+    ]
+  );
   // Smart interval for auto-refresh - disabled immediate to prevent request spam
   useSmartInterval(() => fetchRealStats(false), 60000, {
     immediate: false, // Changed from true to false to prevent immediate execution
@@ -502,7 +508,9 @@ export function VerusExplorer() {
                   className="p-6 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm rounded-xl border border-slate-300 dark:border-white/10 transition-all text-left group"
                 >
                   <Database className="h-8 w-8 mb-3 text-blue-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Blocks</h3>
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
+                    Blocks
+                  </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Browse blockchain blocks
                   </p>
@@ -515,7 +523,9 @@ export function VerusExplorer() {
                   className="p-6 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm rounded-xl border border-slate-300 dark:border-white/10 transition-all text-left group"
                 >
                   <Pulse className="h-8 w-8 mb-3 text-verus-blue group-hover:scale-110 transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Transactions</h3>
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
+                    Transactions
+                  </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     View transaction history
                   </p>
@@ -528,7 +538,9 @@ export function VerusExplorer() {
                   className="p-6 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm rounded-xl border border-slate-300 dark:border-white/10 transition-all text-left group"
                 >
                   <User className="h-8 w-8 mb-3 text-green-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">Addresses</h3>
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
+                    Addresses
+                  </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Explore wallet addresses
                   </p>
@@ -614,7 +626,9 @@ export function VerusExplorer() {
           <div className="bg-red-500/10 backdrop-blur-sm rounded-lg p-4 border border-red-500/20 mb-4">
             <div className="flex items-center space-x-3">
               <WarningCircle className="h-5 w-5 text-red-400" />
-              <div className="text-gray-900 dark:text-white font-semibold">{error}</div>
+              <div className="text-gray-900 dark:text-white font-semibold">
+                {error}
+              </div>
               <button
                 onClick={() => fetchRealStats(true)}
                 className="ml-auto px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-200 rounded-md transition-colors text-sm"
@@ -624,7 +638,6 @@ export function VerusExplorer() {
             </div>
           </div>
         )}
-
       </aside>
 
       {/* Main Content Area with Landmark */}
@@ -639,7 +652,6 @@ export function VerusExplorer() {
           <div className="min-h-[600px]">{renderTabContent()}</div>
         </div>
       </main>
-
 
       {/* Footer */}
       <footer className="bg-gray-50/50 dark:bg-black/20 backdrop-blur-sm border-t border-slate-300 dark:border-white/10 mt-16">

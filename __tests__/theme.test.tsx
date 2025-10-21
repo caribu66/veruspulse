@@ -57,7 +57,7 @@ describe('Theme Context', () => {
 
   it('should default to dark theme', async () => {
     localStorageMock.getItem.mockReturnValue(null);
-    
+
     render(
       <ThemeProvider>
         <TestComponent />
@@ -71,7 +71,7 @@ describe('Theme Context', () => {
 
   it('should use saved theme from localStorage', async () => {
     localStorageMock.getItem.mockReturnValue('light');
-    
+
     render(
       <ThemeProvider>
         <TestComponent />
@@ -85,7 +85,7 @@ describe('Theme Context', () => {
 
   it('should toggle theme correctly', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <TestComponent />
@@ -105,7 +105,7 @@ describe('Theme Context', () => {
 
   it('should set theme directly', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <TestComponent />
@@ -121,7 +121,7 @@ describe('Theme Context', () => {
 
   it('should save theme to localStorage', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <TestComponent />
@@ -137,7 +137,7 @@ describe('Theme Context', () => {
 
   it('should add/remove dark class to document', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <TestComponent />
@@ -170,8 +170,9 @@ describe('Theme Toggle Components', () => {
 
     await waitFor(() => {
       // Should show sun icon in dark theme
-      const sunIcon = document.querySelector('[data-testid="sun-icon"]') || 
-                     document.querySelector('svg[class*="text-yellow-300"]');
+      const sunIcon =
+        document.querySelector('[data-testid="sun-icon"]') ||
+        document.querySelector('svg[class*="text-yellow-300"]');
       expect(sunIcon).toBeTruthy();
     });
   });
@@ -218,7 +219,7 @@ describe('Theme Toggle Components', () => {
 describe('Theme CSS Classes', () => {
   it('should apply correct dark theme classes', async () => {
     localStorageMock.getItem.mockReturnValue('dark');
-    
+
     render(
       <ThemeProvider>
         <div className="bg-slate-900 dark:bg-slate-900 bg-white text-white dark:text-white text-slate-900">
@@ -234,7 +235,7 @@ describe('Theme CSS Classes', () => {
 
   it('should apply correct light theme classes', async () => {
     localStorageMock.getItem.mockReturnValue('light');
-    
+
     render(
       <ThemeProvider>
         <div className="bg-slate-900 dark:bg-slate-900 bg-white text-white dark:text-white text-slate-900">
@@ -252,7 +253,7 @@ describe('Theme CSS Classes', () => {
 describe('Theme Persistence', () => {
   it('should persist theme across page reloads', async () => {
     localStorageMock.getItem.mockReturnValue('light');
-    
+
     const { unmount } = render(
       <ThemeProvider>
         <TestComponent />
@@ -281,7 +282,7 @@ describe('Theme Persistence', () => {
 describe('System Theme Detection', () => {
   it('should detect system dark theme preference', async () => {
     localStorageMock.getItem.mockReturnValue(null);
-    
+
     // Mock system prefers dark theme
     window.matchMedia = jest.fn().mockImplementation(query => ({
       matches: query === '(prefers-color-scheme: dark)',
@@ -293,7 +294,7 @@ describe('System Theme Detection', () => {
       removeEventListener: jest.fn(),
       dispatchEvent: jest.fn(),
     }));
-    
+
     render(
       <ThemeProvider>
         <TestComponent />
@@ -307,7 +308,7 @@ describe('System Theme Detection', () => {
 
   it('should default to dark theme when no preference is saved', async () => {
     localStorageMock.getItem.mockReturnValue(null);
-    
+
     render(
       <ThemeProvider>
         <TestComponent />

@@ -12,7 +12,9 @@ import {
 } from '@/lib/utils/verusid-utils';
 import { VerusIDBrowseData } from '@/lib/types/verusid-browse-types';
 
-const createTestIdentity = (overrides: Partial<VerusIDBrowseData> = {}): VerusIDBrowseData => ({
+const createTestIdentity = (
+  overrides: Partial<VerusIDBrowseData> = {}
+): VerusIDBrowseData => ({
   address: 'iAddress123',
   baseName: 'testid',
   friendlyName: 'testid@',
@@ -100,7 +102,9 @@ describe('VerusID Utils Edge Cases', () => {
     });
 
     test('searches in address field', () => {
-      const identities = [createTestIdentity({ address: 'iCSq1EkTestAddress' })];
+      const identities = [
+        createTestIdentity({ address: 'iCSq1EkTestAddress' }),
+      ];
       expect(searchIdentities(identities, 'iCSq1Ek')).toHaveLength(1);
     });
   });

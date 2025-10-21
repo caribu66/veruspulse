@@ -18,7 +18,7 @@ export function validateStartup(): void {
     console.error('║  ⚠️  STARTUP VALIDATION FAILED            ║');
     console.error('╚════════════════════════════════════════════╝');
     console.error('\n❌ Environment validation errors:');
-    validation.errors?.forEach((error) => {
+    validation.errors?.forEach(error => {
       console.error(`   • ${error}`);
     });
     console.error('\n💡 Fix these errors before starting the application.\n');
@@ -38,7 +38,9 @@ export function validateStartup(): void {
     console.log(`   RPC User: ${summary.VERUS_RPC_USER}`);
     console.log(`   Redis: ${summary.REDIS_HOST}:${summary.REDIS_PORT}`);
     console.log(`   ZMQ Enabled: ${summary.ENABLE_ZMQ}`);
-    console.log(`   Database: ${summary.DATABASE_URL ? 'Configured' : 'Not configured'}`);
+    console.log(
+      `   Database: ${summary.DATABASE_URL ? 'Configured' : 'Not configured'}`
+    );
     console.log(`   Cache Enabled: ${summary.ENABLE_CACHE}`);
     console.log(`   Rate Limiting: ${summary.ENABLE_RATE_LIMITING}\n`);
   }
@@ -55,4 +57,3 @@ if (typeof window === 'undefined') {
     }
   }
 }
-

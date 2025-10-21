@@ -104,7 +104,7 @@ export function VerusIDFilters({
             type="text"
             placeholder="Search by name, friendly name, or address..."
             value={localFilters.searchQuery}
-            onChange={(e) => handleFilterChange('searchQuery', e.target.value)}
+            onChange={e => handleFilterChange('searchQuery', e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-white/10 border border-slate-300 dark:border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {localFilters.searchQuery && (
@@ -135,10 +135,13 @@ export function VerusIDFilters({
               onFiltersChange(defaultFilters);
             }}
             className={`flex items-center space-x-1 px-3 py-1 border rounded-lg text-sm transition-all ${
-              !filters.searchQuery && 
-              filters.stakeRange[0] === 0 && filters.stakeRange[1] === 100000 &&
-              filters.apyRange[0] === 0 && filters.apyRange[1] === 1000 &&
-              filters.activityStatus === 'all' && !filters.top100Only
+              !filters.searchQuery &&
+              filters.stakeRange[0] === 0 &&
+              filters.stakeRange[1] === 100000 &&
+              filters.apyRange[0] === 0 &&
+              filters.apyRange[1] === 1000 &&
+              filters.activityStatus === 'all' &&
+              !filters.top100Only
                 ? 'bg-green-500/30 border-green-500/50 text-white'
                 : 'bg-white/10 hover:bg-green-500/30 border-slate-300 dark:border-slate-700 hover:border-green-500/50 text-blue-100 hover:text-white'
             }`}
@@ -146,14 +149,15 @@ export function VerusIDFilters({
           >
             <span>Show All</span>
           </button>
-          
+
           {Object.entries(presets).map(([key, preset]) => {
-            const isActive = 
+            const isActive =
               (key === 'top-100' && filters.top100Only) ||
               (key === 'high-apy' && filters.apyRange[0] >= 50) ||
-              (key === 'active-stakers' && filters.activityStatus === 'active-7d') ||
+              (key === 'active-stakers' &&
+                filters.activityStatus === 'active-7d') ||
               (key === 'high-stakes' && filters.stakeRange[0] >= 1000);
-            
+
             return (
               <button
                 key={key}
@@ -182,7 +186,8 @@ export function VerusIDFilters({
           {/* Stake Range */}
           <div>
             <label className="block text-sm font-medium text-blue-200 mb-2">
-              Total Stakes: {localFilters.stakeRange[0]} - {localFilters.stakeRange[1]}
+              Total Stakes: {localFilters.stakeRange[0]} -{' '}
+              {localFilters.stakeRange[1]}
             </label>
             <div className="flex items-center space-x-4">
               <input
@@ -191,10 +196,12 @@ export function VerusIDFilters({
                 max="10000"
                 step="100"
                 value={localFilters.stakeRange[0]}
-                onChange={(e) => handleFilterChange('stakeRange', [
-                  parseInt(e.target.value),
-                  localFilters.stakeRange[1]
-                ])}
+                onChange={e =>
+                  handleFilterChange('stakeRange', [
+                    parseInt(e.target.value),
+                    localFilters.stakeRange[1],
+                  ])
+                }
                 className="flex-1"
               />
               <input
@@ -203,10 +210,12 @@ export function VerusIDFilters({
                 max="10000"
                 step="100"
                 value={localFilters.stakeRange[1]}
-                onChange={(e) => handleFilterChange('stakeRange', [
-                  localFilters.stakeRange[0],
-                  parseInt(e.target.value)
-                ])}
+                onChange={e =>
+                  handleFilterChange('stakeRange', [
+                    localFilters.stakeRange[0],
+                    parseInt(e.target.value),
+                  ])
+                }
                 className="flex-1"
               />
             </div>
@@ -215,7 +224,8 @@ export function VerusIDFilters({
           {/* APY Range */}
           <div>
             <label className="block text-sm font-medium text-blue-200 mb-2">
-              APY Range: {localFilters.apyRange[0]}% - {localFilters.apyRange[1]}%
+              APY Range: {localFilters.apyRange[0]}% -{' '}
+              {localFilters.apyRange[1]}%
             </label>
             <div className="flex items-center space-x-4">
               <input
@@ -224,10 +234,12 @@ export function VerusIDFilters({
                 max="200"
                 step="5"
                 value={localFilters.apyRange[0]}
-                onChange={(e) => handleFilterChange('apyRange', [
-                  parseInt(e.target.value),
-                  localFilters.apyRange[1]
-                ])}
+                onChange={e =>
+                  handleFilterChange('apyRange', [
+                    parseInt(e.target.value),
+                    localFilters.apyRange[1],
+                  ])
+                }
                 className="flex-1"
               />
               <input
@@ -236,10 +248,12 @@ export function VerusIDFilters({
                 max="200"
                 step="5"
                 value={localFilters.apyRange[1]}
-                onChange={(e) => handleFilterChange('apyRange', [
-                  localFilters.apyRange[0],
-                  parseInt(e.target.value)
-                ])}
+                onChange={e =>
+                  handleFilterChange('apyRange', [
+                    localFilters.apyRange[0],
+                    parseInt(e.target.value),
+                  ])
+                }
                 className="flex-1"
               />
             </div>
@@ -252,7 +266,9 @@ export function VerusIDFilters({
             </label>
             <select
               value={localFilters.activityStatus}
-              onChange={(e) => handleFilterChange('activityStatus', e.target.value)}
+              onChange={e =>
+                handleFilterChange('activityStatus', e.target.value)
+              }
               className="w-full px-3 py-2 bg-white/10 border border-slate-300 dark:border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Identities</option>
@@ -273,7 +289,7 @@ export function VerusIDFilters({
           <X className="h-4 w-4" />
           <span className="text-sm">Reset All</span>
         </button>
-        
+
         <div className="text-xs text-blue-200">
           Showing {filteredCount} of {totalIdentities} identities
         </div>

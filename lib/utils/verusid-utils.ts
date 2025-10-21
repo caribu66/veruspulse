@@ -1,4 +1,8 @@
-import { VerusIDBrowseData, FilterState, SortOptions } from '@/lib/types/verusid-browse-types';
+import {
+  VerusIDBrowseData,
+  FilterState,
+  SortOptions,
+} from '@/lib/types/verusid-browse-types';
 
 /**
  * Filter identities by stake count range
@@ -8,8 +12,9 @@ export function filterIdentitiesByStakeRange(
   minStakes: number,
   maxStakes: number
 ): VerusIDBrowseData[] {
-  return identities.filter(identity => 
-    identity.totalStakes >= minStakes && identity.totalStakes <= maxStakes
+  return identities.filter(
+    identity =>
+      identity.totalStakes >= minStakes && identity.totalStakes <= maxStakes
   );
 }
 
@@ -39,10 +44,10 @@ export function filterIdentitiesByActivity(
   status: FilterState['activityStatus']
 ): VerusIDBrowseData[] {
   if (status === 'all') return identities;
-  
+
   return identities.filter(identity => {
     const daysSince = identity.daysSinceLastStake;
-    
+
     switch (status) {
       case 'active-7d':
         return daysSince !== null && daysSince <= 7;
@@ -64,14 +69,15 @@ export function searchIdentities(
   query: string
 ): VerusIDBrowseData[] {
   if (!query.trim()) return identities;
-  
+
   const searchTerm = query.toLowerCase().trim();
-  
-  return identities.filter(identity => 
-    identity.baseName.toLowerCase().includes(searchTerm) ||
-    identity.friendlyName.toLowerCase().includes(searchTerm) ||
-    identity.displayName.toLowerCase().includes(searchTerm) ||
-    identity.address.toLowerCase().includes(searchTerm)
+
+  return identities.filter(
+    identity =>
+      identity.baseName.toLowerCase().includes(searchTerm) ||
+      identity.friendlyName.toLowerCase().includes(searchTerm) ||
+      identity.displayName.toLowerCase().includes(searchTerm) ||
+      identity.address.toLowerCase().includes(searchTerm)
   );
 }
 
@@ -85,7 +91,7 @@ export function sortIdentities(
 ): VerusIDBrowseData[] {
   const sorted = [...identities].sort((a, b) => {
     let comparison = 0;
-    
+
     switch (sortBy) {
       case 'name':
         comparison = a.baseName.localeCompare(b.baseName);
@@ -114,23 +120,27 @@ export function sortIdentities(
       default:
         comparison = 0;
     }
-    
+
     return sortOrder === 'desc' ? -comparison : comparison;
   });
-  
+
   return sorted;
 }
 
 /**
  * Get activity status based on last stake time
  */
-export function getActivityStatus(lastStakeTime: string | null): 'active' | 'inactive' | 'unknown' {
+export function getActivityStatus(
+  lastStakeTime: string | null
+): 'active' | 'inactive' | 'unknown' {
   if (!lastStakeTime) return 'inactive';
-  
+
   const lastStake = new Date(lastStakeTime);
   const now = new Date();
-  const daysSince = Math.floor((now.getTime() - lastStake.getTime()) / (1000 * 60 * 60 * 24));
-  
+  const daysSince = Math.floor(
+    (now.getTime() - lastStake.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
   if (daysSince <= 7) return 'active';
   if (daysSince <= 30) return 'active';
   return 'inactive';
@@ -141,14 +151,14 @@ export function getActivityStatus(lastStakeTime: string | null): 'active' | 'ina
  */
 export function formatLastActivity(timestamp: string | null): string {
   if (!timestamp) return 'Never';
-  
+
   const date = new Date(timestamp);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffMinutes = Math.floor(diffMs / (1000 * 60));
-  
+
   if (diffDays > 0) {
     return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
   } else if (diffHours > 0) {
@@ -174,7 +184,9 @@ export function getAPYColorClass(apy: number | null): string {
 /**
  * Get color class for activity status
  */
-export function getActivityColorClass(status: 'active' | 'inactive' | 'unknown'): string {
+export function getActivityColorClass(
+  status: 'active' | 'inactive' | 'unknown'
+): string {
   switch (status) {
     case 'active':
       return 'text-green-400';
@@ -223,34 +235,38 @@ export function getQuickFilterPresets() {
     'top-100': {
       label: 'Top 100',
       description: 'Top 100 by network rank',
-      filter: (identities: VerusIDBrowseData[]) => 
-        identities.filter(id => id.networkRank && id.networkRank <= 100)
+      filter: (identities: VerusIDBrowseData[]) =>
+        identities.filter(id => id.networkRank && id.networkRank <= 100),
     },
     'high-apy': {
       label: 'High APY',
       description: 'APY > 50%',
-      filter: (identities: VerusIDBrowseData[]) => 
-        identities.filter(id => id.apyAllTime && id.apyAllTime > 50)
+      filter: (identities: VerusIDBrowseData[]) =>
+        identities.filter(id => id.apyAllTime && id.apyAllTime > 50),
     },
     'active-stakers': {
       label: 'Active Stakers',
       description: 'Staked in last 7 days',
-      filter: (identities: VerusIDBrowseData[]) => 
-        identities.filter(id => id.daysSinceLastStake !== null && id.daysSinceLastStake <= 7)
+      filter: (identities: VerusIDBrowseData[]) =>
+        identities.filter(
+          id => id.daysSinceLastStake !== null && id.daysSinceLastStake <= 7
+        ),
     },
     'high-stakes': {
       label: 'High Stakes',
       description: '> 1000 stakes',
-      filter: (identities: VerusIDBrowseData[]) => 
-        identities.filter(id => id.totalStakes > 1000)
-    }
+      filter: (identities: VerusIDBrowseData[]) =>
+        identities.filter(id => id.totalStakes > 1000),
+    },
   };
 }
 
 /**
  * Search for a specific VerusID via RPC (for identities not in database)
  */
-export async function searchVerusIDViaRPC(query: string): Promise<VerusIDBrowseData | null> {
+export async function searchVerusIDViaRPC(
+  query: string
+): Promise<VerusIDBrowseData | null> {
   try {
     // First, get the identity information
     const identityResponse = await fetch('/api/verusid-lookup', {
@@ -258,16 +274,19 @@ export async function searchVerusIDViaRPC(query: string): Promise<VerusIDBrowseD
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identity: query }),
     });
-    
+
     const identityResult = await identityResponse.json();
-    
+
     if (!identityResult.success || !identityResult.data?.identity) {
       return null;
     }
 
     const identity = identityResult.data.identity;
-    const identityAddress = identity.identity?.identityaddress || identity.primaryaddresses?.[0] || '';
-    
+    const identityAddress =
+      identity.identity?.identityaddress ||
+      identity.primaryaddresses?.[0] ||
+      '';
+
     // Then, get the balance and staking information
     let balanceData = null;
     try {
@@ -276,7 +295,7 @@ export async function searchVerusIDViaRPC(query: string): Promise<VerusIDBrowseD
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ verusid: query }),
       });
-      
+
       const balanceResult = await balanceResponse.json();
       if (balanceResult.success && balanceResult.data) {
         balanceData = balanceResult.data;
@@ -287,7 +306,7 @@ export async function searchVerusIDViaRPC(query: string): Promise<VerusIDBrowseD
 
     // Calculate total value from balance data
     const totalValueVRSC = balanceData?.totalBalance || 0;
-    
+
     return {
       address: identityAddress,
       baseName: identity.identity?.name || '',
@@ -324,7 +343,6 @@ export async function searchVerusIDViaRPC(query: string): Promise<VerusIDBrowseD
       firstStakeTime: null,
       lastStakeTime: null,
     };
-    
   } catch (error) {
     console.error('RPC search failed:', error);
     return null;

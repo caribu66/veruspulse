@@ -161,15 +161,22 @@ export class RateLimiter {
         perHour: (requestsInHour / this.config.maxRequestsPerHour) * 100,
       },
       available: {
-        perSecond: Math.max(0, this.config.maxRequestsPerSecond - requestsInSecond),
-        perMinute: Math.max(0, this.config.maxRequestsPerMinute - requestsInMinute),
+        perSecond: Math.max(
+          0,
+          this.config.maxRequestsPerSecond - requestsInSecond
+        ),
+        perMinute: Math.max(
+          0,
+          this.config.maxRequestsPerMinute - requestsInMinute
+        ),
         perHour: Math.max(0, this.config.maxRequestsPerHour - requestsInHour),
         burst: Math.max(0, this.burstTokens),
       },
       totalTracked: this.requestTimes.length,
-      isHealthy: requestsInSecond < this.config.maxRequestsPerSecond * 0.8 &&
-                 requestsInMinute < this.config.maxRequestsPerMinute * 0.8 &&
-                 requestsInHour < this.config.maxRequestsPerHour * 0.8,
+      isHealthy:
+        requestsInSecond < this.config.maxRequestsPerSecond * 0.8 &&
+        requestsInMinute < this.config.maxRequestsPerMinute * 0.8 &&
+        requestsInHour < this.config.maxRequestsPerHour * 0.8,
     };
   }
 

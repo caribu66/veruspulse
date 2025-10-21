@@ -11,6 +11,7 @@ npm run rpc:check
 ```
 
 This will show:
+
 - ✅ **Live RPC usage** in real-time (requests per second/minute/hour)
 - 📊 **Rate limit configuration** (how many requests are allowed)
 - 💾 **Cache settings** (how caching reduces RPC calls)
@@ -26,6 +27,7 @@ npm run rpc:monitor
 ```
 
 This provides:
+
 - Real-time request tracking
 - Visual progress bars showing usage vs. limits
 - Method breakdown (which RPC calls are being made)
@@ -42,7 +44,7 @@ This provides:
 The application enforces the following rate limits on all RPC calls:
 
 - **10 requests per second**
-- **300 requests per minute** 
+- **300 requests per minute**
 - **10,000 requests per hour**
 - **20 burst tokens** (allows temporary spikes)
 
@@ -73,18 +75,19 @@ The application uses aggressive caching to minimize actual RPC calls:
 
 ### Cache TTLs (Time To Live)
 
-| Data Type | Cache TTL | Reason |
-|-----------|-----------|--------|
-| Blockchain Info | 30s | Changes slowly (new blocks ~1 min) |
-| Mining Info | 30s | Mining stats don't change rapidly |
-| Network Info | 30s | Network stats are relatively stable |
-| Mempool | 10s | Changes frequently (new txs) |
-| Block Data | 5 min | Historical blocks never change |
-| VerusID | 5 min | Identity data is stable |
+| Data Type       | Cache TTL | Reason                              |
+| --------------- | --------- | ----------------------------------- |
+| Blockchain Info | 30s       | Changes slowly (new blocks ~1 min)  |
+| Mining Info     | 30s       | Mining stats don't change rapidly   |
+| Network Info    | 30s       | Network stats are relatively stable |
+| Mempool         | 10s       | Changes frequently (new txs)        |
+| Block Data      | 5 min     | Historical blocks never change      |
+| VerusID         | 5 min     | Identity data is stable             |
 
 ### Cache Hit Rates
 
 With proper caching:
+
 - **~70-80% reduction** in actual RPC calls
 - Frontend polling hits cache instead of RPC
 - Multiple components share cached data
@@ -97,19 +100,21 @@ Example: If 5 components request blockchain info every 30s, only 1 RPC call is m
 
 The UI makes periodic requests:
 
-| Component | Interval | Endpoint | Notes |
-|-----------|----------|----------|-------|
-| Main Dashboard | 60s | `/api/consolidated-data` | High cache hit rate |
-| Live Blocks | 60s | `/api/latest-blocks` | Block feed |
-| Mempool | 45s | `/api/mempool/transactions` | Transaction feed |
-| Status Indicators | 30s | `/api/blockchain-info` | Multiple components |
+| Component         | Interval | Endpoint                    | Notes               |
+| ----------------- | -------- | --------------------------- | ------------------- |
+| Main Dashboard    | 60s      | `/api/consolidated-data`    | High cache hit rate |
+| Live Blocks       | 60s      | `/api/latest-blocks`        | Block feed          |
+| Mempool           | 45s      | `/api/mempool/transactions` | Transaction feed    |
+| Status Indicators | 30s      | `/api/blockchain-info`      | Multiple components |
 
 ### Estimated Load
 
 **Worst case (no cache hits):**
+
 - ~7-8 RPC calls per minute
 
 **Typical case (with caching):**
+
 - ~2-3 actual RPC calls per minute
 
 **This is well within safe limits** (300/min allowed).
@@ -123,6 +128,7 @@ curl http://localhost:3000/api/rpc-stats
 ```
 
 Response includes:
+
 - Real-time request counts
 - Current usage percentages
 - Available request capacity
@@ -152,7 +158,7 @@ Instead of polling for new blocks, use ZMQ notifications:
 
 ```typescript
 // Subscribe to new blocks
-zmq.subscribeHashBlock((hash) => {
+zmq.subscribeHashBlock(hash => {
   // Update UI immediately without polling
 });
 ```
@@ -162,6 +168,7 @@ This can **reduce RPC calls by 50-70%**.
 ### 4. Batch RPC Calls
 
 Instead of:
+
 ```typescript
 const blockchain = await rpc.getBlockchainInfo();
 const mining = await rpc.getMiningInfo();
@@ -169,6 +176,7 @@ const network = await rpc.getNetworkInfo();
 ```
 
 Use batching:
+
 ```typescript
 const [blockchain, mining, network] = await rpc.batch([
   { method: 'getblockchaininfo' },
@@ -184,6 +192,7 @@ This makes 1 HTTP request instead of 3.
 ### If You See High Usage
 
 1. **Check the live monitor:**
+
    ```bash
    npm run rpc:monitor
    ```
@@ -199,11 +208,13 @@ This makes 1 HTTP request instead of 3.
 ### If Rate Limits Are Hit
 
 The system automatically handles rate limiting by:
+
 - Queueing requests
 - Adding exponential backoff
 - Waiting for capacity to become available
 
 You'll see in logs:
+
 ```
 ⏳ Rate limit reached, waiting 1000ms...
 ```
@@ -219,10 +230,10 @@ If you have a dedicated Verus node, you can increase limits:
 import { aggressiveRateLimiter } from '@/lib/utils/rate-limiter';
 
 const rpcClient = new RPCClient({
-  maxRequestsPerSecond: 20,    // Double the default
-  maxRequestsPerMinute: 600,   // Double the default
-  maxRequestsPerHour: 20000,   // Double the default
-  burstLimit: 40,              // Double the burst
+  maxRequestsPerSecond: 20, // Double the default
+  maxRequestsPerMinute: 600, // Double the default
+  maxRequestsPerHour: 20000, // Double the default
+  burstLimit: 40, // Double the burst
 });
 ```
 
@@ -249,18 +260,21 @@ const rpcClient = new RPCClient({
 ## Summary
 
 ✅ **You are NOT hammering the RPC** if:
+
 - Usage is < 50% of limits
 - Cache hit rate is high (> 70%)
 - Request patterns are predictable (polling at set intervals)
 - No rate limit warnings in logs
 
 ⚠️ **Review your code** if:
+
 - Usage consistently > 75% of limits
 - Many requests in burst patterns
 - Frequent rate limit warnings
 - Unexpected spikes in traffic
 
 🔴 **Immediate action needed** if:
+
 - Usage consistently > 90% of limits
 - Rate limits being hit constantly
 - Background scripts running wild
@@ -285,7 +299,7 @@ curl http://localhost:3000/api/rpc-stats
 ```
 
 For more details, see:
+
 - [RPC Best Practices](./RPC-BEST-PRACTICES.md)
 - [Cache Configuration](../lib/cache/cache-utils.ts)
 - [Rate Limiter Implementation](../lib/utils/rate-limiter.ts)
-

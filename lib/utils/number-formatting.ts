@@ -159,7 +159,7 @@ export function formatFileSize(
   const size = numBytes / Math.pow(k, i);
   // Check if size is a whole number - if so, use 0 decimals for cleaner display
   const isExactMatch = size === Math.floor(size);
-  const precision = isExactMatch ? 0 : (size >= 100 ? 0 : size >= 10 ? 1 : 2);
+  const precision = isExactMatch ? 0 : size >= 100 ? 0 : size >= 10 ? 1 : 2;
 
   return size.toFixed(precision) + ' ' + units[i];
 }
@@ -392,14 +392,16 @@ export function formatStake(
 /**
  * Calculate average block time from recent block timestamps
  */
-export function calculateAverageBlockTime(blocks: Array<{ time: number; height: number }>): number | null {
+export function calculateAverageBlockTime(
+  blocks: Array<{ time: number; height: number }>
+): number | null {
   if (!blocks || blocks.length < 2) {
     return null;
   }
 
   // Sort blocks by height (ascending) to ensure proper order
   const sortedBlocks = [...blocks].sort((a, b) => a.height - b.height);
-  
+
   // Calculate time differences between consecutive blocks
   const timeDifferences: number[] = [];
   for (let i = 1; i < sortedBlocks.length; i++) {
@@ -415,7 +417,9 @@ export function calculateAverageBlockTime(blocks: Array<{ time: number; height: 
   }
 
   // Calculate average
-  const averageTime = timeDifferences.reduce((sum, diff) => sum + diff, 0) / timeDifferences.length;
+  const averageTime =
+    timeDifferences.reduce((sum, diff) => sum + diff, 0) /
+    timeDifferences.length;
   return Math.round(averageTime);
 }
 
@@ -428,19 +432,19 @@ export function formatBlockTime(seconds: number | null | undefined): string {
   }
 
   const time = Number(seconds);
-  
+
   if (time < 60) {
     return `${time.toFixed(0)}s`;
   } else if (time < 3600) {
     const minutes = Math.floor(time / 60);
     const remainingSeconds = time % 60;
-    return remainingSeconds > 0 
+    return remainingSeconds > 0
       ? `${minutes}m ${remainingSeconds.toFixed(0)}s`
       : `${minutes}m`;
   } else {
     const hours = Math.floor(time / 3600);
     const remainingMinutes = Math.floor((time % 3600) / 60);
-    return remainingMinutes > 0 
+    return remainingMinutes > 0
       ? `${hours}h ${remainingMinutes}m`
       : `${hours}h`;
   }

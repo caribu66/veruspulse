@@ -5,14 +5,14 @@ import { logger } from '@/lib/utils/logger';
 /**
  * RPC Statistics Endpoint
  * Returns current rate limiter stats and RPC usage information
- * 
+ *
  * Note: Uses verusAPI (robust client) which is used by 95% of the application
  */
 export async function GET() {
   try {
     // Get live rate limiter statistics from the main RPC client
     const rateLimiterStats = verusAPI.getRateLimiterStats();
-    
+
     // Determine status based on usage
     let statusEmoji = '🟢';
     let statusText = 'HEALTHY';
@@ -21,7 +21,7 @@ export async function GET() {
       rateLimiterStats.usage.perMinute,
       rateLimiterStats.usage.perHour
     );
-    
+
     if (maxUsage >= 90) {
       statusEmoji = '🔴';
       statusText = 'CRITICAL';
@@ -32,7 +32,7 @@ export async function GET() {
       statusEmoji = '🟡';
       statusText = 'MODERATE';
     }
-    
+
     const stats = {
       timestamp: new Date().toISOString(),
       status: `${statusEmoji} RPC usage is ${statusText.toLowerCase()}`,
@@ -119,4 +119,3 @@ export async function GET() {
     );
   }
 }
-

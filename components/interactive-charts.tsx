@@ -70,16 +70,20 @@ export function MiniChart({
   // Generate path points
   const points = data
     .map((point, index) => {
-      const x = padding + (data.length > 1 ? (index / (data.length - 1)) * chartWidth : chartWidth / 2);
+      const x =
+        padding +
+        (data.length > 1
+          ? (index / (data.length - 1)) * chartWidth
+          : chartWidth / 2);
       const y =
         padding +
         chartHeight -
         ((point.value - minValue) / valueRange) * chartHeight;
-      
+
       // Ensure x and y are valid numbers
       const validX = isNaN(x) ? padding + chartWidth / 2 : x;
       const validY = isNaN(y) ? padding + chartHeight / 2 : y;
-      
+
       return `${validX},${validY}`;
     })
     .join(' ');
@@ -148,7 +152,11 @@ export function MiniChart({
 
         {/* Data points */}
         {data.map((point, index) => {
-          const x = padding + (data.length > 1 ? (index / (data.length - 1)) * chartWidth : chartWidth / 2);
+          const x =
+            padding +
+            (data.length > 1
+              ? (index / (data.length - 1)) * chartWidth
+              : chartWidth / 2);
           const y =
             padding +
             chartHeight -
@@ -263,9 +271,7 @@ export function ChartStatsCard({
         <div className="flex items-center gap-1">
           {trend === 'up' && <TrendUp className="h-3 w-3 text-green-400" />}
           {trend === 'down' && <TrendDown className="h-3 w-3 text-red-400" />}
-          {trend === 'neutral' && (
-            <Pulse className="h-3 w-3 text-gray-400" />
-          )}
+          {trend === 'neutral' && <Pulse className="h-3 w-3 text-gray-400" />}
           <span
             className={`font-medium ${
               trend === 'up'

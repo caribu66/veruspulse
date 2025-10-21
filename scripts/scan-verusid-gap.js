@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * Scan VerusID Staking Data - Fill the Gap
- * 
+ *
  * Scans blocks between VerusID activation (1,520,000) and your existing data
  * to capture all historical VerusID staking rewards.
- * 
+ *
  * Usage:
  *   node scripts/scan-verusid-gap.js --start 1520000 --end 1990205
  *   node scripts/scan-verusid-gap.js --auto  (automatically finds gaps)
@@ -14,11 +14,13 @@ const { Pool } = require('pg');
 const http = require('http');
 
 // Configuration
-const DATABASE_URL = process.env.DATABASE_URL || 
+const DATABASE_URL =
+  process.env.DATABASE_URL ||
   'postgresql://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db';
 const RPC_HOST = process.env.VERUS_RPC_HOST || 'http://127.0.0.1:18843';
 const RPC_USER = process.env.VERUS_RPC_USER || 'verus';
-const RPC_PASSWORD = process.env.VERUS_RPC_PASSWORD || '1CvFqDVqdPlznV4pksyoiyZ1eKhLoRKb';
+const RPC_PASSWORD =
+  process.env.VERUS_RPC_PASSWORD || '1CvFqDVqdPlznV4pksyoiyZ1eKhLoRKb';
 
 const VERUSID_START_BLOCK = 1520000; // VerusID activation
 const BATCH_SIZE = 1000; // Process 1000 blocks at a time
@@ -47,7 +49,7 @@ async function rpcCall(method, params = []) {
   return new Promise((resolve, reject) => {
     const url = new URL(RPC_HOST);
     const auth = Buffer.from(`${RPC_USER}:${RPC_PASSWORD}`).toString('base64');
-    
+
     const postData = JSON.stringify({
       jsonrpc: '1.0',
       id: Date.now(),
@@ -107,14 +109,14 @@ function extractStakingInfo(block) {
   if (block.blocktype !== 'minted') {
     return null;
   }
-  
+
   // First transaction is the coinstake
   if (!block.tx || block.tx.length === 0) {
     return null;
   }
-  
+
   const coinstake = block.tx[0];
-  
+
   // Get the first output address (the staker)
   if (coinstake.vout && coinstake.vout.length > 0) {
     for (const vout of coinstake.vout) {
@@ -134,7 +136,7 @@ function extractStakingInfo(block) {
       }
     }
   }
-  
+
   return null;
 }
 
@@ -148,7 +150,7 @@ async function storeStakingReward(reward) {
     VALUES ($1, $2, $3, $4, $5, $6, NOW())
     ON CONFLICT (block_height) DO NOTHING
   `;
-  
+
   await pool.query(query, [
     reward.identityAddress,
     reward.blockHeight,
@@ -169,7 +171,7 @@ async function storeIdentity(address, blockHeight) {
       first_seen_block = LEAST(identities.first_seen_block, EXCLUDED.first_seen_block)
     WHERE identities.first_seen_block IS NULL OR identities.first_seen_block > EXCLUDED.first_seen_block
   `;
-  
+
   await pool.query(query, [address, blockHeight]);
 }
 
@@ -181,17 +183,21 @@ async function findGaps() {
       MAX(block_height) as max_block
     FROM staking_rewards
   `;
-  
+
   const result = await pool.query(query);
   const { min_block, max_block } = result.rows[0];
-  
+
   // Get current blockchain height
   const info = await rpcCall('getblockchaininfo');
   const currentHeight = info.blocks;
-  
+
   return {
-    beforeExisting: min_block ? { start: VERUSID_START_BLOCK, end: min_block - 1 } : null,
-    afterExisting: max_block ? { start: max_block + 1, end: currentHeight } : null,
+    beforeExisting: min_block
+      ? { start: VERUSID_START_BLOCK, end: min_block - 1 }
+      : null,
+    afterExisting: max_block
+      ? { start: max_block + 1, end: currentHeight }
+      : null,
     currentHeight,
   };
 }
@@ -201,53 +207,63 @@ async function processBlockRange(start, end) {
   let processed = 0;
   let stakes = 0;
   let errors = 0;
-  
+
   const startTime = Date.now();
-  
+
   for (let height = start; height <= end; height += BATCH_SIZE) {
     const batchEnd = Math.min(height + BATCH_SIZE - 1, end);
     const batchPromises = [];
-    
+
     // Process blocks in parallel batches
-    for (let h = height; h <= batchEnd; h += Math.ceil(BATCH_SIZE / CONCURRENT_REQUESTS)) {
-      const chunkEnd = Math.min(h + Math.ceil(BATCH_SIZE / CONCURRENT_REQUESTS) - 1, batchEnd);
+    for (
+      let h = height;
+      h <= batchEnd;
+      h += Math.ceil(BATCH_SIZE / CONCURRENT_REQUESTS)
+    ) {
+      const chunkEnd = Math.min(
+        h + Math.ceil(BATCH_SIZE / CONCURRENT_REQUESTS) - 1,
+        batchEnd
+      );
       batchPromises.push(processChunk(h, chunkEnd));
     }
-    
+
     try {
       const results = await Promise.all(batchPromises);
       const batchStakes = results.reduce((sum, r) => sum + r.stakes, 0);
       stakes += batchStakes;
-      processed += (batchEnd - height + 1);
-      
+      processed += batchEnd - height + 1;
+
       // Progress update
-      const progress = ((height - start) / (end - start) * 100).toFixed(2);
+      const progress = (((height - start) / (end - start)) * 100).toFixed(2);
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
       const rate = (processed / elapsed).toFixed(1);
       const eta = ((end - height) / rate).toFixed(0);
-      
+
       process.stdout.write(
         `\r[${progress}%] Block ${height}-${batchEnd} | ` +
-        `Stakes: ${stakes} | Rate: ${rate}/s | ETA: ${eta}s    `
+          `Stakes: ${stakes} | Rate: ${rate}/s | ETA: ${eta}s    `
       );
     } catch (error) {
       errors++;
-      console.error(`\nError processing batch ${height}-${batchEnd}:`, error.message);
+      console.error(
+        `\nError processing batch ${height}-${batchEnd}:`,
+        error.message
+      );
     }
   }
-  
+
   return { processed, stakes, errors };
 }
 
 // Process a chunk of blocks
 async function processChunk(start, end) {
   let stakes = 0;
-  
+
   for (let height = start; height <= end; height++) {
     try {
       const block = await getBlock(height);
       const stakeInfo = extractStakingInfo(block);
-      
+
       if (stakeInfo) {
         await storeStakingReward(stakeInfo);
         await storeIdentity(stakeInfo.identityAddress, height);
@@ -260,7 +276,7 @@ async function processChunk(start, end) {
       }
     }
   }
-  
+
   return { stakes };
 }
 
@@ -268,24 +284,32 @@ async function processChunk(start, end) {
 async function main() {
   console.log('🔍 VerusID Staking Gap Scanner\n');
   console.log('━'.repeat(60));
-  
+
   // Determine scan range
   if (autoMode) {
     console.log('\n📊 Auto mode: Finding gaps in data...\n');
     const gaps = await findGaps();
-    
+
     console.log(`Current blockchain height: ${gaps.currentHeight}`);
-    
+
     if (gaps.beforeExisting) {
       console.log(`\nGap before existing data:`);
-      console.log(`  Blocks: ${gaps.beforeExisting.start} → ${gaps.beforeExisting.end}`);
-      console.log(`  Count: ${gaps.beforeExisting.end - gaps.beforeExisting.start + 1} blocks`);
+      console.log(
+        `  Blocks: ${gaps.beforeExisting.start} → ${gaps.beforeExisting.end}`
+      );
+      console.log(
+        `  Count: ${gaps.beforeExisting.end - gaps.beforeExisting.start + 1} blocks`
+      );
       startBlock = gaps.beforeExisting.start;
       endBlock = gaps.beforeExisting.end;
     } else if (gaps.afterExisting) {
       console.log(`\nGap after existing data:`);
-      console.log(`  Blocks: ${gaps.afterExisting.start} → ${gaps.afterExisting.end}`);
-      console.log(`  Count: ${gaps.afterExisting.end - gaps.afterExisting.start + 1} blocks`);
+      console.log(
+        `  Blocks: ${gaps.afterExisting.start} → ${gaps.afterExisting.end}`
+      );
+      console.log(
+        `  Count: ${gaps.afterExisting.end - gaps.afterExisting.start + 1} blocks`
+      );
       startBlock = gaps.afterExisting.start;
       endBlock = gaps.afterExisting.end;
     } else {
@@ -295,18 +319,20 @@ async function main() {
   } else if (!startBlock || !endBlock) {
     console.error('\n❌ Error: Must specify --start and --end, or use --auto');
     console.error('\nUsage:');
-    console.error('  node scripts/scan-verusid-gap.js --start 1520000 --end 1990205');
+    console.error(
+      '  node scripts/scan-verusid-gap.js --start 1520000 --end 1990205'
+    );
     console.error('  node scripts/scan-verusid-gap.js --auto');
     process.exit(1);
   }
-  
+
   console.log(`\n🚀 Scanning blocks ${startBlock} → ${endBlock}`);
   console.log(`   Total blocks: ${endBlock - startBlock + 1}`);
   console.log(`   Batch size: ${BATCH_SIZE}`);
   console.log('');
-  
+
   const result = await processBlockRange(startBlock, endBlock);
-  
+
   console.log('\n\n━'.repeat(60));
   console.log('\n✅ Scan Complete!\n');
   console.log(`   Processed: ${result.processed} blocks`);
@@ -327,4 +353,3 @@ main()
     pool.end();
     process.exit(1);
   });
-

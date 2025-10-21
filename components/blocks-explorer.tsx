@@ -524,7 +524,9 @@ export function BlocksExplorer() {
               <Database className="h-5 w-5 text-blue-400" />
             </div>
             <div>
-              <div className="text-gray-900 dark:text-white font-semibold">Total Blocks</div>
+              <div className="text-gray-900 dark:text-white font-semibold">
+                Total Blocks
+              </div>
               <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {formatBlockHeight(totalBlocks)}
               </div>
@@ -538,7 +540,9 @@ export function BlocksExplorer() {
               <Hash className="h-5 w-5 text-green-400" />
             </div>
             <div>
-              <div className="text-gray-900 dark:text-white font-semibold">Average Size</div>
+              <div className="text-gray-900 dark:text-white font-semibold">
+                Average Size
+              </div>
               <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {blocks.length > 0
                   ? formatFileSize(
@@ -557,7 +561,9 @@ export function BlocksExplorer() {
               <Coins className="h-5 w-5 text-verus-blue" />
             </div>
             <div>
-              <div className="text-gray-900 dark:text-white font-semibold">Total Size</div>
+              <div className="text-gray-900 dark:text-white font-semibold">
+                Total Size
+              </div>
               <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {blocks.length > 0
                   ? formatFileSize(
@@ -575,7 +581,9 @@ export function BlocksExplorer() {
               <Clock className="h-5 w-5 text-verus-teal" />
             </div>
             <div>
-              <div className="text-gray-900 dark:text-white font-semibold">Latest Block</div>
+              <div className="text-gray-900 dark:text-white font-semibold">
+                Latest Block
+              </div>
               <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {blocks.length > 0 ? formatTime(blocks[0]?.time || 0) : 'N/A'}
               </div>
@@ -589,7 +597,9 @@ export function BlocksExplorer() {
               <Coins className="h-5 w-5 text-verus-teal" />
             </div>
             <div>
-              <div className="text-gray-900 dark:text-white font-semibold">Total Rewards</div>
+              <div className="text-gray-900 dark:text-white font-semibold">
+                Total Rewards
+              </div>
               <div className="text-blue-600 dark:text-blue-200 text-sm">
                 {blocks.length > 0
                   ? `${blocks
@@ -606,7 +616,9 @@ export function BlocksExplorer() {
       {/* Blocks Table */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Recent Blocks</h3>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            Recent Blocks
+          </h3>
 
           {/* Controls */}
           <div className="flex items-center space-x-3">
@@ -713,7 +725,8 @@ export function BlocksExplorer() {
                     className="bg-white dark:bg-slate-800 rounded-lg p-4 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60"
                     onClick={() => {
                       // Add current page to navigation history before navigating
-                      const currentUrl = window.location.pathname + window.location.search;
+                      const currentUrl =
+                        window.location.pathname + window.location.search;
                       addToHistory(currentUrl);
                       router.push(`/block/${block.hash}`);
                     }}
@@ -728,7 +741,9 @@ export function BlocksExplorer() {
                                 e.stopPropagation();
                                 const prevBlock = sortedBlocks[index + 1];
                                 if (prevBlock) {
-                                  const currentUrl = window.location.pathname + window.location.search;
+                                  const currentUrl =
+                                    window.location.pathname +
+                                    window.location.search;
                                   addToHistory(currentUrl);
                                   router.push(`/block/${prevBlock.hash}`);
                                 }
@@ -748,7 +763,9 @@ export function BlocksExplorer() {
                                 e.stopPropagation();
                                 const nextBlock = sortedBlocks[index - 1];
                                 if (nextBlock) {
-                                  const currentUrl = window.location.pathname + window.location.search;
+                                  const currentUrl =
+                                    window.location.pathname +
+                                    window.location.search;
                                   addToHistory(currentUrl);
                                   router.push(`/block/${nextBlock.hash}`);
                                 }
@@ -1097,21 +1114,27 @@ export function BlocksExplorer() {
 
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
                       <div>
-                        <div className="text-blue-600 dark:text-blue-200 mb-1">Hash</div>
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">
+                          Hash
+                        </div>
                         <div className="text-gray-900 dark:text-white font-mono text-xs break-all">
                           {block.hash}
                         </div>
                       </div>
 
                       <div>
-                        <div className="text-blue-600 dark:text-blue-200 mb-1">Transactions</div>
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">
+                          Transactions
+                        </div>
                         <div className="text-gray-900 dark:text-white">
                           {formatTransactionCount(block.nTx)}
                         </div>
                       </div>
 
                       <div>
-                        <div className="text-blue-600 dark:text-blue-200 mb-1">Block Reward</div>
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">
+                          Block Reward
+                        </div>
                         <div className="text-gray-900 dark:text-white">
                           {block.reward !== undefined && block.reward > 0 ? (
                             <div className="flex flex-col space-y-1">
@@ -1132,14 +1155,18 @@ export function BlocksExplorer() {
                       </div>
 
                       <div>
-                        <div className="text-blue-600 dark:text-blue-200 mb-1">Size</div>
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">
+                          Size
+                        </div>
                         <div className="text-gray-900 dark:text-white">
                           {formatFileSize(block.size)}
                         </div>
                       </div>
 
                       <div>
-                        <div className="text-blue-600 dark:text-blue-200 mb-1">Difficulty</div>
+                        <div className="text-blue-600 dark:text-blue-200 mb-1">
+                          Difficulty
+                        </div>
                         <div className="text-gray-900 dark:text-white">
                           {formatDifficulty(block.difficulty)}
                         </div>

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       count: 1000, // Get up to 1000 identities
       txproof: false,
     });
-    
+
     if (!rpcIdentities || rpcIdentities.length === 0) {
       logger.warn('⚠️ No identities found from RPC');
       return NextResponse.json({
@@ -50,28 +50,37 @@ export async function GET(request: NextRequest) {
     let filteredIdentities = rpcIdentities;
     if (search && Array.isArray(rpcIdentities)) {
       const searchLower = search.toLowerCase();
-      filteredIdentities = rpcIdentities.filter((identity: any) => 
-        identity.friendlyname?.toLowerCase().includes(searchLower) ||
-        identity.identity?.name?.toLowerCase().includes(searchLower) ||
-        identity.identityaddress?.toLowerCase().includes(searchLower)
+      filteredIdentities = rpcIdentities.filter(
+        (identity: any) =>
+          identity.friendlyname?.toLowerCase().includes(searchLower) ||
+          identity.identity?.name?.toLowerCase().includes(searchLower) ||
+          identity.identityaddress?.toLowerCase().includes(searchLower)
       );
     }
 
     // Limit results
-    const limitedIdentities = Array.isArray(filteredIdentities) ? filteredIdentities.slice(0, limit) : [];
+    const limitedIdentities = Array.isArray(filteredIdentities)
+      ? filteredIdentities.slice(0, limit)
+      : [];
 
     // For each identity, get cached data (same as VerusID lookup)
     const enrichedIdentities = await Promise.all(
       limitedIdentities.map(async (identity: any) => {
         try {
           // Get cached identity data (same as VerusID lookup)
-          const cachedData = await getCachedIdentity(identity.friendlyname || identity.identity?.name);
-          
+          const cachedData = await getCachedIdentity(
+            identity.friendlyname || identity.identity?.name
+          );
+
           return {
-            address: identity.identityaddress || identity.primaryaddresses?.[0] || '',
+            address:
+              identity.identityaddress || identity.primaryaddresses?.[0] || '',
             name: identity.identity?.name || '',
             friendlyName: identity.friendlyname || '',
-            displayName: identity.friendlyname || identity.identity?.name || identity.identityaddress,
+            displayName:
+              identity.friendlyname ||
+              identity.identity?.name ||
+              identity.identityaddress,
             firstSeenBlock: null,
             lastScannedBlock: null,
             lastRefreshed: new Date().toISOString(),
@@ -84,10 +93,14 @@ export async function GET(request: NextRequest) {
         } catch (error) {
           // If cache lookup fails, return basic identity data
           return {
-            address: identity.identityaddress || identity.primaryaddresses?.[0] || '',
+            address:
+              identity.identityaddress || identity.primaryaddresses?.[0] || '',
             name: identity.identity?.name || '',
             friendlyName: identity.friendlyname || '',
-            displayName: identity.friendlyname || identity.identity?.name || identity.identityaddress,
+            displayName:
+              identity.friendlyname ||
+              identity.identity?.name ||
+              identity.identityaddress,
             firstSeenBlock: null,
             lastScannedBlock: null,
             lastRefreshed: new Date().toISOString(),
@@ -124,7 +137,7 @@ export async function GET(request: NextRequest) {
     return addSecurityHeaders(response);
   } catch (error: any) {
     logger.error('❌ Failed to fetch VerusIDs using cache system:', error);
-    
+
     const response = NextResponse.json(
       {
         success: false,

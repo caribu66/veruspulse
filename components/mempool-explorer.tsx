@@ -389,7 +389,8 @@ export function MempoolExplorer() {
                         </button>
                         <button
                           onClick={() => {
-                            const currentUrl = window.location.pathname + window.location.search;
+                            const currentUrl =
+                              window.location.pathname + window.location.search;
                             addToHistory(currentUrl);
                             router.push(`/transaction/${tx.txid}`);
                           }}

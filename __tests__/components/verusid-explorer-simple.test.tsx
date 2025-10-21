@@ -126,7 +126,9 @@ describe('VerusIDExplorer - Basic Rendering', () => {
 
   it('should render all tab buttons', () => {
     render(<VerusIDExplorer />);
-    const buttons = screen.getAllByRole('button', { name: /^MagnifyingGlass$/i });
+    const buttons = screen.getAllByRole('button', {
+      name: /^MagnifyingGlass$/i,
+    });
     expect(buttons.length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: /Browse/i })).toBeInTheDocument();
     expect(

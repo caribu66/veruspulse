@@ -27,27 +27,31 @@ function readLockFile(lockFile) {
 
 function stopServer(lockFile, serverType) {
   const lockData = readLockFile(lockFile);
-  
+
   if (!lockData) {
-    console.log(`ℹ️  No ${serverType} server lock file found. Server may not be running.`);
+    console.log(
+      `ℹ️  No ${serverType} server lock file found. Server may not be running.`
+    );
     return false;
   }
 
   const pid = lockData.pid;
   console.log(`🔍 Found ${serverType} server with PID: ${pid}`);
-  
+
   try {
     // Try to kill the process
     process.kill(pid, 'SIGTERM');
     console.log(`✅ ${serverType} server stopped successfully!`);
-    
+
     // Remove lock file
     fs.unlinkSync(lockFile);
     return true;
   } catch (err) {
     if (err.code === 'ESRCH') {
       // Process doesn't exist, just remove stale lock file
-      console.log(`ℹ️  Process not found (may have already stopped). Cleaning up lock file...`);
+      console.log(
+        `ℹ️  Process not found (may have already stopped). Cleaning up lock file...`
+      );
       try {
         fs.unlinkSync(lockFile);
       } catch (e) {
@@ -63,7 +67,7 @@ function stopServer(lockFile, serverType) {
 
 function stopAllServers() {
   console.log('🔍 Checking for running servers...\n');
-  
+
   let devStopped = false;
   let prodStopped = false;
 
@@ -88,7 +92,3 @@ function stopAllServers() {
 }
 
 stopAllServers();
-
-
-
-

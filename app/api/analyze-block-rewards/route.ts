@@ -7,7 +7,6 @@ export async function GET(request: NextRequest) {
     const sampleSize = parseInt(searchParams.get('samples') || '100');
     const forceRefresh = searchParams.get('refresh') === 'true';
 
-
     const schedule = await dynamicBlockRewardAnalyzer.analyzeBlockRewards(
       sampleSize,
       forceRefresh

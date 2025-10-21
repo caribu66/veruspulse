@@ -62,7 +62,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build order by clause - ALWAYS sort by stakes to show active stakers first
-    let orderByClause = 'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
+    let orderByClause =
+      'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
 
     // Main query with left join to staking stats
     const query = `

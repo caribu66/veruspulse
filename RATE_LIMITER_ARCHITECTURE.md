@@ -34,11 +34,12 @@ export const verusAPI = new VerusAPIClient(); // Uses defaultRateLimiter (SAME I
 // lib/middleware/security.ts
 import { RateLimiter } from '@/lib/utils/validation'; // DIFFERENT CLASS!
 
-const apiRateLimiter = new RateLimiter(60000, 100);      // API endpoints
-const searchRateLimiter = new RateLimiter(60000, 20);    // Search endpoints
+const apiRateLimiter = new RateLimiter(60000, 100); // API endpoints
+const searchRateLimiter = new RateLimiter(60000, 20); // Search endpoints
 ```
 
 **This is intentional and correct!**
+
 - HTTP API rate limiting (per IP address)
 - RPC rate limiting (to Verus daemon)
 - Two different concerns, two different limiters ✅
@@ -111,16 +112,19 @@ export class VerusClientWithFallback {
 ## No Duplication Issues!
 
 ### ✅ RPC Rate Limiter: **Single shared instance**
+
 - `rpcClient` and `verusAPI` use the **same** `defaultRateLimiter`
 - All RPC calls tracked together
 - Stats reflect all application RPC usage
 
 ### ✅ HTTP Rate Limiter: **Intentionally separate**
+
 - Different purpose (protect HTTP endpoints, not RPC)
 - Different class implementation
 - Works at middleware level
 
 ### ✅ Fallback Client: **No rate limiting needed**
+
 - Only calls public APIs when daemon is down
 - Low frequency usage
 - External services have their own rate limits
@@ -144,12 +148,12 @@ console.log(verusAPI.getRateLimiterStats()); // SAME VALUES!
 
 ## Conclusion
 
-**✅ NO DUPLICATION!** 
+**✅ NO DUPLICATION!**
 
 The architecture is correct:
+
 - RPC rate limiting is **unified** (single instance)
 - HTTP rate limiting is **separate by design**
 - Fallback client has **no rate limiting by design**
 
 All RPC calls from your application are tracked and rate-limited through the **single shared `defaultRateLimiter`** instance.
-

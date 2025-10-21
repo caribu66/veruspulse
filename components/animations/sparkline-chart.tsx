@@ -31,13 +31,14 @@ export function SparklineChart({
     const range = max - min || 1;
 
     const points = data.map((value, index) => {
-      const x = data.length > 1 ? (index / (data.length - 1)) * width : width / 2;
+      const x =
+        data.length > 1 ? (index / (data.length - 1)) * width : width / 2;
       const y = height - ((value - min) / range) * height;
-      
+
       // Ensure x and y are valid numbers
       const validX = isNaN(x) ? width / 2 : x;
       const validY = isNaN(y) ? height / 2 : y;
-      
+
       return { x: validX, y: validY, value };
     });
 
@@ -115,18 +116,20 @@ export function SparklineChart({
       />
 
       {/* Dots at each data point */}
-      {dots.map((dot, index) => (
-        !isNaN(dot.x) && !isNaN(dot.y) && (
-          <circle
-            key={index}
-            cx={dot.x}
-            cy={dot.y}
-            r="2"
-            fill={trendColor}
-            className="opacity-70 hover:opacity-100 transition-opacity"
-          />
-        )
-      ))}
+      {dots.map(
+        (dot, index) =>
+          !isNaN(dot.x) &&
+          !isNaN(dot.y) && (
+            <circle
+              key={index}
+              cx={dot.x}
+              cy={dot.y}
+              r="2"
+              fill={trendColor}
+              className="opacity-70 hover:opacity-100 transition-opacity"
+            />
+          )
+      )}
     </svg>
   );
 }

@@ -51,8 +51,10 @@ export function Card({
 
   // Variant styles - Solid, professional design (theme-aware)
   const variantStyles = {
-    default: 'bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700',
-    elevated: 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-xl',
+    default:
+      'bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700',
+    elevated:
+      'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-xl',
     flat: 'bg-white dark:bg-slate-900',
     outlined: 'bg-white dark:bg-slate-900 border-2 border-verus-blue/40',
   };
@@ -130,7 +132,10 @@ export function CardTitle({
 }: CardTitleProps) {
   return (
     <Component
-      className={cn('text-xl md:text-2xl font-bold text-gray-900 dark:text-white', className)}
+      className={cn(
+        'text-xl md:text-2xl font-bold text-gray-900 dark:text-white',
+        className
+      )}
       {...props}
     >
       {children}
@@ -153,7 +158,10 @@ export function CardDescription({
   ...props
 }: CardDescriptionProps) {
   return (
-    <p className={cn('text-sm text-gray-600 dark:text-slate-400', className)} {...props}>
+    <p
+      className={cn('text-sm text-gray-600 dark:text-slate-400', className)}
+      {...props}
+    >
       {children}
     </p>
   );
@@ -234,8 +242,12 @@ export function StatCard({
     <Card variant="elevated" hover="glow" className={className}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-sm text-gray-600 dark:text-slate-400 mb-1">{label}</p>
-          <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+          <p className="text-sm text-gray-600 dark:text-slate-400 mb-1">
+            {label}
+          </p>
+          <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            {value}
+          </p>
           {change !== undefined && (
             <p className={cn('text-sm mt-1', trendColor)}>
               {change > 0 && '+'}

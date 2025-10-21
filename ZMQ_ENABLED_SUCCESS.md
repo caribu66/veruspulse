@@ -15,7 +15,6 @@ Your VerusPulse app is now receiving **real-time blockchain updates** directly f
 1. **50-70% Reduction in RPC Calls** 📉
    - Before: App polls every 30-60 seconds for new blocks/transactions
    - After: Daemon pushes updates instantly when they happen
-   
 2. **Instant UI Updates** ⚡
    - New blocks appear immediately (no polling delay)
    - New transactions show up in real-time
@@ -37,17 +36,18 @@ Your VerusPulse app is now receiving **real-time blockchain updates** directly f
 
 ```
 ✅ ZMQ Package: Installed (zeromq@6.5.0)
-✅ ZMQ Connection: Successful (tcp://127.0.0.1:28332)  
+✅ ZMQ Connection: Successful (tcp://127.0.0.1:28332)
 ✅ ZMQ Messages: Receiving (hashtx, hashblock)
 ✅ Daemon Status: Publishing on port 28332
 ```
 
 ### Live Test Output:
+
 ```
 📨 Received: hashtx
    Hash: c1778da87cbfd3682485ce4106ac30ef...
 
-📨 Received: hashtx  
+📨 Received: hashtx
    Hash: bc0b98dc4104baffd69a56b1cf6d067d...
 ```
 
@@ -56,6 +56,7 @@ Your VerusPulse app is now receiving **real-time blockchain updates** directly f
 ## ⚙️ Configuration
 
 ### verus.conf (Already Configured ✅)
+
 ```conf
 # ZMQ Real-Time Notifications
 zmqpubhashblock=tcp://127.0.0.1:28332
@@ -65,6 +66,7 @@ zmqpubrawtx=tcp://127.0.0.1:28332
 ```
 
 ### Environment Variables
+
 ```bash
 VERUS_ZMQ_ADDRESS=tcp://127.0.0.1:28332
 ENABLE_ZMQ=true
@@ -75,6 +77,7 @@ ENABLE_ZMQ=true
 ## 🔍 How It Works
 
 ### Traditional Polling (Before):
+
 ```
 App → RPC Call → Daemon (every 60s)
 App → RPC Call → Daemon (every 60s)
@@ -83,6 +86,7 @@ App → RPC Call → Daemon (every 60s)
 ```
 
 ### ZMQ Push Updates (Now):
+
 ```
 Daemon → ZMQ Push → App (only when new data)
    New Block Mined ✅
@@ -96,16 +100,17 @@ Daemon → ZMQ Push → App (only when new data)
 
 ### Estimated RPC Load Reduction:
 
-| Component | Before (Polling) | After (ZMQ) | Savings |
-|-----------|-----------------|-------------|---------|
-| Block Updates | 60 calls/hour | 0 calls/hour | **100%** |
-| Live Feed | 60 calls/hour | 0 calls/hour | **100%** |
-| Status Checks | 120 calls/hour | 120 calls/hour | 0% (still needed) |
-| **Total Blocks/TX** | **120 calls/hour** | **~5 calls/hour** | **~96%** |
+| Component           | Before (Polling)   | After (ZMQ)       | Savings           |
+| ------------------- | ------------------ | ----------------- | ----------------- |
+| Block Updates       | 60 calls/hour      | 0 calls/hour      | **100%**          |
+| Live Feed           | 60 calls/hour      | 0 calls/hour      | **100%**          |
+| Status Checks       | 120 calls/hour     | 120 calls/hour    | 0% (still needed) |
+| **Total Blocks/TX** | **120 calls/hour** | **~5 calls/hour** | **~96%**          |
 
 ### Real-World Impact:
+
 - Daemon work queue: Less pressure
-- Network bandwidth: Minimal (push only when needed)  
+- Network bandwidth: Minimal (push only when needed)
 - UI responsiveness: Instant updates
 - Battery/CPU usage: Lower (less polling overhead)
 
@@ -133,17 +138,20 @@ The following components now receive real-time updates:
 ## 🧪 Testing ZMQ
 
 ### Quick Test:
+
 ```bash
 cd /home/explorer/verus-dapp
 node test-zmq.js
 ```
 
 ### Check Status via API:
+
 ```bash
 curl http://localhost:3000/api/zmq/status | jq '.'
 ```
 
 Expected response:
+
 ```json
 {
   "success": true,
@@ -169,17 +177,20 @@ Expected response:
 ### If ZMQ Disconnects:
 
 The app will automatically:
+
 1. Attempt to reconnect (up to 10 attempts)
 2. Fall back to polling if reconnection fails
 3. Log warnings but continue operating
 
 ### Manual Reconnect:
+
 ```bash
 # Restart the app
 npm run dev
 ```
 
 ### If Daemon Restarts:
+
 ZMQ will automatically reconnect when the daemon comes back online.
 
 ---
@@ -187,6 +198,7 @@ ZMQ will automatically reconnect when the daemon comes back online.
 ## 📊 Monitoring
 
 ### Watch Real-Time Activity:
+
 ```bash
 # Monitor ZMQ messages
 node test-zmq.js
@@ -196,6 +208,7 @@ tail -f .next/trace | grep ZMQ
 ```
 
 ### Check Daemon ZMQ Stats:
+
 ```bash
 # Via Cursor terminal or SSH
 netstat -an | grep 28332
@@ -219,15 +232,18 @@ netstat -an | grep 28332
 ## 🚀 Next Steps
 
 ### Your Difficulty Card Will Now:
+
 1. Update instantly when new blocks arrive
 2. Show real-time difficulty changes
 3. No longer rely on 30-second polling
 4. Display accurate, up-to-date information
 
 ### Monitor Performance:
+
 Watch your daemon's work queue - it should be much healthier now with reduced polling load.
 
 ### Optional Enhancements:
+
 1. Add real-time charts for block arrival times
 2. Implement live difficulty change notifications
 3. Add sound/visual alerts for new blocks (PoW vs PoS)
@@ -245,4 +261,3 @@ Watch your daemon's work queue - it should be much healthier now with reduced po
 **🎊 Congratulations! Your app is now optimized for real-time blockchain monitoring!**
 
 The difficulty card and all other components will now show current, accurate data with minimal daemon load.
-

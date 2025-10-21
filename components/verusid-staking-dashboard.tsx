@@ -80,8 +80,10 @@ export function VerusIDStakingDashboard({
   );
   const [liveUTXOData, setLiveUTXOData] = useState<any>(null);
   const [achievements, setAchievements] = useState<any>(null);
-  const [networkParticipation, setNetworkParticipation] = useState<NetworkParticipationData | null>(null);
-  const [stakingMomentum, setStakingMomentum] = useState<StakingMomentumData | null>(null);
+  const [networkParticipation, setNetworkParticipation] =
+    useState<NetworkParticipationData | null>(null);
+  const [stakingMomentum, setStakingMomentum] =
+    useState<StakingMomentumData | null>(null);
 
   // Real-time events for live updates
   const {
@@ -149,7 +151,9 @@ export function VerusIDStakingDashboard({
 
   const fetchNetworkParticipation = useCallback(async () => {
     try {
-      const response = await fetch(`/api/verusid/${iaddr}/network-participation-simple`);
+      const response = await fetch(
+        `/api/verusid/${iaddr}/network-participation-simple`
+      );
       const data = await response.json();
 
       if (data.success) {
@@ -162,7 +166,9 @@ export function VerusIDStakingDashboard({
 
   const fetchStakingMomentum = useCallback(async () => {
     try {
-      const response = await fetch(`/api/verusid/${iaddr}/staking-momentum-simple`);
+      const response = await fetch(
+        `/api/verusid/${iaddr}/staking-momentum-simple`
+      );
       const data = await response.json();
 
       if (data.success) {
@@ -176,13 +182,20 @@ export function VerusIDStakingDashboard({
   // Fetch all data when iaddr changes
   useEffect(() => {
     if (!iaddr) return;
-    
+
     fetchStats();
     fetchLiveUTXOs();
     fetchAchievements();
     fetchNetworkParticipation();
     fetchStakingMomentum();
-  }, [iaddr, fetchStats, fetchLiveUTXOs, fetchAchievements, fetchNetworkParticipation, fetchStakingMomentum]);
+  }, [
+    iaddr,
+    fetchStats,
+    fetchLiveUTXOs,
+    fetchAchievements,
+    fetchNetworkParticipation,
+    fetchStakingMomentum,
+  ]);
 
   const toggleSection = (section: string) => {
     const newExpanded = new Set(expandedSections);
@@ -326,12 +339,13 @@ export function VerusIDStakingDashboard({
     },
     xAxis: {
       type: 'category',
-      data: monthlyData?.map((d: any) =>
-        new Date(d.month).toLocaleDateString('en-US', {
-          month: 'short',
-          year: 'numeric',
-        })
-      ) || [],
+      data:
+        monthlyData?.map((d: any) =>
+          new Date(d.month).toLocaleDateString('en-US', {
+            month: 'short',
+            year: 'numeric',
+          })
+        ) || [],
       axisLine: { lineStyle: { color: '#3165d4' } },
       axisLabel: { rotate: 45, color: '#888' },
     },
@@ -384,12 +398,13 @@ export function VerusIDStakingDashboard({
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
     xAxis: {
       type: 'category',
-      data: dailyData?.slice(-30).map((d: any) =>
-        new Date(d.date).toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-        })
-      ) || [],
+      data:
+        dailyData?.slice(-30).map((d: any) =>
+          new Date(d.date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          })
+        ) || [],
       axisLine: { lineStyle: { color: '#60a5fa' } },
     },
     yAxis: {
@@ -537,7 +552,8 @@ export function VerusIDStakingDashboard({
                   <span>
                     +
                     {(
-                      monthlyData?.[monthlyData.length - 1]?.totalRewardsVRSC || 0
+                      monthlyData?.[monthlyData.length - 1]?.totalRewardsVRSC ||
+                      0
                     ).toFixed(1)}{' '}
                     this month
                   </span>
@@ -612,7 +628,10 @@ export function VerusIDStakingDashboard({
                 </div>
                 {monthlyData && monthlyData.length > 0 && (
                   <SparklineChart
-                    data={monthlyData?.slice(-12).map((d: any) => d.stakeCount) || []}
+                    data={
+                      monthlyData?.slice(-12).map((d: any) => d.stakeCount) ||
+                      []
+                    }
                     width={60}
                     height={20}
                     trend="neutral"
@@ -733,7 +752,9 @@ export function VerusIDStakingDashboard({
                   <div className="text-xs text-gray-400">of Network Weight</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400">Expected Next Stake</div>
+                  <div className="text-xs text-gray-400">
+                    Expected Next Stake
+                  </div>
                   <div className="text-lg font-bold text-cyan-400">
                     {networkParticipation ? (
                       networkParticipation.expectedStakeTimeFormatted
@@ -772,17 +793,25 @@ export function VerusIDStakingDashboard({
                 {/* Status Indicator */}
                 {networkParticipation && (
                   <div className="mt-2 flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      networkParticipation.status === 'active' ? 'bg-green-400' :
-                      networkParticipation.status === 'not_staking' ? 'bg-red-400' :
-                      networkParticipation.status === 'data_unavailable' ? 'bg-orange-400' :
-                      'bg-yellow-400'
-                    }`}></div>
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        networkParticipation.status === 'active'
+                          ? 'bg-green-400'
+                          : networkParticipation.status === 'not_staking'
+                            ? 'bg-red-400'
+                            : networkParticipation.status === 'data_unavailable'
+                              ? 'bg-orange-400'
+                              : 'bg-yellow-400'
+                      }`}
+                    ></div>
                     <span className="text-xs text-gray-400">
-                      {networkParticipation.status === 'active' ? 'Active Staking' :
-                       networkParticipation.status === 'not_staking' ? 'Not Staking' :
-                       networkParticipation.status === 'data_unavailable' ? 'Network Data Unavailable' :
-                       'Low Participation'}
+                      {networkParticipation.status === 'active'
+                        ? 'Active Staking'
+                        : networkParticipation.status === 'not_staking'
+                          ? 'Not Staking'
+                          : networkParticipation.status === 'data_unavailable'
+                            ? 'Network Data Unavailable'
+                            : 'Low Participation'}
                     </span>
                   </div>
                 )}
@@ -802,26 +831,36 @@ export function VerusIDStakingDashboard({
                   stakingMomentum.momentum ? (
                     <>
                       <div>
-                        <div className="text-xs text-gray-400">Performance Trend</div>
-                        <div className={`text-lg font-bold ${
-                          stakingMomentum.momentum.color === 'green' ? 'text-green-400' :
-                          stakingMomentum.momentum.color === 'yellow' ? 'text-yellow-400' :
-                          'text-red-400'
-                        }`}>
+                        <div className="text-xs text-gray-400">
+                          Performance Trend
+                        </div>
+                        <div
+                          className={`text-lg font-bold ${
+                            stakingMomentum.momentum.color === 'green'
+                              ? 'text-green-400'
+                              : stakingMomentum.momentum.color === 'yellow'
+                                ? 'text-yellow-400'
+                                : 'text-red-400'
+                          }`}
+                        >
                           {stakingMomentum.momentum.frequencyTrendFormatted}
                         </div>
                         <div className="text-xs text-gray-400">
-                          {stakingMomentum.momentum.frequencyChangeFormatted} vs previous week
+                          {stakingMomentum.momentum.frequencyChangeFormatted} vs
+                          previous week
                         </div>
                       </div>
-                      
+
                       <div>
-                        <div className="text-xs text-gray-400">Performance Rating</div>
+                        <div className="text-xs text-gray-400">
+                          Performance Rating
+                        </div>
                         <div className="text-lg font-bold text-purple-400">
                           {stakingMomentum.performanceRating}
                         </div>
                         <div className="text-xs text-gray-400">
-                          {stakingMomentum.performanceRatio.toFixed(1)}% of expected
+                          {stakingMomentum.performanceRatio.toFixed(1)}% of
+                          expected
                         </div>
                       </div>
 
@@ -829,7 +868,9 @@ export function VerusIDStakingDashboard({
                       <div className="mt-3 pt-3 border-t border-purple-500/20">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="text-xs text-gray-400">Last 7 Days</div>
+                            <div className="text-xs text-gray-400">
+                              Last 7 Days
+                            </div>
                             <div className="text-sm font-bold text-purple-300">
                               {stakingMomentum.momentum.last7d} stakes
                             </div>
@@ -837,11 +878,17 @@ export function VerusIDStakingDashboard({
                           <div className="text-right">
                             <div className="text-xs text-gray-400">Status</div>
                             <div className="flex items-center space-x-1">
-                              <div className={`w-2 h-2 rounded-full ${
-                                stakingMomentum.momentum.isActive ? 'bg-green-400' : 'bg-yellow-400'
-                              }`}></div>
+                              <div
+                                className={`w-2 h-2 rounded-full ${
+                                  stakingMomentum.momentum.isActive
+                                    ? 'bg-green-400'
+                                    : 'bg-yellow-400'
+                                }`}
+                              ></div>
                               <span className="text-xs text-gray-400">
-                                {stakingMomentum.momentum.isActive ? 'Active' : 'Inactive'}
+                                {stakingMomentum.momentum.isActive
+                                  ? 'Active'
+                                  : 'Inactive'}
                               </span>
                             </div>
                           </div>
@@ -852,22 +899,28 @@ export function VerusIDStakingDashboard({
                     // No historical data available - show current performance only
                     <>
                       <div>
-                        <div className="text-xs text-gray-400">Performance Rating</div>
+                        <div className="text-xs text-gray-400">
+                          Performance Rating
+                        </div>
                         <div className="text-lg font-bold text-purple-400">
                           {stakingMomentum.performanceRating}
                         </div>
                         <div className="text-xs text-gray-400">
-                          {stakingMomentum.performanceRatio.toFixed(1)}% of expected
+                          {stakingMomentum.performanceRatio.toFixed(1)}% of
+                          expected
                         </div>
                       </div>
-                      
+
                       <div>
-                        <div className="text-xs text-gray-400">Current Weight</div>
+                        <div className="text-xs text-gray-400">
+                          Current Weight
+                        </div>
                         <div className="text-lg font-bold text-purple-300">
                           {stakingMomentum.yourWeight.toLocaleString()} VRSC
                         </div>
                         <div className="text-xs text-gray-400">
-                          Expected frequency: {stakingMomentum.expectedFrequency.toFixed(3)}/day
+                          Expected frequency:{' '}
+                          {stakingMomentum.expectedFrequency.toFixed(3)}/day
                         </div>
                       </div>
 
@@ -1057,12 +1110,13 @@ export function VerusIDStakingDashboard({
                   },
                   xAxis: {
                     type: 'category',
-                    data: monthlyData?.map((d: any) =>
-                      new Date(d.month).toLocaleDateString('en-US', {
-                        month: 'short',
-                        year: '2-digit',
-                      })
-                    ) || [],
+                    data:
+                      monthlyData?.map((d: any) =>
+                        new Date(d.month).toLocaleDateString('en-US', {
+                          month: 'short',
+                          year: '2-digit',
+                        })
+                      ) || [],
                     axisLine: { lineStyle: { color: '#666' } },
                     axisLabel: { color: '#888', rotate: 45 },
                   },
@@ -1079,14 +1133,15 @@ export function VerusIDStakingDashboard({
                     {
                       name: 'Cumulative Total',
                       type: 'line',
-                      data: monthlyData?.reduce(
-                        (acc: number[], d: any, i: number) => {
-                          const prev = i > 0 ? acc[i - 1] : 0;
-                          acc.push(prev + d.totalRewardsVRSC);
-                          return acc;
-                        },
-                        []
-                      ) || [],
+                      data:
+                        monthlyData?.reduce(
+                          (acc: number[], d: any, i: number) => {
+                            const prev = i > 0 ? acc[i - 1] : 0;
+                            acc.push(prev + d.totalRewardsVRSC);
+                            return acc;
+                          },
+                          []
+                        ) || [],
                       itemStyle: { color: '#4ade80' },
                       lineStyle: { width: 3 },
                       smooth: true,
@@ -1111,7 +1166,8 @@ export function VerusIDStakingDashboard({
                     {
                       name: 'Monthly Rewards',
                       type: 'bar',
-                      data: monthlyData?.map((d: any) => d.totalRewardsVRSC) || [],
+                      data:
+                        monthlyData?.map((d: any) => d.totalRewardsVRSC) || [],
                       itemStyle: {
                         color: 'rgba(251, 191, 36, 0.6)',
                         borderColor: '#fbbf24',
@@ -1189,10 +1245,12 @@ export function VerusIDStakingDashboard({
               </h5>
               <div className="bg-gray-100 dark:bg-gray-900/50 rounded-lg p-6 overflow-x-auto">
                 <HeatmapCalendar
-                  data={dailyData?.map((d: any) => ({
-                    date: new Date(d.date).toISOString().split('T')[0],
-                    value: d.stakeCount || 0,
-                  })) || []}
+                  data={
+                    dailyData?.map((d: any) => ({
+                      date: new Date(d.date).toISOString().split('T')[0],
+                      value: d.stakeCount || 0,
+                    })) || []
+                  }
                   cellSize={14}
                   gap={3}
                 />
@@ -1236,7 +1294,9 @@ export function VerusIDStakingDashboard({
         <div className="flex items-center justify-center space-x-4">
           <span>
             Last Updated:{' '}
-            {stats.metadata?.lastCalculated ? new Date(stats.metadata.lastCalculated).toLocaleString() : 'Never'}
+            {stats.metadata?.lastCalculated
+              ? new Date(stats.metadata.lastCalculated).toLocaleString()
+              : 'Never'}
           </span>
           <button
             onClick={fetchStats}

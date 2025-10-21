@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     // Get list of identities from RPC (this is the source of truth)
     const rpcIdentities = await verusAPI.listIdentities();
-    
+
     if (!rpcIdentities || rpcIdentities.length === 0) {
       return NextResponse.json({
         success: true,
@@ -39,10 +39,11 @@ export async function GET(request: NextRequest) {
     let filteredIdentities = rpcIdentities;
     if (search) {
       const searchLower = search.toLowerCase();
-      filteredIdentities = rpcIdentities.filter((identity: any) => 
-        identity.friendlyname?.toLowerCase().includes(searchLower) ||
-        identity.identity?.name?.toLowerCase().includes(searchLower) ||
-        identity.identityaddress?.toLowerCase().includes(searchLower)
+      filteredIdentities = rpcIdentities.filter(
+        (identity: any) =>
+          identity.friendlyname?.toLowerCase().includes(searchLower) ||
+          identity.identity?.name?.toLowerCase().includes(searchLower) ||
+          identity.identityaddress?.toLowerCase().includes(searchLower)
       );
     }
 
@@ -54,17 +55,24 @@ export async function GET(request: NextRequest) {
       limitedIdentities.map(async (identity: any) => {
         try {
           // Get cached identity data if available
-          const cachedData = await getCachedIdentity(identity.friendlyname || identity.identity?.name);
-          
+          const cachedData = await getCachedIdentity(
+            identity.friendlyname || identity.identity?.name
+          );
+
           // Get balance data if available
           let balanceData = null;
           try {
-            const balanceResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid-balance`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ verusid: identity.friendlyname || identity.identity?.name }),
-            });
-            
+            const balanceResponse = await fetch(
+              `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid-balance`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  verusid: identity.friendlyname || identity.identity?.name,
+                }),
+              }
+            );
+
             if (balanceResponse.ok) {
               const balanceResult = await balanceResponse.json();
               if (balanceResult.success) {
@@ -76,10 +84,14 @@ export async function GET(request: NextRequest) {
           }
 
           return {
-            address: identity.identityaddress || identity.primaryaddresses?.[0] || '',
+            address:
+              identity.identityaddress || identity.primaryaddresses?.[0] || '',
             baseName: identity.identity?.name || '',
             friendlyName: identity.friendlyname || '',
-            displayName: identity.friendlyname || identity.identity?.name || identity.identityaddress,
+            displayName:
+              identity.friendlyname ||
+              identity.identity?.name ||
+              identity.identityaddress,
             totalStakes: 0,
             totalRewardsVRSC: 0,
             totalValueVRSC: balanceData?.totalBalance || 0,
@@ -103,7 +115,8 @@ export async function GET(request: NextRequest) {
             lowestRewardVRSC: 0,
             lastCalculated: null,
             dataCompleteness: balanceData ? 50 : 10,
-            activityStatus: balanceData?.totalBalance > 0 ? 'active' : 'unknown',
+            activityStatus:
+              balanceData?.totalBalance > 0 ? 'active' : 'unknown',
             daysSinceLastStake: null,
             firstSeenBlock: null,
             lastScannedBlock: null,
@@ -114,10 +127,14 @@ export async function GET(request: NextRequest) {
         } catch (error) {
           // If enrichment fails, return basic identity data
           return {
-            address: identity.identityaddress || identity.primaryaddresses?.[0] || '',
+            address:
+              identity.identityaddress || identity.primaryaddresses?.[0] || '',
             baseName: identity.identity?.name || '',
             friendlyName: identity.friendlyname || '',
-            displayName: identity.friendlyname || identity.identity?.name || identity.identityaddress,
+            displayName:
+              identity.friendlyname ||
+              identity.identity?.name ||
+              identity.identityaddress,
             totalStakes: 0,
             totalRewardsVRSC: 0,
             totalValueVRSC: 0,
@@ -172,7 +189,7 @@ export async function GET(request: NextRequest) {
     return addSecurityHeaders(response);
   } catch (error: any) {
     logger.error('❌ Failed to fetch comprehensive VerusID data:', error);
-    
+
     const response = NextResponse.json(
       {
         success: false,
@@ -185,4 +202,3 @@ export async function GET(request: NextRequest) {
     return addSecurityHeaders(response);
   }
 }
-

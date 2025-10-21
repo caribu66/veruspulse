@@ -79,14 +79,15 @@ export function BlockRewardSection({ block }: BlockRewardSectionProps) {
               icon={getRewardIcon()}
             />
 
-            {block.stakeRewardInfo.stakeAmount && block.stakeRewardInfo.stakeAmount > 0 && (
-              <BlockDetailRow
-                label="Stake Amount"
-                value={`${block.stakeRewardInfo.stakeAmount.toFixed(8)} VRSC`}
-                copyable
-                icon={<TrendingUp className="h-4 w-4 text-blue-400" />}
-              />
-            )}
+            {block.stakeRewardInfo.stakeAmount &&
+              block.stakeRewardInfo.stakeAmount > 0 && (
+                <BlockDetailRow
+                  label="Stake Amount"
+                  value={`${block.stakeRewardInfo.stakeAmount.toFixed(8)} VRSC`}
+                  copyable
+                  icon={<TrendingUp className="h-4 w-4 text-blue-400" />}
+                />
+              )}
 
             {block.stakeRewardInfo.stakeAge && (
               <BlockDetailRow

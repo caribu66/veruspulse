@@ -31,9 +31,11 @@ export async function GET() {
     // Skip RPC calls and use mock data directly (RPC listcurrencies with systemtype filter not supported)
     // TODO: Remove this block and uncomment RPC logic below once RPC endpoint supports the required filters
     const USE_MOCK_DATA = true; // Set to false to re-enable RPC calls
-    
+
     if (USE_MOCK_DATA) {
-      logger.info('Using realistic mock data based on cryptodashboard.faldt.net (RPC not configured)');
+      logger.info(
+        'Using realistic mock data based on cryptodashboard.faldt.net (RPC not configured)'
+      );
       // Return realistic mock data based on actual cryptodashboard.faldt.net data
       const mockChains: PBaaSChainPrice[] = [
         {

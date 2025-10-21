@@ -55,33 +55,39 @@ export async function GET(request: NextRequest) {
 
     // Try to lookup each known VerusID using the same system as VerusID lookup
     const enrichedIdentities = [];
-    
+
     for (const verusid of KNOWN_VERUSIDS) {
       try {
         // Use the same lookup system as VerusID lookup
-        const identityResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid-lookup`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ identity: verusid }),
-        });
-        
+        const identityResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid-lookup`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identity: verusid }),
+          }
+        );
+
         const identityResult = await identityResponse.json();
-        
+
         if (identityResult.success && identityResult.data?.identity) {
           const identity = identityResult.data.identity;
-          
+
           // Get cached data
           const cachedData = await getCachedIdentity(verusid);
-          
+
           // Get balance data
           let balanceData = null;
           try {
-            const balanceResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid-balance`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ verusid }),
-            });
-            
+            const balanceResponse = await fetch(
+              `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid-balance`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ verusid }),
+              }
+            );
+
             if (balanceResponse.ok) {
               const balanceResult = await balanceResponse.json();
               if (balanceResult.success) {
@@ -95,8 +101,10 @@ export async function GET(request: NextRequest) {
           // Get comprehensive staking data
           let stakingData = null;
           try {
-            const stakingResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid/${identity.identity?.identityaddress || identity.primaryaddresses?.[0]}/staking-stats`);
-            
+            const stakingResponse = await fetch(
+              `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid/${identity.identity?.identityaddress || identity.primaryaddresses?.[0]}/staking-stats`
+            );
+
             if (stakingResponse.ok) {
               const stakingResult = await stakingResponse.json();
               if (stakingResult.success && stakingResult.data?.summary) {
@@ -108,10 +116,14 @@ export async function GET(request: NextRequest) {
           }
 
           const enrichedIdentity = {
-            address: identity.identity?.identityaddress || identity.primaryaddresses?.[0] || '',
+            address:
+              identity.identity?.identityaddress ||
+              identity.primaryaddresses?.[0] ||
+              '',
             name: identity.identity?.name || '',
             friendlyName: identity.friendlyname || '',
-            displayName: identity.friendlyname || identity.identity?.name || verusid,
+            displayName:
+              identity.friendlyname || identity.identity?.name || verusid,
             firstSeenBlock: null,
             lastScannedBlock: null,
             lastRefreshed: new Date().toISOString(),
@@ -124,10 +136,18 @@ export async function GET(request: NextRequest) {
           };
 
           // Apply search filter if provided
-          if (!search || 
-              enrichedIdentity.name.toLowerCase().includes(search.toLowerCase()) ||
-              enrichedIdentity.friendlyName.toLowerCase().includes(search.toLowerCase()) ||
-              enrichedIdentity.displayName.toLowerCase().includes(search.toLowerCase())) {
+          if (
+            !search ||
+            enrichedIdentity.name
+              .toLowerCase()
+              .includes(search.toLowerCase()) ||
+            enrichedIdentity.friendlyName
+              .toLowerCase()
+              .includes(search.toLowerCase()) ||
+            enrichedIdentity.displayName
+              .toLowerCase()
+              .includes(search.toLowerCase())
+          ) {
             enrichedIdentities.push(enrichedIdentity);
           }
         }
@@ -140,7 +160,9 @@ export async function GET(request: NextRequest) {
     // Limit results
     const limitedIdentities = enrichedIdentities.slice(0, limit);
 
-    logger.info(`✅ Found ${limitedIdentities.length} identities from known list`);
+    logger.info(
+      `✅ Found ${limitedIdentities.length} identities from known list`
+    );
 
     const response = NextResponse.json({
       success: true,
@@ -165,7 +187,7 @@ export async function GET(request: NextRequest) {
     return addSecurityHeaders(response);
   } catch (error: any) {
     logger.error('❌ Failed to fetch known VerusIDs:', error);
-    
+
     const response = NextResponse.json(
       {
         success: false,

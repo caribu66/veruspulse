@@ -110,7 +110,8 @@ export function QuickStatsTicker({
       label: 'Block Height',
       value: networkStats?.blocks?.toLocaleString() || '...',
       icon: Database,
-      color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
+      color:
+        'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
       trend: 'up',
     },
     {
@@ -123,7 +124,8 @@ export function QuickStatsTicker({
             ? miningStats.pooledtx
             : '...',
       icon: Pulse,
-      color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
+      color:
+        'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
       trend: 'neutral',
     },
     {
@@ -133,7 +135,8 @@ export function QuickStatsTicker({
         ? `${(networkStats.circulatingSupply / 1000000).toFixed(2)}M`
         : '...',
       icon: CurrencyDollar,
-      color: 'text-green-600 dark:text-green-400 bg-white dark:bg-green-500/10 border-slate-300 dark:border-green-500/20',
+      color:
+        'text-green-600 dark:text-green-400 bg-white dark:bg-green-500/10 border-slate-300 dark:border-green-500/20',
       suffix: 'VRSC',
     },
     {
@@ -144,7 +147,8 @@ export function QuickStatsTicker({
           ? formatStake(stakingStats.netstakeweight)
           : '...',
       icon: TrendUp,
-      color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
+      color:
+        'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
       trend: 'up',
     },
     {
@@ -152,7 +156,8 @@ export function QuickStatsTicker({
       label: 'Connections',
       value: networkStats?.connections || '...',
       icon: Network,
-      color: 'text-blue-600 dark:text-verus-blue bg-white dark:bg-verus-blue/10 border-slate-300 dark:border-verus-blue/20',
+      color:
+        'text-blue-600 dark:text-verus-blue bg-white dark:bg-verus-blue/10 border-slate-300 dark:border-verus-blue/20',
       trend: 'neutral',
     },
   ];

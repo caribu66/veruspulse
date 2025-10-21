@@ -55,7 +55,9 @@ export function PBaaSPriceTicker({
   maxAssets = 5,
 }: PBaaSPriceTickerProps) {
   const [prices, setPrices] = useState<LivePriceData[]>([]);
-  const [vrscPriceSources, setVrscPriceSources] = useState<VRSCPriceSource[]>([]);
+  const [vrscPriceSources, setVrscPriceSources] = useState<VRSCPriceSource[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLive, setIsLive] = useState(true);
@@ -86,7 +88,7 @@ export function PBaaSPriceTicker({
 
         setVrscPriceSources(data.data.vrscPriceSources || []);
         setIsLive(true);
-        
+
         logger.info('📊 PBaaS prices updated:', {
           count: newPrices.length,
           vrscPrice: data.data.vrscPriceUSD,
@@ -156,7 +158,7 @@ export function PBaaSPriceTicker({
     // Always put VRSC first
     const vrsc = allPrices.find(p => p.symbol === 'VRSC');
     const others = allPrices.filter(p => p.symbol !== 'VRSC');
-    
+
     // Sort others by USD price (as a proxy for liquidity/importance)
     // Higher priced assets typically have more liquidity
     const sortedOthers = others.sort((a, b) => {
@@ -165,17 +167,23 @@ export function PBaaSPriceTicker({
     });
 
     // Take VRSC + top (maxAssets - 1) others
-    const topAssets = vrsc ? [vrsc, ...sortedOthers.slice(0, maxAssets - 1)] : sortedOthers.slice(0, maxAssets);
+    const topAssets = vrsc
+      ? [vrsc, ...sortedOthers.slice(0, maxAssets - 1)]
+      : sortedOthers.slice(0, maxAssets);
     return topAssets;
   };
 
   if (loading) {
     return (
-      <div className={`pbaas-price-ticker-container w-full bg-white dark:bg-slate-900 border-y border-slate-300 dark:border-slate-700 py-4 md:py-6 ${className}`}>
+      <div
+        className={`pbaas-price-ticker-container w-full bg-white dark:bg-slate-900 border-y border-slate-300 dark:border-slate-700 py-4 md:py-6 ${className}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-center space-x-2">
             <ArrowsClockwise className="h-5 w-5 animate-spin text-verus-blue" />
-            <span className="text-sm text-slate-400">Loading PBaaS prices...</span>
+            <span className="text-sm text-slate-400">
+              Loading PBaaS prices...
+            </span>
           </div>
         </div>
       </div>
@@ -184,7 +192,9 @@ export function PBaaSPriceTicker({
 
   if (error || prices.length === 0) {
     return (
-      <div className={`pbaas-price-ticker-container w-full bg-white dark:bg-slate-900 border-y border-slate-300 dark:border-slate-700 py-4 md:py-6 ${className}`}>
+      <div
+        className={`pbaas-price-ticker-container w-full bg-white dark:bg-slate-900 border-y border-slate-300 dark:border-slate-700 py-4 md:py-6 ${className}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-center space-x-2">
             <WifiSlash className="h-5 w-5 text-red-400" />
@@ -200,11 +210,15 @@ export function PBaaSPriceTicker({
   const topAssets = getTopAssets(prices);
 
   return (
-    <div className={`pbaas-price-ticker-container relative w-full bg-white dark:bg-slate-900 border-y border-slate-300 dark:border-slate-700 py-4 md:py-6 ${className}`}>
+    <div
+      className={`pbaas-price-ticker-container relative w-full bg-white dark:bg-slate-900 border-y border-slate-300 dark:border-slate-700 py-4 md:py-6 ${className}`}
+    >
       {/* Live Indicator + PBaaS Badge */}
       <div className="absolute top-2 left-4 z-10 flex items-center space-x-2">
         <div className="flex items-center space-x-1.5">
-          <WifiHigh className={`h-3.5 w-3.5 ${isLive ? 'text-green-400' : 'text-red-400'}`} />
+          <WifiHigh
+            className={`h-3.5 w-3.5 ${isLive ? 'text-green-400' : 'text-red-400'}`}
+          />
           {isLive && (
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
           )}
@@ -283,12 +297,16 @@ export function PBaaSPriceTicker({
                     <span className="font-medium">{changeDisplay}</span>
                   </div>
                 ) : (
-                  <div className="text-sm text-gray-500 dark:text-slate-500">24h: N/A</div>
+                  <div className="text-sm text-gray-500 dark:text-slate-500">
+                    24h: N/A
+                  </div>
                 )}
 
                 {/* Price in VRSC */}
                 <div className="pt-2 border-t border-slate-300 dark:border-slate-700/50">
-                  <div className="text-xs text-gray-600 dark:text-slate-400">Price in VRSC</div>
+                  <div className="text-xs text-gray-600 dark:text-slate-400">
+                    Price in VRSC
+                  </div>
                   <div className="text-sm font-semibold text-gray-800 dark:text-slate-200 mt-0.5">
                     {formatPriceInVRSC(asset.priceInVRSC)}
                   </div>
@@ -297,13 +315,18 @@ export function PBaaSPriceTicker({
                 {/* Hover Details */}
                 {isHovered && (
                   <div className="absolute top-full left-0 right-0 mt-2 p-3 bg-slate-800 border border-verus-blue/60 rounded-lg shadow-xl z-20 text-xs">
-                    <div className="font-semibold text-white mb-2">{asset.name}</div>
+                    <div className="font-semibold text-white mb-2">
+                      {asset.name}
+                    </div>
                     {asset.symbol === 'VRSC' && vrscPriceSources.length > 0 && (
                       <div className="space-y-1 text-slate-300">
-                        <div className="text-slate-400 mb-1">Price Sources:</div>
+                        <div className="text-slate-400 mb-1">
+                          Price Sources:
+                        </div>
                         {vrscPriceSources.map((source, idx) => (
                           <div key={idx} className="text-xs">
-                            • {source.basketName}: {formatPrice(source.priceUSD)}
+                            • {source.basketName}:{' '}
+                            {formatPrice(source.priceUSD)}
                           </div>
                         ))}
                       </div>
@@ -419,5 +442,3 @@ export function PBaaSPriceTicker({
     </div>
   );
 }
-
-

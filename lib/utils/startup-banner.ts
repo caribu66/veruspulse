@@ -28,7 +28,8 @@ export function showStartupBanner() {
   if (
     process.env.DATABASE_URL &&
     process.env.UTXO_DATABASE_ENABLED === 'true' &&
-    (process.env.NODE_ENV === 'production' || process.env.ENABLE_SMART_UPDATER === 'true')
+    (process.env.NODE_ENV === 'production' ||
+      process.env.ENABLE_SMART_UPDATER === 'true')
   ) {
     initializeSmartVerusIDUpdater(process.env.DATABASE_URL)
       .then(() => {

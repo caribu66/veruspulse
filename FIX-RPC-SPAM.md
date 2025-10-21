@@ -18,14 +18,13 @@ This was repeating hundreds of times per minute, making the logs unusable.
    - `/api/live-prices` calls it twice (lines 38 and 139)
    - Multiple ticker components poll `/api/live-prices` frequently:
      - `pbaas-price-ticker.tsx` - every 30 seconds
-     - `verus-price-ticker.tsx` - every 6 seconds  
+     - `verus-price-ticker.tsx` - every 6 seconds
      - `moving-price-ticker.tsx` - every 5 seconds
      - `minimal-price-indicator.tsx` - every 10 seconds
 
-2. **Failing RPC call**: 
+2. **Failing RPC call**:
    - `listcurrencies` with `{systemtype: 'pbaas'}` parameter was failing with HTTP 400
    - The RPC endpoint doesn't support the `systemtype` filter parameter
-   
 3. **Retry amplification**:
    - Each failed call triggered 3 retry attempts (with exponential backoff: 2s, 4s, 8s)
    - With 12+ calls per minute × 3 retries = 36+ retry log messages per minute
@@ -61,7 +60,9 @@ export async function GET() {
   const USE_MOCK_DATA = true; // Set to false to re-enable RPC calls
 
   if (USE_MOCK_DATA) {
-    logger.info('Using realistic mock data based on cryptodashboard.faldt.net (RPC not configured)');
+    logger.info(
+      'Using realistic mock data based on cryptodashboard.faldt.net (RPC not configured)'
+    );
     // ... return mock data and cache it
     cachedData = responseData;
     cacheTimestamp = Date.now();
@@ -98,10 +99,9 @@ When the Verus RPC endpoint is properly configured and supports the required par
 ## Additional Optimizations to Consider
 
 1. **Reduce polling frequency**: Some components poll every 5-6 seconds which is aggressive
-2. **Deduplicate requests**: Use SWR or React Query to prevent duplicate simultaneous requests  
+2. **Deduplicate requests**: Use SWR or React Query to prevent duplicate simultaneous requests
 3. **Use Next.js revalidation**: Add `export const revalidate = 30` for ISR caching
 
 ## Files Modified
 
 - `/app/api/pbaas-prices/route.ts` - Skip failing RPC calls, use mock data directly
-

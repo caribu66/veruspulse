@@ -9,27 +9,27 @@ interface BackButtonProps {
    * Optional custom fallback path if no history exists
    */
   fallbackPath?: string;
-  
+
   /**
    * Optional custom label (defaults to "Back")
    */
   label?: string;
-  
+
   /**
    * Optional custom className for styling
    */
   className?: string;
-  
+
   /**
    * Show icon only (no text)
    */
   iconOnly?: boolean;
-  
+
   /**
    * Button size variant
    */
   size?: 'sm' | 'md' | 'lg';
-  
+
   /**
    * Button style variant
    */
@@ -64,7 +64,8 @@ export function BackButton({
   const variantStyles = {
     default: 'bg-white/10 hover:bg-white/20 text-white border border-white/20',
     ghost: 'bg-transparent hover:bg-white/10 text-gray-300 hover:text-white',
-    outline: 'bg-transparent border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white',
+    outline:
+      'bg-transparent border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white',
   };
 
   // Icon sizes
@@ -91,4 +92,3 @@ export function BackButton({
     </button>
   );
 }
-

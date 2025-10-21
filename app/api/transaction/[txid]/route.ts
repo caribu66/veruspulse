@@ -69,8 +69,7 @@ export async function GET(
         );
 
         fee = Math.max(0, totalInputValue - totalOutputValue);
-      } catch (error) {
-      }
+      } catch (error) {}
     }
 
     const response = {

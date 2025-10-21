@@ -53,8 +53,7 @@ export async function POST(request: NextRequest) {
             endAtHeight: options?.endAtHeight,
             limitAddresses: options?.limitAddresses,
           })
-          .then(() => {
-          })
+          .then(() => {})
           .catch(error => {
             console.error('[Mass Scan API] Scan failed:', error);
           });
@@ -175,8 +174,7 @@ export async function POST(request: NextRequest) {
           endAtHeight: currentHeight,
           limitAddresses: body.limitAddresses,
         })
-        .then(() => {
-        })
+        .then(() => {})
         .catch(error => {
           console.error('[Mass Scan API] Recent scan failed:', error);
         });
@@ -209,8 +207,7 @@ export async function POST(request: NextRequest) {
           endAtHeight: body.endHeight,
           limitAddresses: body.limitAddresses || 10000, // Default 10k limit
         })
-        .then(() => {
-        })
+        .then(() => {})
         .catch(error => {
           console.error('[Mass Scan API] Full historical scan failed:', error);
         });

@@ -7,11 +7,13 @@ This directory contains load testing scripts for testing the VerusPulse blockcha
 ### Install k6
 
 **macOS (using Homebrew):**
+
 ```bash
 brew install k6
 ```
 
 **Linux (Debian/Ubuntu):**
+
 ```bash
 sudo gpg -k
 sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
@@ -21,6 +23,7 @@ sudo apt-get install k6
 ```
 
 **Using Docker:**
+
 ```bash
 docker pull grafana/k6:latest
 ```
@@ -30,6 +33,7 @@ For more installation options, visit: https://k6.io/docs/getting-started/install
 ## Available Tests
 
 ### 1. Load Test (`k6-load-test.js`)
+
 Simulates realistic user behavior with 100 concurrent users.
 
 - **Duration**: ~3 minutes
@@ -38,6 +42,7 @@ Simulates realistic user behavior with 100 concurrent users.
 - **Use Case**: Test normal production load
 
 ### 2. Spike Test (`k6-spike-test.js`)
+
 Tests how the system handles sudden traffic spikes.
 
 - **Duration**: ~2 minutes
@@ -45,6 +50,7 @@ Tests how the system handles sudden traffic spikes.
 - **Use Case**: Test system resilience during traffic surges
 
 ### 3. Stress Test (`k6-stress-test.js`)
+
 Gradually increases load to find the system's breaking point.
 
 - **Duration**: ~10 minutes
@@ -56,11 +62,13 @@ Gradually increases load to find the system's breaking point.
 ### Quick Start
 
 Make the run script executable:
+
 ```bash
 chmod +x load-tests/run-load-tests.sh
 ```
 
 Run the standard load test (100 users):
+
 ```bash
 ./load-tests/run-load-tests.sh load
 ```
@@ -68,21 +76,25 @@ Run the standard load test (100 users):
 ### All Test Types
 
 **Load Test (100 concurrent users):**
+
 ```bash
 ./load-tests/run-load-tests.sh load
 ```
 
 **Spike Test (sudden traffic spikes):**
+
 ```bash
 ./load-tests/run-load-tests.sh spike
 ```
 
 **Stress Test (find system limits):**
+
 ```bash
 ./load-tests/run-load-tests.sh stress
 ```
 
 **Run All Tests:**
+
 ```bash
 ./load-tests/run-load-tests.sh all
 ```
@@ -90,6 +102,7 @@ Run the standard load test (100 users):
 ### Custom Base URL
 
 Test against a different server:
+
 ```bash
 BASE_URL=http://your-server.com ./load-tests/run-load-tests.sh load
 ```
@@ -97,6 +110,7 @@ BASE_URL=http://your-server.com ./load-tests/run-load-tests.sh load
 ### Direct k6 Usage
 
 You can also run k6 directly:
+
 ```bash
 k6 run load-tests/k6-load-test.js
 k6 run load-tests/k6-spike-test.js
@@ -104,6 +118,7 @@ k6 run load-tests/k6-stress-test.js
 ```
 
 With custom options:
+
 ```bash
 BASE_URL=http://localhost:3000 k6 run load-tests/k6-load-test.js
 ```
@@ -130,17 +145,20 @@ BASE_URL=http://localhost:3000 k6 run load-tests/k6-load-test.js
 ### Success Criteria
 
 **Load Test:**
+
 - ✅ 95% of requests complete in < 3 seconds
 - ✅ 99% of requests complete in < 5 seconds
 - ✅ Error rate < 10%
 
 **Spike Test:**
+
 - ✅ 95% of requests complete in < 5 seconds
 - ✅ 99% of requests complete in < 10 seconds
 - ✅ Error rate < 20%
 - ✅ System recovers after spike
 
 **Stress Test:**
+
 - 📊 Identify the maximum number of users the system can handle
 - 📊 Find bottlenecks and performance degradation points
 - 📊 Measure graceful degradation
@@ -148,18 +166,21 @@ BASE_URL=http://localhost:3000 k6 run load-tests/k6-load-test.js
 ## Interpreting Results
 
 ### Good Performance
+
 ```
 http_req_duration.............: avg=450ms   p(95)=1.2s   p(99)=2.1s
 http_req_failed...............: 1.2% (12 of 1000)
 ```
 
 ### Warning Signs
+
 ```
 http_req_duration.............: avg=2.5s    p(95)=5.8s   p(99)=12.3s
 http_req_failed...............: 15% (150 of 1000)
 ```
 
 ### Critical Issues
+
 ```
 http_req_duration.............: avg=8.2s    p(95)=25s    p(99)=45s
 http_req_failed...............: 35% (350 of 1000)
@@ -168,6 +189,7 @@ http_req_failed...............: 35% (350 of 1000)
 ## Results Storage
 
 Test results are saved in JSON format in:
+
 ```
 load-tests/results/
   ├── load-test-YYYYMMDD-HHMMSS.json
@@ -180,6 +202,7 @@ load-tests/results/
 ### Modify User Count
 
 Edit the test file (e.g., `k6-load-test.js`):
+
 ```javascript
 stages: [
   { duration: '30s', target: 200 }, // Change 100 to 200 users
@@ -191,6 +214,7 @@ stages: [
 ### Add Custom Endpoints
 
 Add to the test scenarios in the default function:
+
 ```javascript
 makeRequest(`${BASE_URL}/api/your-endpoint`, 'your-endpoint-name');
 ```
@@ -198,6 +222,7 @@ makeRequest(`${BASE_URL}/api/your-endpoint`, 'your-endpoint-name');
 ### Adjust Thresholds
 
 Modify the thresholds in the options:
+
 ```javascript
 thresholds: {
   http_req_duration: ['p(95)<2000', 'p(99)<4000'], // More strict
@@ -208,7 +233,9 @@ thresholds: {
 ## Troubleshooting
 
 ### Server Not Responding
+
 Make sure your server is running:
+
 ```bash
 npm run dev
 # or
@@ -216,12 +243,14 @@ npm run build && npm start
 ```
 
 ### High Error Rates
+
 - Check server logs for errors
 - Verify database connections
 - Check Redis/cache availability
 - Monitor system resources (CPU, memory, disk I/O)
 
 ### Slow Response Times
+
 - Check API endpoint performance
 - Review database query efficiency
 - Monitor cache hit rates
@@ -239,6 +268,7 @@ npm run build && npm start
 ## Integration with CI/CD
 
 Add to your `.github/workflows` or CI pipeline:
+
 ```bash
 # Run load test as part of deployment validation
 ./load-tests/run-load-tests.sh load
@@ -247,16 +277,19 @@ Add to your `.github/workflows` or CI pipeline:
 ## Advanced Usage
 
 ### Generate HTML Report
+
 ```bash
 k6 run --out json=results.json load-tests/k6-load-test.js
 ```
 
 ### Stream Metrics to Grafana
+
 ```bash
 k6 run --out influxdb=http://localhost:8086/k6 load-tests/k6-load-test.js
 ```
 
 ### Run with Docker
+
 ```bash
 docker run --network="host" -v $PWD:/scripts grafana/k6 run /scripts/load-tests/k6-load-test.js
 ```
@@ -265,4 +298,3 @@ docker run --network="host" -v $PWD:/scripts grafana/k6 run /scripts/load-tests/
 
 For k6 documentation: https://k6.io/docs/
 For VerusPulse issues: Create an issue in the repository
-

@@ -6,7 +6,9 @@ let dbPool: Pool | null = null;
 function getDbPool() {
   if (!dbPool) {
     dbPool = new Pool({
-      connectionString: process.env.DATABASE_URL || 'postgres://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db',
+      connectionString:
+        process.env.DATABASE_URL ||
+        'postgres://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db',
     });
   }
   return dbPool;
@@ -82,8 +84,18 @@ export async function GET(
     );
 
     // Determine current status and stage
-    let status: 'not_started' | 'scanning' | 'processing' | 'complete' | 'error' = 'not_started';
-    let stage: 'initial' | 'blockchain_scan' | 'data_processing' | 'stats_calculation' | 'complete' = 'initial';
+    let status:
+      | 'not_started'
+      | 'scanning'
+      | 'processing'
+      | 'complete'
+      | 'error' = 'not_started';
+    let stage:
+      | 'initial'
+      | 'blockchain_scan'
+      | 'data_processing'
+      | 'stats_calculation'
+      | 'complete' = 'initial';
     let progress = 0;
     let message = '';
     let estimatedTimeRemaining = null;
@@ -102,10 +114,10 @@ export async function GET(
     } else if (scanMetadata.rows.length > 0) {
       const scan = scanMetadata.rows[0];
       const scanProgress = parseFloat(scan.scan_progress || '0');
-      
+
       status = 'scanning';
       progress = Math.min(Math.round(scanProgress), 95); // Cap at 95% until fully done
-      
+
       if (scanProgress < 33) {
         stage = 'blockchain_scan';
         message = `Scanning blockchain... ${progress}%`;
@@ -119,14 +131,18 @@ export async function GET(
 
       // Estimate time remaining based on progress
       if (scan.estimated_completion_time) {
-        const timeRemaining = new Date(scan.estimated_completion_time).getTime() - Date.now();
+        const timeRemaining =
+          new Date(scan.estimated_completion_time).getTime() - Date.now();
         if (timeRemaining > 0) {
           estimatedTimeRemaining = Math.ceil(timeRemaining / 1000); // seconds
         }
       }
-      
+
       stakesFound = stakeCount;
-    } else if (identity.scan_status === 'scanning' || identity.scan_status === 'pending') {
+    } else if (
+      identity.scan_status === 'scanning' ||
+      identity.scan_status === 'pending'
+    ) {
       status = 'scanning';
       stage = 'blockchain_scan';
       progress = 5;
@@ -141,7 +157,9 @@ export async function GET(
     // Calculate time since last scan
     let timeSinceLastScan = null;
     if (identity.last_scanned_at) {
-      timeSinceLastScan = Math.floor((Date.now() - new Date(identity.last_scanned_at).getTime()) / 1000);
+      timeSinceLastScan = Math.floor(
+        (Date.now() - new Date(identity.last_scanned_at).getTime()) / 1000
+      );
     }
 
     return NextResponse.json({
@@ -163,15 +181,11 @@ export async function GET(
   } catch (error: any) {
     console.error('Scan progress error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error.message || 'Failed to get scan progress' 
+      {
+        success: false,
+        error: error.message || 'Failed to get scan progress',
       },
       { status: 500 }
     );
   }
 }
-
-
-
-

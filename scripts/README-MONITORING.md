@@ -9,6 +9,7 @@ Two powerful scripts to monitor your Verus daemon's health and initialization st
 ### 1. `monitor-verus-daemon.sh` - Continuous Live Monitor
 
 Real-time dashboard that updates every 2 seconds showing:
+
 - ✅ Process status (running, PID, uptime, CPU, memory)
 - 🔌 RPC status (ready, loading, error states)
 - ⛓️ Blockchain sync status (blocks, headers, progress)
@@ -16,6 +17,7 @@ Real-time dashboard that updates every 2 seconds showing:
 - ⚒️ Mining/staking metrics (hashrate, difficulty, mempool)
 
 **Perfect for:**
+
 - Watching daemon initialization after restart
 - Monitoring sync progress
 - Debugging RPC issues
@@ -24,12 +26,14 @@ Real-time dashboard that updates every 2 seconds showing:
 ### 2. `check-daemon-status.sh` - Quick Status Check
 
 Single snapshot showing:
+
 - Process running status
 - RPC availability
 - Current block height
 - Sync status
 
 **Perfect for:**
+
 - Quick health checks
 - Scripts and automation
 - Troubleshooting
@@ -135,6 +139,7 @@ sudo systemctl restart verusd
 ```
 
 Watch the daemon progress through:
+
 1. ⟳ **LOADING** - Loading block index (1-5 minutes)
 2. ⟳ **ACTIVATING** - Activating best chain (few seconds)
 3. ✓ **READY** - Fully initialized and accepting RPC
@@ -161,6 +166,7 @@ Watch the daemon progress through:
 ```
 
 If you see this:
+
 - Check `~/.komodo/VRSC/VRSC.conf` for `rpcworkqueue` setting
 - Increase to 512 or 1024
 - Add `rpcthreads=16` if not present
@@ -189,10 +195,12 @@ curl --user verus:verus ...
 ## 🎨 Status Indicators
 
 ### Process States
+
 - `● RUNNING` 🟢 - Daemon process is running
 - `● STOPPED` 🔴 - Daemon is not running
 
 ### RPC States
+
 - `✓ READY` 🟢 - Fully initialized, accepting all RPC calls
 - `⟳ LOADING` 🟡 - Loading block index from disk
 - `⟳ ACTIVATING` 🟡 - Activating best chain
@@ -203,6 +211,7 @@ curl --user verus:verus ...
 - `? UNKNOWN` 🟣 - Cannot determine state
 
 ### Sync States
+
 - `✓ SYNCED` 🟢 - Blockchain fully synced
 - `⟳ SYNCING` 🟡 - Currently syncing (shows blocks behind)
 
@@ -223,6 +232,7 @@ export VERUS_RPC_HOST="http://192.168.1.100:18843"
 ```
 
 **Defaults:**
+
 - `VERUS_RPC_USER`: `verus`
 - `VERUS_RPC_PASSWORD`: `verus`
 - `VERUS_RPC_HOST`: `http://127.0.0.1:18843`
@@ -342,4 +352,3 @@ chmod +x scripts/*.sh
 ---
 
 **Happy Monitoring! 🎉**
-

@@ -7,11 +7,13 @@ import Image from 'next/image';
 export function DonationBanner() {
   const [isVisible, setIsVisible] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<'VRSC' | 'BTC'>('VRSC');
+  const [selectedCurrency, setSelectedCurrency] = useState<'VRSC' | 'BTC'>(
+    'VRSC'
+  );
 
   const DONATION_ADDRESSES = {
     VRSC: 'RPJ39AoZBN3s2uBaCAKdsT6rvSYCGRTwWE',
-    BTC: '1F1r4evGaYFHxtpNizLWmvmfAB5bccNtgL'
+    BTC: '1F1r4evGaYFHxtpNizLWmvmfAB5bccNtgL',
   };
 
   useEffect(() => {

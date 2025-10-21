@@ -15,34 +15,29 @@ export async function GET() {
     // Use cached RPC client for better performance (30s cache TTL)
     // This reduces RPC calls by 95% for frequently accessed data
     // Note: Removed getTxOutSetInfo as it's too slow (10+ seconds)
-    const [
-      blockchainInfo,
-      miningInfo,
-      mempoolInfo,
-      networkInfo,
-      walletInfo,
-    ] = await Promise.allSettled([
-      CachedRPCClient.getBlockchainInfo().catch(err => {
-        logger.warn('Blockchain info fetch failed:', err);
-        return null;
-      }),
-      CachedRPCClient.getMiningInfo().catch(err => {
-        logger.warn('Mining info fetch failed:', err);
-        return null;
-      }),
-      CachedRPCClient.getMempoolInfo().catch(err => {
-        logger.warn('Mempool info fetch failed:', err);
-        return null;
-      }),
-      CachedRPCClient.getNetworkInfo().catch(err => {
-        logger.warn('Network info fetch failed:', err);
-        return null;
-      }),
-      verusAPI.getWalletInfo().catch(err => {
-        logger.warn('Wallet info fetch failed:', err);
-        return null;
-      }),
-    ]);
+    const [blockchainInfo, miningInfo, mempoolInfo, networkInfo, walletInfo] =
+      await Promise.allSettled([
+        CachedRPCClient.getBlockchainInfo().catch(err => {
+          logger.warn('Blockchain info fetch failed:', err);
+          return null;
+        }),
+        CachedRPCClient.getMiningInfo().catch(err => {
+          logger.warn('Mining info fetch failed:', err);
+          return null;
+        }),
+        CachedRPCClient.getMempoolInfo().catch(err => {
+          logger.warn('Mempool info fetch failed:', err);
+          return null;
+        }),
+        CachedRPCClient.getNetworkInfo().catch(err => {
+          logger.warn('Network info fetch failed:', err);
+          return null;
+        }),
+        verusAPI.getWalletInfo().catch(err => {
+          logger.warn('Wallet info fetch failed:', err);
+          return null;
+        }),
+      ]);
 
     // Get the data values
     const walletData =
@@ -57,8 +52,10 @@ export async function GET() {
     if (blockchainData) {
       try {
         // Try to get cached supply first (instant)
-        const cachedSupply = await CacheManager.get<number>(CACHE_KEYS.circulatingSupply());
-        
+        const cachedSupply = await CacheManager.get<number>(
+          CACHE_KEYS.circulatingSupply()
+        );
+
         if (cachedSupply) {
           // Use cached value immediately
           blockchainData.circulatingSupply = cachedSupply;
@@ -69,21 +66,26 @@ export async function GET() {
           const averageSupplyPerBlock = 20.9; // ~79M VRSC at 3.77M blocks
           const approximateSupply = blocks * averageSupplyPerBlock;
           blockchainData.circulatingSupply = approximateSupply;
-          logger.info(`✅ Circulating supply approximation: ${approximateSupply}`);
-          
+          logger.info(
+            `✅ Circulating supply approximation: ${approximateSupply}`
+          );
+
           // Update cache in background (non-blocking)
           // This will make the next request have the real value
           setImmediate(async () => {
             try {
-              const rpcUrl = process.env.VERUS_RPC_HOST || 'http://127.0.0.1:18843';
+              const rpcUrl =
+                process.env.VERUS_RPC_HOST || 'http://127.0.0.1:18843';
               const rpcUser = process.env.VERUS_RPC_USER || 'verus';
               const rpcPass = process.env.VERUS_RPC_PASSWORD || 'verus';
-              
+
               const response = await fetch(rpcUrl, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': 'Basic ' + Buffer.from(`${rpcUser}:${rpcPass}`).toString('base64'),
+                  Authorization:
+                    'Basic ' +
+                    Buffer.from(`${rpcUser}:${rpcPass}`).toString('base64'),
                 },
                 body: JSON.stringify({
                   jsonrpc: '2.0',
@@ -92,14 +94,20 @@ export async function GET() {
                   params: [],
                 }),
               });
-              
+
               if (response.ok) {
                 const data = await response.json();
                 if (data.result && data.result.total_amount) {
                   const realSupply = data.result.total_amount;
                   // Cache for 5 minutes (300 seconds)
-                  await CacheManager.set(CACHE_KEYS.circulatingSupply(), realSupply, 300);
-                  logger.info(`✅ Background: Real circulating supply cached: ${realSupply}`);
+                  await CacheManager.set(
+                    CACHE_KEYS.circulatingSupply(),
+                    realSupply,
+                    300
+                  );
+                  logger.info(
+                    `✅ Background: Real circulating supply cached: ${realSupply}`
+                  );
                 }
               }
             } catch (error) {
@@ -107,7 +115,6 @@ export async function GET() {
             }
           });
         }
-        
       } catch (error) {
         blockchainData.circulatingSupply = 0;
         logger.warn('⚠️ Error getting supply - using 0:', error);
@@ -147,47 +154,61 @@ export async function GET() {
     let averageBlockTime = null;
     if (blockchainData && blockchainData.blocks > 0) {
       try {
-        logger.info(`🔍 Starting block time calculation for height ${blockchainData.blocks}`);
-        
+        logger.info(
+          `🔍 Starting block time calculation for height ${blockchainData.blocks}`
+        );
+
         // Try to get recent blocks using the existing latest-blocks API approach
         const currentHeight = blockchainData.blocks;
         const recentBlocks = [];
-        
+
         // Get last 3 blocks for calculation (minimal to avoid timeout)
         for (let i = 0; i < Math.min(3, currentHeight); i++) {
           try {
             const height = currentHeight - i;
             logger.info(`🔍 Fetching block ${height}...`);
-            
+
             const blockHash = await verusAPI.getBlockHash(height);
             if (!blockHash) {
               logger.warn(`No hash for block ${height}`);
               continue;
             }
-            
+
             const block = await verusAPI.getBlock(blockHash, false);
             if (block && block.time && block.height) {
               recentBlocks.push({
                 time: block.time,
-                height: block.height
+                height: block.height,
               });
               logger.info(`✅ Fetched block ${height} at time ${block.time}`);
             } else {
-              logger.warn(`Invalid block data for ${height}:`, { time: block?.time, height: block?.height });
+              logger.warn(`Invalid block data for ${height}:`, {
+                time: block?.time,
+                height: block?.height,
+              });
             }
           } catch (error) {
-            logger.warn(`Failed to fetch block ${currentHeight - i}:`, error instanceof Error ? error.message : String(error));
+            logger.warn(
+              `Failed to fetch block ${currentHeight - i}:`,
+              error instanceof Error ? error.message : String(error)
+            );
             // Continue with other blocks even if one fails
           }
         }
-        
-        logger.info(`📊 Collected ${recentBlocks.length} blocks for calculation`);
-        
+
+        logger.info(
+          `📊 Collected ${recentBlocks.length} blocks for calculation`
+        );
+
         if (recentBlocks.length >= 2) {
           averageBlockTime = calculateAverageBlockTime(recentBlocks);
-          logger.info(`✅ Calculated average block time: ${averageBlockTime}s from ${recentBlocks.length} blocks`);
+          logger.info(
+            `✅ Calculated average block time: ${averageBlockTime}s from ${recentBlocks.length} blocks`
+          );
         } else {
-          logger.warn(`⚠️ Not enough blocks for calculation: ${recentBlocks.length} blocks`);
+          logger.warn(
+            `⚠️ Not enough blocks for calculation: ${recentBlocks.length} blocks`
+          );
           // Fallback: use 60 seconds as default for Verus
           averageBlockTime = 60;
           logger.info(`🔄 Using fallback block time: 60s`);

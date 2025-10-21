@@ -237,7 +237,9 @@ export function LiveActivityFeed({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Pulse className="h-5 w-5 text-blue-400" />
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Live Activity</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                Live Activity
+              </h3>
               <div className="flex items-center gap-1">
                 <Circle
                   className={`h-2 w-2 ${isLive ? 'fill-verus-green text-verus-green' : 'fill-slate-400 text-slate-400'} animate-pulse`}
@@ -260,7 +262,9 @@ export function LiveActivityFeed({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-blue-400" />
-                <span className="text-sm text-blue-600 dark:text-blue-200">Next Block</span>
+                <span className="text-sm text-blue-600 dark:text-blue-200">
+                  Next Block
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
@@ -283,7 +287,11 @@ export function LiveActivityFeed({
             {[
               { key: 'all', label: 'All', icon: Pulse },
               { key: 'block', label: 'Blocks', icon: Database },
-              { key: 'transaction', label: 'Transactions', icon: CurrencyDollar },
+              {
+                key: 'transaction',
+                label: 'Transactions',
+                icon: CurrencyDollar,
+              },
               { key: 'verusid', label: 'VerusIDs', icon: User },
               { key: 'staking', label: 'Staking', icon: TrendUp },
             ].map(({ key, label, icon: Icon }) => (
@@ -346,31 +354,36 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
       case 'block':
         return {
           icon: Database,
-          color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
+          color:
+            'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
           label: event.data.miner === 'Staked' ? 'Block Staked' : 'Block Mined',
         };
       case 'transaction':
         return {
           icon: CurrencyDollar,
-          color: 'text-green-600 dark:text-green-400 bg-white dark:bg-green-500/10 border-slate-300 dark:border-green-500/20',
+          color:
+            'text-green-600 dark:text-green-400 bg-white dark:bg-green-500/10 border-slate-300 dark:border-green-500/20',
           label: 'Large Transaction',
         };
       case 'verusid':
         return {
           icon: User,
-          color: 'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
+          color:
+            'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
           label: 'VerusID Registered',
         };
       case 'staking':
         return {
           icon: TrendUp,
-          color: 'text-green-600 dark:text-green-400 bg-white dark:bg-green-500/10 border-slate-300 dark:border-green-500/20',
+          color:
+            'text-green-600 dark:text-green-400 bg-white dark:bg-green-500/10 border-slate-300 dark:border-green-500/20',
           label: 'Staking Reward',
         };
       default:
         return {
           icon: Pulse,
-          color: 'text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-500/10 border-slate-300 dark:border-gray-500/20',
+          color:
+            'text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-500/10 border-slate-300 dark:border-gray-500/20',
           label: 'Activity',
         };
     }
@@ -417,7 +430,9 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
           {event.type === 'block' && (
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Height:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Height:
+                </span>
                 <Link
                   href={`/block/${event.data.hash}`}
                   className="text-blue-400 hover:text-blue-300 font-mono flex items-center gap-1"
@@ -436,7 +451,9 @@ function EventCard({ event, index }: { event: ActivityEvent; index: number }) {
           {event.type === 'transaction' && (
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Amount:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Amount:
+                </span>
                 <span className="text-green-400 font-bold">
                   {event.data.amount.toLocaleString()} VRSC
                 </span>

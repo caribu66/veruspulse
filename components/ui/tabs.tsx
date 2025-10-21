@@ -23,7 +23,9 @@ export function Tabs({
   className = '',
 }: TabsProps) {
   return (
-    <div className={`border-b border-slate-300 dark:border-white/20 ${className}`}>
+    <div
+      className={`border-b border-slate-300 dark:border-white/20 ${className}`}
+    >
       <div className="flex space-x-1 overflow-x-auto">
         {tabs.map(tab => (
           <button

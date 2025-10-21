@@ -9,15 +9,21 @@ export async function GET() {
 
     // Get Bridge.vETH currency state directly
     const bridgeVethCurrencyId = 'i3f7tSctFkiPpiedY8QR5Tep9p4qDVebDx';
-    
-    const currencyState = await verusAPI.call('getcurrencystate', [bridgeVethCurrencyId]);
-    
-    if (!currencyState || !Array.isArray(currencyState) || currencyState.length === 0) {
+
+    const currencyState = await verusAPI.call('getcurrencystate', [
+      bridgeVethCurrencyId,
+    ]);
+
+    if (
+      !currencyState ||
+      !Array.isArray(currencyState) ||
+      currencyState.length === 0
+    ) {
       throw new Error('No currency state data returned');
     }
 
     const state = currencyState[0].currencystate;
-    
+
     // Find VRSC reserve (primary pricing currency)
     const vrscReserve = state.reservecurrencies.find(
       (r: any) => r.currencyid === 'i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV'
@@ -40,8 +46,8 @@ export async function GET() {
         currencyId: r.currencyid,
         weight: r.weight,
         reserves: r.reserves,
-        priceInReserve: r.priceinreserve
-      }))
+        priceInReserve: r.priceinreserve,
+      })),
     };
 
     logger.info(`✅ Bridge.vETH price: ${bridgeVethData.priceInVRSC} VRSC`);
@@ -69,4 +75,3 @@ export async function GET() {
     return addSecurityHeaders(response);
   }
 }
-

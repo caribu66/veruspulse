@@ -382,7 +382,6 @@ const BlockDetailsPage = ({
           </div>
         </div>
       </div>
-
     </div>
   );
 };

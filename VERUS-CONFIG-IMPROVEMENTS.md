@@ -19,21 +19,27 @@ Your configuration is already **very good**! Here are the improvements made:
 ## 🔧 Optimizations Made
 
 ### 1. **RPC Threads: 16 → 24** ⚡
+
 **Why:** You have 32 CPU cores
+
 - **Old:** 16 threads (50% of cores)
 - **New:** 24 threads (75% of cores)
 - **Impact:** Better handling of concurrent explorer queries
 - **Benefit:** 50% more RPC request handling capacity
 
 ### 2. **Work Queue: 1024 → 2048** 📊
+
 **Why:** Handle burst traffic from explorer
+
 - **Old:** 1024 requests in queue
 - **New:** 2048 requests in queue
 - **Impact:** Better handling of traffic spikes
 - **Benefit:** Fewer "work queue exceeded" errors
 
 ### 3. **DB Cache: 2048 MB → 4096 MB** 💾
+
 **Why:** You have 31GB RAM (only using 6%)
+
 - **Old:** 2GB cache
 - **New:** 4GB cache (conservative)
 - **Could go:** 8-12GB if dedicated server
@@ -41,21 +47,27 @@ Your configuration is already **very good**! Here are the improvements made:
 - **Benefit:** 2x cache = 2x faster lookups
 
 ### 4. **Mempool: 512 MB → 1024 MB** 📦
+
 **Why:** More transaction history for explorer
+
 - **Old:** 512 MB
 - **New:** 1GB
 - **Impact:** Keep more pending transactions
 - **Benefit:** Better mempool analytics
 
 ### 5. **Max Connections: 40 → 125** 🌐
+
 **Why:** Better network health and block propagation
+
 - **Old:** 40 connections (minimum viable)
 - **New:** 125 connections (healthy node)
 - **Impact:** Faster block arrival, better peer diversity
 - **Benefit:** Lower orphan rate, faster sync
 
 ### 6. **ZMQ Ports: Fixed Conflicts** 🔧
+
 **Issue Found:** `zmqpubhashtx` was listed twice
+
 - **Old:** All using port 28332 (causes conflicts)
 - **New:** Separate ports for each type:
   - `zmqpubhashblock=tcp://127.0.0.1:28332`
@@ -66,6 +78,7 @@ Your configuration is already **very good**! Here are the improvements made:
 - **Benefit:** Real-time notifications without conflicts
 
 ### 7. **Additional Optimizations Added** ➕
+
 - `par=16` - Parallel script verification (faster sync)
 - `persistmempool=1` - Save mempool across restarts
 - `rpcservertimeout=120` - Allow slow queries to complete
@@ -98,6 +111,7 @@ Expected overall performance gain: 30-50% for explorer queries
 ### Your System: 32 cores, 31GB RAM
 
 **Resource Utilization:**
+
 ```
 Before:
 ├─ CPU: ~50% (16/32 threads)
@@ -132,6 +146,7 @@ rpcpassword=Xy9kL2mN8qR4tV6wP3sD7fG1hJ5bN9zC
 ```
 
 **Action Required:**
+
 1. Generate strong password: `openssl rand -base64 32`
 2. Update `verus.conf`
 3. Update your explorer's `.env.local` with same credentials
@@ -141,16 +156,19 @@ rpcpassword=Xy9kL2mN8qR4tV6wP3sD7fG1hJ5bN9zC
 ## 🚀 Safe Update Procedure
 
 ### Step 1: Backup Current Config
+
 ```bash
 cp ~/.komodo/VRSC/VRSC.conf ~/.komodo/VRSC/VRSC.conf.backup.$(date +%Y%m%d)
 ```
 
 ### Step 2: Update Configuration
+
 ```bash
 cp verus.conf.optimized ~/.komodo/VRSC/VRSC.conf
 ```
 
 ### Step 3: Update RPC Password (IMPORTANT!)
+
 ```bash
 # Generate secure password
 NEW_PASSWORD=$(openssl rand -base64 32)
@@ -166,12 +184,13 @@ echo "Saved to both configs!"
 ```
 
 ### Step 4: Restart Daemon
+
 ```bash
 # Stop daemon gracefully
 ~/verus-cli/verus stop
 
 # Wait for shutdown (check every 5 seconds)
-while pgrep verusd > /dev/null; do 
+while pgrep verusd > /dev/null; do
   echo "Waiting for daemon to stop..."
   sleep 5
 done
@@ -185,6 +204,7 @@ tail -f ~/.komodo/VRSC/debug.log
 ```
 
 ### Step 5: Verify ZMQ is Working
+
 ```bash
 # Check if ZMQ ports are listening
 netstat -tuln | grep 2833
@@ -197,6 +217,7 @@ netstat -tuln | grep 2833
 ```
 
 ### Step 6: Test Explorer Connection
+
 ```bash
 # Test RPC connection
 ~/verus-cli/verus getinfo
@@ -212,18 +233,21 @@ curl http://localhost:3000/api/health | jq
 ### What to Watch
 
 1. **RPC Performance**
+
    ```bash
    # Check work queue isn't maxed out
    ~/verus-cli/verus getinfo | grep -i queue
    ```
 
 2. **Memory Usage**
+
    ```bash
    # Daemon should use ~4-5GB RAM now
    ps aux | grep verusd | grep -v grep
    ```
 
 3. **Connection Health**
+
    ```bash
    # Should have 100+ connections after a few hours
    ~/verus-cli/verus getinfo | grep connections
@@ -242,16 +266,19 @@ curl http://localhost:3000/api/health | jq
 ### If You Have Issues:
 
 **If RAM usage is too high:**
+
 ```conf
 dbcache=2048  # Reduce back to 2GB
 ```
 
 **If CPU usage is too high:**
+
 ```conf
 rpcthreads=16  # Reduce back to 16
 ```
 
 **If you want even MORE performance:**
+
 ```conf
 dbcache=8192      # 8GB cache (aggressive)
 rpcthreads=28     # 28 threads (aggressive)
@@ -262,26 +289,28 @@ maxconnections=200 # More peers
 
 ## 📋 Configuration Comparison
 
-| Setting | Current | Optimized | Max Safe |
-|---------|---------|-----------|----------|
-| rpcthreads | 16 | 24 | 28 |
-| rpcworkqueue | 1024 | 2048 | 4096 |
-| dbcache | 2048 | 4096 | 12288 |
-| maxmempool | 512 | 1024 | 2048 |
-| maxconnections | 40 | 125 | 200 |
-| par | - | 16 | 24 |
+| Setting        | Current | Optimized | Max Safe |
+| -------------- | ------- | --------- | -------- |
+| rpcthreads     | 16      | 24        | 28       |
+| rpcworkqueue   | 1024    | 2048      | 4096     |
+| dbcache        | 2048    | 4096      | 12288    |
+| maxmempool     | 512     | 1024      | 2048     |
+| maxconnections | 40      | 125       | 200      |
+| par            | -       | 16        | 24       |
 
 ---
 
 ## 🏁 Bottom Line
 
 ### Your Current Config: **7/10** (Good)
+
 - ✅ All required indexes
 - ✅ ZMQ enabled (though needs port fix)
 - ⚠️ Under-utilizing your powerful hardware
 - ⚠️ Weak RPC password
 
 ### Optimized Config: **9/10** (Excellent)
+
 - ✅ Fully utilizes your 32-core CPU
 - ✅ Better uses your 31GB RAM
 - ✅ ZMQ ports properly separated
@@ -290,6 +319,7 @@ maxconnections=200 # More peers
 - ⚠️ Still needs secure password (easy fix)
 
 ### Expected Improvement
+
 - **30-50% faster explorer queries**
 - **Better handling of concurrent users**
 - **More reliable real-time updates**
@@ -302,6 +332,7 @@ maxconnections=200 # More peers
 **Apply the optimized configuration!** Your hardware can handle it easily.
 
 **Time Required:**
+
 - Backup: 1 minute
 - Update config: 2 minutes
 - Restart daemon: 3-5 minutes
@@ -315,7 +346,3 @@ maxconnections=200 # More peers
 ---
 
 **Ready to proceed?** Follow the "Safe Update Procedure" above! 🚀
-
-
-
-

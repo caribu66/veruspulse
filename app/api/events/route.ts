@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
 
   const stream = new ReadableStream({
     start(controller) {
-
       // Send initial connection message
       const welcomeMessage = `data: ${JSON.stringify({
         type: 'connected',

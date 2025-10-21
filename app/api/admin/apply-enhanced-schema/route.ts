@@ -11,7 +11,6 @@ const db = new Pool({
 
 export async function POST() {
   try {
-
     // Add missing columns to existing tables
     await db.query(`
       ALTER TABLE verusid_statistics 
@@ -267,7 +266,6 @@ export async function POST() {
       CREATE INDEX IF NOT EXISTS idx_stake_competition_height 
       ON stake_competition(block_height DESC)
     `);
-
 
     return NextResponse.json({
       success: true,

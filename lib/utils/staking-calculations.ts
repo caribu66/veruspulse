@@ -68,7 +68,7 @@ export function calculateParticipationRate(
   }
 
   const percentage = (yourWeight / networkWeight) * 100;
-  
+
   // Cap at 100% to prevent display issues from data inconsistencies
   return Math.min(percentage, 100);
 }
@@ -83,7 +83,7 @@ export function formatParticipationPercentage(percentage: number): string {
   if (percentage === 0) {
     return '0%';
   }
-  
+
   if (percentage >= 1) {
     return `${percentage.toFixed(2)}%`;
   } else if (percentage >= 0.01) {
@@ -115,6 +115,6 @@ export function calculateStakingFrequency(
   const blocksPerDay = 1440;
   const posBlocksPerDay = blocksPerDay * 0.5; // 50% PoS
   const yourShare = yourWeight / networkWeight;
-  
+
   return posBlocksPerDay * yourShare;
 }

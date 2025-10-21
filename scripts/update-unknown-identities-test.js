@@ -7,10 +7,13 @@
 const { Pool } = require('pg');
 const http = require('http');
 
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db';
+const DATABASE_URL =
+  process.env.DATABASE_URL ||
+  'postgresql://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db';
 const RPC_HOST = process.env.VERUS_RPC_HOST || 'http://127.0.0.1:18843';
 const RPC_USER = process.env.VERUS_RPC_USER || 'verus';
-const RPC_PASSWORD = process.env.VERUS_RPC_PASSWORD || '1CvFqDVqdPlznV4pksyoiyZ1eKhLoRKb';
+const RPC_PASSWORD =
+  process.env.VERUS_RPC_PASSWORD || '1CvFqDVqdPlznV4pksyoiyZ1eKhLoRKb';
 
 const pool = new Pool({ connectionString: DATABASE_URL });
 
@@ -18,7 +21,7 @@ async function rpcCall(method, params = []) {
   return new Promise((resolve, reject) => {
     const url = new URL(RPC_HOST);
     const auth = Buffer.from(`${RPC_USER}:${RPC_PASSWORD}`).toString('base64');
-    
+
     const postData = JSON.stringify({
       jsonrpc: '1.0',
       id: Date.now(),
@@ -67,7 +70,9 @@ async function getIdentityDetails(iAddress) {
     if (result && result.identity) {
       return {
         name: result.identity.name || 'unknown',
-        friendlyName: result.fullyqualifiedname || `${result.identity.name || 'unknown'}.VRSC@`,
+        friendlyName:
+          result.fullyqualifiedname ||
+          `${result.identity.name || 'unknown'}.VRSC@`,
       };
     }
     return null;
@@ -87,36 +92,40 @@ async function updateIdentity(iAddress, name, friendlyName) {
 
 async function main() {
   console.log('🧪 TEST MODE: Updating only 10 unknown identities\n');
-  
+
   // Get only 10 unknown identities for testing
   const result = await pool.query(
     "SELECT identity_address FROM identities WHERE base_name = 'unknown' ORDER BY identity_address LIMIT 10"
   );
-  
+
   const unknownIdentities = result.rows;
   const total = unknownIdentities.length;
-  
+
   console.log(`Found ${total} unknown identities to test\n`);
-  
+
   if (total === 0) {
     console.log('✅ No unknown identities found!');
     pool.end();
     process.exit(0);
   }
-  
+
   let updated = 0;
   let notFound = 0;
-  
+
   console.log('📡 Fetching identity details from blockchain...\n');
-  
+
   for (let i = 0; i < unknownIdentities.length; i++) {
     const { identity_address } = unknownIdentities[i];
-    
+
     try {
       const details = await getIdentityDetails(identity_address);
-      
+
       if (details && details.name !== 'unknown') {
-        await updateIdentity(identity_address, details.name, details.friendlyName);
+        await updateIdentity(
+          identity_address,
+          details.name,
+          details.friendlyName
+        );
         console.log(`${i + 1}. ✅ ${identity_address} → ${details.name}`);
         updated++;
       } else {
@@ -124,17 +133,19 @@ async function main() {
         notFound++;
       }
     } catch (error) {
-      console.log(`${i + 1}. ⚠️  ${identity_address} → Error: ${error.message}`);
+      console.log(
+        `${i + 1}. ⚠️  ${identity_address} → Error: ${error.message}`
+      );
     }
-    
+
     await new Promise(resolve => setTimeout(resolve, 100));
   }
-  
+
   console.log('\n📊 Test Results:');
   console.log(`   ✅ Updated: ${updated}`);
   console.log(`   ❌ Not found: ${notFound}`);
   console.log('\n✨ Test complete!');
-  
+
   pool.end();
 }
 

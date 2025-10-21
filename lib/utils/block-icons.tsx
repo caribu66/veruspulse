@@ -19,20 +19,14 @@ export function getBlockIcon(blocktype?: string, className?: string) {
     // Proof of Stake (PoS) - Staking/Coins icon
     return (
       <span title="Proof of Stake (PoS)">
-        <Coins
-          className={`${iconClass} text-green-400`}
-          weight="fill"
-        />
+        <Coins className={`${iconClass} text-green-400`} weight="fill" />
       </span>
     );
   } else {
     // Proof of Work (PoW) - Mining/Hammer icon
     return (
       <span title="Proof of Work (PoW)">
-        <Hammer
-          className={`${iconClass} text-yellow-400`}
-          weight="fill"
-        />
+        <Hammer className={`${iconClass} text-yellow-400`} weight="fill" />
       </span>
     );
   }

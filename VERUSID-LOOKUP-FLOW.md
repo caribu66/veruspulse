@@ -9,25 +9,30 @@ When a user searches for a VerusID that's **not in your database** (e.g., `joann
 ## 📋 Step-by-Step Flow
 
 ### 1. **User Searches** 🔎
+
 ```
 User enters: "joanna@" or "iJ3fzzUKHSMA2xj7W9r6b9HGdXf4PCFESG"
 ```
 
 ### 2. **Cache Check** ⚡ (Fast)
+
 ```typescript
 // Check if VerusID is already cached (sub-millisecond)
 cachedIdentity = await getCachedIdentity(identity);
 ```
+
 - **If cached:** Use cached data (instant response)
 - **If not cached:** Continue to step 3
 
 ### 3. **Blockchain Lookup** 🔗 (Real-time)
+
 ```typescript
 // Fetch from Verus blockchain via RPC
-const identity = await verusAPI.getIdentity("joanna@");
+const identity = await verusAPI.getIdentity('joanna@');
 ```
 
 **What gets fetched:**
+
 - ✅ Identity address (i-address)
 - ✅ Name (`joanna`)
 - ✅ Primary addresses (R-addresses)
@@ -37,6 +42,7 @@ const identity = await verusAPI.getIdentity("joanna@");
 - ✅ Block height, txid
 
 **Result:**
+
 ```json
 {
   "identity": {
@@ -49,24 +55,26 @@ const identity = await verusAPI.getIdentity("joanna@");
 ```
 
 ### 4. **Store in Database** 💾
+
 ```typescript
 // Save to search history
 await searchDb.storeSearch({
   searchQuery: identity,
   searchType: 'verusid',
-  resultFound: true
+  resultFound: true,
 });
 
 // Save VerusID details
 await searchDb.storeVerusIDSearch({
-  verusID: "joanna@",
-  identityAddress: "iJ3fzzUKHSMA2xj7W9r6b9HGdXf4PCFESG",
-  primaryAddresses: ["RCBwVJ..."],
+  verusID: 'joanna@',
+  identityAddress: 'iJ3fzzUKHSMA2xj7W9r6b9HGdXf4PCFESG',
+  primaryAddresses: ['RCBwVJ...'],
   // ... all other details
 });
 ```
 
 ### 5. **Check If Staking Data Needed** 🎯 (CRITICAL!)
+
 ```typescript
 // Check if this VerusID has staking data
 const needsScan = await needsPriorityScan(identityAddress);
@@ -75,17 +83,19 @@ if (needsScan) {
   // 🚀 Trigger background priority scan!
   fetch('/api/verusid/priority-scan', {
     method: 'POST',
-    body: JSON.stringify({ identityAddress })
+    body: JSON.stringify({ identityAddress }),
   });
 }
 ```
 
 **Priority Scan Decision:**
+
 - ✅ **Triggers if:** VerusID has NO staking records in database
 - ✅ **Triggers if:** Last scan was > 24 hours ago
 - ❌ **Skips if:** VerusID already has complete data
 
 ### 6. **Return to User** 📤 (Immediate)
+
 ```json
 {
   "success": true,
@@ -106,6 +116,7 @@ if (needsScan) {
 ```
 
 **User sees:**
+
 - ✅ VerusID found!
 - ✅ Basic identity information
 - ⚠️ Staking stats: "No data yet - indexing in progress..."
@@ -152,6 +163,7 @@ When user refreshes the page (or clicks refresh):
 ```
 
 **User now sees:**
+
 - ✅ Complete staking history
 - ✅ Total rewards
 - ✅ Leaderboard ranking
@@ -163,6 +175,7 @@ When user refreshes the page (or clicks refresh):
 ## 🎯 User Experience Timeline
 
 ### Immediate (0-1 second)
+
 ```
 ✅ VerusID found: joanna@
 ✅ Identity details shown
@@ -170,6 +183,7 @@ When user refreshes the page (or clicks refresh):
 ```
 
 ### After 30 seconds - 5 minutes
+
 ```
 ✅ Background scan complete
 ✅ Staking data now available
@@ -177,6 +191,7 @@ When user refreshes the page (or clicks refresh):
 ```
 
 ### On Refresh
+
 ```
 ✅ Complete staking history
 ✅ 89 stakes found
@@ -190,6 +205,7 @@ When user refreshes the page (or clicks refresh):
 ## 📊 What Gets Stored in Database
 
 ### 1. identities Table
+
 ```sql
 INSERT INTO identities (
   identity_address,
@@ -207,6 +223,7 @@ INSERT INTO identities (
 ```
 
 ### 2. search_history Table
+
 ```sql
 INSERT INTO search_history (
   search_query,
@@ -222,6 +239,7 @@ INSERT INTO search_history (
 ```
 
 ### 3. verusid_searches Table
+
 ```sql
 INSERT INTO verusid_searches (
   verus_id,
@@ -239,6 +257,7 @@ INSERT INTO verusid_searches (
 ```
 
 ### 4. staking_rewards Table (After Priority Scan)
+
 ```sql
 -- Multiple rows, one per stake
 INSERT INTO staking_rewards (
@@ -256,6 +275,7 @@ INSERT INTO staking_rewards (
 ```
 
 ### 5. verusid_statistics Table (After Priority Scan)
+
 ```sql
 INSERT INTO verusid_statistics (
   address,
@@ -283,11 +303,13 @@ INSERT INTO verusid_statistics (
 ## 💡 Smart Features
 
 ### 1. **Intelligent Caching**
+
 - First lookup: Fetch from blockchain (slow)
 - Second lookup: Serve from cache (instant)
 - Cache TTL: 5 minutes for basic info, 1 hour for stats
 
 ### 2. **Priority Scanning**
+
 ```typescript
 // Only scans VerusIDs that are actually being looked up
 // Doesn't waste resources scanning everyone
@@ -300,6 +322,7 @@ if (user_looked_up_this_verusid && no_staking_data) {
 ```
 
 ### 3. **Graceful Degradation**
+
 ```typescript
 // If staking data not ready yet:
 return {
@@ -313,10 +336,11 @@ return {
 ```
 
 ### 4. **Progress Indication**
+
 ```typescript
 // Frontend can show:
-"⏳ Indexing your staking history... This may take 1-5 minutes"
-"🔄 Refresh this page in a moment to see your stats"
+'⏳ Indexing your staking history... This may take 1-5 minutes';
+'🔄 Refresh this page in a moment to see your stats';
 ```
 
 ---
@@ -324,15 +348,19 @@ return {
 ## 🚀 Optimization Strategies
 
 ### For Popular VerusIDs
+
 If a VerusID is searched multiple times:
+
 1. First user triggers priority scan
 2. Subsequent users get instant results (already indexed)
 
 ### For Rare VerusIDs
+
 - Only scanned when actually looked up
 - Prevents wasting resources on unused IDs
 
 ### For Active Stakers
+
 - Background updates keep data fresh
 - No re-scan needed on subsequent lookups
 
@@ -341,6 +369,7 @@ If a VerusID is searched multiple times:
 ## ⚠️ Edge Cases Handled
 
 ### 1. **VerusID Doesn't Exist**
+
 ```json
 {
   "success": false,
@@ -349,6 +378,7 @@ If a VerusID is searched multiple times:
 ```
 
 ### 2. **VerusID Has No Stakes**
+
 ```json
 {
   "success": true,
@@ -361,12 +391,14 @@ If a VerusID is searched multiple times:
 ```
 
 ### 3. **Priority Scan Fails**
+
 ```typescript
 // Still returns basic identity info
 // User can manually trigger rescan later
 ```
 
 ### 4. **Database Offline**
+
 ```typescript
 // Degrades to blockchain-only lookups
 // No historical stats, but basic info still works
@@ -377,6 +409,7 @@ If a VerusID is searched multiple times:
 ## 📈 Performance Metrics
 
 ### Cold Lookup (Unknown VerusID)
+
 ```
 1. Cache check:      < 1ms
 2. Blockchain RPC:   50-200ms
@@ -387,6 +420,7 @@ Total response:      60-250ms  ✅ Fast!
 ```
 
 ### Warm Lookup (Known VerusID, No Stats Yet)
+
 ```
 1. Cache check:      < 1ms
 2. Blockchain RPC:   SKIPPED (cached)
@@ -396,6 +430,7 @@ Total response:      < 10ms  ✅ Instant!
 ```
 
 ### Hot Lookup (Complete Data)
+
 ```
 1. Cache check:      < 1ms
 2. Stats from DB:    < 10ms
@@ -408,12 +443,14 @@ Total response:      < 15ms  ✅ Lightning!
 ## 🎯 Summary
 
 ### What User Sees (First Time)
+
 1. ✅ Instant: "VerusID found!"
 2. ✅ Instant: Identity details displayed
 3. ⏳ Waiting: "Staking stats loading..."
 4. 🔄 After scan: "Refresh to see stats!"
 
 ### What System Does (Behind Scenes)
+
 1. ✅ Fetch from blockchain
 2. ✅ Store in database
 3. ✅ Cache for future lookups
@@ -423,6 +460,7 @@ Total response:      < 15ms  ✅ Lightning!
 7. 🏆 Evaluate achievements
 
 ### Result
+
 - ✅ Fast initial response (< 250ms)
 - ✅ Complete data within 1-5 minutes
 - ✅ Instant lookups thereafter
@@ -434,7 +472,3 @@ Total response:      < 15ms  ✅ Lightning!
 **Key Insight:** Your system is **smart** - it only indexes what users actually care about, but does it **automatically in the background** so the user experience is seamless!
 
 🎉 **Users get their data without waiting, and you don't waste resources scanning IDs nobody looks at!**
-
-
-
-

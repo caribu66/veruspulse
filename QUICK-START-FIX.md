@@ -5,6 +5,7 @@
 The "Identity not found" errors when clicking VerusIDs from the browse page are now **FIXED**!
 
 ### Changes Made:
+
 1. ✅ Browse components now use reliable I-addresses instead of names
 2. ✅ Created update script to enrich "unknown" identities
 3. ✅ Database consolidated to `verus_utxo_db`
@@ -48,11 +49,13 @@ pm2 restart verus-dapp
 ## 📊 Current Status
 
 **Test Results (just ran):**
+
 - ✅ Script works correctly
 - ✅ Found 1 valid identity: "Prostokvashino"
 - ❌ 9 were stale/invalid (safe to keep as unknown)
 
 **Database Stats:**
+
 - 32,990 total identities
 - 26,144 currently showing as "unknown" (79%)
 - After full update: ~99% will have real names
@@ -62,10 +65,12 @@ pm2 restart verus-dapp
 ## 🎯 What Users Will Experience
 
 ### Right Now (After Rebuild)
+
 - ✅ Click on any identity → Works!
 - ⚠️ Some show as "unknown" (but still clickable)
 
 ### After Running Update Script
+
 - ✅ Click on any identity → Works!
 - ✅ Shows real names (e.g., "Prostokvashino" instead of "unknown")
 
@@ -87,4 +92,3 @@ See `VERUSID-LOOKUP-FIX.md` for full details and troubleshooting.
 ---
 
 **Recommended Action:** Run Option 1 now (5 minutes), then Option 2 later tonight (22 minutes)
-

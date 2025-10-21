@@ -72,13 +72,15 @@ export async function GET(request: NextRequest) {
         orderByClause = 'ORDER BY i.last_refreshed_at DESC NULLS LAST';
         break;
       case 'stakes':
-        orderByClause = 'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
+        orderByClause =
+          'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
         break;
       case 'recent':
         orderByClause = 'ORDER BY i.first_seen_block DESC NULLS LAST';
         break;
       case 'rewards':
-        orderByClause = 'ORDER BY COALESCE(s.total_rewards_satoshis, 0) DESC, i.base_name ASC';
+        orderByClause =
+          'ORDER BY COALESCE(s.total_rewards_satoshis, 0) DESC, i.base_name ASC';
         break;
     }
 
@@ -172,4 +174,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

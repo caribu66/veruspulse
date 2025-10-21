@@ -43,11 +43,13 @@ Lock files contain JSON with process information:
 **Lock File:** `.dev-server.lock`
 
 Checks:
+
 - ✅ Lock file exists and process is running
 - ✅ Port 3000 is available
 - ✅ Removes stale lock files automatically
 
 Stop with:
+
 ```bash
 npm run dev:stop
 ```
@@ -59,11 +61,13 @@ npm run dev:stop
 **Lock File:** `.prod-server.lock`
 
 Checks:
+
 - ✅ Lock file exists and process is running
 - ✅ Port 3000 (or custom PORT) is available
 - ✅ Removes stale lock files automatically
 
 Stop with:
+
 ```bash
 npm run stop
 ```
@@ -74,10 +78,12 @@ npm run stop
 **Lock File:** `.daemon-monitor.lock`
 
 Checks:
+
 - ✅ Lock file exists and process is running
 - ✅ Removes stale lock files automatically
 
 Stop with:
+
 ```bash
 kill $(cat .daemon-monitor.lock)
 ```
@@ -88,10 +94,12 @@ kill $(cat .daemon-monitor.lock)
 **Lock File:** `.stake-monitor.lock`
 
 Checks:
+
 - ✅ Lock file exists and process is running
 - ✅ Removes stale lock files automatically
 
 Stop with:
+
 ```bash
 kill $(cat .stake-monitor.lock)
 ```
@@ -102,6 +110,7 @@ kill $(cat .stake-monitor.lock)
 **Lock File:** `.verusid-sync.lock`
 
 Checks:
+
 - ✅ Lock file exists and process is running
 - ✅ Removes stale lock files automatically
 
@@ -114,6 +123,7 @@ Checks:
 ```
 
 Shows:
+
 - Running services with PID and uptime
 - Stale lock files
 - Services without lock files
@@ -126,6 +136,7 @@ Shows:
 ```
 
 Stops:
+
 - All services with lock files
 - Additional cleanup by process name
 - Removes all lock files
@@ -180,6 +191,7 @@ kill $(cat .stake-monitor.lock)
 ### 3. Stale Lock Cleanup
 
 A lock file is considered "stale" when:
+
 - The file exists
 - But the process (PID) is not running
 
@@ -192,7 +204,7 @@ All start scripts automatically detect and remove stale locks.
 ✅ **Automatic Cleanup** - Stale locks removed automatically  
 ✅ **Clear Error Messages** - Shows PID and how to stop existing instance  
 ✅ **Graceful Shutdown** - Lock files cleaned up on exit  
-✅ **Cross-Script Coordination** - All services use same mechanism  
+✅ **Cross-Script Coordination** - All services use same mechanism
 
 ## Troubleshooting
 
@@ -252,12 +264,14 @@ kill $(lsof -ti:3000)
 ## Migration Notes
 
 ### Old Behavior (Before)
+
 - Used `pgrep` to check for running processes
 - No automatic stale lock cleanup
 - No standardized stopping mechanism
 - Each script had different checking logic
 
 ### New Behavior (After)
+
 - ✅ Uses lock files with PID tracking
 - ✅ Automatic stale lock detection and removal
 - ✅ Standardized stop scripts
@@ -283,6 +297,7 @@ All scripts use one of:
 ## Future Enhancements
 
 Potential improvements:
+
 - [ ] Add systemd service files
 - [ ] Add PM2 process management
 - [ ] Add health check endpoints
@@ -290,7 +305,3 @@ Potential improvements:
 - [ ] Add automatic restart on crash
 - [ ] Add log rotation
 - [ ] Add metrics collection
-
-
-
-

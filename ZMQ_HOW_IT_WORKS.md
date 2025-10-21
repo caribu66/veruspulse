@@ -30,6 +30,7 @@ Great question! The answer is: **The daemon pushes data TO you, instead of you p
 ```
 
 **Problems:**
+
 - 🔴 Wastes RPC calls when nothing is happening
 - 🔴 Delayed updates (have to wait for next poll)
 - 🔴 Creates constant load on daemon
@@ -54,6 +55,7 @@ Great question! The answer is: **The daemon pushes data TO you, instead of you p
 ```
 
 **Benefits:**
+
 - ✅ Instant notifications when events happen
 - ✅ Zero RPC calls for monitoring
 - ✅ No daemon load from constant polling
@@ -73,8 +75,8 @@ const socket = new zmq.Subscriber();
 socket.connect('tcp://127.0.0.1:28332');
 
 // Subscribe to topics you care about
-socket.subscribe('hashblock');  // "Tell me about new blocks"
-socket.subscribe('hashtx');     // "Tell me about new transactions"
+socket.subscribe('hashblock'); // "Tell me about new blocks"
+socket.subscribe('hashtx'); // "Tell me about new transactions"
 ```
 
 This is like subscribing to a newsletter - you sign up once, then you get updates automatically.
@@ -100,7 +102,7 @@ for await (const [topic, message] of socket) {
   if (topic === 'hashblock') {
     const blockHash = message.toString('hex');
     console.log('New block!', blockHash);
-    
+
     // NOW you make an RPC call to get block details
     const blockDetails = await verusAPI.getBlock(blockHash);
     updateUI(blockDetails);
@@ -131,6 +133,7 @@ When we ran the ZMQ test, here's what happened:
 ```
 
 **What this means:**
+
 1. Someone broadcast a transaction to the network
 2. Your daemon validated it and added to mempool
 3. Daemon **immediately pushed** notification to your app: "New TX! Hash: c177..."
@@ -142,6 +145,7 @@ When we ran the ZMQ test, here's what happened:
 ## 🎯 How Your Difficulty Card Uses This
 
 ### Before (Polling):
+
 ```javascript
 // Every 30 seconds
 setInterval(async () => {
@@ -150,20 +154,23 @@ setInterval(async () => {
   updateDifficultyCard(difficulty);
 }, 30000);
 ```
+
 - 120 RPC calls per hour
 - 30-second delay for updates
 - Constant daemon load
 
 ### After (ZMQ):
+
 ```javascript
 // Listen for new blocks (no interval needed!)
-zmqListener.on('newBlock', async (blockHash) => {
+zmqListener.on('newBlock', async blockHash => {
   // Only make RPC call when new block arrives
   const block = await verusAPI.getBlock(blockHash); // ← Single RPC call
   const difficulty = block.difficulty;
   updateDifficultyCard(difficulty); // ← Instant update!
 });
 ```
+
 - ~1-2 RPC calls per hour (only when blocks actually arrive)
 - Instant updates (no delay!)
 - Minimal daemon load
@@ -214,22 +221,26 @@ zmqpubrawtx=tcp://127.0.0.1:28332      ← Full transaction data (optional)
 Imagine a video game:
 
 ### Polling (Bad):
+
 ```
 You: "Did I get shot?" → Game: "No"
 (wait 1 second)
 You: "Did I get shot?" → Game: "No"
-(wait 1 second)  
+(wait 1 second)
 You: "Did I get shot?" → Game: "Yes! You died 0.9 seconds ago"
 ```
+
 **Result**: Delayed death animation, laggy gameplay
 
 ### Push/Event-Based (Good):
+
 ```
 (You just play the game)
 Game: "You got shot!" → Instant death animation
 Game: "Enemy approaching!" → Instant warning
 Game: "Level up!" → Instant celebration
 ```
+
 **Result**: Smooth, responsive gameplay
 
 ---
@@ -238,13 +249,14 @@ Game: "Level up!" → Instant celebration
 
 ### Scenario: Monitoring for new blocks over 1 hour
 
-| Method | RPC Calls | Latency | Daemon Load |
-|--------|-----------|---------|-------------|
-| **Polling (60s)** | 60 calls | 0-60s delay | Constant |
-| **Polling (30s)** | 120 calls | 0-30s delay | High |
-| **ZMQ Push** | ~1-2 calls | <100ms | Minimal |
+| Method            | RPC Calls  | Latency     | Daemon Load |
+| ----------------- | ---------- | ----------- | ----------- |
+| **Polling (60s)** | 60 calls   | 0-60s delay | Constant    |
+| **Polling (30s)** | 120 calls  | 0-30s delay | High        |
+| **ZMQ Push**      | ~1-2 calls | <100ms      | Minimal     |
 
 ### In your case:
+
 - Block time: ~60 seconds
 - Blocks per hour: ~60 blocks
 - **Polling**: 120 RPC calls (2x per minute) = 98% wasted
@@ -277,6 +289,7 @@ Compare this to a full `getblock` RPC response (can be 50KB+!):
 ```
 
 **ZMQ Strategy:**
+
 1. Get notification (32 bytes) ← Free/instant
 2. Only fetch details if you need them ← One targeted RPC call
 
@@ -285,6 +298,7 @@ Compare this to a full `getblock` RPC response (can be 50KB+!):
 ## 🚀 Real-World Analogy
 
 ### Polling = Constantly checking your mailbox
+
 ```
 Walk to mailbox... empty
 (wait 5 minutes)
@@ -294,14 +308,17 @@ Walk to mailbox... empty
 (wait 5 minutes)
 Walk to mailbox... GOT MAIL!
 ```
+
 **Wasted effort**: 99% of trips are pointless
 
 ### ZMQ = Mailman rings doorbell
+
 ```
 (You're inside doing other things)
 *DING DONG* "Mail delivery!"
 You: "Thanks!" (walk to mailbox)
 ```
+
 **Efficient**: Only act when there's actually something
 
 ---
@@ -316,10 +333,12 @@ You: "Thanks!" (walk to mailbox)
 2. **RPC** = Data retrieval system ("give me details")
 
 **Old way:**
+
 - Ask daemon every 30s: "anything new?" (usually no)
 - Wastes 95%+ of requests
 
 **New way:**
+
 - Daemon tells you: "NEW BLOCK!" (instant notification)
 - You ask once: "tell me about that block" (targeted request)
 - Efficiency: Perfect!
@@ -339,4 +358,3 @@ Look for the `startListening()` method - that's where the magic happens!
 ---
 
 **Bottom line**: ZMQ is like having a smart notification system that tells you when to look, instead of constantly checking if there's anything to see. 📱
-

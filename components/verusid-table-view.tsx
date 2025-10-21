@@ -13,13 +13,16 @@ import {
   Star,
   Clock,
 } from '@phosphor-icons/react';
-import { VerusIDBrowseData, SortOptions } from '@/lib/types/verusid-browse-types';
-import { 
-  formatVRSCAmount, 
-  formatAPY, 
-  formatLastActivity, 
-  getAPYColorClass, 
-  getActivityColorClass 
+import {
+  VerusIDBrowseData,
+  SortOptions,
+} from '@/lib/types/verusid-browse-types';
+import {
+  formatVRSCAmount,
+  formatAPY,
+  formatLastActivity,
+  getAPYColorClass,
+  getActivityColorClass,
 } from '@/lib/utils/verusid-utils';
 
 interface VerusIDTableViewProps {
@@ -29,11 +32,11 @@ interface VerusIDTableViewProps {
   onIdentityClick?: (identity: VerusIDBrowseData) => void;
 }
 
-export function VerusIDTableView({ 
-  identities, 
-  sortOptions, 
-  onSort, 
-  onIdentityClick 
+export function VerusIDTableView({
+  identities,
+  sortOptions,
+  onSort,
+  onIdentityClick,
 }: VerusIDTableViewProps) {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
@@ -41,19 +44,23 @@ export function VerusIDTableView({
     return (
       <div className="text-center py-12">
         <User className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-white mb-2">No Identities Found</h3>
-        <p className="text-blue-200">Try adjusting your filters or search terms.</p>
+        <h3 className="text-lg font-semibold text-white mb-2">
+          No Identities Found
+        </h3>
+        <p className="text-blue-200">
+          Try adjusting your filters or search terms.
+        </p>
       </div>
     );
   }
 
-  const SortButton = ({ 
-    sortKey, 
-    children, 
-    icon 
-  }: { 
-    sortKey: SortOptions['sortBy']; 
-    children: React.ReactNode; 
+  const SortButton = ({
+    sortKey,
+    children,
+    icon,
+  }: {
+    sortKey: SortOptions['sortBy'];
+    children: React.ReactNode;
     icon?: React.ReactNode;
   }) => {
     const isActive = sortOptions.sortBy === sortKey;
@@ -117,15 +124,13 @@ export function VerusIDTableView({
               Last Activity
             </SortButton>
           </div>
-          <div className="col-span-1 text-center">
-            Actions
-          </div>
+          <div className="col-span-1 text-center">Actions</div>
         </div>
       </div>
 
       {/* Table Body */}
       <div className="divide-y divide-slate-700">
-        {identities.map((identity) => (
+        {identities.map(identity => (
           <div
             key={identity.address}
             className={`grid grid-cols-12 gap-4 p-4 hover:bg-white/5 transition-colors cursor-pointer ${
@@ -142,10 +147,16 @@ export function VerusIDTableView({
                   <User className="h-4 w-4 text-blue-400" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-medium text-white truncate" title={identity.friendlyName}>
+                  <div
+                    className="font-medium text-white truncate"
+                    title={identity.friendlyName}
+                  >
                     {identity.displayName}
                   </div>
-                  <div className="text-xs text-blue-200 truncate font-mono" title={identity.address}>
+                  <div
+                    className="text-xs text-blue-200 truncate font-mono"
+                    title={identity.address}
+                  >
                     {identity.address.slice(0, 20)}...
                   </div>
                 </div>
@@ -162,16 +173,17 @@ export function VerusIDTableView({
             {/* Rewards/Balance Column */}
             <div className="col-span-2 flex items-center">
               <div className="text-sm font-semibold text-green-400">
-                {identity.totalRewardsVRSC > 0 
+                {identity.totalRewardsVRSC > 0
                   ? formatVRSCAmount(identity.totalRewardsVRSC)
-                  : formatVRSCAmount(identity.totalValueVRSC)
-                }
+                  : formatVRSCAmount(identity.totalValueVRSC)}
               </div>
             </div>
 
             {/* APY Column */}
             <div className="col-span-1 flex items-center">
-              <div className={`text-sm font-semibold ${getAPYColorClass(identity.apyAllTime)}`}>
+              <div
+                className={`text-sm font-semibold ${getAPYColorClass(identity.apyAllTime)}`}
+              >
                 {formatAPY(identity.apyAllTime)}
               </div>
             </div>
@@ -190,12 +202,12 @@ export function VerusIDTableView({
             {/* Last Activity Column */}
             <div className="col-span-1 flex items-center">
               <div className="text-xs">
-                <div className={`${getActivityColorClass(identity.activityStatus)}`}>
+                <div
+                  className={`${getActivityColorClass(identity.activityStatus)}`}
+                >
                   {formatLastActivity(identity.lastStakeTime)}
                 </div>
-                <div className="text-gray-400">
-                  {identity.activityStatus}
-                </div>
+                <div className="text-gray-400">{identity.activityStatus}</div>
               </div>
             </div>
 
@@ -204,7 +216,7 @@ export function VerusIDTableView({
               <Link
                 href={`/verusid?search=${encodeURIComponent(identity.address)}`}
                 className="p-2 text-blue-300 hover:text-blue-200 transition-colors"
-                onClick={(e) => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
                 title="View Details"
               >
                 <ArrowSquareOut className="h-4 w-4" />

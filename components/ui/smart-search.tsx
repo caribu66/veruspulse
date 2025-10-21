@@ -380,7 +380,9 @@ export function SmartSearch({
                   className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors text-left"
                 >
                   <Clock className="h-4 w-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                  <span className="text-sm text-gray-900 dark:text-white">{recentQuery}</span>
+                  <span className="text-sm text-gray-900 dark:text-white">
+                    {recentQuery}
+                  </span>
                 </button>
               ))}
             </div>

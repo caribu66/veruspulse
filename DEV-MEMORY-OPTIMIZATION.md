@@ -23,33 +23,42 @@ Your Next.js 15 development server uses significant memory due to:
 ## Additional Memory Reduction Options
 
 ### Option 1: Disable Source Maps (Most Aggressive)
+
 Saves ~500MB but makes debugging harder.
 
 Edit `next.config.js` line 57, uncomment:
+
 ```js
 config.devtool = false;
 ```
 
 ### Option 2: Reduce Database Connection Pools
+
 If you're using PostgreSQL, set these in your shell before running `npm run dev`:
+
 ```bash
 export DB_POOL_MIN=1
 export DB_POOL_MAX=2
 ```
 
 ### Option 3: Don't Load Real-time Data on All Pages
+
 The `RealtimeDataProvider` in `app/layout.tsx` loads WebSocket connections on every page.
 Consider moving it only to pages that need real-time updates.
 
 ### Option 4: Clear Build Cache
+
 If memory is still high after changes:
+
 ```bash
 rm -rf .next
 npm run dev
 ```
 
 ### Option 5: Use Production Build for Testing
+
 Production builds use much less memory:
+
 ```bash
 npm run build
 npm start
@@ -78,12 +87,12 @@ VERUS_RPC_PASSWORD=password
 
 ## Expected Memory Usage After Optimizations
 
-| Configuration | Memory Usage |
-|--------------|--------------|
-| **Default (Before)** | 3-4 GB |
-| **After our changes** | 2-2.5 GB |
-| **With source maps disabled** | 1.5-2 GB |
-| **Production build** | 500MB-1GB |
+| Configuration                 | Memory Usage |
+| ----------------------------- | ------------ |
+| **Default (Before)**          | 3-4 GB       |
+| **After our changes**         | 2-2.5 GB     |
+| **With source maps disabled** | 1.5-2 GB     |
+| **Production build**          | 500MB-1GB    |
 
 ## Monitor Memory Usage
 
@@ -98,12 +107,14 @@ pm2 monit
 ## Troubleshooting
 
 **Still using too much memory?**
+
 1. Check if PM2 is auto-restarting it: `pm2 list`
 2. Check for memory leaks in API routes
 3. Consider upgrading your RAM or using production mode for development
 
 **Need real-time features while developing?**
 ZMQ is now enabled by default. Add to your `.env` file:
+
 ```bash
 # Enable ZMQ for real-time blockchain updates (enabled by default)
 ENABLE_ZMQ=true
@@ -113,8 +124,8 @@ ENABLE_ZMQ=true
 ```
 
 Or run with environment variable:
+
 ```bash
 ENABLE_ZMQ=true npm run dev   # Enable (default if set in .env)
 ENABLE_ZMQ=false npm run dev  # Disable to save memory
 ```
-

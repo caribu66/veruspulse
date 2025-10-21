@@ -42,6 +42,7 @@ npm run dev
 ```
 
 You should see:
+
 ```
 ✅ Connected to Verus ZMQ: tcp://127.0.0.1:28332
 ```
@@ -49,26 +50,31 @@ You should see:
 ## 🎛️ Configuration Options
 
 ### Enable ZMQ (Default)
+
 ```bash
 ENABLE_ZMQ=true npm run dev
 ```
 
 ### Disable ZMQ (Save Memory)
+
 ```bash
 ENABLE_ZMQ=false npm run dev
 ```
 
 ### Production (Always Enabled)
+
 In production, ZMQ is automatically enabled if configured.
 
 ## 🔍 How It Works
 
 ### Development Mode
+
 - **Default Behavior**: ZMQ is enabled if `ENABLE_ZMQ=true` in `.env`
 - **Override**: Use `ENABLE_ZMQ=false` to disable temporarily
 - **Fallback**: If ZMQ connection fails, app continues working (graceful degradation)
 
 ### Production Mode
+
 - **Always Enabled**: ZMQ automatically attempts connection
 - **Graceful Failure**: App works without ZMQ if connection fails
 - **Auto-Reconnect**: Attempts to reconnect with exponential backoff
@@ -76,6 +82,7 @@ In production, ZMQ is automatically enabled if configured.
 ## 📊 Benefits in Development
 
 ### With ZMQ Enabled ✅
+
 - Real-time block notifications
 - Real-time transaction notifications
 - No polling required (90% fewer RPC calls)
@@ -83,6 +90,7 @@ In production, ZMQ is automatically enabled if configured.
 - Better testing of real-time features
 
 ### Without ZMQ (Memory Saving)
+
 - Polling-based updates
 - ~100MB less memory usage
 - Still functional, just not real-time
@@ -95,6 +103,7 @@ In production, ZMQ is automatically enabled if configured.
 Visit: `http://localhost:3000/api/health`
 
 Look for:
+
 ```json
 {
   "zmq": {
@@ -108,11 +117,13 @@ Look for:
 ### Monitor ZMQ Events
 
 Check server logs:
+
 ```bash
 tail -f /tmp/verus-explorer.log
 ```
 
 You should see:
+
 ```
 ✅ Connected to Verus ZMQ: tcp://127.0.0.1:28332
 🔔 New Block: 1a2b3c4d5e6f7890...
@@ -127,21 +138,27 @@ You should see:
 **Solutions**:
 
 1. **Check Verus Daemon Configuration**
+
    ```bash
    verus getzmqnotifications
    ```
+
    Should return ZMQ endpoints.
 
 2. **Verify ZMQ Package is Installed**
+
    ```bash
    npm list zeromq
    ```
+
    If not found:
+
    ```bash
    npm install zeromq
    ```
 
 3. **Check Firewall** (if remote daemon)
+
    ```bash
    telnet YOUR_DAEMON_IP 28332
    ```
@@ -156,18 +173,21 @@ You should see:
 If `npm install zeromq` fails:
 
 **Linux**:
+
 ```bash
 sudo apt-get install python3 make g++ libzmq3-dev
 npm install zeromq
 ```
 
 **macOS**:
+
 ```bash
 brew install zeromq
 npm install zeromq
 ```
 
 **Windows**:
+
 ```bash
 # Install Visual Studio Build Tools first
 npm install --global windows-build-tools
@@ -179,6 +199,7 @@ npm install zeromq
 If your Verus daemon is on a different machine:
 
 **1. Update verus.conf on the remote machine:**
+
 ```conf
 zmqpubhashblock=tcp://0.0.0.0:28332
 zmqpubhashtx=tcp://0.0.0.0:28332
@@ -190,11 +211,13 @@ rpcallowip=0.0.0.0/0
 ```
 
 **2. Update your .env:**
+
 ```bash
 VERUS_ZMQ_ADDRESS=tcp://REMOTE_IP:28332
 ```
 
 **3. Open firewall on remote machine:**
+
 ```bash
 sudo ufw allow 28332/tcp
 ```
@@ -202,11 +225,13 @@ sudo ufw allow 28332/tcp
 ## 📈 Performance Comparison
 
 ### Without ZMQ (Polling)
+
 - RPC calls: ~100/minute
 - Update latency: 5-10 seconds
 - Memory usage: 2.8GB
 
 ### With ZMQ (Real-time)
+
 - RPC calls: ~10/minute (90% reduction!)
 - Update latency: <1 second
 - Memory usage: 2.9GB (+100MB)
@@ -214,18 +239,22 @@ sudo ufw allow 28332/tcp
 ## 🎯 Recommended Setup
 
 ### For Active Development
+
 ```bash
 ENABLE_ZMQ=true
 VERUS_ZMQ_ADDRESS=tcp://127.0.0.1:28332
 ```
+
 ✅ Best for testing real-time features
 ✅ Faster development experience
 ✅ More accurate production simulation
 
 ### For Memory-Constrained Development
+
 ```bash
 ENABLE_ZMQ=false
 ```
+
 ✅ Saves ~100MB RAM
 ✅ Still fully functional
 ⚠️ No real-time updates
@@ -245,11 +274,13 @@ VERUS_RPC_HOST=http://127.0.0.1:18843       # RPC endpoint
 ## ✨ What Changed
 
 ### Before
+
 - ZMQ was disabled in development to save memory
 - Only worked in production mode
 - Required manual environment variable override
 
 ### After
+
 - ZMQ enabled in development by default (if `ENABLE_ZMQ=true`)
 - Controlled via `.env` file
 - Easy to disable if needed
@@ -266,6 +297,7 @@ VERUS_RPC_HOST=http://127.0.0.1:18843       # RPC endpoint
 ZMQ now works in development mode! Just set `ENABLE_ZMQ=true` in your `.env` file and enjoy real-time blockchain updates while developing.
 
 **Commands**:
+
 ```bash
 # With ZMQ (default if ENABLE_ZMQ=true in .env)
 npm run dev
@@ -278,7 +310,3 @@ ENABLE_ZMQ=false npm run dev
 ```
 
 Happy developing! 🚀
-
-
-
-

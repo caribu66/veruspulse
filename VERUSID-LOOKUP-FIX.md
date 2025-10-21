@@ -31,17 +31,20 @@ Error: Identity not found
 ### 1. Browse Components Now Use I-Addresses
 
 **Fixed Files:**
+
 - `components/browse-all-verusids.tsx`
 - `components/verusid-table-view.tsx`
 - `components/verusid-card-grid.tsx`
 
 **Before:**
+
 ```typescript
 // ❌ Used unreliable baseName
 href={`/verusid?search=${encodeURIComponent(identity.baseName)}`}
 ```
 
 **After:**
+
 ```typescript
 // ✅ Always uses reliable I-address
 href={`/verusid?search=${encodeURIComponent(identity.address)}`}
@@ -52,6 +55,7 @@ href={`/verusid?search=${encodeURIComponent(identity.address)}`}
 **New File:** `scripts/update-unknown-identities.js`
 
 This script:
+
 - ✅ Finds all identities with `base_name = 'unknown'`
 - ✅ Looks up actual names from blockchain via RPC
 - ✅ Updates database with correct names
@@ -80,6 +84,7 @@ node scripts/update-unknown-identities.js
 ```
 
 **Expected Output:**
+
 ```
 🔍 Finding identities with unknown names...
 
@@ -111,7 +116,7 @@ pm2 restart verus-dapp
 
 ```sql
 -- Check identity name status
-SELECT 
+SELECT
   COUNT(*) as total_identities,
   COUNT(CASE WHEN base_name = 'unknown' THEN 1 END) as unknown_names,
   COUNT(CASE WHEN base_name != 'unknown' THEN 1 END) as known_names,
@@ -120,11 +125,13 @@ FROM identities;
 ```
 
 **Before Fix:**
+
 - Total: 32,990
 - Known: 6,846 (21%)
 - Unknown: 26,144 (79%)
 
 **After Running Update Script:**
+
 - Total: 32,990
 - Known: ~32,736 (99%)
 - Unknown: ~254 (1%)
@@ -134,12 +141,14 @@ FROM identities;
 ## 🎯 What Users Will Experience
 
 ### Before Fix
+
 1. User browses VerusIDs ✅
 2. Sees list with "unknown" names ⚠️
 3. Clicks on an identity ❌
 4. Gets "Identity not found" error ❌
 
 ### After Fix
+
 1. User browses VerusIDs ✅
 2. Sees list with names (or I-addresses) ✅
 3. Clicks on an identity ✅
@@ -152,12 +161,14 @@ FROM identities;
 ### Why I-Addresses Are Reliable
 
 I-addresses are **immutable blockchain identifiers**:
+
 - ✅ Always valid if the identity exists
 - ✅ Never change
 - ✅ Can be used directly in RPC calls
 - ✅ Work even if name is unknown
 
 Names can be:
+
 - ❌ "unknown" (placeholder)
 - ❌ Null/empty
 - ❌ Changed (though rare)
@@ -192,6 +203,7 @@ RPC call: getidentity("iC8VMJX9L3212eFvU9WmL8SGEJBUD423Up")
 ### Test the Fix
 
 1. **Browse VerusIDs:**
+
    ```
    http://localhost:3000/verusid-browse
    ```
@@ -217,14 +229,17 @@ node /tmp/test-update.js
 ## 📈 Performance Impact
 
 ### Browse Page
+
 - **Before:** Same (already using database)
 - **After:** Same (no performance change)
 
 ### Identity Lookup
+
 - **Before:** Fast with I-address, FAILED with "unknown"
 - **After:** Fast and RELIABLE with I-address
 
 ### Update Script
+
 - **Duration:** ~50ms per identity
 - **Total Time:** 26,144 × 50ms = ~22 minutes
 - **RPC Load:** Minimal (throttled with delays)
@@ -252,15 +267,18 @@ node /tmp/test-update.js
 ## 📝 Summary
 
 ### What's Fixed
+
 - ✅ Browse page now works correctly for all identities
 - ✅ No more "Identity not found" errors
 - ✅ Created script to enrich database with real names
 
 ### What's Optional
+
 - ⏳ Running the update script (improves UX but not required)
 - ⏳ Rebuilding Next.js (only if you want latest code)
 
 ### Impact
+
 - **Users:** Can now browse and view all identities reliably
 - **System:** More stable and predictable
 - **Database:** Can be enriched with real names (optional)
@@ -269,4 +287,3 @@ node /tmp/test-update.js
 
 **Status:** ✅ Critical Fix Applied  
 **User Impact:** 🎉 Identity browsing now works perfectly!
-

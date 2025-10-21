@@ -764,7 +764,7 @@ export function VerusIDExplorer() {
             <p className="text-blue-200 mb-6">
               Browse through all registered VerusIDs on the network
             </p>
-            <a 
+            <a
               href="/verusid/browse"
               className="inline-block px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
             >

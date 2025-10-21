@@ -48,7 +48,9 @@ export async function GET(request: NextRequest) {
     // Parse query parameters
     const searchParams = request.nextUrl.searchParams;
     const limit = Math.min(parseInt(searchParams.get('limit') || '100'), 500); // Max 500 for initial load
-    const includeRPC = searchParams.get('includeRPC') === 'true' || searchParams.get('includeRPC') === '1';
+    const includeRPC =
+      searchParams.get('includeRPC') === 'true' ||
+      searchParams.get('includeRPC') === '1';
 
     // Main query: Get identities with comprehensive statistics
     const query = `
@@ -94,7 +96,9 @@ export async function GET(request: NextRequest) {
     logger.info(`✅ Found ${result.rows.length} identities from database`);
 
     // Get total count for metadata
-    const countResult = await db.query('SELECT COUNT(*) as total FROM identities');
+    const countResult = await db.query(
+      'SELECT COUNT(*) as total FROM identities'
+    );
     const totalCount = parseInt(countResult.rows[0]?.total) || 0;
 
     // Format the results
@@ -102,8 +106,11 @@ export async function GET(request: NextRequest) {
       const lastStakeTime = row.last_stake_time;
       const now = new Date();
       const lastStake = lastStakeTime ? new Date(lastStakeTime) : null;
-      const daysSinceLastStake = lastStake ? 
-        Math.floor((now.getTime() - lastStake.getTime()) / (1000 * 60 * 60 * 24)) : null;
+      const daysSinceLastStake = lastStake
+        ? Math.floor(
+            (now.getTime() - lastStake.getTime()) / (1000 * 60 * 60 * 24)
+          )
+        : null;
 
       // Determine activity status
       let activityStatus: 'active' | 'inactive' = 'inactive';
@@ -118,14 +125,15 @@ export async function GET(request: NextRequest) {
       return {
         address: row.identity_address,
         baseName: row.base_name || 'unknown',
-        friendlyName: row.friendly_name || `${row.base_name || 'unknown'}.VRSC@`,
+        friendlyName:
+          row.friendly_name || `${row.base_name || 'unknown'}.VRSC@`,
         displayName: row.friendly_name || row.base_name || row.identity_address,
         firstSeenBlock: row.first_seen_block,
         lastScannedBlock: row.last_scanned_block,
         lastRefreshed: row.last_refreshed_at,
         totalStakes: row.total_stakes || 0,
-        totalRewardsVRSC: row.total_rewards_satoshis 
-          ? parseFloat(row.total_rewards_satoshis) / 100000000 
+        totalRewardsVRSC: row.total_rewards_satoshis
+          ? parseFloat(row.total_rewards_satoshis) / 100000000
           : 0,
         firstStakeTime: row.first_stake_time,
         lastStakeTime: row.last_stake_time,
@@ -135,33 +143,39 @@ export async function GET(request: NextRequest) {
         apy30d: row.apy_30d ? parseFloat(row.apy_30d) : null,
         apy7d: row.apy_7d ? parseFloat(row.apy_7d) : null,
         roiAllTime: row.roi_all_time ? parseFloat(row.roi_all_time) : null,
-        stakingEfficiency: row.staking_efficiency ? parseFloat(row.staking_efficiency) : null,
+        stakingEfficiency: row.staking_efficiency
+          ? parseFloat(row.staking_efficiency)
+          : null,
         avgStakeAge: row.avg_stake_age || null,
         networkRank: row.network_rank,
-        networkPercentile: row.network_percentile ? parseFloat(row.network_percentile) : null,
+        networkPercentile: row.network_percentile
+          ? parseFloat(row.network_percentile)
+          : null,
         eligibleUtxos: row.eligible_utxos || 0,
         currentUtxos: row.current_utxos || 0,
         cooldownUtxos: row.cooldown_utxos || 0,
-        totalValueVRSC: row.total_value_satoshis 
-          ? parseFloat(row.total_value_satoshis) / 100000000 
+        totalValueVRSC: row.total_value_satoshis
+          ? parseFloat(row.total_value_satoshis) / 100000000
           : 0,
-        eligibleValueVRSC: row.eligible_value_satoshis 
-          ? parseFloat(row.eligible_value_satoshis) / 100000000 
+        eligibleValueVRSC: row.eligible_value_satoshis
+          ? parseFloat(row.eligible_value_satoshis) / 100000000
           : 0,
-        largestUtxoVRSC: row.largest_utxo_satoshis 
-          ? parseFloat(row.largest_utxo_satoshis) / 100000000 
+        largestUtxoVRSC: row.largest_utxo_satoshis
+          ? parseFloat(row.largest_utxo_satoshis) / 100000000
           : 0,
-        smallestEligibleVRSC: row.smallest_eligible_satoshis 
-          ? parseFloat(row.smallest_eligible_satoshis) / 100000000 
+        smallestEligibleVRSC: row.smallest_eligible_satoshis
+          ? parseFloat(row.smallest_eligible_satoshis) / 100000000
           : 0,
-        highestRewardVRSC: row.highest_reward_satoshis 
-          ? parseFloat(row.highest_reward_satoshis) / 100000000 
+        highestRewardVRSC: row.highest_reward_satoshis
+          ? parseFloat(row.highest_reward_satoshis) / 100000000
           : 0,
-        lowestRewardVRSC: row.lowest_reward_satoshis 
-          ? parseFloat(row.lowest_reward_satoshis) / 100000000 
+        lowestRewardVRSC: row.lowest_reward_satoshis
+          ? parseFloat(row.lowest_reward_satoshis) / 100000000
           : 0,
         lastCalculated: row.last_calculated,
-        dataCompleteness: row.data_completeness ? parseFloat(row.data_completeness) : 100,
+        dataCompleteness: row.data_completeness
+          ? parseFloat(row.data_completeness)
+          : 100,
         activityStatus,
         daysSinceLastStake,
       };
@@ -178,13 +192,16 @@ export async function GET(request: NextRequest) {
             address: id.identityaddress,
             baseName: id.identity?.name || '',
             friendlyName: id.friendlyname || '',
-            displayName: id.friendlyname || id.identity?.name || id.identityaddress,
+            displayName:
+              id.friendlyname || id.identity?.name || id.identityaddress,
             // RPC data doesn't include staking stats
             totalStakes: 0,
             totalRewardsVRSC: 0,
             activityStatus: 'unknown' as const,
           }));
-          logger.info(`✅ Found ${rpcIdentities.length} additional identities from RPC`);
+          logger.info(
+            `✅ Found ${rpcIdentities.length} additional identities from RPC`
+          );
         }
       } catch (error) {
         logger.warn('⚠️ Failed to fetch RPC identities:', error);
@@ -196,14 +213,16 @@ export async function GET(request: NextRequest) {
     if (includeRPC && rpcIdentities.length > 0) {
       // Create a map of existing identities by address to avoid duplicates
       const existingAddresses = new Set(identities.map(id => id.address));
-      
+
       // Add RPC identities that aren't already in the database
-      const newRpcIdentities = rpcIdentities.filter(rpcId => 
-        rpcId.address && !existingAddresses.has(rpcId.address)
+      const newRpcIdentities = rpcIdentities.filter(
+        rpcId => rpcId.address && !existingAddresses.has(rpcId.address)
       );
-      
+
       allIdentities = [...identities, ...newRpcIdentities];
-      logger.info(`✅ Merged ${newRpcIdentities.length} new RPC identities with ${identities.length} database identities`);
+      logger.info(
+        `✅ Merged ${newRpcIdentities.length} new RPC identities with ${identities.length} database identities`
+      );
     }
 
     const response = NextResponse.json({
@@ -226,7 +245,7 @@ export async function GET(request: NextRequest) {
     return addSecurityHeaders(response);
   } catch (error: any) {
     logger.error('❌ Failed to fetch all VerusIDs:', error);
-    
+
     const response = NextResponse.json(
       {
         success: false,

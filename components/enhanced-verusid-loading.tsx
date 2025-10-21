@@ -23,8 +23,18 @@ interface EnhancedLoadingProps {
   className?: string;
 }
 
-type ScanStage = 'initial' | 'blockchain_scan' | 'data_processing' | 'stats_calculation' | 'complete';
-type ScanStatus = 'not_started' | 'scanning' | 'processing' | 'complete' | 'error';
+type ScanStage =
+  | 'initial'
+  | 'blockchain_scan'
+  | 'data_processing'
+  | 'stats_calculation'
+  | 'complete';
+type ScanStatus =
+  | 'not_started'
+  | 'scanning'
+  | 'processing'
+  | 'complete'
+  | 'error';
 
 interface ScanProgress {
   status: ScanStatus;
@@ -79,7 +89,7 @@ export function EnhancedVerusIDLoading({
         if (data.data.status === 'complete' && !hasTriggeredComplete) {
           setHasTriggeredComplete(true);
           setIsPolling(false);
-          
+
           // Wait a moment to show completion message, then call onComplete
           setTimeout(() => {
             if (onComplete) {
@@ -164,22 +174,28 @@ export function EnhancedVerusIDLoading({
   const Icon = stageInfo.icon;
 
   return (
-    <div className={`bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 border ${stageInfo.borderColor} shadow-2xl ${stageInfo.glowColor} ${className}`}>
+    <div
+      className={`bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 border ${stageInfo.borderColor} shadow-2xl ${stageInfo.glowColor} ${className}`}
+    >
       {/* Header */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center mb-4">
-          <div className={`relative p-4 rounded-2xl ${stageInfo.bgColor} ${stageInfo.borderColor} border-2`}>
-            <Icon className={`h-12 w-12 ${stageInfo.color} ${scanProgress.stage !== 'complete' ? 'animate-pulse' : ''}`} />
+          <div
+            className={`relative p-4 rounded-2xl ${stageInfo.bgColor} ${stageInfo.borderColor} border-2`}
+          >
+            <Icon
+              className={`h-12 w-12 ${stageInfo.color} ${scanProgress.stage !== 'complete' ? 'animate-pulse' : ''}`}
+            />
             {scanProgress.stage !== 'complete' && (
               <div className="absolute inset-0 rounded-2xl bg-white/10 animate-ping" />
             )}
           </div>
         </div>
-        
+
         <h2 className={`text-3xl font-bold ${stageInfo.color} mb-2`}>
           {stageInfo.title}
         </h2>
-        
+
         <p className="text-white/80 text-lg mb-1">{verusID}</p>
         <p className="text-white/60">{stageInfo.description}</p>
       </div>
@@ -195,7 +211,7 @@ export function EnhancedVerusIDLoading({
               {scanProgress.progress}%
             </span>
           </div>
-          
+
           <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
             <div
               className={`h-full ${stageInfo.bgColor} ${stageInfo.borderColor} border-r-2 transition-all duration-500 ease-out relative`}
@@ -289,33 +305,43 @@ export function EnhancedVerusIDLoading({
 
       {/* Stage Progress Indicators */}
       <div className="flex items-center justify-between mb-6">
-        {['blockchain_scan', 'data_processing', 'stats_calculation'].map((stage, index) => {
-          const isActive = scanProgress.stage === stage;
-          const isComplete = ['blockchain_scan', 'data_processing', 'stats_calculation'].indexOf(scanProgress.stage) > index || scanProgress.stage === 'complete';
-          
-          return (
-            <div key={stage} className="flex items-center flex-1">
-              <div
-                className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
-                  isComplete
-                    ? 'bg-green-500/20 border-green-500 text-green-400'
-                    : isActive
-                    ? `${stageInfo.bgColor} ${stageInfo.borderColor} ${stageInfo.color}`
-                    : 'bg-white/5 border-white/20 text-white/40'
-                }`}
-              >
-                {isComplete ? (
-                  <CheckCircle className="h-5 w-5" weight="fill" />
-                ) : (
-                  <span className="text-sm font-bold">{index + 1}</span>
+        {['blockchain_scan', 'data_processing', 'stats_calculation'].map(
+          (stage, index) => {
+            const isActive = scanProgress.stage === stage;
+            const isComplete =
+              [
+                'blockchain_scan',
+                'data_processing',
+                'stats_calculation',
+              ].indexOf(scanProgress.stage) > index ||
+              scanProgress.stage === 'complete';
+
+            return (
+              <div key={stage} className="flex items-center flex-1">
+                <div
+                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
+                    isComplete
+                      ? 'bg-green-500/20 border-green-500 text-green-400'
+                      : isActive
+                        ? `${stageInfo.bgColor} ${stageInfo.borderColor} ${stageInfo.color}`
+                        : 'bg-white/5 border-white/20 text-white/40'
+                  }`}
+                >
+                  {isComplete ? (
+                    <CheckCircle className="h-5 w-5" weight="fill" />
+                  ) : (
+                    <span className="text-sm font-bold">{index + 1}</span>
+                  )}
+                </div>
+                {index < 2 && (
+                  <div
+                    className={`flex-1 h-1 mx-2 rounded-full ${isComplete ? 'bg-green-500/50' : 'bg-white/10'}`}
+                  />
                 )}
               </div>
-              {index < 2 && (
-                <div className={`flex-1 h-1 mx-2 rounded-full ${isComplete ? 'bg-green-500/50' : 'bg-white/10'}`} />
-              )}
-            </div>
-          );
-        })}
+            );
+          }
+        )}
       </div>
 
       {/* Helpful Tips */}
@@ -324,20 +350,30 @@ export function EnhancedVerusIDLoading({
           <Lightning className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
           <div>
             <h4 className="text-blue-300 font-semibold mb-1">
-              {scanProgress.stage === 'complete' ? 'Ready to View!' : 'What\'s Happening?'}
+              {scanProgress.stage === 'complete'
+                ? 'Ready to View!'
+                : "What's Happening?"}
             </h4>
             <p className="text-blue-200/80 text-sm">
               {scanProgress.stage === 'complete' ? (
                 <>
-                  Your VerusID data has been fully indexed with <strong>{scanProgress.stakesFound}</strong> {scanProgress.stakesFound === 1 ? 'stake' : 'stakes'} found. 
+                  Your VerusID data has been fully indexed with{' '}
+                  <strong>{scanProgress.stakesFound}</strong>{' '}
+                  {scanProgress.stakesFound === 1 ? 'stake' : 'stakes'} found.
                   Redirecting you to your dashboard...
                 </>
               ) : (
                 <>
-                  We're scanning the entire Verus blockchain to find all your staking activity. 
-                  This is a one-time process - future visits will be instant! 
+                  We're scanning the entire Verus blockchain to find all your
+                  staking activity. This is a one-time process - future visits
+                  will be instant!
                   {scanProgress.stakesFound > 0 && (
-                    <> So far we've found <strong>{scanProgress.stakesFound}</strong> {scanProgress.stakesFound === 1 ? 'stake' : 'stakes'}!</>
+                    <>
+                      {' '}
+                      So far we've found{' '}
+                      <strong>{scanProgress.stakesFound}</strong>{' '}
+                      {scanProgress.stakesFound === 1 ? 'stake' : 'stakes'}!
+                    </>
                   )}
                 </>
               )}
@@ -364,7 +400,3 @@ export function EnhancedVerusIDLoading({
 //   0% { transform: translateX(-100%); }
 //   100% { transform: translateX(100%); }
 // }
-
-
-
-

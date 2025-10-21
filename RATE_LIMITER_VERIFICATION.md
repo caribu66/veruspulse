@@ -41,12 +41,13 @@ export const defaultRateLimiter = new RateLimiter({ ... });
 export const rpcClient = new RPCClient();
 // ↓ Uses defaultRateLimiter
 
-// lib/rpc-client-robust.ts  
+// lib/rpc-client-robust.ts
 export const verusAPI = new VerusAPIClient();
 // ↓ Uses defaultRateLimiter (SAME INSTANCE!)
 ```
 
-**Result:** 
+**Result:**
+
 - ✅ All RPC calls tracked in one place
 - ✅ Single set of rate limits enforced
 - ✅ Accurate statistics
@@ -66,6 +67,7 @@ const searchRateLimiter = new RateLimiter(60000, 20);
 ```
 
 **This is CORRECT and intentional:**
+
 - Different class (`validation.ts` vs `rate-limiter.ts`)
 - Different purpose (HTTP endpoints vs RPC calls)
 - Different limits (per IP address vs per daemon)
@@ -95,6 +97,7 @@ const searchRateLimiter = new RateLimiter(60000, 20);
 ```
 
 **Both are needed!**
+
 - Without HTTP limiter: One user could spam your API
 - Without RPC limiter: Your app could overwhelm the daemon
 
@@ -103,21 +106,27 @@ const searchRateLimiter = new RateLimiter(60000, 20);
 ## Verification Commands
 
 ### Quick Check
+
 ```bash
 npm run rpc:check
 ```
+
 Shows current RPC usage from the shared rate limiter.
 
 ### Real-time Monitor
+
 ```bash
 npm run rpc:monitor
 ```
+
 Live dashboard showing requests as they happen.
 
 ### Verify Singleton
+
 ```bash
 npm run rpc:verify
 ```
+
 Proves that rate limiter is a shared singleton (no duplication).
 
 ---
@@ -125,6 +134,7 @@ Proves that rate limiter is a shared singleton (no duplication).
 ## Evidence of Correct Implementation
 
 ### 1. Shared Instance
+
 ```typescript
 // Both clients initialized without config
 export const rpcClient = new RPCClient();      // No config = use default
@@ -139,17 +149,20 @@ constructor(rateLimitConfig?: Partial<RateLimitConfig>) {
 ```
 
 ### 2. Single Request Counter
+
 When you make RPC calls:
+
 - `verusAPI.getBlockchainInfo()` → increments counter
-- `verusAPI.getBlock(hash)` → increments same counter  
+- `verusAPI.getBlock(hash)` → increments same counter
 - `rpcClient.call('getinfo')` → increments same counter
 
 **All tracked together!**
 
 ### 3. Consistent Statistics
+
 ```bash
 # Call 1: verusAPI.getBlockchainInfo()
-rpcClient.getRateLimiterStats() 
+rpcClient.getRateLimiterStats()
 # → { totalTracked: 1 }
 
 # Call 2: verusAPI.getBlock(hash)
@@ -182,4 +195,3 @@ The system works exactly as intended! 🎉
 - **Architecture:** [RATE_LIMITER_ARCHITECTURE.md](./RATE_LIMITER_ARCHITECTURE.md)
 - **Verification:** This file
 - **Monitoring Guide:** [docs/RPC-MONITORING.md](./docs/RPC-MONITORING.md)
-

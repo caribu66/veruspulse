@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
-import { priorityScanVerusID, needsPriorityScan } from '@/lib/services/priority-verusid-scanner';
+import {
+  priorityScanVerusID,
+  needsPriorityScan,
+} from '@/lib/services/priority-verusid-scanner';
 
 export async function POST(request: Request) {
   try {
@@ -32,7 +35,7 @@ export async function POST(request: Request) {
 
     // Check if priority scan is needed
     const needsScan = await needsPriorityScan(identityAddress);
-    
+
     if (!needsScan) {
       logger.info(`✅ ${identityAddress} already has complete staking data`);
       return NextResponse.json({
@@ -40,24 +43,30 @@ export async function POST(request: Request) {
         data: {
           needsScan: false,
           message: 'Already has complete staking data',
-          stakesFound: 0
-        }
+          stakesFound: 0,
+        },
       });
     }
 
     // Start priority scan (this will run in background)
     logger.info(`🔍 Starting priority scan for ${identityAddress}...`);
-    
+
     // Run the scan (this is async but we don't wait for completion)
-    priorityScanVerusID(identityAddress).then(result => {
-      if (result.success) {
-        logger.info(`✅ Priority scan completed for ${identityAddress}: ${result.message}`);
-      } else {
-        logger.error(`❌ Priority scan failed for ${identityAddress}: ${result.message}`);
-      }
-    }).catch(error => {
-      logger.error(`❌ Priority scan error for ${identityAddress}:`, error);
-    });
+    priorityScanVerusID(identityAddress)
+      .then(result => {
+        if (result.success) {
+          logger.info(
+            `✅ Priority scan completed for ${identityAddress}: ${result.message}`
+          );
+        } else {
+          logger.error(
+            `❌ Priority scan failed for ${identityAddress}: ${result.message}`
+          );
+        }
+      })
+      .catch(error => {
+        logger.error(`❌ Priority scan error for ${identityAddress}:`, error);
+      });
 
     // Return immediately to user
     const response = NextResponse.json({
@@ -66,15 +75,14 @@ export async function POST(request: Request) {
         needsScan: true,
         message: 'Priority scan started in background',
         status: 'scanning',
-        estimatedTime: '2-5 minutes'
-      }
+        estimatedTime: '2-5 minutes',
+      },
     });
 
     return addSecurityHeaders(response);
-
   } catch (error: any) {
     logger.error('❌ Priority scan API error:', error);
-    
+
     const response = NextResponse.json(
       {
         success: false,
@@ -105,21 +113,22 @@ export async function GET(request: Request) {
 
     // Check if priority scan is needed
     const needsScan = await needsPriorityScan(identityAddress);
-    
+
     const response = NextResponse.json({
       success: true,
       data: {
         identityAddress,
         needsScan,
-        message: needsScan ? 'Priority scan recommended' : 'Already has complete data'
-      }
+        message: needsScan
+          ? 'Priority scan recommended'
+          : 'Already has complete data',
+      },
     });
 
     return addSecurityHeaders(response);
-
   } catch (error: any) {
     logger.error('❌ Priority scan check error:', error);
-    
+
     const response = NextResponse.json(
       {
         success: false,
@@ -132,4 +141,3 @@ export async function GET(request: Request) {
     return addSecurityHeaders(response);
   }
 }
-

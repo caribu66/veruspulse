@@ -29,9 +29,7 @@ interface QuickActionsBarProps {
   onTabChange: (tab: string) => void;
 }
 
-export function QuickActionsBar({
-  onTabChange,
-}: QuickActionsBarProps) {
+export function QuickActionsBar({ onTabChange }: QuickActionsBarProps) {
   const [hoveredAction, setHoveredAction] = useState<string | null>(null);
 
   const quickActions: QuickAction[] = [
@@ -147,7 +145,6 @@ export function QuickActionsBar({
             <p className="text-sm text-gray-400">Jump to popular features</p>
           </div>
         </div>
-
       </div>
 
       {/* Actions Grid */}

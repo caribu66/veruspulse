@@ -4,12 +4,14 @@
 
 /* Theme transition support */
 * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* Import achievement animations */
 @import '../styles/achievement-animations.css';
-
 
 /* Custom styles for VerusCoin Explorer */
 body {
@@ -53,17 +55,17 @@ body {
   --verus-blue: #3165d4; /* Official Verus Blue - primary brand color */
   --verus-blue-light: #4a7ce8; /* Hover states */
   --verus-blue-dark: #2650b3; /* Active states */
-  --verus-green: #4AA658; /* Official Verus Green - success, positive */
+  --verus-green: #4aa658; /* Official Verus Green - success, positive */
   --verus-green-light: #5cb96a; /* Green highlights */
   --verus-green-dark: #3d8a49; /* Green active */
-  --verus-red: #D4313E; /* Official Verus Red - errors, alerts */
+  --verus-red: #d4313e; /* Official Verus Red - errors, alerts */
   --verus-red-light: #e04b56; /* Red highlights */
   --verus-red-dark: #b52732; /* Red active */
 
   /* ============ Semantic Colors (official palette only) ============ */
-  --color-success: #4AA658; /* Success states (official green) */
+  --color-success: #4aa658; /* Success states (official green) */
   --color-warning: #f59e0b; /* Warning states */
-  --color-error: #D4313E; /* Error states (official red) */
+  --color-error: #d4313e; /* Error states (official red) */
   --color-info: #3165d4; /* Info states (official blue) */
 
   /* ============ Border Colors ============ */
@@ -190,12 +192,12 @@ html.dark body {
 
 /* Hide scrollbar utility class */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+  display: none; /* Chrome, Safari and Opera */
 }
 
 /* ================================================================
@@ -441,7 +443,9 @@ html.dark body {
 [data-theme='light'] .bg-white\/20 {
   background-color: var(--bg-elevated);
   border: 1px solid var(--border-secondary);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme='light'] .bg-white\/5:hover,
@@ -449,7 +453,9 @@ html.dark body {
 [data-theme='light'] .bg-white\/20:hover {
   background-color: #f8fafc;
   border-color: #cbd5e1;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transform: translateY(-1px);
   transition: all 0.2s ease-in-out;
 }
@@ -459,14 +465,18 @@ html.dark body {
 [data-theme='light'] .bg-slate-900 {
   background-color: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
 }
 
 [data-theme='light'] .bg-slate-800:hover,
 [data-theme='light'] .bg-slate-900:hover {
   background-color: #f8fafc !important;
   border-color: #cbd5e1 !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
 }
 
 [data-theme='light'] .bg-slate-700 {
@@ -515,7 +525,9 @@ html.dark body {
   background-color: #f9fafb;
   border-color: var(--verus-blue);
   color: var(--verus-blue);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 [data-theme='light'] button:not(.bg-verus-blue):not(.bg-verus-green):active {
@@ -638,11 +650,15 @@ html.dark body {
 
 /* Light theme - Enhanced shadows and depth */
 [data-theme='light'] .shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
 }
 
 [data-theme='light'] .shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
 }
 
 [data-theme='light'] .shadow-2xl {
@@ -719,14 +735,18 @@ html.dark body {
 [data-theme='light'] textarea:hover,
 [data-theme='light'] select:hover {
   border-color: #9ca3af !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
 }
 
 [data-theme='light'] input:focus,
 [data-theme='light'] textarea:focus,
 [data-theme='light'] select:focus {
   border-color: var(--verus-blue) !important;
-  box-shadow: 0 0 0 3px rgba(49, 101, 212, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+  box-shadow:
+    0 0 0 3px rgba(49, 101, 212, 0.1),
+    0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
   outline: none !important;
 }
 
@@ -736,14 +756,14 @@ html.dark body {
 }
 
 /* Light theme - Search Input Enhancement */
-[data-theme='light'] input[type="search"],
-[data-theme='light'] input[type="text"] {
+[data-theme='light'] input[type='search'],
+[data-theme='light'] input[type='text'] {
   background-color: #f9fafb !important;
   border: 1px solid #e5e7eb !important;
 }
 
-[data-theme='light'] input[type="search"]:focus,
-[data-theme='light'] input[type="text"]:focus {
+[data-theme='light'] input[type='search']:focus,
+[data-theme='light'] input[type='text']:focus {
   background-color: #ffffff !important;
   border-color: var(--verus-blue) !important;
 }
@@ -781,7 +801,6 @@ html.dark body {
   background-color: #f8fafc !important;
   color: #94a3b8 !important;
 }
-
 
 /* Light theme - Fix error states */
 [data-theme='light'] .error {
@@ -844,18 +863,18 @@ nav > *:last-child,
 nav .logo,
 .navbar .logo,
 .navigation .logo,
-nav [class*="logo"],
-.navbar [class*="logo"],
-.navigation [class*="logo"] {
+nav [class*='logo'],
+.navbar [class*='logo'],
+.navigation [class*='logo'] {
   margin-left: 1.5rem !important; /* Extra breathing room for logos */
 }
 
 nav button,
 .navbar button,
 .navigation button,
-nav [role="button"],
-.navbar [role="button"],
-.navigation [role="button"] {
+nav [role='button'],
+.navbar [role='button'],
+.navigation [role='button'] {
   margin-left: 0.5rem !important;
   margin-right: 0.5rem !important; /* Breathing room around buttons */
 }
@@ -863,9 +882,9 @@ nav [role="button"],
 nav button:last-child,
 .navbar button:last-child,
 .navigation button:last-child,
-nav [role="button"]:last-child,
-.navbar [role="button"]:last-child,
-.navigation [role="button"]:last-child {
+nav [role='button']:last-child,
+.navbar [role='button']:last-child,
+.navigation [role='button']:last-child {
   margin-right: 1.5rem !important; /* Extra breathing room for last button */
 }
 
@@ -897,9 +916,6 @@ nav [role="button"]:last-child,
   border-radius: 12px;
   margin: 0;
 }
-
-
-
 
 .backdrop-blur-sm {
   min-height: 50px;
@@ -957,17 +973,19 @@ nav [role="button"]:last-child,
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
   --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
-  
+
   /* Elevation levels - Semantic naming */
-  --elevation-base: var(--shadow-sm);      /* Base cards, default elevation */
-  --elevation-raised: var(--shadow-md);    /* Hovered cards, raised elements */
-  --elevation-floating: var(--shadow-lg);  /* Dropdowns, popovers */
-  --elevation-overlay: var(--shadow-xl);   /* Modals, dialogs */
-  --elevation-modal: var(--shadow-2xl);    /* Full-screen overlays */
+  --elevation-base: var(--shadow-sm); /* Base cards, default elevation */
+  --elevation-raised: var(--shadow-md); /* Hovered cards, raised elements */
+  --elevation-floating: var(--shadow-lg); /* Dropdowns, popovers */
+  --elevation-overlay: var(--shadow-xl); /* Modals, dialogs */
+  --elevation-modal: var(--shadow-2xl); /* Full-screen overlays */
 }
 
 /* Dark theme shadows - Enhanced for dark backgrounds */
@@ -976,8 +994,10 @@ nav [role="button"]:last-child,
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
 }
 
@@ -985,9 +1005,12 @@ nav [role="button"]:last-child,
 [data-theme='light'] {
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.08);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.15), 0 1px 2px -1px rgb(0 0 0 / 0.12);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.12);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.12);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.12);
+  --shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.12);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.12);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.12);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.3);
 }
 

@@ -34,11 +34,13 @@ cd /home/explorer/actions-runner
 ```
 
 **Get your GitHub token:**
+
 1. Go to: `https://github.com/YOUR_USERNAME/verus-dapp/settings/actions/runners/new`
 2. Copy the registration token
 3. Run the setup script above and paste the token
 
 **Install as a service:**
+
 ```bash
 cd /home/explorer/actions-runner
 sudo ./svc.sh install explorer
@@ -55,6 +57,7 @@ Configure these secrets in your GitHub repository:
 **Settings → Secrets and variables → Actions → New repository secret**
 
 #### **Production Secrets** (Self-Hosted Runner)
+
 ```
 PROD_VERUS_RPC_HOST=http://127.0.0.1:18843
 PROD_VERUS_RPC_USER=verus
@@ -64,6 +67,7 @@ JWT_SECRET=your_jwt_secret_key_here
 ```
 
 #### **Staging Secrets** (Optional)
+
 ```
 STAGING_VERUS_RPC_HOST=http://127.0.0.1:18843
 STAGING_VERUS_RPC_USER=verus
@@ -71,6 +75,7 @@ STAGING_VERUS_RPC_PASSWORD=your_secure_password
 ```
 
 #### **Optional: Security Scanning**
+
 ```
 SNYK_TOKEN=your_snyk_token  # For advanced security scanning
 CODECOV_TOKEN=your_codecov_token  # For code coverage tracking
@@ -81,12 +86,14 @@ CODECOV_TOKEN=your_codecov_token  # For code coverage tracking
 ### **3. Enable Dependabot**
 
 Dependabot is pre-configured in `.github/dependabot.yml` and will:
+
 - ✅ Check for dependency updates weekly
 - ✅ Create PRs automatically
 - ✅ Group related updates
 - ✅ Include security advisories
 
 **To customize**: Edit `.github/dependabot.yml` and update:
+
 - `reviewers` - Your GitHub username
 - `assignees` - Your GitHub username
 
@@ -103,7 +110,7 @@ Dependabot is pre-configured in `.github/dependabot.yml` and will:
    - ✅ Require approvals: 1
    - ✅ Require status checks to pass before merging
    - ✅ Require branches to be up to date before merging
-   
+
    **Required status checks:**
    - `Lint & Format Check`
    - `TypeScript Type Check`
@@ -120,16 +127,19 @@ Dependabot is pre-configured in `.github/dependabot.yml` and will:
 ## 🔄 Workflow Triggers
 
 ### **Push to `main`**
+
 ```
 Triggers: Lint → TypeCheck → Test → Build → Security → Deploy Production
 ```
 
 ### **Push to `develop`**
+
 ```
 Triggers: Lint → TypeCheck → Test → Build → Security → Deploy Staging
 ```
 
 ### **Pull Request to `main` or `develop`**
+
 ```
 Triggers: Lint → TypeCheck → Test → Build → E2E → Bundle Analysis
 ```
@@ -139,73 +149,89 @@ Triggers: Lint → TypeCheck → Test → Build → E2E → Bundle Analysis
 ## 📊 Job Details
 
 ### **1. Lint & Format Check**
+
 ```bash
 npm run lint
 npm run format:check
 ```
+
 **Validates**: Code style and formatting consistency
 
 ---
 
 ### **2. TypeScript Type Check**
+
 ```bash
 npx tsc --noEmit
 ```
+
 **Validates**: Type safety across the codebase
 
 ---
 
 ### **3. Unit Tests**
+
 ```bash
 npm test -- --coverage
 ```
+
 **Runs**: Jest tests with 70% coverage threshold  
 **Uploads**: Coverage report to Codecov
 
 ---
 
 ### **4. Build Next.js App**
+
 ```bash
 npm run build
 ```
+
 **Validates**: Production build succeeds  
 **Uploads**: Build artifacts for deployment
 
 ---
 
 ### **5. E2E Tests (Playwright)**
+
 ```bash
 npm run test:e2e
 ```
+
 **Runs**: Chromium-based E2E tests  
 **Uploads**: Test reports and screenshots
 
 ---
 
 ### **6. Security Audit**
+
 ```bash
 npm audit --audit-level=high
 snyk test --severity-threshold=high
 ```
+
 **Checks**: Security vulnerabilities in dependencies  
 **Alert Level**: High severity only
 
 ---
 
 ### **7. Bundle Analysis**
+
 ```bash
 npm run analyze
 ```
+
 **Generates**: Bundle size report  
 **Uploads**: Analysis for review
 
 ---
 
 ### **8. Deploy Production**
+
 **Trigger**: Push to `main`  
 **Target**: Production environment (www.veruspulse.com)  
 **Method**: Self-hosted runner on production server
 **Steps**:
+
 1. Checkout latest code
 2. Install dependencies
 3. Create .env from GitHub secrets
@@ -216,6 +242,7 @@ npm run analyze
 ---
 
 ### **9. Deploy Staging**
+
 **Trigger**: Push to `develop`  
 **Target**: Staging environment  
 **Method**: Self-hosted runner (port 3001)
@@ -249,24 +276,28 @@ npm audit
 ### **Change Node.js Version**
 
 Edit `.github/workflows/ci-cd.yml`:
+
 ```yaml
 env:
-  NODE_VERSION: '20.x'  # Change to your preferred version
+  NODE_VERSION: '20.x' # Change to your preferred version
 ```
 
 ### **Self-Hosted Runner Management**
 
 **View runner status:**
+
 ```bash
 sudo systemctl status actions.runner.YOUR_USERNAME-verus-dapp.veruspulse-production.service
 ```
 
 **View runner logs:**
+
 ```bash
 sudo journalctl -u actions.runner.YOUR_USERNAME-verus-dapp.veruspulse-production.service -f
 ```
 
 **Restart runner:**
+
 ```bash
 cd /home/explorer/actions-runner
 sudo ./svc.sh stop
@@ -274,6 +305,7 @@ sudo ./svc.sh start
 ```
 
 **Remove runner:**
+
 ```bash
 cd /home/explorer/actions-runner
 sudo ./svc.sh stop
@@ -284,6 +316,7 @@ sudo ./svc.sh uninstall
 ### **Add Environment-Specific Jobs**
 
 Example: Add a job for backup before deployment:
+
 ```yaml
 backup-database:
   name: Backup Database
@@ -299,6 +332,7 @@ backup-database:
 ## 📈 Monitoring
 
 ### **View Workflow Runs**
+
 1. Go to repository → **Actions** tab
 2. View current/past runs
 3. Click any job for detailed logs
@@ -306,6 +340,7 @@ backup-database:
 ### **Status Badges**
 
 Add to your README.md:
+
 ```markdown
 [![CI/CD](https://github.com/your-username/verus-dapp/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/verus-dapp/actions/workflows/ci.yml)
 ```
@@ -315,6 +350,7 @@ Add to your README.md:
 Configure in: **Settings → Notifications → Actions**
 
 Options:
+
 - Email on workflow failures
 - Slack integration
 - Discord webhooks
@@ -324,6 +360,7 @@ Options:
 ## 🐛 Troubleshooting
 
 ### **Self-Hosted Runner Not Appearing**
+
 ```bash
 # Check service status
 sudo systemctl status actions.runner.*
@@ -337,12 +374,14 @@ sudo ./svc.sh stop && sudo ./svc.sh start
 ```
 
 ### **Runner is Offline**
+
 1. Check if Verus daemon is running: `ps aux | grep verusd`
 2. Verify network connectivity
 3. Check runner logs for errors
 4. Re-register runner if needed
 
 ### **Build Fails: "Cannot find module"**
+
 ```bash
 # On the self-hosted runner
 cd /home/explorer/verus-dapp
@@ -351,6 +390,7 @@ npm ci
 ```
 
 ### **Deployment Fails: "PM2 command not found"**
+
 ```bash
 # Install PM2 globally
 npm install -g pm2
@@ -360,6 +400,7 @@ npx pm2 start npm --name "veruspulse" -- start
 ```
 
 ### **RPC Connection Error During Build**
+
 ```bash
 # Verify Verus daemon is running
 verus getinfo
@@ -369,6 +410,7 @@ verus getinfo
 ```
 
 ### **Security Audit Fails**
+
 ```bash
 # Review audit report
 npm audit
@@ -380,6 +422,7 @@ npm audit fix
 ```
 
 ### **Deployment Fails: "Missing secrets"**
+
 1. Verify all required secrets are configured
 2. Check secret names match workflow file
 3. Ensure secrets don't contain trailing spaces
@@ -393,7 +436,7 @@ npm audit fix
 ✅ **Rotate tokens regularly** - Update every 90 days  
 ✅ **Use least privilege** - Grant minimum required permissions  
 ✅ **Enable 2FA** - Protect GitHub account  
-✅ **Review Dependabot PRs** - Don't auto-merge blindly  
+✅ **Review Dependabot PRs** - Don't auto-merge blindly
 
 ---
 
@@ -460,6 +503,7 @@ Before going live, ensure:
 ```
 
 **Benefits:**
+
 - ✅ RPC stays localhost-only (no security risks)
 - ✅ No need to expose port 18843 to internet
 - ✅ No VPN or tunneling required
@@ -471,4 +515,3 @@ Before going live, ensure:
 
 **Last Updated**: October 20, 2025  
 **Maintained By**: VerusPulse Team
-

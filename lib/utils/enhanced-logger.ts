@@ -46,7 +46,8 @@ class EnhancedLogger {
 
   constructor() {
     // Set log level from environment variable
-    const envLogLevel = process.env.NEXT_PUBLIC_LOG_LEVEL || process.env.LOG_LEVEL || 'info';
+    const envLogLevel =
+      process.env.NEXT_PUBLIC_LOG_LEVEL || process.env.LOG_LEVEL || 'info';
     this.logLevel = envLogLevel as 'error' | 'warn' | 'info' | 'debug';
     this.showStartupBanner();
   }
@@ -187,7 +188,12 @@ class EnhancedLogger {
     console.log(`${timestamp} ${mainMessage}`);
 
     // Only show details for errors and warnings, or in debug mode
-    if (entry.details && (entry.level === 'ERROR' || entry.level === 'WARN' || this.logLevel === 'debug')) {
+    if (
+      entry.details &&
+      (entry.level === 'ERROR' ||
+        entry.level === 'WARN' ||
+        this.logLevel === 'debug')
+    ) {
       console.log(
         colors.gray(`    Details: ${JSON.stringify(entry.details, null, 2)}`)
       );
@@ -426,7 +432,9 @@ class EnhancedLogger {
     console.log('\n');
     console.log(colors.blue('🚀 VERUS EXPLORER'));
     console.log(colors.gray(`   Log Level: ${this.logLevel.toUpperCase()}`));
-    console.log(colors.gray('   Set NEXT_PUBLIC_LOG_LEVEL=debug for verbose logs\n'));
+    console.log(
+      colors.gray('   Set NEXT_PUBLIC_LOG_LEVEL=debug for verbose logs\n')
+    );
 
     this.bannerShown = true;
   }

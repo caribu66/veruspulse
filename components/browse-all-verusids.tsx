@@ -15,7 +15,12 @@ import {
 import { VerusIDFilters } from './verusid-filters';
 import { VerusIDCardGrid } from './verusid-card-grid';
 import { VerusIDTableView } from './verusid-table-view';
-import { VerusIDBrowseData, FilterState, SortOptions, ViewMode } from '@/lib/types/verusid-browse-types';
+import {
+  VerusIDBrowseData,
+  FilterState,
+  SortOptions,
+  ViewMode,
+} from '@/lib/types/verusid-browse-types';
 import {
   filterIdentitiesByStakeRange,
   filterIdentitiesByAPYRange,
@@ -31,7 +36,9 @@ const ITEMS_PER_PAGE = 50;
 export function BrowseAllVerusIDs() {
   // State management
   const [identities, setIdentities] = useState<VerusIDBrowseData[]>([]);
-  const [rpcSearchResults, setRpcSearchResults] = useState<VerusIDBrowseData[]>([]);
+  const [rpcSearchResults, setRpcSearchResults] = useState<VerusIDBrowseData[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode['mode']>('cards');
@@ -86,43 +93,53 @@ export function BrowseAllVerusIDs() {
 
       if (result?.success && result.data) {
         // Map the browse API response to our expected format
-        const mappedIdentities = result.data.identities.map((identity: any) => ({
-          address: identity.address,
-          baseName: identity.name,
-          friendlyName: identity.friendlyName,
-          displayName: identity.displayName,
-          firstSeenBlock: identity.firstSeenBlock,
-          lastScannedBlock: identity.lastScannedBlock,
-          lastRefreshed: identity.lastRefreshed,
-          totalStakes: identity.totalStakes,
-          totalRewardsVRSC: identity.totalRewardsVRSC,
-          firstStakeTime: null,
-          lastStakeTime: identity.lastStake,
-          apyAllTime: identity.apyAllTime,
-          apyYearly: null,
-          apy90d: null,
-          apy30d: null,
-          apy7d: null,
-          roiAllTime: null,
-          stakingEfficiency: null,
-          avgStakeAge: null,
-          networkRank: identity.networkRank,
-          networkPercentile: null,
-          eligibleUtxos: 0,
-          currentUtxos: 0,
-          cooldownUtxos: 0,
-          totalValueVRSC: identity.totalValueVRSC || 0, // Use actual balance data
-          eligibleValueVRSC: 0,
-          largestUtxoVRSC: 0,
-          smallestEligibleVRSC: 0,
-          highestRewardVRSC: 0,
-          lowestRewardVRSC: 0,
-          lastCalculated: null,
-          dataCompleteness: 100,
-          activityStatus: identity.lastStake ? 'active' : (identity.totalValueVRSC > 0 ? 'active' : 'inactive'),
-          daysSinceLastStake: identity.lastStake ? 
-            Math.floor((Date.now() - new Date(identity.lastStake).getTime()) / (1000 * 60 * 60 * 24)) : null,
-        }));
+        const mappedIdentities = result.data.identities.map(
+          (identity: any) => ({
+            address: identity.address,
+            baseName: identity.name,
+            friendlyName: identity.friendlyName,
+            displayName: identity.displayName,
+            firstSeenBlock: identity.firstSeenBlock,
+            lastScannedBlock: identity.lastScannedBlock,
+            lastRefreshed: identity.lastRefreshed,
+            totalStakes: identity.totalStakes,
+            totalRewardsVRSC: identity.totalRewardsVRSC,
+            firstStakeTime: null,
+            lastStakeTime: identity.lastStake,
+            apyAllTime: identity.apyAllTime,
+            apyYearly: null,
+            apy90d: null,
+            apy30d: null,
+            apy7d: null,
+            roiAllTime: null,
+            stakingEfficiency: null,
+            avgStakeAge: null,
+            networkRank: identity.networkRank,
+            networkPercentile: null,
+            eligibleUtxos: 0,
+            currentUtxos: 0,
+            cooldownUtxos: 0,
+            totalValueVRSC: identity.totalValueVRSC || 0, // Use actual balance data
+            eligibleValueVRSC: 0,
+            largestUtxoVRSC: 0,
+            smallestEligibleVRSC: 0,
+            highestRewardVRSC: 0,
+            lowestRewardVRSC: 0,
+            lastCalculated: null,
+            dataCompleteness: 100,
+            activityStatus: identity.lastStake
+              ? 'active'
+              : identity.totalValueVRSC > 0
+                ? 'active'
+                : 'inactive',
+            daysSinceLastStake: identity.lastStake
+              ? Math.floor(
+                  (Date.now() - new Date(identity.lastStake).getTime()) /
+                    (1000 * 60 * 60 * 24)
+                )
+              : null,
+          })
+        );
         setIdentities(mappedIdentities);
       } else {
         setError(result?.error || 'Failed to load identities');
@@ -138,12 +155,13 @@ export function BrowseAllVerusIDs() {
   const filteredAndSortedIdentities = useMemo(() => {
     // Combine database identities with RPC search results
     let allIdentities = [...identities, ...rpcSearchResults];
-    
+
     // Remove duplicates based on address
-    const uniqueIdentities = allIdentities.filter((identity, index, self) => 
-      index === self.findIndex(id => id.address === identity.address)
+    const uniqueIdentities = allIdentities.filter(
+      (identity, index, self) =>
+        index === self.findIndex(id => id.address === identity.address)
     );
-    
+
     let filtered = uniqueIdentities;
 
     // Apply search
@@ -174,16 +192,25 @@ export function BrowseAllVerusIDs() {
     }
 
     // Apply sorting
-    filtered = sortIdentities(filtered, sortOptions.sortBy, sortOptions.sortOrder);
+    filtered = sortIdentities(
+      filtered,
+      sortOptions.sortBy,
+      sortOptions.sortOrder
+    );
 
     return filtered;
   }, [identities, rpcSearchResults, filters, sortOptions]);
 
   // Pagination
-  const totalPages = Math.ceil(filteredAndSortedIdentities.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(
+    filteredAndSortedIdentities.length / ITEMS_PER_PAGE
+  );
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedIdentities = filteredAndSortedIdentities.slice(startIndex, endIndex);
+  const paginatedIdentities = filteredAndSortedIdentities.slice(
+    startIndex,
+    endIndex
+  );
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -193,7 +220,8 @@ export function BrowseAllVerusIDs() {
   const handleSort = (sortBy: SortOptions['sortBy']) => {
     setSortOptions(prev => ({
       sortBy,
-      sortOrder: prev.sortBy === sortBy && prev.sortOrder === 'asc' ? 'desc' : 'asc',
+      sortOrder:
+        prev.sortBy === sortBy && prev.sortOrder === 'asc' ? 'desc' : 'asc',
     }));
   };
 
@@ -208,7 +236,7 @@ export function BrowseAllVerusIDs() {
       const rpcResult = await searchVerusIDViaRPC(query);
       if (rpcResult) {
         setRpcSearchResults([rpcResult]);
-        
+
         // 🚀 PRIORITY SCANNING: Trigger priority scan for found VerusID
         if (rpcResult.address) {
           try {
@@ -314,7 +342,10 @@ export function BrowseAllVerusIDs() {
         {/* Content Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+            <div
+              key={i}
+              className="bg-slate-800 border border-slate-700 rounded-lg p-4"
+            >
               <div className="animate-pulse">
                 <div className="h-4 bg-slate-700 rounded w-3/4 mb-2"></div>
                 <div className="h-3 bg-slate-700 rounded w-1/2 mb-4"></div>
@@ -337,7 +368,9 @@ export function BrowseAllVerusIDs() {
           <div className="flex items-start space-x-3">
             <WarningCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-1" />
             <div className="flex-1">
-              <h3 className="text-red-400 font-semibold text-lg mb-2">Error Loading Identities</h3>
+              <h3 className="text-red-400 font-semibold text-lg mb-2">
+                Error Loading Identities
+              </h3>
               <p className="text-red-300 text-sm mb-4">{error}</p>
               <button
                 onClick={loadIdentities}
@@ -361,13 +394,16 @@ export function BrowseAllVerusIDs() {
           <div>
             <div className="flex items-center space-x-3 mb-2">
               <Database className="h-8 w-8 text-blue-400" />
-              <h1 className="text-3xl font-bold text-white">Browse All VerusIDs</h1>
+              <h1 className="text-3xl font-bold text-white">
+                Browse All VerusIDs
+              </h1>
             </div>
             <p className="text-blue-200">
-              Explore all registered VerusID identities with comprehensive staking analytics
+              Explore all registered VerusID identities with comprehensive
+              staking analytics
             </p>
           </div>
-          
+
           <div className="flex items-center space-x-3">
             {/* View Toggle */}
             <div className="bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl p-1">
@@ -431,22 +467,29 @@ export function BrowseAllVerusIDs() {
               <UsersThree className="h-4 w-4 text-blue-300" />
               <span className="text-sm text-blue-200">Total Identities</span>
             </div>
-            <div className="text-2xl font-bold text-white">{identities.length}</div>
+            <div className="text-2xl font-bold text-white">
+              {identities.length}
+            </div>
           </div>
           <div className="bg-white/10 rounded-lg p-4">
             <div className="flex items-center space-x-2 mb-1">
               <Eye className="h-4 w-4 text-green-300" />
               <span className="text-sm text-blue-200">Showing</span>
             </div>
-            <div className="text-2xl font-bold text-white">{filteredAndSortedIdentities.length}</div>
+            <div className="text-2xl font-bold text-white">
+              {filteredAndSortedIdentities.length}
+            </div>
           </div>
           <div className="bg-white/10 rounded-lg p-4">
             <div className="flex items-center space-x-2 mb-1">
               <Database className="h-4 w-4 text-purple-300" />
-              <span className="text-sm text-blue-200">Page {currentPage} of {totalPages}</span>
+              <span className="text-sm text-blue-200">
+                Page {currentPage} of {totalPages}
+              </span>
             </div>
             <div className="text-2xl font-bold text-white">
-              {startIndex + 1}-{Math.min(endIndex, filteredAndSortedIdentities.length)}
+              {startIndex + 1}-
+              {Math.min(endIndex, filteredAndSortedIdentities.length)}
             </div>
           </div>
         </div>
@@ -485,13 +528,12 @@ export function BrowseAllVerusIDs() {
                   }`}
                 >
                   <span>{label}</span>
-                  {sortOptions.sortBy === key && (
-                    sortOptions.sortOrder === 'asc' ? (
+                  {sortOptions.sortBy === key &&
+                    (sortOptions.sortOrder === 'asc' ? (
                       <SortAscending className="h-3 w-3" />
                     ) : (
                       <SortDescending className="h-3 w-3" />
-                    )
-                  )}
+                    ))}
                 </button>
               ))}
             </div>
@@ -519,10 +561,11 @@ export function BrowseAllVerusIDs() {
         <div className="bg-slate-900 rounded-2xl border border-slate-700 p-6">
           <div className="flex items-center justify-between">
             <div className="text-sm text-blue-200">
-              Showing {startIndex + 1} to {Math.min(endIndex, filteredAndSortedIdentities.length)} of{' '}
+              Showing {startIndex + 1} to{' '}
+              {Math.min(endIndex, filteredAndSortedIdentities.length)} of{' '}
               {filteredAndSortedIdentities.length} identities
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
@@ -531,7 +574,7 @@ export function BrowseAllVerusIDs() {
               >
                 Previous
               </button>
-              
+
               <div className="flex items-center space-x-1">
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   const pageNum = i + 1;
@@ -565,9 +608,11 @@ export function BrowseAllVerusIDs() {
                   </>
                 )}
               </div>
-              
+
               <button
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                onClick={() =>
+                  setCurrentPage(prev => Math.min(totalPages, prev + 1))
+                }
                 disabled={currentPage === totalPages}
                 className="px-3 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
               >

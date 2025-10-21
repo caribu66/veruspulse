@@ -26,7 +26,14 @@ export function UTXOBubbleChart({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const { bubbles, maxValue, minValue } = useMemo(() => {
-    if (!utxos || utxos.length === 0 || !width || !height || width <= 0 || height <= 0) {
+    if (
+      !utxos ||
+      utxos.length === 0 ||
+      !width ||
+      !height ||
+      width <= 0 ||
+      height <= 0
+    ) {
       return { bubbles: [], maxValue: 0, minValue: 0 };
     }
 
@@ -70,8 +77,12 @@ export function UTXOBubbleChart({
 
       return {
         ...utxo,
-        x: isNaN(x) ? width * 0.5 : Math.max(radius, Math.min(width - radius, x)),
-        y: isNaN(y) ? height * 0.5 : Math.max(radius, Math.min(height - radius, y)),
+        x: isNaN(x)
+          ? width * 0.5
+          : Math.max(radius, Math.min(width - radius, x)),
+        y: isNaN(y)
+          ? height * 0.5
+          : Math.max(radius, Math.min(height - radius, y)),
         radius: isNaN(radius) ? 10 : radius,
       };
     });
@@ -96,7 +107,15 @@ export function UTXOBubbleChart({
   };
 
   // Guard against invalid dimensions or empty data
-  if (bubbles.length === 0 || !width || !height || width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
+  if (
+    bubbles.length === 0 ||
+    !width ||
+    !height ||
+    width <= 0 ||
+    height <= 0 ||
+    isNaN(width) ||
+    isNaN(height)
+  ) {
     return (
       <div
         className={`${className} flex items-center justify-center bg-gray-800/30 rounded-lg`}

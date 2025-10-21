@@ -435,8 +435,8 @@ export function NetworkDashboard({
                           Block Time
                         </div>
                         <div className="text-green-400 text-xs mt-1">
-                          {miningStats?.difficulty 
-                            ? 'Target: 60s ✓' 
+                          {miningStats?.difficulty
+                            ? 'Target: 60s ✓'
                             : 'Real-time calculation'}
                         </div>
                       </div>
@@ -664,7 +664,8 @@ export function NetworkDashboard({
                           Sync Progress
                         </div>
                         <div className="text-yellow-400 text-xs mt-1">
-                          {networkStats?.verificationProgress && networkStats.verificationProgress < 1
+                          {networkStats?.verificationProgress &&
+                          networkStats.verificationProgress < 1
                             ? 'Syncing...'
                             : 'Fully Synced ✓'}
                         </div>
@@ -686,7 +687,9 @@ export function NetworkDashboard({
                           Network Status
                         </div>
                         <div className="text-green-400 text-xs mt-1">
-                          {networkStats?.networkActive ? 'Healthy ✓' : 'Issues Detected'}
+                          {networkStats?.networkActive
+                            ? 'Healthy ✓'
+                            : 'Issues Detected'}
                         </div>
                       </div>
                     </div>

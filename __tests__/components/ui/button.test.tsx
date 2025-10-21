@@ -19,7 +19,7 @@ describe('Button Component', () => {
     it('should apply default variant', () => {
       const { container } = render(<Button>Test</Button>);
       const button = container.querySelector('button');
-      expect(button).toHaveClass('bg-blue-600');
+      expect(button).toHaveClass('bg-verus-blue');
     });
   });
 
@@ -27,7 +27,7 @@ describe('Button Component', () => {
     it('should apply primary variant styles', () => {
       const { container } = render(<Button variant="primary">Primary</Button>);
       const button = container.querySelector('button');
-      expect(button).toHaveClass('bg-blue-600');
+      expect(button).toHaveClass('bg-verus-blue');
     });
 
     it('should apply secondary variant styles', () => {
@@ -35,7 +35,7 @@ describe('Button Component', () => {
         <Button variant="secondary">Secondary</Button>
       );
       const button = container.querySelector('button');
-      expect(button).toHaveClass('bg-slate-800');
+      expect(button).toHaveClass('bg-gray-200');
     });
 
     it('should apply danger variant styles', () => {
@@ -47,7 +47,7 @@ describe('Button Component', () => {
     it('should apply ghost variant styles', () => {
       const { container } = render(<Button variant="ghost">Ghost</Button>);
       const button = container.querySelector('button');
-      expect(button).toHaveClass('hover:bg-slate-800');
+      expect(button).toHaveClass('hover:bg-gray-100');
     });
   });
 

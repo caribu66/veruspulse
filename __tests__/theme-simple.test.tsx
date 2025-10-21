@@ -168,7 +168,7 @@ describe('Theme System Integration', () => {
       const themeToggle = screen.getByRole('button', {
         name: /switch to dark theme/i,
       });
-      expect(themeToggle).toHaveClass('bg-white', 'border-gray-200');
+      expect(themeToggle).toHaveClass('bg-white', 'border-slate-300');
     });
 
     it('should toggle theme when clicking ThemeToggle', async () => {

@@ -262,7 +262,7 @@ describe('ThemeToggleCompact Component', () => {
     );
 
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-white', 'border-gray-200');
+    expect(button).toHaveClass('bg-white', 'border-slate-300');
   });
 
   it('should handle hydration gracefully', async () => {

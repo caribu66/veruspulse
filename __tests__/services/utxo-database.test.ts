@@ -295,9 +295,9 @@ describe('UTXODatabaseService', () => {
     it('should handle null timestamps', async () => {
       const nullTimeUTXO = {
         ...mockUTXO,
-        lastStakeTime: null,
-        cooldownUntilTime: null,
-        spentTime: null,
+        lastStakeTime: undefined,
+        cooldownUntilTime: undefined,
+        spentTime: undefined,
       };
       const nullTimeRow = {
         ...mockUTXORow,

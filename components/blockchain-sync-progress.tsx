@@ -58,7 +58,9 @@ export function BlockchainSyncProgress({
             const blockchainData = data.data;
             const verificationProgress =
               blockchainData.verificationProgress || 0;
-            const syncProgress = Number((verificationProgress * 100).toFixed(1));
+            const syncProgress = Number(
+              (verificationProgress * 100).toFixed(1)
+            );
             const isSynced = syncProgress >= 99.9; // Consider synced at 99.9%
             const initializing =
               blockchainData._raw?.initializing || blockchainData.blocks === 0;
@@ -96,12 +98,7 @@ export function BlockchainSyncProgress({
   }, [refreshInterval]);
 
   // Don't show anything if synced or disconnected
-  if (
-    isLoading ||
-    !syncStatus.connected ||
-    syncStatus.isSynced ||
-    error
-  ) {
+  if (isLoading || !syncStatus.connected || syncStatus.isSynced || error) {
     return null;
   }
 
@@ -122,12 +119,12 @@ export function BlockchainSyncProgress({
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 {syncStatus.initializing
                   ? 'Initializing Blockchain...'
                   : 'Synchronizing Blockchain'}
               </h3>
-              <p className="text-sm text-white/70">
+              <p className="text-sm text-gray-600 dark:text-white/70">
                 {syncStatus.initializing
                   ? 'Loading block index and verifying data'
                   : 'Downloading and verifying blocks'}
@@ -138,14 +135,16 @@ export function BlockchainSyncProgress({
           {/* Connection Info */}
           <div className="hidden sm:flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-2">
-              <Network className="h-4 w-4 text-blue-400" />
-              <span className="text-white/80">
+              <Network className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+              <span className="text-gray-700 dark:text-white/80">
                 {syncStatus.connections} peers
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-blue-400" />
-              <span className="text-white/80">{syncStatus.latency}ms</span>
+              <Clock className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+              <span className="text-gray-700 dark:text-white/80">
+                {syncStatus.latency}ms
+              </span>
             </div>
           </div>
         </div>
@@ -153,13 +152,13 @@ export function BlockchainSyncProgress({
         {/* Progress Bar */}
         <div className="space-y-2">
           {/* Progress Bar Container */}
-          <div className="relative h-8 bg-slate-900/50 rounded-full overflow-hidden border border-blue-500/20">
+          <div className="relative h-8 bg-gray-200 dark:bg-slate-900/50 rounded-full overflow-hidden border border-blue-300/30 dark:border-blue-500/20">
             {/* Animated Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/10 to-transparent animate-shimmer z-0" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/20 dark:via-blue-400/10 to-transparent animate-shimmer z-0" />
 
             {/* Glowing Effect - Behind everything */}
             <div
-              className="absolute inset-y-0 left-0 bg-gradient-to-r from-transparent to-blue-400/30 blur-sm transition-all duration-500 z-0"
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-transparent to-blue-400/40 dark:to-blue-400/30 blur-sm transition-all duration-500 z-0"
               style={{ width: `${progressPercentage}%` }}
             />
 
@@ -171,16 +170,16 @@ export function BlockchainSyncProgress({
 
             {/* Progress Text - Always on top */}
             <div className="absolute inset-0 flex items-center justify-center z-20">
-              <span className="text-white font-bold text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <span className="text-gray-800 dark:text-white font-bold text-sm drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                 {progressPercentage.toFixed(1)}%
               </span>
             </div>
           </div>
 
           {/* Stats Row */}
-          <div className="flex items-center justify-between text-sm text-white/70">
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-white/70">
             <div className="flex items-center space-x-2">
-              <HardDrives className="h-4 w-4 text-blue-400" />
+              <HardDrives className="h-4 w-4 text-blue-500 dark:text-blue-400" />
               <span>
                 {syncStatus.blockHeight.toLocaleString()} blocks processed
               </span>
@@ -195,7 +194,7 @@ export function BlockchainSyncProgress({
 
             <div className="hidden sm:block">
               {progressPercentage > 0 && progressPercentage < 100 && (
-                <span className="text-white/60">
+                <span className="text-gray-500 dark:text-white/60">
                   {progressPercentage < 50
                     ? 'This may take a while...'
                     : progressPercentage < 90
@@ -209,12 +208,14 @@ export function BlockchainSyncProgress({
 
         {/* Info Message */}
         {syncStatus.initializing && (
-          <div className="mt-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-            <p className="text-xs text-white/70 leading-relaxed">
-              <strong className="text-white/90">Note:</strong> Initial
-              synchronization may take some time depending on your connection
-              speed and the blockchain size. The wallet will be fully functional
-              once sync is complete.
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-500/10 rounded-lg border border-blue-200 dark:border-blue-500/20">
+            <p className="text-xs text-gray-600 dark:text-white/70 leading-relaxed">
+              <strong className="text-gray-800 dark:text-white/90">
+                Note:
+              </strong>{' '}
+              Initial synchronization may take some time depending on your
+              connection speed and the blockchain size. The wallet will be fully
+              functional once sync is complete.
             </p>
           </div>
         )}
@@ -244,9 +245,10 @@ export function BlockchainSyncProgressCompact({
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.data) {
-            const verificationProgress =
-              data.data.verificationProgress || 0;
-            const syncProgress = Number((verificationProgress * 100).toFixed(1));
+            const verificationProgress = data.data.verificationProgress || 0;
+            const syncProgress = Number(
+              (verificationProgress * 100).toFixed(1)
+            );
             const isSynced = syncProgress >= 99.9;
 
             setSyncStatus({
@@ -284,4 +286,3 @@ export function BlockchainSyncProgressCompact({
     </div>
   );
 }
-

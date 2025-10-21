@@ -117,7 +117,11 @@ export function HeroSection({
             {/* Verus Logo */}
             <div className="flex justify-center mb-8">
               <Image
-                src="/verus-icon-slogan-blue.svg"
+                src={
+                  theme === 'light'
+                    ? '/verus-icon-slogan-blue.svg'
+                    : '/verus-icon-slogan-white.svg'
+                }
                 alt="Verus Protocol"
                 width={200}
                 height={80}

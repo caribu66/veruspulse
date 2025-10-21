@@ -93,13 +93,17 @@ export function CompactNavigationBar({
         >
           {/* Left: Logo */}
           <div className="flex items-center flex-shrink-0">
-            <div className="relative w-[300px] h-10">
+            <div className="relative h-12 w-auto">
               <Image
-                src="/verus-icon-slogan-blue.svg"
+                src={
+                  theme === 'dark'
+                    ? '/verus-icon-slogan-white.svg'
+                    : '/verus-icon-slogan-blue.svg'
+                }
                 alt="Verus - Truth and Privacy for All"
-                width={300}
-                height={40}
-                className="object-contain"
+                width={200}
+                height={48}
+                className="object-contain h-12"
                 priority
               />
             </div>

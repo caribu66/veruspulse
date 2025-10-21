@@ -387,3 +387,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [⭐ Star this repo](https://github.com/caribu66/veruspulse) | [🐛 Report Bug](https://github.com/caribu66/veruspulse/issues) | [💡 Request Feature](https://github.com/caribu66/veruspulse/issues)
 
 </div>
+# Test trigger

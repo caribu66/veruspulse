@@ -28,6 +28,7 @@ import {
   DownloadSimple,
   ShareNetwork,
   GlobeHemisphereWest,
+  ChartBar,
 } from '@phosphor-icons/react';
 import {
   formatCryptoValue,
@@ -79,7 +80,7 @@ export function VerusIDStakingDashboard({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(['hero', 'performance', 'overview'])
+    new Set(['hero', 'performance', 'overview', 'weekly'])
   );
   const [liveUTXOData, setLiveUTXOData] = useState<any>(null);
   const [achievements, setAchievements] = useState<any>(null);
@@ -286,6 +287,7 @@ export function VerusIDStakingDashboard({
   // Use real data from API
   const utxoHealth = stats.utxoHealth || {};
   const monthlyData = stats.timeSeries?.monthly;
+  const weeklyData = stats.timeSeries?.weekly;
 
   // Create hybrid UTXO health data (database + live)
   const hybridUTXOHealth = {
@@ -448,6 +450,87 @@ export function VerusIDStakingDashboard({
         itemStyle: { color: '#10b981' },
         areaStyle: { color: 'rgba(16, 185, 129, 0.1)' },
       },
+    ],
+  };
+
+  // Weekly rewards chart configuration
+  const weeklyChartOption = {
+    title: {
+      text: `${weeklyData?.length || 0} Weeks of Staking History`,
+      left: 'center',
+      top: 5,
+      textStyle: { color: '#888', fontSize: 12 },
+    },
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+      borderColor: '#3165d4',
+      textStyle: { color: '#fff' },
+      formatter: (params: any) => {
+        const week = params[0].axisValue;
+        const stakes = params[0].value;
+        const rewards = params[1]?.value || 0;
+        return `${week}<br/>Stakes: ${stakes}<br/>Rewards: ${rewards.toFixed(2)} VRSC`;
+      },
+    },
+    legend: {
+      data: ['Stakes', 'Rewards'],
+      textStyle: { color: '#fff' },
+      top: 25,
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '20%',
+      top: '15%',
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'category',
+      data:
+        weeklyData?.map((d: any) =>
+          new Date(d.week).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          })
+        ) || [],
+      axisLine: { lineStyle: { color: '#3165d4' } },
+      axisLabel: { rotate: 45, color: '#888' },
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: 'Stakes',
+        axisLine: { lineStyle: { color: '#3165d4' } },
+        splitLine: { lineStyle: { color: 'rgba(49, 101, 212, 0.1)' } },
+      },
+      {
+        type: 'value',
+        name: 'VRSC',
+        axisLine: { lineStyle: { color: '#ef4444' } },
+        splitLine: { show: false },
+      },
+    ],
+    series: [
+      {
+        name: 'Stakes',
+        type: 'bar',
+        data: weeklyData?.map((d: any) => d.stakeCount) || [],
+        itemStyle: { color: '#3165d4' },
+      },
+      {
+        name: 'Rewards',
+        type: 'line',
+        yAxisIndex: 1,
+        data: weeklyData?.map((d: any) => d.totalRewardsVRSC) || [],
+        itemStyle: { color: '#ef4444' },
+        smooth: true,
+        areaStyle: { opacity: 0.3 },
+      },
+    ],
+    dataZoom: [
+      { type: 'slider', start: 0, end: 100, bottom: 20 },
+      { type: 'inside' },
     ],
   };
 
@@ -1353,6 +1436,135 @@ export function VerusIDStakingDashboard({
                 Darker colors indicate more staking activity on that day
               </div>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Weekly Rewards Chart */}
+      <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden">
+        <button
+          onClick={() => toggleSection('weekly')}
+          className="w-full flex items-center justify-between p-4 sm:p-6 hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center space-x-3">
+            <ChartBar className="h-6 w-6 text-blue-400" />
+            <h4 className="text-xl font-semibold text-white">
+              Weekly Rewards Analysis
+            </h4>
+          </div>
+          {expandedSections.has('weekly') ? (
+            <CaretDown className="h-5 w-5 text-yellow-300" />
+          ) : (
+            <CaretRight className="h-5 w-5 text-yellow-300" />
+          )}
+        </button>
+        {expandedSections.has('weekly') && (
+          <div className="px-4 sm:px-6 pb-4 sm:pb-6 border-t border-white/10 overflow-hidden">
+            {/* Weekly Summary Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 pt-4 sm:pt-6 mb-4 sm:mb-6">
+              <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-lg p-4 border border-blue-500/30">
+                <div className="text-blue-300 text-sm font-medium mb-1">
+                  Total Weeks
+                </div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                  {weeklyData?.length || 0}
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-lg p-4 border border-green-500/30">
+                <div className="text-green-300 text-sm font-medium mb-1">
+                  Avg Weekly Rewards
+                </div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                  {weeklyData && weeklyData.length > 0
+                    ? (
+                        weeklyData.reduce(
+                          (sum: number, week: any) =>
+                            sum + (week.totalRewardsVRSC || 0),
+                          0
+                        ) / weeklyData.length
+                      ).toFixed(2)
+                    : '0.00'}
+                </div>
+                <div className="text-green-300 text-xs mt-1">VRSC</div>
+              </div>
+              <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-lg p-4 border border-purple-500/30">
+                <div className="text-purple-300 text-sm font-medium mb-1">
+                  Best Week
+                </div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                  {weeklyData && weeklyData.length > 0
+                    ? Math.max(
+                        ...weeklyData.map((w: any) => w.totalRewardsVRSC || 0)
+                      ).toFixed(2)
+                    : '0.00'}
+                </div>
+                <div className="text-purple-300 text-xs mt-1">VRSC</div>
+              </div>
+              <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-lg p-4 border border-yellow-500/30">
+                <div className="text-yellow-300 text-sm font-medium mb-1">
+                  Avg Weekly Stakes
+                </div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                  {weeklyData && weeklyData.length > 0
+                    ? (
+                        weeklyData.reduce(
+                          (sum: number, week: any) =>
+                            sum + (week.stakeCount || 0),
+                          0
+                        ) / weeklyData.length
+                      ).toFixed(1)
+                    : '0.0'}
+                </div>
+              </div>
+            </div>
+
+            {/* Weekly Chart */}
+            <div className="pt-6">
+              <h5 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <ChartBar className="h-5 w-5 text-blue-400" />
+                Weekly Staking Performance
+                <span className="text-sm text-gray-400 font-normal ml-2">
+                  ({weeklyData?.length || 0} weeks of data)
+                </span>
+              </h5>
+              <div className="w-full overflow-x-auto">
+                <ReactEChartsCore
+                  echarts={echarts}
+                  option={weeklyChartOption}
+                  style={{ height: '400px', minWidth: '600px' }}
+                />
+              </div>
+            </div>
+
+            {/* Recent Weeks Breakdown */}
+            {weeklyData && weeklyData.length > 0 && (
+              <div className="pt-6 border-t border-white/10">
+                <h5 className="text-lg font-semibold text-white mb-4">
+                  Recent Weeks Breakdown
+                </h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+                  {weeklyData.slice(-8).map((week: any, index: number) => (
+                    <div
+                      key={index}
+                      className="bg-white/5 rounded-lg p-2 sm:p-3 border border-white/10 hover:bg-white/10 transition-colors"
+                    >
+                      <div className="text-blue-300 text-sm sm:text-lg font-bold">
+                        {new Date(week.week).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </div>
+                      <div className="text-white text-sm mt-1">
+                        {week.stakeCount || 0} stakes
+                      </div>
+                      <div className="text-green-400 text-sm font-semibold">
+                        {(week.totalRewardsVRSC || 0).toFixed(2)} VRSC
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

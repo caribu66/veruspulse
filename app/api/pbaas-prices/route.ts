@@ -20,6 +20,21 @@ let cacheTimestamp = 0;
 const CACHE_TTL = 30000; // 30 seconds
 
 export async function GET() {
+  // Check if PBaaS prices are disabled (to reduce daemon load)
+  if (process.env.DISABLE_PBAAS_PRICES === 'true') {
+    return addSecurityHeaders(
+      NextResponse.json({
+        success: true,
+        data: {
+          chains: [],
+          count: 0,
+          timestamp: Date.now(),
+          disabled: true,
+        },
+      })
+    );
+  }
+
   // Return cached data if still fresh
   if (cachedData && Date.now() - cacheTimestamp < CACHE_TTL) {
     logger.info('Returning cached PBaaS prices');

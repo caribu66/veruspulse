@@ -275,9 +275,11 @@ export class ComprehensiveBlockScanner {
     if (isPoS && block.tx && block.tx.length > 0) {
       // First transaction is coinstake
       const coinstake = block.tx[0];
-      if (coinstake.vout && coinstake.vout.length > 1) {
-        const output = coinstake.vout[1];
+      if (coinstake.vout && coinstake.vout.length > 0) {
+        // Check both first and second outputs for staker address
+        const output = coinstake.vout[0] || coinstake.vout[1];
         if (
+          output &&
           output.scriptPubKey?.addresses &&
           output.scriptPubKey.addresses.length > 0
         ) {
@@ -350,10 +352,12 @@ export class ComprehensiveBlockScanner {
     const coinstake = block.tx[0];
 
     // Extract staker address and reward
-    if (coinstake.vout && coinstake.vout.length > 1) {
-      const output = coinstake.vout[1];
+    if (coinstake.vout && coinstake.vout.length > 0) {
+      // Check both first and second outputs for staker address
+      const output = coinstake.vout[0] || coinstake.vout[1];
 
       if (
+        output &&
         output.scriptPubKey?.addresses &&
         output.scriptPubKey.addresses.length > 0
       ) {
@@ -364,7 +368,12 @@ export class ComprehensiveBlockScanner {
           return events;
         }
 
-        const rewardAmount = block.stakeRewardInfo?.rewardAmount || 0;
+        // Calculate reward amount from transaction outputs
+        const totalOutput = coinstake.vout.reduce((sum: number, vout: any) => {
+          return sum + (vout.value || 0) * 100000000; // Convert to satoshis
+        }, 0);
+
+        const rewardAmount = totalOutput;
         const stakeAmount = block.stakeAmount || 0;
         const stakeAge = block.stakeAge || 0;
 
@@ -373,7 +382,7 @@ export class ComprehensiveBlockScanner {
           txid: coinstake.txid,
           blockHeight: block.height,
           blockTime: new Date(block.time * 1000),
-          rewardAmount: Math.floor(rewardAmount * 100000000),
+          rewardAmount: Math.floor(rewardAmount),
           stakeAmount: Math.floor(stakeAmount * 100000000),
           stakeAge,
         });
@@ -448,10 +457,10 @@ export class ComprehensiveBlockScanner {
    */
   private async storeStakeEvent(event: StakeEvent): Promise<void> {
     const query = `
-      INSERT INTO stake_events (
-        address, txid, block_height, block_time,
-        reward_amount, stake_amount, stake_age, staking_probability
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO staking_rewards (
+        identity_address, txid, block_height, block_time,
+        amount_sats, stake_amount, stake_age
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       ON CONFLICT (txid) DO NOTHING
     `;
 
@@ -463,7 +472,6 @@ export class ComprehensiveBlockScanner {
       event.rewardAmount,
       event.stakeAmount,
       event.stakeAge,
-      0, // staking_probability - calculate later
     ]);
   }
 

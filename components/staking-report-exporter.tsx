@@ -137,11 +137,13 @@ export function StakingReportExporter({
       {/* Export Button */}
       <button
         onClick={() => setShowExportMenu(!showExportMenu)}
-        className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-lg"
+        className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-verus-blue/20 to-verus-green/20 hover:from-verus-blue/30 hover:to-verus-green/30 text-white rounded-xl border border-verus-blue/30 hover:border-verus-blue/50 transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm"
         disabled={exporting}
       >
         <DownloadSimple className="h-4 w-4" />
-        <span>{exporting ? 'Exporting...' : 'Export Data'}</span>
+        <span className="text-sm sm:text-base font-medium">
+          {exporting ? 'Exporting...' : 'Export Data'}
+        </span>
       </button>
 
       {/* Export Menu */}
@@ -154,26 +156,26 @@ export function StakingReportExporter({
           ></div>
 
           {/* Menu */}
-          <div className="absolute top-full right-0 mt-2 w-72 bg-gray-100 dark:bg-gray-900 border border-gray-700 rounded-lg shadow-2xl z-50 overflow-hidden">
+          <div className="absolute top-full right-0 mt-2 w-72 bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden">
             {/* Header */}
-            <div className="bg-blue-500/20 border-b border-gray-700 p-4 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-verus-blue/20 to-verus-green/20 border-b border-slate-700 p-4 flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <DownloadSimple className="h-5 w-5 text-blue-400" />
+                <DownloadSimple className="h-5 w-5 text-verus-blue" />
                 <span className="font-semibold text-white">Export Options</span>
               </div>
               <button
                 onClick={() => setShowExportMenu(false)}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* Options */}
-            <div className="p-2">
+            <div className="p-3 space-y-2">
               <button
                 onClick={exportToCSV}
-                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 rounded-lg transition-colors text-left group"
+                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 rounded-xl transition-all duration-200 text-left group border border-transparent hover:border-green-500/30"
                 disabled={exporting}
               >
                 <div className="p-2 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 transition-colors">
@@ -181,7 +183,7 @@ export function StakingReportExporter({
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-medium">CSV Export</div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-slate-400">
                     Monthly staking data
                   </div>
                 </div>
@@ -189,21 +191,21 @@ export function StakingReportExporter({
 
               <button
                 onClick={exportTaxReport}
-                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 rounded-lg transition-colors text-left group mt-1"
+                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 rounded-xl transition-all duration-200 text-left group border border-transparent hover:border-verus-teal/30"
                 disabled={exporting}
               >
-                <div className="p-2 bg-verus-teal/20 rounded-lg group-hover:bg-yellow-500/30 transition-colors">
+                <div className="p-2 bg-verus-teal/20 rounded-lg group-hover:bg-verus-teal/30 transition-colors">
                   <Calculator className="h-5 w-5 text-verus-teal" />
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-medium">Tax Report</div>
-                  <div className="text-xs text-gray-400">For tax purposes</div>
+                  <div className="text-xs text-slate-400">For tax purposes</div>
                 </div>
               </button>
 
               <button
                 onClick={exportToPDF}
-                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 rounded-lg transition-colors text-left group mt-1"
+                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 rounded-xl transition-all duration-200 text-left group border border-transparent hover:border-red-500/30"
                 disabled={exporting}
               >
                 <div className="p-2 bg-red-500/20 rounded-lg group-hover:bg-red-500/30 transition-colors">
@@ -211,22 +213,22 @@ export function StakingReportExporter({
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-medium">PDF Report</div>
-                  <div className="text-xs text-gray-400">Coming soon</div>
+                  <div className="text-xs text-slate-400">Coming soon</div>
                 </div>
               </button>
 
-              <div className="border-t border-gray-700 my-2"></div>
+              <div className="border-t border-slate-700 my-3"></div>
 
               <button
                 onClick={generateShareLink}
-                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 rounded-lg transition-colors text-left group"
+                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 rounded-xl transition-all duration-200 text-left group border border-transparent hover:border-verus-blue/30"
               >
-                <div className="p-2 bg-verus-blue/20 rounded-lg group-hover:bg-verus-blue/20 transition-colors">
+                <div className="p-2 bg-verus-blue/20 rounded-lg group-hover:bg-verus-blue/30 transition-colors">
                   <ShareNetwork className="h-5 w-5 text-verus-blue" />
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-medium">Share Link</div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-slate-400">
                     Copy link to clipboard
                   </div>
                 </div>
@@ -234,8 +236,8 @@ export function StakingReportExporter({
             </div>
 
             {/* Footer */}
-            <div className="bg-gray-800/50 border-t border-gray-700 p-3">
-              <p className="text-xs text-gray-400 text-center">
+            <div className="bg-slate-800/50 border-t border-slate-700 p-3">
+              <p className="text-xs text-slate-400 text-center">
                 Export your staking data for analysis or tax purposes
               </p>
             </div>

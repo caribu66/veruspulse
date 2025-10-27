@@ -177,11 +177,13 @@ export function TransactionsExplorer() {
   }
 
   return (
-    <div className="space-y-6 text-white dark:text-white text-slate-900">
+    <div className="space-y-6 text-white dark:text-white text-slate-900 px-4 md:px-0">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold">Transactions Explorer</h2>
+          <h2 className="text-xl md:text-3xl font-bold">
+            Transactions Explorer
+          </h2>
           <p className="text-blue-200 dark:text-blue-200 text-blue-600 text-sm mt-1">
             Explore Verus blockchain transactions and UTXO movements
           </p>
@@ -265,8 +267,8 @@ export function TransactionsExplorer() {
       </div>
 
       {/* Transactions Table */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-6 border border-slate-300 dark:border-slate-700">
+        <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4">
           Recent Transactions
         </h3>
 

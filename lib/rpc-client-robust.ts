@@ -358,6 +358,8 @@ class VerusAPIClient {
   }
 
   async getAddressUTXOs(address: string, signal?: AbortSignal) {
+    // Use getaddressutxos RPC method for accurate UTXO data
+    // getaddressutxos ({"addresses": [address]})
     return this.call('getaddressutxos', [{ addresses: [address] }], signal);
   }
 
@@ -554,6 +556,45 @@ class VerusAPIClient {
     if (startHeight !== undefined) params.push(startHeight);
     if (endHeight !== undefined) params.push(endHeight);
     return this.call('getidentityhistory', params, signal);
+  }
+
+  /**
+   * Extract creation block from identity history
+   * The first entry in history array is the creation block
+   */
+  async getIdentityCreationBlock(
+    name: string,
+    signal?: AbortSignal
+  ): Promise<{
+    creationBlock: number;
+    creationTxid: string;
+    creationBlockhash: string;
+  } | null> {
+    try {
+      const history = await this.getIdentityHistory(
+        name,
+        undefined,
+        undefined,
+        signal
+      );
+
+      if (!history || !history.history || history.history.length === 0) {
+        logger.warn(`No history found for identity: ${name}`);
+        return null;
+      }
+
+      // First entry in history is the creation
+      const firstEntry = history.history[0];
+
+      return {
+        creationBlock: firstEntry.height,
+        creationTxid: firstEntry.output?.txid || firstEntry.txid,
+        creationBlockhash: firstEntry.blockhash,
+      };
+    } catch (error) {
+      logger.error(`Failed to get creation block for ${name}:`, error);
+      return null;
+    }
   }
 
   async getCurrencyDefinition(currencyId: string, signal?: AbortSignal) {

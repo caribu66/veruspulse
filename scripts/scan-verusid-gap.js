@@ -103,10 +103,11 @@ async function getBlock(height) {
   return await rpcCall('getblock', [blockHash, 2]); // 2 = full transaction data
 }
 
-// Check if block is a PoS block and extract I-address
+// Check if block is a PoS block and extract staker address (I or R address)
+// Using Oink70's proven method: block.validationtype === 'stake'
 function extractStakingInfo(block) {
-  // PoS blocks have blocktype: "minted"
-  if (block.blocktype !== 'minted') {
+  // OINK70'S PROVEN METHOD: Only validationtype="stake" is PoS
+  if (block.validationtype !== 'stake') {
     return null;
   }
 
@@ -117,21 +118,28 @@ function extractStakingInfo(block) {
 
   const coinstake = block.tx[0];
 
-  // Get the first output address (the staker)
+  // Get the first output address (the staker) - can be I-address OR R-address
   if (coinstake.vout && coinstake.vout.length > 0) {
     for (const vout of coinstake.vout) {
-      if (vout.scriptPubKey && vout.scriptPubKey.addresses) {
+      if (
+        vout.scriptPubKey &&
+        vout.scriptPubKey.addresses &&
+        vout.scriptPubKey.addresses.length > 0
+      ) {
         const address = vout.scriptPubKey.addresses[0];
         // Only interested in I-addresses (VerusIDs)
         if (address && address.startsWith('i')) {
-          return {
-            identityAddress: address,
-            blockHeight: block.height,
-            blockTime: new Date(block.time * 1000),
-            blockHash: block.hash,
-            txid: coinstake.txid,
-            amountSats: Math.floor(vout.value * 100000000),
-          };
+          // Only count non-zero value outputs (the actual stake reward)
+          if (vout.value > 0) {
+            return {
+              identityAddress: address,
+              blockHeight: block.height,
+              blockTime: new Date(block.time * 1000),
+              blockHash: block.hash,
+              txid: coinstake.txid,
+              amountSats: Math.floor(vout.value * 100000000),
+            };
+          }
         }
       }
     }
@@ -144,19 +152,19 @@ function extractStakingInfo(block) {
 async function storeStakingReward(reward) {
   const query = `
     INSERT INTO staking_rewards (
-      identity_address, block_height, block_time, block_hash, 
-      txid, amount_sats, created_at
+      identity_address, txid, vout, block_height, block_time, block_hash, 
+      amount_sats, classifier, source_address
     )
-    VALUES ($1, $2, $3, $4, $5, $6, NOW())
-    ON CONFLICT (block_height) DO NOTHING
+    VALUES ($1, $2, 0, $3, $4, $5, $6, 'coinbase', $1)
+    ON CONFLICT (txid, vout) DO NOTHING
   `;
 
   await pool.query(query, [
     reward.identityAddress,
+    reward.txid,
     reward.blockHeight,
     reward.blockTime,
     reward.blockHash,
-    reward.txid,
     reward.amountSats,
   ]);
 }
@@ -250,6 +258,9 @@ async function processBlockRange(start, end) {
         error.message
       );
     }
+
+    // Add delay between batches to avoid hammering daemon
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
 
   return { processed, stakes, errors };
@@ -268,6 +279,11 @@ async function processChunk(start, end) {
         await storeStakingReward(stakeInfo);
         await storeIdentity(stakeInfo.identityAddress, height);
         stakes++;
+      }
+
+      // Small delay to avoid hammering RPC
+      if (height % 100 === 0) {
+        await new Promise(resolve => setTimeout(resolve, 10));
       }
     } catch (error) {
       // Skip blocks that can't be retrieved (might not exist yet)

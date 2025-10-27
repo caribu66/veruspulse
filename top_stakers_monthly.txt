@@ -1,0 +1,104 @@
+  month  |        friendly_name         | stake_count 
+---------+------------------------------+-------------
+ 2025-10 | LuckPool.VRSC@               |        3294
+ 2025-10 | Verus Development Fund.VRSC@ |         833
+ 2025-10 | Verus Coin Foundation.VRSC@  |         620
+ 2025-10 | staker.VRSC@                 |         299
+ 2025-10 | Verus Community Pool.VRSC@   |         202
+ 2025-10 | RockPi.VRSC@                 |         168
+ 2025-10 | whale.VRSC@                  |          52
+ 2025-09 | LuckPool.VRSC@               |        5800
+ 2025-09 | Verus Development Fund.VRSC@ |         965
+ 2025-09 | Verus Coin Foundation.VRSC@  |         770
+ 2025-09 | staker.VRSC@                 |         401
+ 2025-09 | Verus Community Pool.VRSC@   |         339
+ 2025-09 | whale.VRSC@                  |         312
+ 2025-09 | RockPi.VRSC@                 |         194
+ 2025-08 | LuckPool.VRSC@               |        7062
+ 2025-08 | Verus Development Fund.VRSC@ |        1316
+ 2025-08 | Verus Coin Foundation.VRSC@  |         806
+ 2025-08 | Verus Community Pool.VRSC@   |         454
+ 2025-08 | staker.VRSC@                 |         429
+ 2025-08 | RockPi.VRSC@                 |         189
+ 2025-08 | whale.VRSC@                  |          77
+ 2025-08 | unknown.VRSC@                |           5
+ 2025-07 | LuckPool.VRSC@               |        7688
+ 2025-07 | Verus Development Fund.VRSC@ |        1115
+ 2025-07 | Verus Coin Foundation.VRSC@  |        1039
+ 2025-07 | whale.VRSC@                  |         660
+ 2025-07 | Verus Community Pool.VRSC@   |         494
+ 2025-07 | staker.VRSC@                 |         321
+ 2025-07 | unknown.VRSC@                |         225
+ 2025-07 | RockPi.VRSC@                 |         179
+ 2025-06 | LuckPool.VRSC@               |        7305
+ 2025-06 | Verus Development Fund.VRSC@ |        1002
+ 2025-06 | Verus Coin Foundation.VRSC@  |         893
+ 2025-06 | whale.VRSC@                  |         806
+ 2025-06 | unknown.VRSC@                |         627
+ 2025-06 | Verus Community Pool.VRSC@   |         547
+ 2025-06 | staker.VRSC@                 |         293
+ 2025-06 | RockPi.VRSC@                 |         151
+ 2025-05 | LuckPool.VRSC@               |        4341
+ 2025-05 | Verus Development Fund.VRSC@ |        1075
+ 2025-05 | Verus Coin Foundation.VRSC@  |         811
+ 2025-05 | unknown.VRSC@                |         695
+ 2025-05 | whale.VRSC@                  |         457
+ 2025-05 | Verus Community Pool.VRSC@   |         341
+ 2025-05 | staker.VRSC@                 |         284
+ 2025-05 | RockPi.VRSC@                 |         172
+ 2025-04 | LuckPool.VRSC@               |        3789
+ 2025-04 | Verus Development Fund.VRSC@ |        1024
+ 2025-04 | Verus Coin Foundation.VRSC@  |         732
+ 2025-04 | unknown.VRSC@                |         698
+ 2025-04 | whale.VRSC@                  |         560
+ 2025-04 | staker.VRSC@                 |         326
+ 2025-04 | Verus Community Pool.VRSC@   |         288
+ 2025-04 | RockPi.VRSC@                 |          85
+ 2025-03 | LuckPool.VRSC@               |        3395
+ 2025-03 | Verus Development Fund.VRSC@ |        1129
+ 2025-03 | Verus Coin Foundation.VRSC@  |         699
+ 2025-03 | unknown.VRSC@                |         684
+ 2025-03 | whale.VRSC@                  |         557
+ 2025-03 | staker.VRSC@                 |         291
+ 2025-03 | Verus Community Pool.VRSC@   |         279
+ 2025-03 | RockPi.VRSC@                 |         132
+ 2025-02 | LuckPool.VRSC@               |        3466
+ 2025-02 | Verus Development Fund.VRSC@ |         843
+ 2025-02 | unknown.VRSC@                |         678
+ 2025-02 | Verus Coin Foundation.VRSC@  |         628
+ 2025-02 | whale.VRSC@                  |         545
+ 2025-02 | staker.VRSC@                 |         299
+ 2025-02 | Verus Community Pool.VRSC@   |         280
+ 2025-02 | RockPi.VRSC@                 |         134
+ 2025-01 | LuckPool.VRSC@               |        4222
+ 2025-01 | Verus Development Fund.VRSC@ |         992
+ 2025-01 | unknown.VRSC@                |         749
+ 2025-01 | Verus Coin Foundation.VRSC@  |         679
+ 2025-01 | whale.VRSC@                  |         639
+ 2025-01 | staker.VRSC@                 |         316
+ 2025-01 | Verus Community Pool.VRSC@   |         252
+ 2025-01 | RockPi.VRSC@                 |         140
+ 2024-12 | LuckPool.VRSC@               |        5023
+ 2024-12 | Verus Development Fund.VRSC@ |         880
+ 2024-12 | unknown.VRSC@                |         739
+ 2024-12 | whale.VRSC@                  |         717
+ 2024-12 | Verus Coin Foundation.VRSC@  |         645
+ 2024-12 | staker.VRSC@                 |         289
+ 2024-12 | Verus Community Pool.VRSC@   |         260
+ 2024-12 | RockPi.VRSC@                 |         164
+ 2024-11 | LuckPool.VRSC@               |        6614
+ 2024-11 | Verus Development Fund.VRSC@ |         877
+ 2024-11 | whale.VRSC@                  |         772
+ 2024-11 | unknown.VRSC@                |         771
+ 2024-11 | Verus Coin Foundation.VRSC@  |         696
+ 2024-11 | Verus Community Pool.VRSC@   |         319
+ 2024-11 | staker.VRSC@                 |         301
+ 2024-11 | RockPi.VRSC@                 |         149
+ 2024-10 | LuckPool.VRSC@               |        9581
+ 2024-10 | Verus Coin Foundation.VRSC@  |         942
+ 2024-10 | Verus Development Fund.VRSC@ |         860
+ 2024-10 | whale.VRSC@                  |         567
+ 2024-10 | Verus Community Pool.VRSC@   |         498
+ 2024-10 | staker.VRSC@                 |         271
+(100 rows)
+

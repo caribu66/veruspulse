@@ -236,7 +236,7 @@ export function VerusIDDetailsView({
         )}
 
         {activeTab === 'utxo' && (
-          <div role="tabpanel">
+          <div role="tabpanel" className="w-full overflow-x-hidden">
             <Suspense fallback={<TabSkeleton />}>
               {loadedTabs.has('utxo') && verusID && (
                 <VerusIDUTXOAnalytics iaddr={verusID.identityaddress} />

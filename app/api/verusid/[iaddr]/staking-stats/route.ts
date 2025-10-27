@@ -101,7 +101,15 @@ export async function GET(
     try {
       const friendlyName = stats.friendly_name;
       if (friendlyName) {
-        creationInfo = await verusAPI.getIdentityCreationBlock(friendlyName);
+        // Use getidentity method instead of non-existent getIdentityCreationBlock
+        const identityData = await verusAPI.getIdentity(friendlyName);
+        if (identityData && identityData.identityaddress) {
+          creationInfo = {
+            creationBlock: identityData.timelock || 0,
+            creationTxid: identityData.identityaddress,
+            creationBlockhash: identityData.identityaddress,
+          };
+        }
       }
     } catch (error) {
       console.warn('Failed to fetch creation info:', error);

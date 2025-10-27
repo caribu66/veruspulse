@@ -1,0 +1,9 @@
+📊 Joanna@ Staking Report for Wallet Comparison
+
+📋 Summary:
+  Total Stakes: 308
+  Block Range: 1077805 to 3767983
+  Time Range: 2020-07-01 to 2025-10-12
+
+📊 By Era:
+❌ Error: preHalving.reduce(...).toFixed is not a function

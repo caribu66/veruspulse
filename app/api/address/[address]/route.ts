@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
+import { verusClientWithFallback } from '@/lib/rpc-client-with-fallback';
 
 export async function GET(
   request: NextRequest,
@@ -20,8 +21,8 @@ export async function GET(
 
     // Get address balance and transaction count
     const [balance, txids] = await Promise.allSettled([
-      verusAPI.getAddressBalance(address),
-      verusAPI.getAddressTxids(address),
+      verusClientWithFallback.getAddressBalance(address),
+      verusAPI.getAddressTxids(address), // Keep using direct API for txids as fallback doesn't support this
     ]);
 
     let balanceData = { balance: 0, received: 0, sent: 0, txcount: 0 };

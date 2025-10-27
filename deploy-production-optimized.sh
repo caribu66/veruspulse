@@ -243,3 +243,7 @@ echo "  2. Configure firewall: sudo ufw allow 3000/tcp"
 echo "  3. Setup SSL/HTTPS if needed"
 echo ""
 echo "================================================"
+
+
+
+

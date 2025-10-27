@@ -74,7 +74,7 @@ export function Card({
     none: '',
     lift: 'hover:shadow-2xl hover:-translate-y-0.5',
     glow: 'hover:border-verus-blue/60 hover:shadow-lg',
-    brighten: 'hover:bg-gray-50 dark:hover:bg-slate-800',
+    brighten: 'hover:bg-slate-700 dark:hover:bg-slate-700',
   };
 
   // Clickable cursor

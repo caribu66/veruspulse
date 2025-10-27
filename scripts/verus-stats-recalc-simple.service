@@ -1,0 +1,24 @@
+[Unit]
+Description=VerusPulse Statistics Auto-Recalculation Service
+Documentation=https://github.com/your-username/verus-dapp
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=explorer
+Group=explorer
+WorkingDirectory=/home/explorer/verus-dapp
+ExecStart=/usr/bin/node scripts/auto-recalculate-stats.js
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=verus-stats-recalc
+
+# Environment variables
+Environment=NODE_ENV=production
+Environment=DATABASE_URL=postgres://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db
+
+[Install]
+WantedBy=multi-user.target

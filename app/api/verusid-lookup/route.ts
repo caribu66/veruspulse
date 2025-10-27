@@ -89,6 +89,8 @@ export async function POST(request: NextRequest) {
 
     // Build result from cache or RPC response
     let result;
+    let creationInfo = null;
+
     if (cachedIdentity) {
       // Use cached data - construct response format
       result = {
@@ -118,6 +120,20 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString(),
         cached: false,
       };
+
+      // Extract creation block from history if available
+      if (
+        result.history &&
+        result.history.history &&
+        result.history.history.length > 0
+      ) {
+        const firstEntry = result.history.history[0];
+        creationInfo = {
+          creationBlock: firstEntry.height,
+          creationTxid: firstEntry.output?.txid || firstEntry.txid,
+          creationBlockhash: firstEntry.blockhash,
+        };
+      }
 
       // Cache the newly fetched identity
       if (result.identity) {
@@ -253,9 +269,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Add creation info to result if available
+    const responseData = {
+      ...result,
+      ...(creationInfo && { creationInfo }),
+    };
+
     const response = NextResponse.json({
       success: true,
-      data: result,
+      data: responseData,
     });
 
     return addSecurityHeaders(response);

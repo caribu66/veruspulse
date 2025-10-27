@@ -128,7 +128,10 @@ async function scanAddress(address, name, currentHeight) {
                           new Date(
                             (rawTx.time || block.time) * 1000
                           ).toISOString(),
-                          Math.round(vout.value * 100000000),
+                          // Fix for data corruption: Handle both VRSC and satoshi units
+                          vout.value > 1000
+                            ? Math.round(vout.value)
+                            : Math.round(vout.value * 100000000),
                           'coinbase',
                           address,
                         ]

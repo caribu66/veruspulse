@@ -111,13 +111,19 @@ export async function GET() {
                 }
               }
             } catch (error) {
-              logger.warn('⚠️ Background supply fetch failed:', error);
+              logger.warn(
+                '⚠️ Background supply fetch failed:',
+                error instanceof Error ? error.message : String(error)
+              );
             }
           });
         }
       } catch (error) {
         blockchainData.circulatingSupply = 0;
-        logger.warn('⚠️ Error getting supply - using 0:', error);
+        logger.warn(
+          '⚠️ Error getting supply - using 0:',
+          error instanceof Error ? error.message : String(error)
+        );
       }
     }
 
@@ -214,7 +220,10 @@ export async function GET() {
           logger.info(`🔄 Using fallback block time: 60s`);
         }
       } catch (error) {
-        logger.warn('⚠️ Failed to calculate block time:', error);
+        logger.warn(
+          '⚠️ Failed to calculate block time:',
+          error instanceof Error ? error.message : String(error)
+        );
         // Fallback: use 60 seconds as default for Verus
         averageBlockTime = 60;
         logger.info(`🔄 Using fallback block time: 60s`);

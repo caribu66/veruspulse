@@ -45,7 +45,7 @@ import { VerusIDSyncStatus } from './verusid-sync-status';
 import { VerusIDUTXOAnalytics } from './verusid-utxo-analytics';
 import { VerusIDAchievements } from './verusid-achievements';
 import { VerusIDIdentityDetails } from './verusid-identity-details';
-import { VerusIDScanProgress } from './verusid-scan-progress';
+// import { VerusIDScanProgress } from './verusid-scan-progress';
 import { Tabs, TabPanel } from './ui/tabs';
 
 interface VerusID {
@@ -887,26 +887,17 @@ export function VerusIDExplorer() {
         </div>
       )}
 
-      {/* Scan Progress */}
+      {/* Scan Progress - Temporarily disabled */}
       {showScanProgress && (
         <div className="space-y-6">
-          <VerusIDScanProgress
-            verusidName={identity}
-            onComplete={result => {
-              console.log('✅ Scan completed:', result);
-              setScanResult(result);
-              setShowScanProgress(false);
-              // Re-trigger the search to load the now-scanned VerusID
-              setTimeout(() => {
-                searchIdentity();
-              }, 1000);
-            }}
-            onError={error => {
-              console.error('❌ Scan failed:', error);
-              setShowScanProgress(false);
-              setError(`Scan failed: ${error}`);
-            }}
-          />
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-6 text-center">
+            <div className="text-blue-400 font-semibold mb-2">
+              Scan Progress
+            </div>
+            <div className="text-blue-200 text-sm">
+              Scan functionality is temporarily disabled during deployment.
+            </div>
+          </div>
         </div>
       )}
 

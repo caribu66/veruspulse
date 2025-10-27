@@ -346,10 +346,10 @@ export function MempoolExplorer() {
 
             {/* Export Controls */}
             <div className="flex items-center space-x-2">
-              <DownloadSimple className="h-4 w-4 text-blue-400" />
+              <DownloadSimple className="h-4 w-4 text-verus-blue" />
               <button
                 onClick={exportToJSON}
-                className="px-2 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 text-xs rounded transition-colors"
+                className="px-3 py-1.5 bg-gradient-to-r from-blue-500/20 to-blue-600/20 hover:from-blue-500/30 hover:to-blue-600/30 text-blue-400 text-xs font-medium rounded-lg border border-blue-500/30 hover:border-blue-500/50 transition-all duration-200"
               >
                 JSON
               </button>

@@ -28,7 +28,7 @@ import { useSmartInterval } from '@/lib/hooks/use-interval';
 import { usePerformanceMonitor } from '@/lib/hooks/use-performance-monitor';
 import { useScreenReaderAnnouncement } from '@/lib/hooks/use-screen-reader-announcement';
 import { useApiFetch } from '@/lib/hooks/use-retryable-fetch';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { EnhancedNavigationBar } from './enhanced-navigation-bar';
 import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 import { BlockchainSyncProgress } from './blockchain-sync-progress';
@@ -105,6 +105,7 @@ function normalizeLegacyTab(tab: string): ExplorerTab {
 export function VerusExplorer() {
   const [activeTab, setActiveTab] = useState<ExplorerTab>('dashboard');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addToHistory, initializeHistory } = useNavigationHistory();
 
   // Performance monitoring
@@ -409,6 +410,15 @@ export function VerusExplorer() {
     },
   });
 
+  // Initialize active tab from URL parameters
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      const normalizedTab = normalizeLegacyTab(tabParam);
+      setActiveTab(normalizedTab);
+    }
+  }, [searchParams]);
+
   // Manual initial fetch to avoid immediate interval execution
   useEffect(() => {
     // Force immediate data fetch with initial load flag
@@ -505,13 +515,13 @@ export function VerusExplorer() {
                   onClick={() => {
                     /* Show blocks */
                   }}
-                  className="p-6 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm rounded-xl border border-slate-300 dark:border-white/10 transition-all text-left group"
+                  className="p-6 bg-slate-800 border border-slate-600 hover:bg-slate-700 rounded-xl transition-all text-left group"
                 >
                   <Database className="h-8 w-8 mb-3 text-blue-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-semibold mb-1 text-white">
                     Blocks
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-slate-300">
                     Browse blockchain blocks
                   </p>
                 </button>
@@ -520,13 +530,13 @@ export function VerusExplorer() {
                   onClick={() => {
                     /* Show transactions */
                   }}
-                  className="p-6 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm rounded-xl border border-slate-300 dark:border-white/10 transition-all text-left group"
+                  className="p-6 bg-slate-800 border border-slate-600 hover:bg-slate-700 rounded-xl transition-all text-left group"
                 >
                   <Pulse className="h-8 w-8 mb-3 text-verus-blue group-hover:scale-110 transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-semibold mb-1 text-white">
                     Transactions
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-slate-300">
                     View transaction history
                   </p>
                 </button>
@@ -535,13 +545,13 @@ export function VerusExplorer() {
                   onClick={() => {
                     /* Show addresses */
                   }}
-                  className="p-6 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm rounded-xl border border-slate-300 dark:border-white/10 transition-all text-left group"
+                  className="p-6 bg-slate-800 border border-slate-600 hover:bg-slate-700 rounded-xl transition-all text-left group"
                 >
                   <User className="h-8 w-8 mb-3 text-green-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-semibold mb-1 text-white">
                     Addresses
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-slate-300">
                     Explore wallet addresses
                   </p>
                 </button>
@@ -556,9 +566,11 @@ export function VerusExplorer() {
 
         case 'verusids':
           return (
-            <Suspense fallback={<ComponentSkeleton />}>
-              <VerusIDExplorer />
-            </Suspense>
+            <div className="space-y-6">
+              <Suspense fallback={<ComponentSkeleton />}>
+                <VerusIDExplorer />
+              </Suspense>
+            </div>
           );
 
         default:
@@ -600,6 +612,8 @@ export function VerusExplorer() {
     fetchRealStats,
     startRender,
     endRender,
+    handleTabChange,
+    isBackgroundRefreshing,
   ]);
 
   return (
@@ -616,7 +630,7 @@ export function VerusExplorer() {
       <aside
         role="complementary"
         aria-label="Network status"
-        className="max-w-7xl mx-auto px-6 pt-6"
+        className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6"
       >
         {/* Blockchain Sync Progress */}
         <BlockchainSyncProgress className="mb-4" />
@@ -645,11 +659,11 @@ export function VerusExplorer() {
         id="main-content"
         role="main"
         aria-label="Main content"
-        className="max-w-7xl mx-auto px-6 py-12"
+        className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
       >
-        <div className="space-y-8">
+        <div className="space-y-8 w-full">
           {/* Tab Content */}
-          <div className="min-h-[600px]">{renderTabContent()}</div>
+          <div className="min-h-[600px] w-full">{renderTabContent()}</div>
         </div>
       </main>
 

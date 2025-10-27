@@ -45,11 +45,12 @@ kill_by_pattern() {
     fi
 }
 
-# Stop Next.js development server
+# Stop Next.js development server ONLY (not PM2-managed production)
 kill_by_pattern "next dev" "Next.js Dev Server"
 
-# Stop Next.js production server
-kill_by_pattern "next start" "Next.js Production Server"
+# DO NOT stop PM2-managed production server!
+# The production server is managed by PM2 and should stay running
+# If you need to stop production: pm2 stop veruspulse
 
 # Stop npm processes in this project directory
 if pgrep -f "npm.*${BASE_DIR}" > /dev/null; then

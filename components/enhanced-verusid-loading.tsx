@@ -364,13 +364,13 @@ export function EnhancedVerusIDLoading({
                 </>
               ) : (
                 <>
-                  We're scanning the entire Verus blockchain to find all your
-                  staking activity. This is a one-time process - future visits
-                  will be instant!
+                  We&apos;re scanning the entire Verus blockchain to find all
+                  your staking activity. This is a one-time process - future
+                  visits will be instant!
                   {scanProgress.stakesFound > 0 && (
                     <>
                       {' '}
-                      So far we've found{' '}
+                      So far we&apos;ve found{' '}
                       <strong>{scanProgress.stakesFound}</strong>{' '}
                       {scanProgress.stakesFound === 1 ? 'stake' : 'stakes'}!
                     </>

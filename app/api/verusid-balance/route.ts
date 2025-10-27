@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
+import { verusClientWithFallback } from '@/lib/rpc-client-with-fallback';
 import {
   resolveVerusID,
   getCachedIdentity,
@@ -98,7 +99,8 @@ export async function POST(request: NextRequest) {
     // Fetch balances for uncached addresses only
     const balancePromises = uncachedAddresses.map(async (address: string) => {
       try {
-        const balanceData = await verusAPI.getAddressBalance(address);
+        const balanceData =
+          await verusClientWithFallback.getAddressBalance(address);
         // Calculate sent amount properly: sent = received - balance
         const received = balanceData?.received || 0;
         const balance = balanceData?.balance || 0;

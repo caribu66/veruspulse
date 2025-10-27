@@ -1,0 +1,334 @@
+#!/usr/bin/env node
+
+/**
+ * Incremental VerusID Staker Scanner
+ * Scans from last processed block to current tip
+ * Updates database with new stakes
+ */
+
+const { Pool } = require('pg');
+const { execSync } = require('child_process');
+
+class IncrementalStakerScanner {
+  constructor() {
+    this.pool = new Pool({
+      connectionString:
+        'postgresql://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db',
+      max: 3,
+    });
+
+    this.lastScannedBlock = null;
+    this.currentTip = null;
+    this.newStakesFound = 0;
+    this.blocksProcessed = 0;
+    this.posBlocksFound = 0;
+    this.startTime = Date.now();
+  }
+
+  async initialize() {
+    console.log(
+      '╔═══════════════════════════════════════════════════════════╗'
+    );
+    console.log('║     INCREMENTAL STAKER SCANNER - New Stakes Update       ║');
+    console.log(
+      '╚═══════════════════════════════════════════════════════════╝'
+    );
+    console.log('');
+  }
+
+  async getLastScannedBlock() {
+    try {
+      const result = await this.pool.query(`
+        SELECT MAX(block_height) as last_block 
+        FROM staking_rewards
+      `);
+
+      const lastBlock = result.rows[0]?.last_block || 0;
+      console.log(`📊 Last scanned block: ${lastBlock}`);
+      return lastBlock;
+    } catch (error) {
+      console.error('❌ Error getting last scanned block:', error.message);
+      return 0;
+    }
+  }
+
+  async getCurrentBlockchainHeight() {
+    try {
+      const height = parseInt(
+        execSync('/home/explorer/verus-cli/verus getblockcount', {
+          encoding: 'utf8',
+        }).trim()
+      );
+      return height;
+    } catch (error) {
+      try {
+        const height = parseInt(
+          execSync('verus getblockcount', { encoding: 'utf8' }).trim()
+        );
+        return height;
+      } catch (e) {
+        console.error('❌ Error getting blockchain height:', error.message);
+        return 0;
+      }
+    }
+  }
+
+  async rpcCall(method, params = []) {
+    try {
+      const result = execSync(
+        `/home/explorer/verus-cli/verus ${method} ${params.map(p => (typeof p === 'string' ? `"${p}"` : p)).join(' ')}`,
+        { encoding: 'utf8' }
+      );
+      return JSON.parse(result.trim());
+    } catch (error) {
+      throw new Error(`RPC Error: ${error.message}`);
+    }
+  }
+
+  async getBlock(hash) {
+    try {
+      const result = execSync(
+        `/home/explorer/verus-cli/verus getblock ${hash} 2`,
+        { encoding: 'utf8' }
+      );
+      return JSON.parse(result);
+    } catch (error) {
+      console.error(`❌ Error getting block ${hash}:`, error.message);
+      return null;
+    }
+  }
+
+  async getBlockHash(height) {
+    try {
+      const result = execSync(
+        `/home/explorer/verus-cli/verus getblockhash ${height}`,
+        { encoding: 'utf8' }
+      );
+      return result.trim();
+    } catch (error) {
+      console.error(
+        `❌ Error getting block hash for height ${height}:`,
+        error.message
+      );
+      return null;
+    }
+  }
+
+  async isProofOfStakeBlock(block) {
+    // OINK70'S PROVEN METHOD
+    return block.validationtype === 'stake';
+  }
+
+  async extractAllStakesFromBlock(block) {
+    const stakes = [];
+
+    if (!block.tx || block.tx.length === 0) {
+      return stakes;
+    }
+
+    const coinstakeTx = block.tx[0];
+    if (!coinstakeTx.vout || coinstakeTx.vout.length === 0) {
+      return stakes;
+    }
+
+    // Check ALL vouts for addresses
+    for (let i = 0; i < coinstakeTx.vout.length; i++) {
+      const vout = coinstakeTx.vout[i];
+
+      if (vout.scriptPubKey && vout.scriptPubKey.addresses) {
+        for (const address of vout.scriptPubKey.addresses) {
+          stakes.push({
+            address: address,
+            txid: coinstakeTx.txid,
+            vout: i,
+            block_height: block.height,
+            block_hash: block.hash,
+            block_time: new Date(block.time * 1000),
+            amount_sats: Math.round(vout.value * 100000000),
+            classifier: 'staking_reward',
+            source_address: address,
+            is_verusid: address.startsWith('i'),
+          });
+        }
+      }
+    }
+
+    return stakes;
+  }
+
+  async ensureIdentityExists(address) {
+    try {
+      const checkResult = await this.pool.query(
+        'SELECT identity_address FROM identities WHERE identity_address = $1',
+        [address]
+      );
+
+      if (checkResult.rows.length > 0) {
+        return; // Already exists
+      }
+
+      // Try to get identity info from RPC
+      try {
+        const identityInfo = await this.rpcCall('getidentity', [address]);
+        if (identityInfo && identityInfo.name) {
+          await this.pool.query(
+            `INSERT INTO identities (identity_address, friendly_name, base_name, last_refreshed_at)
+             VALUES ($1, $2, $3, NOW())
+             ON CONFLICT (identity_address) DO NOTHING`,
+            [
+              address,
+              identityInfo.friendlyname || identityInfo.name + '@',
+              identityInfo.name,
+            ]
+          );
+        }
+      } catch (error) {
+        // If can't get identity info, just create a basic entry
+        await this.pool.query(
+          `INSERT INTO identities (identity_address, last_refreshed_at)
+           VALUES ($1, NOW())
+           ON CONFLICT (identity_address) DO NOTHING`,
+          [address]
+        );
+      }
+    } catch (error) {
+      console.error(
+        `⚠️  Error ensuring identity exists for ${address}:`,
+        error.message
+      );
+    }
+  }
+
+  async saveStakes(stakes) {
+    for (const stake of stakes) {
+      try {
+        // CRITICAL: Only save stakes where rewards go to I-addresses
+        // This ensures we only track stakers who stake with their VerusID and receive rewards to it
+        if (!stake.is_verusid) {
+          continue;
+        }
+
+        // Additional validation: source_address must also be an I-address
+        // This ensures the reward address matches the staking identity
+        if (!stake.source_address.startsWith('i')) {
+          continue; // Skip if reward goes to R-address
+        }
+
+        // Only record if identity_address and source_address match
+        // This ensures we only track pure VerusID staking (I-address to I-address)
+        if (stake.address !== stake.source_address) {
+          continue; // Skip if addresses don't match
+        }
+
+        // Ensure identity exists
+        await this.ensureIdentityExists(stake.address);
+
+        // Insert stake
+        await this.pool.query(
+          `INSERT INTO staking_rewards 
+           (identity_address, txid, vout, block_height, block_hash, block_time, 
+            amount_sats, classifier, source_address)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+           ON CONFLICT (txid, vout) DO NOTHING`,
+          [
+            stake.address,
+            stake.txid,
+            stake.vout,
+            stake.block_height,
+            stake.block_hash,
+            stake.block_time,
+            stake.amount_sats,
+            stake.classifier,
+            stake.source_address,
+          ]
+        );
+
+        this.newStakesFound++;
+      } catch (error) {
+        console.error(`❌ Error saving stake ${stake.txid}:`, error.message);
+      }
+    }
+  }
+
+  async scanBlock(height) {
+    try {
+      const hash = await this.getBlockHash(height);
+      if (!hash) return;
+
+      const block = await this.getBlock(hash);
+      if (!block) return;
+
+      this.blocksProcessed++;
+
+      if (await this.isProofOfStakeBlock(block)) {
+        this.posBlocksFound++;
+        const stakes = await this.extractAllStakesFromBlock(block);
+        await this.saveStakes(stakes);
+      }
+
+      // Progress update every 100 blocks
+      if (this.blocksProcessed % 100 === 0) {
+        const elapsed = ((Date.now() - this.startTime) / 1000).toFixed(1);
+        console.log(
+          `📊 Progress: Block ${height} | New stakes: ${this.newStakesFound} | ` +
+            `Pos blocks: ${this.posBlocksFound} | Time: ${elapsed}s`
+        );
+      }
+    } catch (error) {
+      console.error(`❌ Error scanning block ${height}:`, error.message);
+    }
+  }
+
+  async scan() {
+    await this.initialize();
+
+    // Get scan range
+    this.lastScannedBlock = await this.getLastScannedBlock();
+    this.currentTip = await this.getCurrentBlockchainHeight();
+
+    if (this.currentTip <= this.lastScannedBlock) {
+      console.log('✅ Already up to date! No new blocks to scan.');
+      return;
+    }
+
+    console.log(
+      `🔍 Scanning blocks: ${this.lastScannedBlock + 1} to ${this.currentTip}`
+    );
+    console.log(
+      `📊 Blocks to scan: ${this.currentTip - this.lastScannedBlock}\n`
+    );
+
+    // Scan each block
+    for (
+      let height = this.lastScannedBlock + 1;
+      height <= this.currentTip;
+      height++
+    ) {
+      await this.scanBlock(height);
+    }
+
+    // Summary
+    const elapsed = ((Date.now() - this.startTime) / 1000).toFixed(1);
+    console.log(
+      '\n╔═══════════════════════════════════════════════════════════╗'
+    );
+    console.log(
+      '║                    SCAN COMPLETE                           ║'
+    );
+    console.log(
+      '╚═══════════════════════════════════════════════════════════╝'
+    );
+    console.log(`New stakes found:  ${this.newStakesFound}`);
+    console.log(`Blocks processed:  ${this.blocksProcessed}`);
+    console.log(`PoS blocks:        ${this.posBlocksFound}`);
+    console.log(`Time elapsed:      ${elapsed}s`);
+    console.log('');
+  }
+}
+
+// Run scanner
+const scanner = new IncrementalStakerScanner();
+scanner
+  .scan()
+  .catch(console.error)
+  .finally(() => process.exit(0));

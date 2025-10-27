@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
+import { verusClientWithFallback } from '@/lib/rpc-client-with-fallback';
 import { computeBlockFees } from '@/lib/utils/fees';
 import { extractCoinbasePayout } from '@/lib/utils/coinbase';
 import { isOrphan } from '@/lib/utils/orphan';
@@ -24,7 +25,7 @@ export async function GET(
       );
     }
 
-    const block = await verusAPI.getBlock(hash);
+    const block = await verusClientWithFallback.getBlock(hash);
 
     if (!block) {
       return NextResponse.json(
@@ -38,7 +39,9 @@ export async function GET(
 
     // Fetch detailed transaction information
     const txDetails = await Promise.all(
-      block.tx.map((txid: string) => verusAPI.getRawTransaction(txid, true))
+      block.tx.map((txid: string) =>
+        verusClientWithFallback.getTransaction(txid, true)
+      )
     );
 
     block.tx = txDetails.filter(tx => tx !== null);
@@ -49,7 +52,7 @@ export async function GET(
         // Calculate fees
         const feeResult = await computeBlockFees(
           block,
-          (txid: string) => verusAPI.getRawTransaction(txid, true),
+          (txid: string) => verusClientWithFallback.getTransaction(txid, true),
           200 // Limit lookups to prevent timeout
         );
 
@@ -67,8 +70,9 @@ export async function GET(
         }
 
         // Check orphan status
-        const orphanResult = await isOrphan(block, (height: number) =>
-          verusAPI.getBlockHash(height)
+        const orphanResult = await isOrphan(
+          block,
+          (height: number) => verusAPI.getBlockHash(height) // Keep using direct API for block hash lookups
         );
 
         // Calculate propagation time

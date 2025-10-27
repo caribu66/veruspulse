@@ -109,7 +109,22 @@ export class IntelligentMassScanner {
       );
 
       const endHeight = options.endAtHeight || blockchainInfo.blocks;
-      const startHeight = options.startFromHeight || 1;
+
+      // If no start height specified, resume from last scanned block
+      let startHeight: number;
+      if (options.startFromHeight !== undefined) {
+        startHeight = options.startFromHeight;
+        console.log(
+          `[Scan] Using specified start height: ${startHeight.toLocaleString()}`
+        );
+      } else {
+        const lastScanned = await this.getLastScannedBlock();
+        startHeight = lastScanned > 0 ? lastScanned + 1 : 1;
+        console.log(
+          `[Scan] Resuming from last scanned block: ${startHeight.toLocaleString()}`
+        );
+      }
+
       this.progress.totalBlocks = endHeight - startHeight + 1;
 
       console.log(
@@ -140,18 +155,37 @@ export class IntelligentMassScanner {
   }
 
   /**
+   * Get the last scanned block from database to resume scanning
+   */
+  private async getLastScannedBlock(): Promise<number> {
+    try {
+      const result = await this.db.query(
+        'SELECT MAX(block_height) as last_height FROM staking_rewards'
+      );
+      const lastHeight = result.rows[0]?.last_height || 0;
+      console.log(
+        `[Resume] Last scanned block from database: ${lastHeight.toLocaleString()}`
+      );
+      return lastHeight;
+    } catch (error) {
+      console.log('[Resume] No existing data found, starting from beginning');
+      return 0;
+    }
+  }
+
+  /**
    * Discover all active VerusIDs without hammering the RPC
    */
   private async discoverActiveVerusIDs(limit?: number): Promise<string[]> {
     const addresses: Set<string> = new Set();
 
-    // Strategy 1: Get from existing stake_events table
+    // Strategy 1: Get from existing staking_rewards table
     console.log('[Discovery] Checking existing stake events...');
     const existingResult = await this.db.query(
-      "SELECT DISTINCT address FROM stake_events WHERE address LIKE 'i%' LIMIT $1",
+      "SELECT DISTINCT identity_address FROM staking_rewards WHERE identity_address LIKE 'i%' LIMIT $1",
       [limit || 100000]
     );
-    existingResult.rows.forEach(row => addresses.add(row.address));
+    existingResult.rows.forEach(row => addresses.add(row.identity_address));
     console.log(
       `[Discovery] Found ${addresses.size} addresses from existing data`
     );
@@ -449,7 +483,10 @@ export class IntelligentMassScanner {
                 txid: coinstake.txid,
                 blockHeight: height,
                 blockTime: new Date(block.time * 1000),
-                rewardAmount: Math.floor(rewardAmount * 100000000),
+                rewardAmount:
+                  rewardAmount > 1000
+                    ? Math.floor(rewardAmount)
+                    : Math.floor(rewardAmount * 100000000),
                 stakeAmount: Math.floor(stakeAmount * 100000000),
                 stakeAge,
               });

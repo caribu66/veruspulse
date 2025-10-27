@@ -34,7 +34,6 @@ import { UnifiedLiveCard } from './unified-live-card';
 import { HeroSection } from './hero-section';
 import { PBaaSPriceTicker } from './pbaas-price-ticker';
 import { QuickStatsTicker } from './quick-stats-ticker';
-import { LiveActivityFeed } from './live-activity-feed';
 // import { FeaturedVerusIDsCarousel } from './featured-verusids-carousel';
 import { TrendingSection } from './trending-section';
 import { DashboardTabs, DashboardTab } from './dashboard-tabs';
@@ -128,6 +127,44 @@ export function NetworkDashboard({
 }: DashboardProps) {
   // Tab state management
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
+
+  // Block reward state
+  const [blockReward, setBlockReward] = useState<{
+    currentBlockReward: number;
+    currentPosReward: number;
+    loading: boolean;
+  }>({
+    currentBlockReward: 0,
+    currentPosReward: 0,
+    loading: true,
+  });
+
+  // Fetch current block reward
+  useEffect(() => {
+    const fetchBlockReward = async () => {
+      try {
+        const response = await fetch('/api/block-rewards');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setBlockReward({
+              currentBlockReward: data.data.currentBlockReward,
+              currentPosReward: data.data.currentPosReward,
+              loading: false,
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch block reward:', error);
+        setBlockReward(prev => ({ ...prev, loading: false }));
+      }
+    };
+
+    fetchBlockReward();
+    // Refresh block reward every 30 seconds
+    const interval = setInterval(fetchBlockReward, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Using imported formatting functions from utils
 
@@ -227,10 +264,10 @@ export function NetworkDashboard({
       {/* Tabbed Navigation */}
       <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Two Column Layout: Main Tabbed Content + Live Feed (desktop only) */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Main Tabbed Content - Left Side (2/3 width on xl) */}
-        <div className="xl:col-span-2">
+      {/* Main Content Container */}
+      <div className="w-full">
+        {/* Main Tabbed Content */}
+        <div className="w-full">
           {/* Refresh Button and Real-time Status */}
           <div className="flex items-center justify-between mb-4 md:mb-6">
             {/* Real-time Status */}
@@ -277,42 +314,42 @@ export function NetworkDashboard({
                   Your comprehensive gateway to the Verus blockchain. All key
                   network metrics are displayed above in the stats ticker.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-300 dark:border-slate-700">
-                    <div className="p-2 rounded-lg bg-verus-blue/10 border border-verus-blue/40">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                  <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-300 dark:border-slate-700 w-full">
+                    <div className="p-2 rounded-lg bg-verus-blue/10 border border-verus-blue/40 flex-shrink-0">
                       <Database className="h-5 w-5 text-verus-blue" />
                     </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-900 dark:text-white">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
                         Blockchain Explorer
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-slate-400 dark:text-gray-500 dark:text-slate-400 text-slate-600">
+                      <div className="text-xs text-gray-500 dark:text-slate-400">
                         Browse blocks and transactions
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-300 dark:border-slate-700">
-                    <div className="p-2 rounded-lg bg-verus-green/10 border border-verus-green/40">
+                  <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-300 dark:border-slate-700 w-full">
+                    <div className="p-2 rounded-lg bg-verus-green/10 border border-verus-green/40 flex-shrink-0">
                       <UsersThree className="h-5 w-5 text-verus-green" />
                     </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-900 dark:text-white">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
                         VerusID Registry
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-slate-400 dark:text-gray-500 dark:text-slate-400 text-slate-600">
+                      <div className="text-xs text-gray-500 dark:text-slate-400">
                         Discover identities and addresses
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-300 dark:border-slate-700">
-                    <div className="p-2 rounded-lg bg-verus-green/10 border border-verus-green/40">
+                  <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-300 dark:border-slate-700 w-full">
+                    <div className="p-2 rounded-lg bg-verus-green/10 border border-verus-green/40 flex-shrink-0">
                       <Pulse className="h-5 w-5 text-verus-green" />
                     </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-900 dark:text-white">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
                         Live Activity
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-slate-400 dark:text-gray-500 dark:text-slate-400 text-slate-600">
+                      <div className="text-xs text-gray-500 dark:text-slate-400">
                         Real-time network activity
                       </div>
                     </div>
@@ -321,42 +358,42 @@ export function NetworkDashboard({
               </div>
 
               {/* Quick Links */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
                 <button
                   onClick={() => setActiveTab('network')}
-                  className="p-6 bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-gray-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60 transition-all text-left group"
+                  className="p-6 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 hover:border-verus-blue/60 transition-all text-left group w-full h-full"
                 >
-                  <Pulse className="h-8 w-8 mb-3 text-verus-blue transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-gray-900 dark:text-white">
+                  <Pulse className="h-8 w-8 mb-3 text-verus-blue transition-transform group-hover:scale-110" />
+                  <h3 className="text-lg font-semibold mb-1 text-white">
                     View Full Stats
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-slate-400 dark:text-gray-500 dark:text-slate-400 text-slate-600">
+                  <p className="text-sm text-slate-300">
                     Detailed network metrics
                   </p>
                 </button>
 
                 <button
                   onClick={() => setActiveTab('featured')}
-                  className="p-6 bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-gray-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60 transition-all text-left group"
+                  className="p-6 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 hover:border-verus-blue/60 transition-all text-left group w-full h-full"
                 >
-                  <UsersThree className="h-8 w-8 mb-3 text-verus-blue transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-gray-900 dark:text-white">
+                  <UsersThree className="h-8 w-8 mb-3 text-verus-blue transition-transform group-hover:scale-110" />
+                  <h3 className="text-lg font-semibold mb-1 text-white">
                     Featured VerusIDs
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-slate-400">
+                  <p className="text-sm text-slate-300">
                     Top community members
                   </p>
                 </button>
 
                 <button
                   onClick={() => setActiveTab('trending')}
-                  className="p-6 bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-gray-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60 transition-all text-left group"
+                  className="p-6 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 hover:border-verus-blue/60 transition-all text-left group w-full h-full"
                 >
-                  <Fire className="h-8 w-8 mb-3 text-verus-green transition-transform" />
-                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-gray-900 dark:text-white">
+                  <Fire className="h-8 w-8 mb-3 text-verus-green transition-transform group-hover:scale-110" />
+                  <h3 className="text-lg font-semibold mb-1 text-white">
                     What&apos;s Trending
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-500 dark:text-slate-400">
+                  <p className="text-sm text-slate-300">
                     Hot content right now
                   </p>
                 </button>
@@ -533,9 +570,10 @@ export function NetworkDashboard({
                         <div className="text-right">
                           <div className="text-2xl font-bold text-gray-900 dark:text-white">
                             {stakingStats.netstakeweight &&
-                            stakingStats.netstakeweight > 0
+                            stakingStats.netstakeweight > 0 &&
+                            blockReward.currentPosReward > 0
                               ? (
-                                  ((525600 * 6 * 0.5) /
+                                  ((262800 * blockReward.currentPosReward * 2) /
                                     stakingStats.netstakeweight) *
                                   100
                                 ).toFixed(2) + '%'
@@ -559,7 +597,11 @@ export function NetworkDashboard({
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                            6.00 VRSC
+                            {blockReward.loading ? (
+                              <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 rounded"></div>
+                            ) : (
+                              `${blockReward.currentBlockReward.toFixed(8)} VRSC`
+                            )}
                           </div>
                           <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
                             Block Reward
@@ -724,13 +766,6 @@ export function NetworkDashboard({
               <TrendingSection autoRefresh={true} refreshInterval={60000} />
             </div>
           )}
-        </div>
-
-        {/* Live Activity Feed - Desktop Only (XL+ screens) */}
-        <div className="hidden xl:block xl:col-span-1">
-          <div className="sticky top-6">
-            <LiveActivityFeed maxEvents={20} autoRefresh={true} />
-          </div>
         </div>
       </div>
     </div>

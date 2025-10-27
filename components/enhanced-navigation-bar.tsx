@@ -1,8 +1,14 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { ChartBar, MagnifyingGlass, UsersThree } from '@phosphor-icons/react';
+import {
+  ChartBar,
+  MagnifyingGlass,
+  UsersThree,
+  List,
+  X,
+} from '@phosphor-icons/react';
 import { MinimalPriceIndicator } from './minimal-price-indicator';
 import { ThemeToggleCompact } from './theme-toggle';
 import { ICON_SIZES } from '@/lib/constants/design-tokens';
@@ -24,6 +30,7 @@ export function EnhancedNavigationBar({
   onTabChange,
 }: EnhancedNavigationBarProps) {
   const { theme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Navigation items with icons
   const navigationItems = useMemo(
@@ -39,10 +46,15 @@ export function EnhancedNavigationBar({
     []
   );
 
+  const handleTabChange = (tab: ExplorerTab) => {
+    onTabChange(tab);
+    setMobileMenuOpen(false);
+  };
+
   return (
-    <div className="bg-transparent dark:bg-slate-950 border-b border-slate-300 dark:border-slate-700 sticky top-0 z-50">
+    <div className="bg-transparent dark:bg-slate-950 border-b border-slate-300 dark:border-slate-700 sticky top-0 z-50 backdrop-blur-sm">
       {/* Top Row: Logo + Price Ticker */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
         {/* Main Navigation Bar */}
         <nav
           id="navigation"
@@ -53,9 +65,9 @@ export function EnhancedNavigationBar({
           {/* Left: Logo */}
           <div className="flex items-center flex-shrink-0">
             <div className="flex items-center justify-center relative">
-              {/* Verus Logo */}
+              {/* Verus Logo - Responsive sizing */}
               <div className="flex items-center">
-                <div className="relative h-16 w-auto">
+                <div className="relative h-10 sm:h-12 md:h-16 w-auto">
                   <Image
                     src={
                       theme === 'dark'
@@ -65,7 +77,7 @@ export function EnhancedNavigationBar({
                     alt="Verus - Truth and Privacy for All"
                     width={300}
                     height={72}
-                    className="object-contain h-16"
+                    className="object-contain h-10 sm:h-12 md:h-16"
                     priority
                   />
                 </div>
@@ -73,8 +85,8 @@ export function EnhancedNavigationBar({
             </div>
           </div>
 
-          {/* Right: Minimal Price Indicator and Theme Toggle */}
-          <div className="flex items-center space-x-3 flex-shrink-0">
+          {/* Right: Controls */}
+          <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
             {/* Minimal Price Indicator (Desktop) */}
             <div className="hidden lg:flex">
               <MinimalPriceIndicator refreshInterval={10000} maxAssets={3} />
@@ -87,12 +99,26 @@ export function EnhancedNavigationBar({
 
             {/* Theme Toggle */}
             <ThemeToggleCompact />
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] p-2 rounded-lg bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 hover:border-verus-blue/60 text-gray-700 dark:text-slate-300 transition-colors"
+              aria-label="Toggle mobile menu"
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? (
+                <X className={ICON_SIZES.md} />
+              ) : (
+                <List className={ICON_SIZES.md} />
+              )}
+            </button>
           </div>
         </nav>
       </div>
 
-      {/* Navigation Tabs Row - Integrated with main nav */}
-      <div className="max-w-7xl mx-auto px-6 py-3">
+      {/* Desktop Navigation Tabs Row */}
+      <div className="hidden md:block max-w-7xl mx-auto px-6 py-3">
         <nav
           className="flex gap-3 overflow-x-auto scrollbar-hide"
           role="navigation"
@@ -124,6 +150,42 @@ export function EnhancedNavigationBar({
           })}
         </nav>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 animate-in slide-in-from-top-2 duration-200">
+          <nav
+            className="max-w-7xl mx-auto px-4 py-3 space-y-2"
+            role="navigation"
+            aria-label="Mobile navigation"
+          >
+            {navigationItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.key;
+
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => handleTabChange(item.key)}
+                  className={`
+                    w-full flex items-center gap-3 px-4 py-3 min-h-[44px] rounded-lg
+                    transition-all duration-200 text-left
+                    ${
+                      isActive
+                        ? 'bg-verus-blue text-white font-semibold shadow-md'
+                        : 'bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600'
+                    }
+                  `}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <Icon className={ICON_SIZES.md} />
+                  <span className="text-base">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      )}
     </div>
   );
 }

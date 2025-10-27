@@ -614,14 +614,14 @@ export function BlocksExplorer() {
       </div>
 
       {/* Blocks Table */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-6 border border-slate-300 dark:border-slate-700">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
             Recent Blocks
           </h3>
 
           {/* Controls */}
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
             {/* Funnel Toggle */}
             <div className="flex items-center space-x-2">
               <Funnel className="h-4 w-4 text-blue-400" />
@@ -682,16 +682,16 @@ export function BlocksExplorer() {
 
             {/* Export Controls */}
             <div className="flex items-center space-x-2">
-              <DownloadSimple className="h-4 w-4 text-blue-400" />
+              <DownloadSimple className="h-4 w-4 text-verus-blue" />
               <button
                 onClick={exportToCSV}
-                className="px-2 py-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 text-xs rounded transition-colors"
+                className="px-3 py-1.5 bg-gradient-to-r from-green-500/20 to-green-600/20 hover:from-green-500/30 hover:to-green-600/30 text-green-400 text-xs font-medium rounded-lg border border-green-500/30 hover:border-green-500/50 transition-all duration-200"
               >
                 CSV
               </button>
               <button
                 onClick={exportToJSON}
-                className="px-2 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 text-xs rounded transition-colors"
+                className="px-3 py-1.5 bg-gradient-to-r from-blue-500/20 to-blue-600/20 hover:from-blue-500/30 hover:to-blue-600/30 text-blue-400 text-xs font-medium rounded-lg border border-blue-500/30 hover:border-blue-500/50 transition-all duration-200"
               >
                 JSON
               </button>

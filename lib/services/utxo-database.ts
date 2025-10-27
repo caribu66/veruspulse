@@ -119,6 +119,16 @@ export class UTXODatabaseService {
     await this.db.query(query, [txid, vout, spentTxid, spentHeight]);
   }
 
+  async markAllUTXOsAsSpent(address: string): Promise<void> {
+    const query = `
+      UPDATE utxos 
+      SET is_spent = true, updated_at = NOW()
+      WHERE address = $1 AND is_spent = false
+    `;
+
+    await this.db.query(query, [address]);
+  }
+
   // Stake Events Management
   async recordStakeEvent(stakeEvent: StakeEvent): Promise<StakeEvent> {
     const query = `

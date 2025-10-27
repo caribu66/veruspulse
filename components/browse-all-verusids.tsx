@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Database,
   GridFour,
@@ -30,10 +30,13 @@ import {
   searchVerusIDViaRPC,
 } from '@/lib/utils/verusid-utils';
 import { useApiFetch } from '@/lib/hooks/use-retryable-fetch';
+import { useMobileOptimizations } from './mobile-optimizations';
 
 const ITEMS_PER_PAGE = 50;
 
 export function BrowseAllVerusIDs() {
+  const { isMobile } = useMobileOptimizations();
+
   // State management
   const [identities, setIdentities] = useState<VerusIDBrowseData[]>([]);
   const [rpcSearchResults, setRpcSearchResults] = useState<VerusIDBrowseData[]>(
@@ -57,32 +60,10 @@ export function BrowseAllVerusIDs() {
 
   const { apiFetch } = useApiFetch();
 
-  // Load identities on mount
-  useEffect(() => {
-    loadIdentities();
-  }, []);
+  // Force card view on mobile
+  const effectiveViewMode = isMobile ? 'cards' : viewMode;
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Escape key to show all identities
-      if (event.key === 'Escape') {
-        setFilters({
-          stakeRange: [0, 100000],
-          apyRange: [0, 1000],
-          activityStatus: 'all',
-          searchQuery: '',
-          top100Only: false,
-        });
-        setCurrentPage(1);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const loadIdentities = async () => {
+  const loadIdentities = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -149,7 +130,32 @@ export function BrowseAllVerusIDs() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiFetch]);
+
+  // Load identities on mount
+  useEffect(() => {
+    loadIdentities();
+  }, [loadIdentities]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Escape key to show all identities
+      if (event.key === 'Escape') {
+        setFilters({
+          stakeRange: [0, 100000],
+          apyRange: [0, 1000],
+          activityStatus: 'all',
+          searchQuery: '',
+          top100Only: false,
+        });
+        setCurrentPage(1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Apply filters and sorting
   const filteredAndSortedIdentities = useMemo(() => {
@@ -387,49 +393,51 @@ export function BrowseAllVerusIDs() {
   }
 
   return (
-    <div className="max-w-[1800px] mx-auto space-y-6">
+    <div className="max-w-[1800px] mx-auto space-y-6 px-4 md:px-0">
       {/* Header */}
-      <div className="bg-slate-900 rounded-2xl p-8 border border-slate-700">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-slate-900 rounded-2xl p-4 md:p-8 border border-slate-700">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center space-x-3 mb-2">
-              <Database className="h-8 w-8 text-blue-400" />
-              <h1 className="text-3xl font-bold text-white">
+              <Database className="h-6 w-6 md:h-8 md:w-8 text-blue-400" />
+              <h1 className="text-xl md:text-3xl font-bold text-white">
                 Browse All VerusIDs
               </h1>
             </div>
-            <p className="text-blue-200">
+            <p className="text-sm md:text-base text-blue-200">
               Explore all registered VerusID identities with comprehensive
               staking analytics
             </p>
           </div>
 
-          <div className="flex items-center space-x-3">
-            {/* View Toggle */}
-            <div className="bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl p-1">
-              <button
-                onClick={() => setViewMode('cards')}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                  viewMode === 'cards'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/10'
-                }`}
-              >
-                <GridFour className="h-4 w-4" />
-                <span>Cards</span>
-              </button>
-              <button
-                onClick={() => setViewMode('table')}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                  viewMode === 'table'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/10'
-                }`}
-              >
-                <Table className="h-4 w-4" />
-                <span>Table</span>
-              </button>
-            </div>
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+            {/* View Toggle - Hidden on mobile (auto card view) */}
+            {!isMobile && (
+              <div className="bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl p-1">
+                <button
+                  onClick={() => setViewMode('cards')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                    viewMode === 'cards'
+                      ? 'bg-blue-500 text-white'
+                      : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/10'
+                  }`}
+                >
+                  <GridFour className="h-4 w-4" />
+                  <span className="hidden sm:inline">Cards</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                    viewMode === 'table'
+                      ? 'bg-blue-500 text-white'
+                      : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/10'
+                  }`}
+                >
+                  <Table className="h-4 w-4" />
+                  <span className="hidden sm:inline">Table</span>
+                </button>
+              </div>
+            )}
 
             {/* Show All Button */}
             <button
@@ -506,43 +514,41 @@ export function BrowseAllVerusIDs() {
 
       {/* Sort Controls */}
       <div className="bg-slate-900 rounded-2xl border border-slate-700 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-blue-200">Sort by:</span>
-            <div className="flex items-center space-x-2">
-              {[
-                { key: 'name', label: 'Name' },
-                { key: 'stakes', label: 'Stakes' },
-                { key: 'rewards', label: 'Rewards' },
-                { key: 'apy', label: 'APY' },
-                { key: 'rank', label: 'Rank' },
-                { key: 'recent', label: 'Recent' },
-              ].map(({ key, label }) => (
-                <button
-                  key={key}
-                  onClick={() => handleSort(key as SortOptions['sortBy'])}
-                  className={`flex items-center space-x-1 px-3 py-1 rounded-lg text-sm transition-colors ${
-                    sortOptions.sortBy === key
-                      ? 'bg-blue-500 text-white'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  <span>{label}</span>
-                  {sortOptions.sortBy === key &&
-                    (sortOptions.sortOrder === 'asc' ? (
-                      <SortAscending className="h-3 w-3" />
-                    ) : (
-                      <SortDescending className="h-3 w-3" />
-                    ))}
-                </button>
-              ))}
-            </div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <span className="text-sm text-blue-200">Sort by:</span>
+          <div className="flex flex-wrap items-center gap-2">
+            {[
+              { key: 'name', label: 'Name' },
+              { key: 'stakes', label: 'Stakes' },
+              { key: 'rewards', label: 'Rewards' },
+              { key: 'apy', label: 'APY' },
+              { key: 'rank', label: 'Rank' },
+              { key: 'recent', label: 'Recent' },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => handleSort(key as SortOptions['sortBy'])}
+                className={`flex items-center space-x-1 px-3 py-2 min-h-[44px] rounded-lg text-sm transition-colors ${
+                  sortOptions.sortBy === key
+                    ? 'bg-blue-500 text-white'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <span>{label}</span>
+                {sortOptions.sortBy === key &&
+                  (sortOptions.sortOrder === 'asc' ? (
+                    <SortAscending className="h-3 w-3" />
+                  ) : (
+                    <SortDescending className="h-3 w-3" />
+                  ))}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Results */}
-      {viewMode === 'cards' ? (
+      {effectiveViewMode === 'cards' ? (
         <VerusIDCardGrid
           identities={paginatedIdentities}
           onIdentityClick={handleIdentityClick}

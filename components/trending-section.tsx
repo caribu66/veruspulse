@@ -233,7 +233,7 @@ export function TrendingSection({
       );
       const verusidsData = await verusidsRes.json();
 
-      // Process blocks for trending
+      // Process blocks for trending (using real data)
       const trendingBlocks: TrendingItem[] = (blocksData?.data?.blocks || [])
         .filter((block: any) => block.nTx > 2) // Blocks with more transactions
         .slice(0, 5)
@@ -242,8 +242,8 @@ export function TrendingSection({
           type: 'block' as const,
           name: `Block #${block.height.toLocaleString()}`,
           value: `${block.nTx} transactions`,
-          trend: Math.floor(Math.random() * 50) + 10, // Mock trend
-          views: Math.floor(Math.random() * 500) + 100,
+          trend: 0, // Will be filled by analytics when available
+          views: 0, // Will be filled by analytics when available
           link: `/block/${block.hash}`,
           metadata: {
             height: block.height,
@@ -253,7 +253,7 @@ export function TrendingSection({
           },
         }));
 
-      // Process VerusIDs for trending
+      // Process VerusIDs for trending (using real data)
       const trendingVerusIDs: TrendingItem[] = (
         verusidsData?.data?.leaderboard || []
       )
@@ -267,8 +267,8 @@ export function TrendingSection({
             id.friendlyname ||
             `${id.name}@`,
           value: `${(id.totalRewardsVRSC || id.total_rewards || id.totalRewards || 0).toFixed(2)} VRSC`,
-          trend: 75 - index * 10, // Higher for top rankers
-          views: 1000 - index * 100,
+          trend: 0, // Will be filled by analytics when available
+          views: 0, // Will be filled by analytics when available
           link: `/verusid/${id.address || id.identityaddress || id.iaddress}`,
           metadata: {
             stakes: id.totalStakes || id.total_stakes || 0,
@@ -276,63 +276,83 @@ export function TrendingSection({
           },
         }));
 
-      // Mock trending addresses (in production, track from analytics)
-      const trendingAddresses: TrendingItem[] = [
-        {
-          id: 'addr1',
-          type: 'address',
-          name: 'RTop...Wallet',
-          value: '45,000 VRSC',
-          trend: 85,
-          views: 850,
-          link: '/address/RTop...Wallet',
-        },
-        {
-          id: 'addr2',
-          type: 'address',
-          name: 'RAct...Address',
-          value: '128 transactions',
-          trend: 65,
-          views: 620,
-          link: '/address/RAct...Address',
-        },
-      ];
+      // Fetch real trending addresses from recent transactions
+      let trendingAddresses: TrendingItem[] = [];
+      try {
+        const addressesRes = await fetch('/api/latest-transactions?limit=20');
+        const addressesData = await addressesRes.json();
 
-      // Mock trending searches
-      const trendingMagnifyingGlasses: TrendingItem[] = [
-        {
-          id: '1',
-          type: 'search',
-          name: 'verus staking',
-          value: '342 searches',
-          trend: 45,
-          link: '/?tab=explorer',
-        },
-        {
-          id: '2',
-          type: 'search',
-          name: 'latest blocks',
-          value: '289 searches',
-          trend: 32,
-          link: '/?tab=explorer',
-        },
-        {
-          id: '3',
-          type: 'search',
-          name: 'pbaas',
-          value: '234 searches',
-          trend: 28,
-          link: '/?tab=explorer',
-        },
-        {
-          id: '4',
-          type: 'search',
-          name: 'verusid registration',
-          value: '187 searches',
-          trend: 18,
-          link: '/?tab=verusids',
-        },
-      ];
+        if (addressesData?.data?.transactions) {
+          // Count address activity from recent transactions
+          const addressCounts = new Map<
+            string,
+            { count: number; totalValue: number; name: string }
+          >();
+
+          addressesData.data.transactions.forEach((tx: any) => {
+            // Count input addresses
+            tx.vin?.forEach((input: any) => {
+              if (input.addresses) {
+                input.addresses.forEach((addr: string) => {
+                  if (!addressCounts.has(addr)) {
+                    addressCounts.set(addr, {
+                      count: 0,
+                      totalValue: 0,
+                      name: addr,
+                    });
+                  }
+                  const data = addressCounts.get(addr)!;
+                  data.count++;
+                  data.totalValue += input.value || 0;
+                });
+              }
+            });
+
+            // Count output addresses
+            tx.vout?.forEach((output: any) => {
+              if (output.scriptPubKey?.addresses) {
+                output.scriptPubKey.addresses.forEach((addr: string) => {
+                  if (!addressCounts.has(addr)) {
+                    addressCounts.set(addr, {
+                      count: 0,
+                      totalValue: 0,
+                      name: addr,
+                    });
+                  }
+                  const data = addressCounts.get(addr)!;
+                  data.count++;
+                  data.totalValue += output.value || 0;
+                });
+              }
+            });
+          });
+
+          // Convert to trending items, sorted by activity
+          trendingAddresses = Array.from(addressCounts.entries())
+            .sort((a, b) => b[1].count - a[1].count)
+            .slice(0, 3)
+            .map(([address, data], index) => ({
+              id: address,
+              type: 'address' as const,
+              name: `${address.slice(0, 6)}...${address.slice(-4)}`,
+              value:
+                data.totalValue > 1000
+                  ? `${(data.totalValue / 1000).toFixed(0)}K VRSC`
+                  : `${data.totalValue.toFixed(0)} VRSC`,
+              trend: 0, // Will be filled by analytics when available
+              views: 0, // Will be filled by analytics when available
+              link: `/address/${address}`,
+              metadata: { address, transactionCount: data.count },
+            }));
+        }
+      } catch (error) {
+        logger.warn('Failed to fetch trending addresses:', error);
+        // Fallback to empty array if API fails
+        trendingAddresses = [];
+      }
+
+      // Popular search terms - empty for now, will be populated by analytics
+      const trendingMagnifyingGlasses: TrendingItem[] = [];
 
       const newData = {
         blocks: trendingBlocks,
@@ -545,7 +565,7 @@ export function TrendingWidget() {
               id.friendlyname ||
               `${id.name}@`,
             value: `${(id.totalRewardsVRSC || id.total_rewards || 0).toFixed(2)} VRSC`,
-            trend: 90 - index * 15,
+            trend: Math.max(10, 85 - index * 20),
             link: `/verusid/${id.address || id.identityaddress || id.iaddress}`,
           }));
           setTopItems(items);

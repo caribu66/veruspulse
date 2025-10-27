@@ -233,6 +233,54 @@ export class VerusClientWithFallback {
   }
 
   /**
+   * Get currency info with automatic fallback
+   */
+  async getCurrencyInfo(currencyName: string): Promise<any> {
+    try {
+      // Try local daemon first
+      const result = await verusAPI.call('getcurrency', [currencyName]);
+      this.useFallback = false;
+      return result;
+    } catch (error: any) {
+      logger.warn(
+        `⚠️  Local daemon unavailable for getCurrencyInfo: ${error.message}`
+      );
+      logger.info('🔄 Trying fallback APIs...');
+
+      // Try fallback APIs
+      for (const api of this.fallbackAPIs) {
+        try {
+          const response = await fetch(
+            `${api.baseUrl}/currency/${currencyName}`,
+            {
+              signal: AbortSignal.timeout(10000),
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            logger.info(
+              `✅ Retrieved currency info from fallback: ${api.name}`
+            );
+            this.useFallback = true;
+            return data;
+          }
+        } catch (fallbackError: any) {
+          logger.warn(
+            `⚠️  Fallback ${api.name} failed: ${fallbackError.message}`
+          );
+          continue;
+        }
+      }
+
+      // All sources failed
+      throw new Error(
+        'All API sources unavailable (local daemon + fallback APIs)'
+      );
+    }
+  }
+
+  /**
    * Transform external API response to match Verus RPC format
    */
   private transformBlockchainInfo(data: any): any {

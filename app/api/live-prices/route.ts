@@ -132,6 +132,20 @@ async function getVRSCPriceFromPBaaS(): Promise<{
 
 export async function GET() {
   try {
+    // Check if PBaaS prices are disabled (to reduce daemon load)
+    if (process.env.DISABLE_PBAAS_PRICES === 'true') {
+      return NextResponse.json({
+        success: true,
+        data: {
+          prices: [],
+          vrscPriceUSD: null,
+          vrscPriceSources: [],
+          timestamp: Date.now(),
+          disabled: true,
+        },
+      });
+    }
+
     logger.info('🔍 Fetching live price data from PBaaS chains only...');
     logger.info(
       '📊 Using cryptodashboard.faldt.net method: weighted average from multiple baskets'

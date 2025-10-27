@@ -42,11 +42,11 @@ import { AnimatedCounter } from './animations/counter-animation';
 import { SparklineChart } from './animations/sparkline-chart';
 import { HealthScoreGauge } from './animations/health-score-gauge';
 import { HeatmapCalendar } from './charts/heatmap-calendar';
-import { UTXOBubbleChartNew } from './charts/utxo-bubble-chart-new';
-import {
-  fetchUTXODataWithCache,
-  invalidateUTXOCache,
-} from '@/lib/utils/utxo-cache';
+// import { UTXOBubbleChartNew } from './charts/utxo-bubble-chart-new';
+// import {
+//   fetchUTXODataWithCache,
+//   invalidateUTXOCache,
+// } from '@/lib/utils/utxo-cache';
 // import { NetworkComparisonCard } from './network-comparison-card'; // REMOVED: Component not needed
 import { StakingReportExporter } from './staking-report-exporter';
 import { DashboardSkeleton } from './animations/skeleton-loader';
@@ -128,38 +128,26 @@ export function VerusIDStakingDashboard({
 
   const fetchLiveUTXOs = useCallback(async () => {
     try {
-      const data = await fetchUTXODataWithCache(
-        iaddr,
-        async () => {
-          const response = await fetch(`/api/verusid/${iaddr}/live-utxos`);
-          const result = await response.json();
+      // Simplified UTXO fetching without cache
+      const response = await fetch(`/api/verusid/${iaddr}/live-utxos`);
+      const result = await response.json();
 
-          if (!result.success) {
-            throw new Error(result.error || 'Failed to fetch UTXO data');
-          }
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to fetch UTXO data');
+      }
 
-          return result.data;
-        },
-        {
-          ttl: 30000, // 30 seconds cache
-          forceRefresh: false,
-        }
-      );
-
-      // Store live UTXO data for hybrid approach
-      setLiveUTXOData(data);
+      // Store live UTXO data
+      setLiveUTXOData(result.data);
     } catch (err: any) {
       console.warn('Failed to fetch UTXO data:', err);
       // Silent error handling - keep existing data
     }
   }, [iaddr]);
 
-  // Invalidate cache when component unmounts or iaddr changes
+  // Cleanup when component unmounts or iaddr changes
   useEffect(() => {
     return () => {
-      if (iaddr) {
-        invalidateUTXOCache(iaddr);
-      }
+      // Cleanup logic if needed
     };
   }, [iaddr]);
 

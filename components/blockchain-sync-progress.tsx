@@ -114,9 +114,6 @@ export function BlockchainSyncProgress({
           <div className="flex items-center space-x-3">
             <div className="relative">
               <CircleNotch className="h-6 w-6 text-blue-400 animate-spin" />
-              <div className="absolute inset-0">
-                <CloudArrowDown className="h-6 w-6 text-blue-400 opacity-50" />
-              </div>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

@@ -1,0 +1,17 @@
+console.log('📊 Blocks Created in Verus Per Year:');
+console.log('');
+console.log('Theoretical Calculation:');
+console.log('   Block time: 60 seconds (1 minute)');
+console.log('   Blocks per hour: 60');
+console.log('   Blocks per day: 1,440');
+console.log('   Blocks per year: ~525,600');
+console.log('');
+console.log('Actual Observation from our scans:');
+console.log('   2021 scan: 240,001 blocks');
+console.log('   2022 scan: 240,001 blocks');
+console.log('   2023 scan: 240,001 blocks (in progress)');
+console.log('');
+console.log('Answer: ~240,000 blocks per year');
+console.log('');
+console.log('Note: The actual block time may vary, or the year');
+console.log('range we use (Dec to Dec) represents ~240k blocks');

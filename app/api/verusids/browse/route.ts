@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     let orderByClause =
       'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
 
-    // Main query with left join to staking stats
+    // Main query with left join to staking stats and earliest block fallback
     const query = `
       SELECT 
         i.identity_address,
@@ -78,9 +78,15 @@ export async function GET(request: NextRequest) {
         s.total_rewards_satoshis,
         s.last_stake_time,
         s.apy_all_time,
-        s.network_rank
+        s.network_rank,
+        COALESCE(i.first_seen_block, sr.earliest_block) as effective_first_seen_block
       FROM identities i
       LEFT JOIN verusid_statistics s ON i.identity_address = s.address
+      LEFT JOIN (
+        SELECT identity_address, MIN(block_height) as earliest_block
+        FROM staking_rewards
+        GROUP BY identity_address
+      ) sr ON i.identity_address = sr.identity_address
       ${searchCondition}
       ${orderByClause}
       LIMIT $1 OFFSET $2
@@ -104,7 +110,7 @@ export async function GET(request: NextRequest) {
       name: row.base_name || 'unknown',
       friendlyName: row.friendly_name || `${row.base_name || 'unknown'}.VRSC@`,
       displayName: row.friendly_name || row.base_name || row.identity_address,
-      firstSeenBlock: row.first_seen_block,
+      firstSeenBlock: row.effective_first_seen_block, // Use the fallback value
       lastScannedBlock: row.last_scanned_block,
       lastRefreshed: row.last_refreshed_at,
       totalStakes: row.total_stakes || 0,

@@ -190,7 +190,7 @@ describe('VerusIDExplorer Component', () => {
       fireEvent.click(browseButton);
 
       const searchButtons = screen.getAllByRole('button', {
-        name: /MagnifyingGlass/i,
+        name: /Search/i,
       });
       fireEvent.click(searchButtons[0]);
 

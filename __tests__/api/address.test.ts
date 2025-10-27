@@ -1,11 +1,16 @@
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/address/[address]/route';
 import { verusAPI } from '@/lib/rpc-client-robust';
+import { verusClientWithFallback } from '@/lib/rpc-client-with-fallback';
 
 // Mock dependencies
 jest.mock('@/lib/rpc-client-robust');
+jest.mock('@/lib/rpc-client-with-fallback');
 
 const mockVerusAPI = verusAPI as jest.Mocked<typeof verusAPI>;
+const mockVerusClientWithFallback = verusClientWithFallback as jest.Mocked<
+  typeof verusClientWithFallback
+>;
 
 describe('/api/address/[address]', () => {
   beforeEach(() => {
@@ -15,7 +20,7 @@ describe('/api/address/[address]', () => {
   const mockBalance = {
     balance: 100.5,
     received: 250.75,
-    sent: 0,
+    sent: 150.25, // received - balance
     txcount: 15,
   };
 
@@ -31,7 +36,9 @@ describe('/api/address/[address]', () => {
 
   describe('GET - Success Cases', () => {
     it('should return address data successfully', async () => {
-      mockVerusAPI.getAddressBalance.mockResolvedValue(mockBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        mockBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(mockTxids);
 
       const request = createMockRequest(
@@ -57,10 +64,12 @@ describe('/api/address/[address]', () => {
       const balanceWithLargeSent = {
         balance: 10.0,
         received: 100.0,
-        sent: 0,
+        sent: 90.0, // received - balance
         txcount: 10,
       };
-      mockVerusAPI.getAddressBalance.mockResolvedValue(balanceWithLargeSent);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        balanceWithLargeSent
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(mockTxids);
 
       const request = createMockRequest(
@@ -82,7 +91,9 @@ describe('/api/address/[address]', () => {
         sent: 0,
         txcount: 0,
       };
-      mockVerusAPI.getAddressBalance.mockResolvedValue(zeroBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        zeroBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue([]);
 
       const request = createMockRequest(
@@ -110,7 +121,9 @@ describe('/api/address/[address]', () => {
         sent: 0,
         txcount: 0,
       };
-      mockVerusAPI.getAddressBalance.mockResolvedValue(noTxBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        noTxBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue([]);
 
       const request = createMockRequest(
@@ -129,10 +142,12 @@ describe('/api/address/[address]', () => {
       const largeBalance = {
         balance: 1000000.123456,
         received: 5000000.987654,
-        sent: 0,
+        sent: 4000000.864198, // received - balance
         txcount: 1000,
       };
-      mockVerusAPI.getAddressBalance.mockResolvedValue(largeBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        largeBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(
         Array(1000).fill('txid_placeholder')
       );
@@ -169,7 +184,7 @@ describe('/api/address/[address]', () => {
 
     it('should handle RPC errors gracefully', async () => {
       // Mock both to reject to trigger the catch block
-      mockVerusAPI.getAddressBalance.mockRejectedValue(
+      mockVerusClientWithFallback.getAddressBalance.mockRejectedValue(
         new Error('RPC connection failed')
       );
       mockVerusAPI.getAddressTxids.mockRejectedValue(
@@ -195,7 +210,9 @@ describe('/api/address/[address]', () => {
     });
 
     it('should handle partial failures gracefully', async () => {
-      mockVerusAPI.getAddressBalance.mockResolvedValue(mockBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        mockBalance
+      );
       mockVerusAPI.getAddressTxids.mockRejectedValue(
         new Error('Failed to fetch txids')
       );
@@ -215,7 +232,9 @@ describe('/api/address/[address]', () => {
     });
 
     it('should handle null balance response', async () => {
-      mockVerusAPI.getAddressBalance.mockResolvedValue(null as any);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        null as any
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(mockTxids);
 
       const request = createMockRequest(
@@ -237,7 +256,9 @@ describe('/api/address/[address]', () => {
     });
 
     it('should handle null txids response', async () => {
-      mockVerusAPI.getAddressBalance.mockResolvedValue(mockBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        mockBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(null as any);
 
       const request = createMockRequest(
@@ -260,10 +281,12 @@ describe('/api/address/[address]', () => {
       const fractionalBalance = {
         balance: 0.00000001,
         received: 0.00000002,
-        sent: 0,
+        sent: 0.00000001, // received - balance
         txcount: 1,
       };
-      mockVerusAPI.getAddressBalance.mockResolvedValue(fractionalBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        fractionalBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(['txid1']);
 
       const request = createMockRequest(
@@ -281,7 +304,9 @@ describe('/api/address/[address]', () => {
     });
 
     it('should handle VerusID addresses (i-address)', async () => {
-      mockVerusAPI.getAddressBalance.mockResolvedValue(mockBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        mockBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(mockTxids);
 
       const request = createMockRequest(
@@ -294,9 +319,9 @@ describe('/api/address/[address]', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(mockVerusAPI.getAddressBalance).toHaveBeenCalledWith(
-        'iTestIdentity123'
-      );
+      expect(
+        mockVerusClientWithFallback.getAddressBalance
+      ).toHaveBeenCalledWith('iTestIdentity123');
     });
 
     it('should not allow negative sent amounts', async () => {
@@ -306,7 +331,9 @@ describe('/api/address/[address]', () => {
         sent: 0,
         txcount: 5,
       };
-      mockVerusAPI.getAddressBalance.mockResolvedValue(impossibleBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        impossibleBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(mockTxids);
 
       const request = createMockRequest(
@@ -324,9 +351,13 @@ describe('/api/address/[address]', () => {
     it('should handle missing optional fields in balance', async () => {
       const partialBalance = {
         balance: 50.0,
-        // received and sent might be undefined
+        received: 50.0,
+        sent: 0.0,
+        txcount: 5,
       };
-      mockVerusAPI.getAddressBalance.mockResolvedValue(partialBalance as any);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        partialBalance as any
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(mockTxids);
 
       const request = createMockRequest(
@@ -343,7 +374,9 @@ describe('/api/address/[address]', () => {
     });
 
     it('should handle special characters in address', async () => {
-      mockVerusAPI.getAddressBalance.mockResolvedValue(mockBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        mockBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(mockTxids);
 
       const request = createMockRequest(
@@ -355,16 +388,18 @@ describe('/api/address/[address]', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(mockVerusAPI.getAddressBalance).toHaveBeenCalledWith(
-        'RTest@Address'
-      );
+      expect(
+        mockVerusClientWithFallback.getAddressBalance
+      ).toHaveBeenCalledWith('RTest@Address');
     });
 
     it('should handle very long transaction lists', async () => {
       const manyTxids = Array(10000)
         .fill(null)
         .map((_, i) => `txid_${i}`);
-      mockVerusAPI.getAddressBalance.mockResolvedValue(mockBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        mockBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(manyTxids);
 
       const request = createMockRequest(
@@ -382,7 +417,9 @@ describe('/api/address/[address]', () => {
 
   describe('GET - Timestamp Validation', () => {
     it('should include valid ISO timestamp', async () => {
-      mockVerusAPI.getAddressBalance.mockResolvedValue(mockBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        mockBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(mockTxids);
 
       const request = createMockRequest(
@@ -399,7 +436,9 @@ describe('/api/address/[address]', () => {
     });
 
     it('should have recent timestamp', async () => {
-      mockVerusAPI.getAddressBalance.mockResolvedValue(mockBalance);
+      mockVerusClientWithFallback.getAddressBalance.mockResolvedValue(
+        mockBalance
+      );
       mockVerusAPI.getAddressTxids.mockResolvedValue(mockTxids);
 
       const beforeTime = Date.now();

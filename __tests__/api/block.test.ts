@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/block/[hash]/route';
 import { verusAPI } from '@/lib/rpc-client-robust';
+import { verusClientWithFallback } from '@/lib/rpc-client-with-fallback';
 import { computeBlockFees } from '@/lib/utils/fees';
 import { extractCoinbasePayout } from '@/lib/utils/coinbase';
 import { isOrphan } from '@/lib/utils/orphan';
@@ -8,12 +9,16 @@ import { getMempoolTracker } from '@/lib/monitoring/mempool-tracker';
 
 // Mock all dependencies
 jest.mock('@/lib/rpc-client-robust');
+jest.mock('@/lib/rpc-client-with-fallback');
 jest.mock('@/lib/utils/fees');
 jest.mock('@/lib/utils/coinbase');
 jest.mock('@/lib/utils/orphan');
 jest.mock('@/lib/monitoring/mempool-tracker');
 
 const mockVerusAPI = verusAPI as jest.Mocked<typeof verusAPI>;
+const mockVerusClientWithFallback = verusClientWithFallback as jest.Mocked<
+  typeof verusClientWithFallback
+>;
 const mockComputeBlockFees = computeBlockFees as jest.MockedFunction<
   typeof computeBlockFees
 >;
@@ -77,8 +82,10 @@ describe('/api/block/[hash]', () => {
 
   describe('GET - Basic Block Data', () => {
     it('should return block data without metrics', async () => {
-      mockVerusAPI.getBlock.mockResolvedValue(mockBlock);
-      mockVerusAPI.getRawTransaction.mockResolvedValue(mockTransaction);
+      mockVerusClientWithFallback.getBlock.mockResolvedValue(mockBlock);
+      mockVerusClientWithFallback.getTransaction.mockResolvedValue(
+        mockTransaction
+      );
 
       const request = createMockRequest(
         'http://localhost:3000/api/block/test_hash'
@@ -115,7 +122,7 @@ describe('/api/block/[hash]', () => {
     });
 
     it('should return 404 if block not found', async () => {
-      mockVerusAPI.getBlock.mockResolvedValue(null);
+      mockVerusClientWithFallback.getBlock.mockResolvedValue(null);
 
       const request = createMockRequest(
         'http://localhost:3000/api/block/invalid_hash'
@@ -131,7 +138,7 @@ describe('/api/block/[hash]', () => {
     });
 
     it('should handle RPC errors gracefully', async () => {
-      mockVerusAPI.getBlock.mockRejectedValue(
+      mockVerusClientWithFallback.getBlock.mockRejectedValue(
         new Error('RPC connection failed')
       );
 
@@ -152,8 +159,10 @@ describe('/api/block/[hash]', () => {
 
   describe('GET - Block Data with Metrics', () => {
     beforeEach(() => {
-      mockVerusAPI.getBlock.mockResolvedValue(mockBlock);
-      mockVerusAPI.getRawTransaction.mockResolvedValue(mockTransaction);
+      mockVerusClientWithFallback.getBlock.mockResolvedValue(mockBlock);
+      mockVerusClientWithFallback.getTransaction.mockResolvedValue(
+        mockTransaction
+      );
     });
 
     it('should return block data with full metrics', async () => {
@@ -244,7 +253,7 @@ describe('/api/block/[hash]', () => {
 
     it('should handle blocks with no transactions', async () => {
       const emptyBlock = { ...mockBlock, tx: [] };
-      mockVerusAPI.getBlock.mockResolvedValue(emptyBlock);
+      mockVerusClientWithFallback.getBlock.mockResolvedValue(emptyBlock);
 
       const request = createMockRequest(
         'http://localhost:3000/api/block/test_hash?metrics=1'
@@ -262,8 +271,8 @@ describe('/api/block/[hash]', () => {
 
   describe('GET - Edge Cases', () => {
     it('should filter out null transactions', async () => {
-      mockVerusAPI.getBlock.mockResolvedValue(mockBlock);
-      mockVerusAPI.getRawTransaction
+      mockVerusClientWithFallback.getBlock.mockResolvedValue(mockBlock);
+      mockVerusClientWithFallback.getTransaction
         .mockResolvedValueOnce(mockTransaction)
         .mockResolvedValueOnce(null);
 
@@ -271,7 +280,9 @@ describe('/api/block/[hash]', () => {
         ...mockBlock,
         tx: ['txid1', 'txid2'],
       };
-      mockVerusAPI.getBlock.mockResolvedValue(blockWithMultipleTx);
+      mockVerusClientWithFallback.getBlock.mockResolvedValue(
+        blockWithMultipleTx
+      );
 
       const request = createMockRequest(
         'http://localhost:3000/api/block/test_hash'
@@ -292,8 +303,8 @@ describe('/api/block/[hash]', () => {
         vin: [{ txid: 'prev_txid', vout: 0 }],
       };
 
-      mockVerusAPI.getBlock.mockResolvedValue(mockBlock);
-      mockVerusAPI.getRawTransaction.mockResolvedValue(regularTx);
+      mockVerusClientWithFallback.getBlock.mockResolvedValue(mockBlock);
+      mockVerusClientWithFallback.getTransaction.mockResolvedValue(regularTx);
       mockComputeBlockFees.mockResolvedValue({
         feeTotal: 0.001,
         feePerByteAvg: 0.0000008,

@@ -1,4 +1,4 @@
-import { Pool, PoolClient, QueryResult } from 'pg';
+import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
 import { logger } from '@/lib/utils/logger';
 import { SecurityMonitor } from '@/lib/security/security-monitor';
 
@@ -32,7 +32,7 @@ export class SecureDatabaseClient {
   /**
    * Execute a parameterized query safely
    */
-  async query<T = any>(
+  async query<T extends QueryResultRow = any>(
     text: string,
     params: any[] = [],
     client?: PoolClient
@@ -322,7 +322,10 @@ export class DatabaseOperations {
   /**
    * Get a record by ID safely
    */
-  async getById<T>(table: string, id: string | number): Promise<T | null> {
+  async getById<T extends QueryResultRow = any>(
+    table: string,
+    id: string | number
+  ): Promise<T | null> {
     const builder = new SecureQueryBuilder();
     const { query, params } = builder
       .select('*')
@@ -337,7 +340,7 @@ export class DatabaseOperations {
   /**
    * Get records with pagination safely
    */
-  async getPaginated<T>(
+  async getPaginated<T extends QueryResultRow = any>(
     table: string,
     page: number = 1,
     limit: number = 10,
@@ -382,7 +385,7 @@ export class DatabaseOperations {
   /**
    * Search records safely
    */
-  async search<T>(
+  async search<T extends QueryResultRow = any>(
     table: string,
     searchTerm: string,
     searchColumns: string[],

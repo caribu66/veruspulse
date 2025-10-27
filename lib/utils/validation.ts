@@ -294,7 +294,7 @@ export class EnhancedRateLimiter {
   // Clean up expired entries periodically
   cleanup(): void {
     const now = Date.now();
-    for (const [key, data] of this.requests.entries()) {
+    for (const [key, data] of Array.from(this.requests.entries())) {
       if (now > data.resetTime + this.blockDurationMs) {
         this.requests.delete(key);
       }

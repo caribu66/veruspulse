@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 // import { UnifiedStakingAnalytics } from './unified-staking-analytics'; // Removed
 import {
   UsersThree,
@@ -44,6 +45,7 @@ import { VerusIDSyncStatus } from './verusid-sync-status';
 import { VerusIDUTXOAnalytics } from './verusid-utxo-analytics';
 import { VerusIDAchievements } from './verusid-achievements';
 import { VerusIDIdentityDetails } from './verusid-identity-details';
+import { VerusIDScanProgress } from './verusid-scan-progress';
 import { Tabs, TabPanel } from './ui/tabs';
 
 interface VerusID {
@@ -109,6 +111,8 @@ export function VerusIDExplorer() {
   const [stakingLoading, setStakingLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [showScanProgress, setShowScanProgress] = useState(false);
+  const [scanResult, setScanResult] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'search' | 'browse' | 'trending'>(
     'search'
   );
@@ -344,6 +348,33 @@ export function VerusIDExplorer() {
           status: apiIdentity.status || 'active',
         };
 
+        // Check if this VerusID needs scanning (no staking data available)
+        if (resolvedIdentityAddress && result.data.identityHistoryAvailable) {
+          try {
+            // Check if staking data exists by trying to fetch stats
+            const statsResponse = await fetch(
+              `/api/verusid/${resolvedIdentityAddress}/staking-stats`
+            );
+            if (!statsResponse.ok) {
+              // No staking data found, trigger on-demand scan
+              console.log(
+                `🔍 No staking data found for ${searchInput}, triggering on-demand scan...`
+              );
+              setShowScanProgress(true);
+              setScanResult(null);
+              return; // Don't set the VerusID yet, wait for scan to complete
+            }
+          } catch (error) {
+            // If stats fetch fails, assume we need to scan
+            console.log(
+              `🔍 Could not fetch stats for ${searchInput}, triggering on-demand scan...`
+            );
+            setShowScanProgress(true);
+            setScanResult(null);
+            return;
+          }
+        }
+
         setVerusID(flattened);
         setIdentityHistory(null); // Not cached yet
         setLastUpdated(new Date());
@@ -533,8 +564,8 @@ export function VerusIDExplorer() {
   };
 
   return (
-    <div className="space-y-6 text-white px-4 xl:px-8 py-8">
-      <div className="max-w-[1800px] mx-auto">
+    <div className="space-y-6 text-white">
+      <div className="w-full overflow-hidden">
         {/* Debug Panel - Only show in development */}
         {process.env.NODE_ENV === 'development' && false && (
           <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 text-xs">
@@ -571,8 +602,8 @@ export function VerusIDExplorer() {
         )}
 
         {/* Enhanced Header with Tabs */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-300 dark:border-slate-700">
-          <div className="flex items-center justify-between mb-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 lg:p-8 border border-slate-300 dark:border-slate-700">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-8 mb-6 lg:mb-8">
             <div>
               {/* Breadcrumb added for accessibility and tests */}
               <nav
@@ -591,40 +622,40 @@ export function VerusIDExplorer() {
                 Explore VerusID identities and their associated addresses
               </p>
             </div>
-            <div className="flex items-center space-x-3">
-              <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-2">
+            <div className="flex items-center">
+              <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-1 sm:p-2 flex flex-wrap gap-1 sm:gap-2">
                 <button
                   onClick={() => setActiveTab('search')}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                  className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-md transition-colors text-sm ${
                     activeTab === 'search'
                       ? 'bg-blue-500 text-white'
                       : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
                   }`}
                 >
                   <MagnifyingGlass className="h-4 w-4" />
-                  <span>MagnifyingGlass</span>
+                  <span className="hidden sm:inline">Search</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('browse')}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                  className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-md transition-colors text-sm ${
                     activeTab === 'browse'
                       ? 'bg-blue-500 text-white'
                       : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
                   }`}
                 >
                   <Eye className="h-4 w-4" />
-                  <span>Browse</span>
+                  <span className="hidden sm:inline">Browse</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('trending')}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                  className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-md transition-colors text-sm ${
                     activeTab === 'trending'
                       ? 'bg-blue-500 text-white'
                       : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
                   }`}
                 >
                   <TrendUp className="h-4 w-4" />
-                  <span>Trending</span>
+                  <span className="hidden sm:inline">Trending</span>
                 </button>
               </div>
             </div>
@@ -634,17 +665,17 @@ export function VerusIDExplorer() {
         {/* VerusID Sync Status */}
         <VerusIDSyncStatus currentVerusID={verusID?.identityaddress} />
 
-        {/* MagnifyingGlass Interface */}
+        {/* Search Interface */}
         {activeTab === 'search' && (
           <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex-1">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              <div className="flex-1 min-w-0">
                 <input
                   type="text"
                   value={identity}
                   onChange={e => setIdentity(e.target.value)}
                   placeholder="Enter VerusID (e.g., @username)"
-                  className="w-full px-4 py-3 bg-white/10 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   onKeyPress={e => {
                     if (e.key === 'Enter') {
                       const val = (e.currentTarget as HTMLInputElement).value;
@@ -656,10 +687,10 @@ export function VerusIDExplorer() {
               <button
                 onClick={() => void searchIdentity()}
                 disabled={loading || !identity.trim()}
-                className="flex items-center space-x-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base whitespace-nowrap"
               >
                 <MagnifyingGlass className="h-4 w-4" />
-                <span>{loading ? 'Searching...' : 'MagnifyingGlass'}</span>
+                <span>{loading ? 'Searching...' : 'Search'}</span>
               </button>
             </div>
 
@@ -695,19 +726,25 @@ export function VerusIDExplorer() {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Trending VerusIDs</h3>
               <div className="flex items-center space-x-2">
-                <Funnel className="h-4 w-4 text-blue-300" />
+                <Funnel className="h-4 w-4 text-verus-blue" />
                 <select
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value as any)}
-                  className="bg-white/10 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                  className="bg-slate-800/50 backdrop-blur-sm border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-verus-blue/50 focus:border-verus-blue/50 transition-all duration-200 hover:border-slate-500/50"
                 >
-                  <option value="balance">Balance</option>
-                  <option value="activity">Activity</option>
-                  <option value="name">Name</option>
+                  <option value="balance" className="bg-slate-800 text-white">
+                    Balance
+                  </option>
+                  <option value="activity" className="bg-slate-800 text-white">
+                    Activity
+                  </option>
+                  <option value="name" className="bg-slate-800 text-white">
+                    Name
+                  </option>
                 </select>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
               {trendingIdentities.map((identity, index) => (
                 <div
                   key={index}
@@ -764,12 +801,12 @@ export function VerusIDExplorer() {
             <p className="text-blue-200 mb-6">
               Browse through all registered VerusIDs on the network
             </p>
-            <a
+            <Link
               href="/verusid/browse"
               className="inline-block px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
             >
               Load All Identities
-            </a>
+            </Link>
           </div>
         )}
       </div>
@@ -818,30 +855,30 @@ export function VerusIDExplorer() {
 
             {/* Feature Highlights */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
-              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-slate-800 border border-slate-600 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                 <Wallet className="h-6 w-6 text-verus-green mx-auto mb-2" />
-                <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                <h4 className="text-sm font-semibold text-white mb-1">
                   Balance & Holdings
                 </h4>
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-slate-300">
                   View VRSC balances across all addresses
                 </p>
               </div>
-              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-slate-800 border border-slate-600 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                 <ChartBar className="h-6 w-6 text-verus-green mx-auto mb-2" />
-                <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                <h4 className="text-sm font-semibold text-white mb-1">
                   Staking Analytics
                 </h4>
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-slate-300">
                   Track monthly rewards with interactive charts
                 </p>
               </div>
-              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-slate-800 border border-slate-600 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                 <Shield className="h-6 w-6 text-verus-blue mx-auto mb-2" />
-                <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                <h4 className="text-sm font-semibold text-white mb-1">
                   Identity Details
                 </h4>
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-slate-300">
                   Explore authorities, addresses & properties
                 </p>
               </div>
@@ -850,37 +887,67 @@ export function VerusIDExplorer() {
         </div>
       )}
 
+      {/* Scan Progress */}
+      {showScanProgress && (
+        <div className="space-y-6">
+          <VerusIDScanProgress
+            verusidName={identity}
+            onComplete={result => {
+              console.log('✅ Scan completed:', result);
+              setScanResult(result);
+              setShowScanProgress(false);
+              // Re-trigger the search to load the now-scanned VerusID
+              setTimeout(() => {
+                searchIdentity();
+              }, 1000);
+            }}
+            onError={error => {
+              console.error('❌ Scan failed:', error);
+              setShowScanProgress(false);
+              setError(`Scan failed: ${error}`);
+            }}
+          />
+        </div>
+      )}
+
       {/* Results */}
       {verusID && (
         <div className="space-y-6">
           {/* Identity Header Card */}
-          <div className="bg-gradient-to-r from-verus-blue/20 to-verus-green/20 dark:from-verus-blue/20 dark:to-verus-green/20 from-blue-100 to-green-100 backdrop-blur-sm rounded-2xl p-6 border border-verus-blue/30 dark:border-verus-blue/30 border-blue-200">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-lg bg-verus-blue/20">
-                  <UsersThree className="h-8 w-8 text-purple-300" />
+          <div className="bg-gradient-to-r from-verus-blue/20 to-verus-green/20 dark:from-verus-blue/20 dark:to-verus-green/20 from-blue-100 to-green-100 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-verus-blue/30 dark:border-verus-blue/30 border-blue-200">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6 mb-4 sm:mb-6">
+              <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
+                <div className="p-2 sm:p-3 rounded-lg bg-verus-blue/20 flex-shrink-0">
+                  <UsersThree className="h-6 w-6 sm:h-8 sm:w-8 text-purple-300" />
                 </div>
-                <div>
-                  <h3 className="text-3xl font-bold text-white dark:text-white text-slate-900 mb-2">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white dark:text-white text-slate-900 mb-2 truncate">
                     {verusID.name}
                   </h3>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                     <div
                       className={`flex items-center space-x-2 ${getStatusColor(verusID.status)}`}
                     >
                       {getStatusIcon(verusID.status)}
-                      <span className="font-medium capitalize">
+                      <span className="font-medium capitalize text-sm sm:text-base">
                         {verusID.status}
                       </span>
                     </div>
-                    <div className="flex items-center space-x-1 text-blue-200">
-                      <Hash className="h-4 w-4" />
-                      <span>Block #{verusID.height}</span>
-                    </div>
+                    {verusID.height && verusID.height > 0 ? (
+                      <div className="flex items-center space-x-1 text-blue-200 text-sm sm:text-base">
+                        <Hash className="h-4 w-4" />
+                        <span>Block #{verusID.height.toLocaleString()}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-1 text-gray-400 text-sm sm:text-base">
+                        <Hash className="h-4 w-4" />
+                        <span>Creation block unknown</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col items-end space-y-2">
+              <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-0 lg:space-y-2 flex-shrink-0">
                 {lastUpdated && (
                   <div className="text-xs text-blue-200 flex items-center space-x-1">
                     <Clock className="h-3 w-3" />
@@ -889,7 +956,7 @@ export function VerusIDExplorer() {
                 )}
                 <button
                   onClick={() => copyToClipboard(verusID.name, 'identity')}
-                  className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+                  className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-sm sm:text-base whitespace-nowrap"
                 >
                   {copied === 'identity' ? (
                     <Check className="h-4 w-4" />
@@ -902,48 +969,52 @@ export function VerusIDExplorer() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-              <div className="bg-white/10 rounded-lg p-4">
-                <div className="text-blue-200 text-sm mb-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                <div className="text-blue-200 text-xs sm:text-sm mb-1">
                   Identity Address
                 </div>
-                <div className="text-white font-mono text-sm break-all">
+                <div className="text-white font-mono text-xs sm:text-sm break-all">
                   <a
                     className="underline decoration-blue-400/60 hover:decoration-blue-400"
                     href={`/address/${verusID.identityaddress}`}
                     title="Open identity address"
                   >
-                    {verusID.identityaddress.slice(0, 20)}...
+                    {verusID.identityaddress.slice(0, 16)}...
                   </a>
                 </div>
               </div>
-              <div className="bg-white/10 rounded-lg p-4">
-                <div className="text-blue-200 text-sm mb-1">Transaction ID</div>
-                <div className="text-white font-mono text-sm break-all">
+              <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                <div className="text-blue-200 text-xs sm:text-sm mb-1">
+                  Transaction ID
+                </div>
+                <div className="text-white font-mono text-xs sm:text-sm break-all">
                   {verusID.txid ? (
                     <a
                       className="underline decoration-blue-400/60 hover:decoration-blue-400"
                       href={`/tx/${verusID.txid}`}
                       title="Open transaction"
                     >
-                      {verusID.txid.slice(0, 20)}...
+                      {verusID.txid.slice(0, 16)}...
                     </a>
                   ) : (
                     <span className="text-gray-400">Not available</span>
                   )}
                 </div>
               </div>
-              <div className="bg-white/10 rounded-lg p-4">
-                <div className="text-blue-200 text-sm mb-1">Version</div>
-                <div className="text-white font-semibold">
+              <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                <div className="text-blue-200 text-xs sm:text-sm mb-1">
+                  Version
+                </div>
+                <div className="text-white font-semibold text-sm sm:text-base">
                   {verusID.version}
                 </div>
               </div>
-              <div className="bg-white/10 rounded-lg p-4">
-                <div className="text-blue-200 text-sm mb-1">
+              <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                <div className="text-blue-200 text-xs sm:text-sm mb-1">
                   Minimum Signatures
                 </div>
-                <div className="text-white font-semibold">
+                <div className="text-white font-semibold text-sm sm:text-base">
                   {verusID.minimumsignatures}
                 </div>
               </div>
@@ -951,7 +1022,7 @@ export function VerusIDExplorer() {
           </div>
 
           {/* Horizontal Tabs */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700 overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700 overflow-hidden w-full">
             <Tabs
               tabs={[
                 {
@@ -985,21 +1056,21 @@ export function VerusIDExplorer() {
             />
 
             {/* Tab Content */}
-            <div className="p-6">
+            <div className="p-4 sm:p-6 overflow-hidden">
               {/* Overview Tab */}
               <TabPanel id="overview" activeTab={detailsTab}>
-                <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
+                <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-4 sm:gap-6">
                   {/* Main Content */}
-                  <div className="space-y-4">
-                    <div className="bg-gradient-to-br from-verus-blue/10 to-verus-green/10 rounded-xl p-6 border border-blue-500/20">
-                      <h4 className="text-xl font-bold text-white mb-4">
+                  <div className="space-y-4 min-w-0">
+                    <div className="bg-gradient-to-br from-verus-blue/10 to-verus-green/10 rounded-xl p-4 sm:p-6 border border-blue-500/20">
+                      <h4 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 truncate">
                         Welcome to {verusID.name}
                       </h4>
-                      <p className="text-blue-200 mb-4">
+                      <p className="text-blue-200 mb-3 sm:mb-4 text-sm sm:text-base">
                         Explore comprehensive staking analytics, UTXO health
                         metrics, and achievement progress.
                       </p>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <button
                           onClick={() => setDetailsTab('staking')}
                           className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg p-4 text-left transition-colors"
@@ -1029,7 +1100,7 @@ export function VerusIDExplorer() {
                   </div>
 
                   {/* Sidebar */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 min-w-0">
                     {/* Balance Section - Compact */}
                     {balance && (
                       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700 p-4">
@@ -1084,21 +1155,21 @@ export function VerusIDExplorer() {
                           <div className="text-xs text-blue-200 mb-1">
                             Revocation Authority
                           </div>
-                          <div className="text-white text-sm">
+                          <div className="text-white text-sm min-w-0">
                             {resolvedAuthorities.revocation ? (
                               <div className="space-y-1">
-                                <div className="font-medium">
+                                <div className="font-medium truncate">
                                   {resolvedAuthorities.revocation}
                                 </div>
                                 {verusID.revocationauthority && (
-                                  <div className="font-mono text-blue-200/80 text-xs">
+                                  <div className="font-mono text-blue-200/80 text-xs break-all">
                                     {verusID.revocationauthority.slice(0, 16)}
                                     ...
                                   </div>
                                 )}
                               </div>
                             ) : (
-                              <span className="font-mono text-gray-400">
+                              <span className="font-mono text-gray-400 break-all">
                                 {verusID.revocationauthority
                                   ? verusID.revocationauthority.slice(0, 16) +
                                     '...'
@@ -1111,20 +1182,20 @@ export function VerusIDExplorer() {
                           <div className="text-xs text-blue-200 mb-1">
                             Recovery Authority
                           </div>
-                          <div className="text-white text-sm">
+                          <div className="text-white text-sm min-w-0">
                             {resolvedAuthorities.recovery ? (
                               <div className="space-y-1">
-                                <div className="font-medium">
+                                <div className="font-medium truncate">
                                   {resolvedAuthorities.recovery}
                                 </div>
                                 {verusID.recoveryauthority && (
-                                  <div className="font-mono text-blue-200/80 text-xs">
+                                  <div className="font-mono text-blue-200/80 text-xs break-all">
                                     {verusID.recoveryauthority.slice(0, 16)}...
                                   </div>
                                 )}
                               </div>
                             ) : (
-                              <span className="font-mono text-gray-400">
+                              <span className="font-mono text-gray-400 break-all">
                                 {verusID.recoveryauthority
                                   ? verusID.recoveryauthority.slice(0, 16) +
                                     '...'
@@ -1137,20 +1208,20 @@ export function VerusIDExplorer() {
                           <div className="text-xs text-blue-200 mb-1">
                             Parent
                           </div>
-                          <div className="text-white text-sm">
+                          <div className="text-white text-sm min-w-0">
                             {resolvedAuthorities.parent ? (
                               <div className="space-y-1">
-                                <div className="font-medium">
+                                <div className="font-medium truncate">
                                   {resolvedAuthorities.parent}
                                 </div>
                                 {verusID.parent && (
-                                  <div className="font-mono text-blue-200/80 text-xs">
+                                  <div className="font-mono text-blue-200/80 text-xs break-all">
                                     {verusID.parent.slice(0, 16)}...
                                   </div>
                                 )}
                               </div>
                             ) : (
-                              <span className="font-mono text-gray-400">
+                              <span className="font-mono text-gray-400 break-all">
                                 {verusID.parent
                                   ? verusID.parent.slice(0, 16) + '...'
                                   : 'Root'}
@@ -1355,36 +1426,36 @@ export function VerusIDExplorer() {
                               {balance.addressDetails.map((addr, index) => (
                                 <div
                                   key={index}
-                                  className={`flex justify-between items-center rounded-lg p-4 ${
+                                  className={`flex flex-col sm:flex-row sm:justify-between sm:items-center rounded-lg p-3 sm:p-4 gap-3 sm:gap-4 ${
                                     addr.isIdentityAddress
                                       ? 'bg-green-500/20 border border-green-400/30 ring-1 ring-green-400/20'
                                       : 'bg-slate-800 border border-slate-700 border border-white/10'
                                   }`}
                                 >
-                                  <div className="flex-1">
-                                    <div className="flex items-center space-x-3">
-                                      <div className="text-white font-mono text-sm break-all">
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                                      <div className="text-white font-mono text-xs sm:text-sm break-all">
                                         {addr.address}
                                       </div>
                                       {addr.isIdentityAddress ? (
-                                        <span className="px-2 py-1 bg-green-500/30 text-green-300 text-xs rounded-full">
+                                        <span className="px-2 py-1 bg-green-500/30 text-green-300 text-xs rounded-full whitespace-nowrap w-fit">
                                           I-Address
                                         </span>
                                       ) : (
-                                        <span className="px-2 py-1 bg-blue-500/30 text-blue-300 text-xs rounded-full">
+                                        <span className="px-2 py-1 bg-blue-500/30 text-blue-300 text-xs rounded-full whitespace-nowrap w-fit">
                                           Primary Address
                                         </span>
                                       )}
                                     </div>
                                     {addr.error && (
-                                      <div className="text-red-400 text-xs mt-1">
+                                      <div className="text-red-400 text-xs mt-1 break-all">
                                         Error: {addr.error}
                                       </div>
                                     )}
                                   </div>
-                                  <div className="text-right ml-4">
+                                  <div className="text-left sm:text-right flex-shrink-0">
                                     <div
-                                      className={`font-semibold ${
+                                      className={`font-semibold text-sm sm:text-base ${
                                         addr.isIdentityAddress
                                           ? 'text-green-300'
                                           : 'text-green-400'

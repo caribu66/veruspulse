@@ -27,8 +27,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({
@@ -42,6 +42,7 @@ export default function RootLayout({
         <link rel="icon" href="/verus-icon-blue.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/favicon.ico" />
         <meta name="theme-color" content="#3165d4" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta
           name="apple-mobile-web-app-status-bar-style"

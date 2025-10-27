@@ -103,13 +103,30 @@ export async function resolveVerusID(input: string): Promise<{
   // Get identity from verusd
   const identity = (await verusdRpc('getidentity', [normalized])) as any;
 
+  // Get creation block from identity history (first entry is creation)
+  let height = 0;
+  try {
+    const history = (await verusdRpc('getidentityhistory', [
+      identity.identity.identityaddress,
+      0,
+      0,
+    ])) as any;
+    if (history?.history && history.history.length > 0) {
+      // First entry is the creation
+      height = history.history[0].height || 0;
+    }
+  } catch (error) {
+    // If history lookup fails, default to 0
+    height = 0;
+  }
+
   return {
     identityAddress: identity.identity.identityaddress,
     name: identity.identity.name || '',
     friendlyName: identity.friendlyname || '',
     primaryAddresses: identity.identity.primaryaddresses || [],
     txid: identity.txid || '',
-    height: identity.height || 0,
+    height: height,
     version: identity.identity.version || 1,
     minimumsignatures: identity.identity.minimumsignatures || 1,
     parent: identity.identity.parent || '',
@@ -275,7 +292,22 @@ async function indexIdentityInBackground(
 
           // Only insert the smallest output (the reward, not the stake return)
           const rewardOutput = myOutputs[0];
-          const amountSats = Math.round(rewardOutput.vout.value * 1e8);
+
+          // Fix for data corruption: Handle both VRSC and satoshi units
+          // If value is > 1000, it's likely already in satoshis (1000 VRSC = 100B satoshis)
+          // If value is < 1000, it's likely in VRSC units
+          let amountSats;
+          if (rewardOutput.vout.value > 1000) {
+            // Value is already in satoshis, use as-is
+            amountSats = Math.round(rewardOutput.vout.value);
+          } else {
+            // Value is in VRSC, convert to satoshis
+            amountSats = Math.round(rewardOutput.vout.value * 1e8);
+          }
+
+          // Sanity check: Cap at 1M VRSC (100B satoshis) to prevent corruption
+          const maxReasonableSats = 100000000000; // 1M VRSC
+          amountSats = Math.min(amountSats, maxReasonableSats);
 
           await pool.query(
             `INSERT INTO staking_rewards 
@@ -301,7 +333,19 @@ async function indexIdentityInBackground(
           const addresses = vout.scriptPubKey?.addresses || [];
 
           if (addresses.includes(identityAddress)) {
-            const amountSats = Math.round(vout.value * 1e8);
+            // Fix for data corruption: Handle both VRSC and satoshi units
+            let amountSats;
+            if (vout.value > 1000) {
+              // Value is already in satoshis, use as-is
+              amountSats = Math.round(vout.value);
+            } else {
+              // Value is in VRSC, convert to satoshis
+              amountSats = Math.round(vout.value * 1e8);
+            }
+
+            // Sanity check: Cap at 1M VRSC (100B satoshis) to prevent corruption
+            const maxReasonableSats = 100000000000; // 1M VRSC
+            amountSats = Math.min(amountSats, maxReasonableSats);
 
             await pool.query(
               `INSERT INTO staking_rewards 

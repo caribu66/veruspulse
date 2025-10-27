@@ -59,14 +59,34 @@ export async function GET(
     const achievementService = new AchievementService(db);
 
     // Get all achievement data for this VerusID
-    const [earned, progress, recentUnlocks, rarity, definitions] =
-      await Promise.all([
-        achievementService.getEarnedAchievements(iaddr),
-        achievementService.getAchievementProgress(iaddr),
-        achievementService.getRecentUnlocks(iaddr, 7),
-        achievementService.getBadgeRarity(),
-        achievementService.getAchievementDefinitions(),
-      ]);
+    // Handle missing achievement_progress table gracefully
+    let earned: any[],
+      progress: any[],
+      recentUnlocks: any[],
+      rarity: any,
+      definitions: any[];
+
+    try {
+      [earned, progress, recentUnlocks, rarity, definitions] =
+        await Promise.all([
+          achievementService.getEarnedAchievements(iaddr),
+          achievementService.getAchievementProgress(iaddr),
+          achievementService.getRecentUnlocks(iaddr, 7),
+          achievementService.getBadgeRarity(),
+          achievementService.getAchievementDefinitions(),
+        ]);
+    } catch (error: any) {
+      // If achievement_progress table doesn't exist, return empty progress
+      if (error.message?.includes('achievement_progress')) {
+        earned = await achievementService.getEarnedAchievements(iaddr);
+        progress = [];
+        recentUnlocks = [];
+        rarity = {};
+        definitions = await achievementService.getAchievementDefinitions();
+      } else {
+        throw error;
+      }
+    }
 
     const totalAvailable = definitions.length;
 

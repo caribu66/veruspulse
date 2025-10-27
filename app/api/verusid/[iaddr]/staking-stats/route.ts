@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
+import { verusAPI } from '@/lib/rpc-client-robust';
 
 // Initialize database connection
 let dbPool: Pool | null = null;
@@ -56,19 +57,30 @@ export async function GET(
     }
 
     // Get comprehensive statistics from verusid_statistics table
-    // Support lookup by I-address, friendly name, or base name
-    const statsQuery = `
+    // First try exact address match, then fallback to other methods
+    let statsQuery = `
       SELECT vs.* FROM verusid_statistics vs
-      LEFT JOIN identities i ON vs.address = i.identity_address
-      WHERE vs.address = $1 
-         OR LOWER(vs.friendly_name) = LOWER($1)
-         OR LOWER(vs.friendly_name) LIKE LOWER($1) || '%'
-         OR LOWER(i.base_name) = LOWER(REPLACE($1, '@', ''))
-         OR LOWER(i.friendly_name) = LOWER($1)
+      WHERE vs.address = $1
       LIMIT 1
     `;
 
-    const statsResult = await db.query(statsQuery, [iaddr]);
+    let statsResult = await db.query(statsQuery, [iaddr]);
+
+    // If no exact match, try other lookup methods
+    if (statsResult.rows.length === 0) {
+      statsQuery = `
+        SELECT vs.* FROM verusid_statistics vs
+        LEFT JOIN identities i ON vs.address = i.identity_address
+        WHERE (vs.friendly_name IS NOT NULL AND (
+           LOWER(vs.friendly_name) = LOWER($1)
+           OR LOWER(vs.friendly_name) LIKE LOWER($1) || '%'
+        ))
+        OR LOWER(i.base_name) = LOWER(REPLACE($1, '@', ''))
+        OR LOWER(i.friendly_name) = LOWER($1)
+        LIMIT 1
+      `;
+      statsResult = await db.query(statsQuery, [iaddr]);
+    }
 
     if (statsResult.rows.length === 0) {
       return NextResponse.json(
@@ -83,6 +95,18 @@ export async function GET(
     }
 
     const stats = statsResult.rows[0];
+
+    // Try to get creation info from RPC
+    let creationInfo = null;
+    try {
+      const friendlyName = stats.friendly_name;
+      if (friendlyName) {
+        creationInfo = await verusAPI.getIdentityCreationBlock(friendlyName);
+      }
+    } catch (error) {
+      console.warn('Failed to fetch creation info:', error);
+      // Continue without creation info
+    }
 
     // Generate COMPLETE monthly timeline data (ALL TIME, not just 12 months)
     const monthlyQuery = `
@@ -102,8 +126,10 @@ export async function GET(
     const monthlyData = monthlyResult.rows.map(row => ({
       month: row.period_start,
       stakeCount: parseInt(row.stake_count) || 0,
-      totalRewardsVRSC:
+      totalRewardsVRSC: Math.min(
         (parseFloat(row.total_rewards_satoshis) || 0) / 100000000,
+        1000000 // Cap monthly rewards at 1M VRSC
+      ),
       periodStart: row.period_min,
       periodEnd: row.period_max,
     }));
@@ -126,8 +152,10 @@ export async function GET(
     const weeklyData = weeklyResult.rows.map(row => ({
       week: row.period_start,
       stakeCount: parseInt(row.stake_count) || 0,
-      totalRewardsVRSC:
+      totalRewardsVRSC: Math.min(
         (parseFloat(row.total_rewards_satoshis) || 0) / 100000000,
+        250000 // Cap weekly rewards at 250K VRSC
+      ),
       periodStart: row.period_min,
       periodEnd: row.period_max,
     }));
@@ -150,8 +178,10 @@ export async function GET(
     const dailyData = dailyResult.rows.map(row => ({
       date: row.stake_date,
       stakeCount: parseInt(row.stake_count) || 0,
-      totalRewardsVRSC:
+      totalRewardsVRSC: Math.min(
         (parseFloat(row.total_rewards_satoshis) || 0) / 100000000,
+        50000 // Cap daily rewards at 50K VRSC
+      ),
       periodStart: row.period_min,
       periodEnd: row.period_max,
     }));
@@ -217,13 +247,20 @@ export async function GET(
     }
 
     // Use calculated values if database values are empty/zero
+    // Apply sanity check for rewards (max 10M VRSC per identity - reasonable upper bound)
+    const rawRewardsVRSC =
+      (parseFloat(stats.total_rewards_satoshis) || 0) > 0
+        ? parseFloat(stats.total_rewards_satoshis) / 100000000
+        : calculatedTotalRewards;
+
+    // Sanity check: Cap rewards at 10M VRSC (reasonable maximum for any single identity)
+    const maxReasonableRewards = 10000000; // 10M VRSC
+    const totalRewardsVRSC = Math.min(rawRewardsVRSC, maxReasonableRewards);
+
     const summary = {
       totalStakes:
         stats.total_stakes > 0 ? stats.total_stakes : calculatedTotalStakes,
-      totalRewardsVRSC:
-        (parseFloat(stats.total_rewards_satoshis) || 0) > 0
-          ? parseFloat(stats.total_rewards_satoshis) / 100000000
-          : calculatedTotalRewards,
+      totalRewardsVRSC: totalRewardsVRSC,
       firstStake: stats.first_stake_time || calculatedFirstStake,
       lastStake: stats.last_stake_time || calculatedLastStake,
       apyAllTime: parseFloat(stats.apy_all_time) || calculatedAPY,
@@ -320,6 +357,13 @@ export async function GET(
           dataCompleteness: parseFloat(stats.data_completeness) || 100,
         },
       },
+      ...(creationInfo && {
+        creationInfo: {
+          block: creationInfo.creationBlock,
+          txid: creationInfo.creationTxid,
+          blockhash: creationInfo.creationBlockhash,
+        },
+      }),
       timestamp: new Date().toISOString(),
     };
 

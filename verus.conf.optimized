@@ -22,13 +22,18 @@ identityindex=1        # Additional identity indexing
 server=1
 rpcport=18843
 rpchost=0.0.0.0        # Listen on all interfaces
-rpcuser=verus
-rpcpassword=verus      # ⚠️  SECURITY: Change this in production!
+# SECURITY: Use environment variables for credentials
+# rpcuser=verus
+# rpcpassword=verus      # ⚠️  CRITICAL: Never use default credentials!
+# 
+# Instead, set these via environment variables:
+# VERUS_RPC_USER=your_secure_username
+# VERUS_RPC_PASSWORD=your_secure_password_32_chars_min
 
-# RPC Access Control
+# RPC Access Control - SECURITY: Restrict to specific IPs only
 rpcallowip=127.0.0.1    # Localhost (explorer app)
-rpcallowip=192.168.86.0/24  # Local network (narrowed from /16 for security)
-rpcallowip=172.17.0.0/16    # Docker network
+# rpcallowip=192.168.86.0/24  # DISABLED: Too broad - enable only if needed
+# rpcallowip=172.17.0.0/16    # DISABLED: Docker network - enable only if needed
 
 # ----------------------------------------------------------------------------
 # RPC PERFORMANCE TUNING (Optimized for 32 cores)

@@ -89,16 +89,17 @@ export function VerusIDStakingDashboard({
   const [stakingMomentum, setStakingMomentum] =
     useState<StakingMomentumData | null>(null);
 
-  // Real-time events for live updates
+  // Real-time events for live updates - REDUCED FREQUENCY
   const {
     connected: realtimeConnected,
     lastBlock,
     lastTransaction,
   } = useRealtimeEvents({
     onNewBlock: () => {
-      // Refresh data when new blocks arrive
+      // Only refresh critical data, not UTXOs on every block
       fetchStats();
-      fetchLiveUTXOs();
+      // Remove frequent UTXO updates - only fetch on user interaction
+      // fetchLiveUTXOs();
       fetchNetworkParticipation();
       fetchStakingMomentum();
     },
@@ -250,17 +251,17 @@ export function VerusIDStakingDashboard({
 
     // For other errors, show the traditional error UI
     return (
-      <div className="bg-red-500/10 backdrop-blur-sm rounded-2xl p-8 border border-red-500/20">
+      <div className="bg-slate-600/10 backdrop-blur-sm rounded-2xl p-8 border border-slate-500/20">
         <div className="flex items-start space-x-4">
-          <WarningCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-1" />
+          <WarningCircle className="h-6 w-6 text-slate-300 flex-shrink-0 mt-1" />
           <div>
-            <h3 className="text-red-400 font-semibold text-lg mb-2">
+            <h3 className="text-slate-300 font-semibold text-lg mb-2">
               Error Loading Statistics
             </h3>
-            <p className="text-red-300 text-sm mb-4">{error}</p>
+            <p className="text-slate-400 text-sm mb-4">{error}</p>
             <button
               onClick={fetchStats}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-white text-sm font-medium transition-colors"
+              className="px-4 py-2 bg-slate-600 hover:bg-slate-700 rounded-lg text-white text-sm font-medium transition-colors"
             >
               Retry
             </button>
@@ -585,16 +586,16 @@ export function VerusIDStakingDashboard({
     <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6 px-2 sm:px-4 lg:px-6 xl:px-8">
       {/* Page Header */}
       {stats.friendlyName && (
-        <div className="bg-gradient-to-r from-verus-blue/20 to-verus-green/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-6 xl:p-8 border border-verus-blue/30 text-center shadow-2xl">
+        <div className="bg-gradient-to-r from-slate-600/20 to-slate-500/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-6 xl:p-8 border border-slate-500/30 text-center shadow-2xl">
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-4">
-            <div className="p-2 sm:p-3 bg-verus-blue/20 rounded-xl sm:rounded-2xl">
-              <Medal className="h-6 w-6 sm:h-8 sm:w-8 text-verus-blue" />
+            <div className="p-2 sm:p-3 bg-gray-200 dark:bg-gray-700 rounded-xl sm:rounded-2xl">
+              <Medal className="h-6 w-6 sm:h-8 sm:w-8 text-gray-600 dark:text-gray-400" />
             </div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white tracking-tight break-words max-w-full hyphens-auto">
               {stats.friendlyName}
             </h1>
           </div>
-          <p className="text-verus-blue/90 text-xs sm:text-sm lg:text-base font-medium mb-3 sm:mb-4 lg:mb-6">
+          <p className="text-slate-300 text-xs sm:text-sm lg:text-base font-medium mb-3 sm:mb-4 lg:mb-6">
             Comprehensive Staking Analytics Dashboard
           </p>
 
@@ -602,7 +603,7 @@ export function VerusIDStakingDashboard({
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 bg-black/20 rounded-full px-3 sm:px-4 py-2 mx-auto w-fit mb-3">
             <div className="flex items-center space-x-2">
               <div
-                className={`w-3 h-3 rounded-full ${realtimeConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}
+                className={`w-3 h-3 rounded-full ${realtimeConnected ? 'bg-slate-300 animate-pulse' : 'bg-slate-500'}`}
               ></div>
               <span className="text-xs sm:text-sm font-medium text-gray-200">
                 {realtimeConnected
@@ -618,10 +619,10 @@ export function VerusIDStakingDashboard({
           </div>
 
           {/* Coverage Information */}
-          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg px-4 py-3 text-left max-w-4xl mx-auto">
+          <div className="bg-slate-600/10 border border-slate-500/30 rounded-lg px-4 py-3 text-left max-w-4xl mx-auto">
             <div className="flex items-start space-x-2">
-              <WarningCircle className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-              <div className="text-xs sm:text-sm text-blue-200">
+              <WarningCircle className="h-5 w-5 text-slate-300 flex-shrink-0 mt-0.5" />
+              <div className="text-xs sm:text-sm text-slate-300">
                 <span className="font-semibold">Coverage Note:</span> This
                 dashboard tracks only VerusID stakers who stake with their
                 I-address and receive rewards to the same I-address. VerusIDs
@@ -646,11 +647,11 @@ export function VerusIDStakingDashboard({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {/* Total Rewards */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-            <div className="relative bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl p-3 sm:p-4 lg:p-5 hover:border-yellow-500/50 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-500/20 to-slate-400/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="relative bg-gradient-to-br from-slate-500/10 to-slate-400/10 border border-slate-500/30 rounded-xl p-3 sm:p-4 lg:p-5 hover:border-slate-500/50 transition-all">
               <div className="flex items-center justify-between mb-2 sm:mb-3">
-                <div className="p-1.5 sm:p-2 bg-verus-teal/20 rounded-lg">
-                  <Medal className="h-5 w-5 sm:h-6 sm:w-6 text-verus-teal" />
+                <div className="p-1.5 sm:p-2 bg-slate-600/20 rounded-lg">
+                  <Medal className="h-5 w-5 sm:h-6 sm:w-6 text-slate-300" />
                 </div>
                 {monthlyData && monthlyData.length > 0 && (
                   <SparklineChart
@@ -664,18 +665,18 @@ export function VerusIDStakingDashboard({
                   />
                 )}
               </div>
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-verus-teal mb-1 break-words">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-200 mb-1 break-words">
                 <AnimatedCounter
                   value={stats.summary.totalRewardsVRSC}
                   decimals={2}
                   duration={2000}
                 />
               </div>
-              <div className="text-xs sm:text-sm text-blue-200">
+              <div className="text-xs sm:text-sm text-slate-300">
                 Total Rewards (VRSC)
               </div>
               {monthlyData && monthlyData.length >= 2 && (
-                <div className="text-xs text-yellow-300 mt-1 sm:mt-2 flex items-center space-x-1">
+                <div className="text-xs text-slate-400 mt-1 sm:mt-2 flex items-center space-x-1">
                   <span>
                     +
                     {(
@@ -691,11 +692,11 @@ export function VerusIDStakingDashboard({
 
           {/* APY */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-            <div className="relative bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-5 hover:border-green-500/50 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-600/20 to-slate-500/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="relative bg-gradient-to-br from-slate-600/10 to-slate-500/10 border border-slate-600/30 rounded-xl p-5 hover:border-slate-600/50 transition-all">
               <div className="flex items-center justify-between mb-3">
-                <div className="p-2 bg-green-500/20 rounded-lg">
-                  <TrendUp className="h-6 w-6 text-green-400" />
+                <div className="p-2 bg-slate-600/20 rounded-lg">
+                  <TrendUp className="h-6 w-6 text-slate-300" />
                 </div>
                 {dailyData && dailyData.length > 0 && (
                   <SparklineChart
@@ -713,7 +714,7 @@ export function VerusIDStakingDashboard({
                   />
                 )}
               </div>
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-400 mb-1">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-200 mb-1">
                 <AnimatedCounter
                   value={stats.summary.apyAllTime || 0}
                   decimals={2}
@@ -721,15 +722,15 @@ export function VerusIDStakingDashboard({
                   suffix="%"
                 />
               </div>
-              <div className="text-sm text-blue-200">APY (All Time)</div>
+              <div className="text-sm text-slate-300">APY (All Time)</div>
               {stats.trends?.apy?.['30d'] && (
                 <div
                   className={`text-xs mt-2 flex items-center space-x-1 ${
                     stats.trends.apy['30d'] === 'increasing'
-                      ? 'text-green-300'
+                      ? 'text-slate-300'
                       : stats.trends.apy['30d'] === 'decreasing'
-                        ? 'text-red-300'
-                        : 'text-gray-300'
+                        ? 'text-slate-400'
+                        : 'text-slate-400'
                   }`}
                 >
                   <span>
@@ -747,11 +748,11 @@ export function VerusIDStakingDashboard({
 
           {/* Total Stakes */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-            <div className="relative bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-5 hover:border-blue-500/50 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-700/20 to-slate-600/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="relative bg-gradient-to-br from-slate-700/10 to-slate-600/10 border border-slate-700/30 rounded-xl p-5 hover:border-slate-700/50 transition-all">
               <div className="flex items-center justify-between mb-3">
-                <div className="p-2 bg-blue-500/20 rounded-lg">
-                  <Pulse className="h-6 w-6 text-blue-400" />
+                <div className="p-2 bg-slate-700/20 rounded-lg">
+                  <Pulse className="h-6 w-6 text-slate-300" />
                 </div>
                 {monthlyData && monthlyData.length > 0 && (
                   <SparklineChart
@@ -766,7 +767,7 @@ export function VerusIDStakingDashboard({
                   />
                 )}
               </div>
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-400 mb-1">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-200 mb-1">
                 <AnimatedCounter
                   value={stats.summary.totalStakes}
                   decimals={0}
@@ -774,9 +775,9 @@ export function VerusIDStakingDashboard({
                   format="number"
                 />
               </div>
-              <div className="text-sm text-blue-200">Total Stakes</div>
+              <div className="text-sm text-slate-300">Total Stakes</div>
               {monthlyData && monthlyData.length >= 2 && (
-                <div className="text-xs text-blue-300 mt-2">
+                <div className="text-xs text-slate-400 mt-2">
                   {monthlyData?.[monthlyData.length - 1]?.stakeCount || 0} this
                   month
                 </div>
@@ -786,21 +787,21 @@ export function VerusIDStakingDashboard({
 
           {/* Network Rank */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-verus-blue/20 to-verus-green/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-            <div className="relative bg-gradient-to-br from-verus-blue/10 to-verus-green/10 border border-verus-blue/30 rounded-xl p-5 hover:border-verus-blue/50 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-800/20 to-slate-700/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="relative bg-gradient-to-br from-slate-800/10 to-slate-700/10 border border-slate-800/30 rounded-xl p-5 hover:border-slate-800/50 transition-all">
               <div className="flex items-center justify-between mb-3">
-                <div className="p-2 bg-verus-blue/20 rounded-lg">
-                  <Trophy className="h-6 w-6 text-verus-blue" />
+                <div className="p-2 bg-slate-800/20 rounded-lg">
+                  <Trophy className="h-6 w-6 text-slate-300" />
                 </div>
-                <div className="text-xs text-verus-blue bg-verus-blue/20 px-2 py-1 rounded">
+                <div className="text-xs text-slate-300 bg-slate-800/20 px-2 py-1 rounded">
                   Top {stats.rankings?.percentile?.toFixed(1) || '0.0'}%
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-verus-blue mb-1">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-200 mb-1">
                 #{stats.rankings?.network || 'N/A'}
               </div>
-              <div className="text-sm text-blue-200">Network Rank</div>
-              <div className="text-xs text-verus-blue/80 mt-2">
+              <div className="text-sm text-slate-300">Network Rank</div>
+              <div className="text-xs text-slate-400 mt-2">
                 {stats.rankings?.network
                   ? `Out of ${stats.rankings?.totalStakers || 'many'} stakers`
                   : 'Calculating...'}
@@ -816,8 +817,8 @@ export function VerusIDStakingDashboard({
           <div className="flex items-center justify-between">
             <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
               <div className="flex items-center space-x-3 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-blue-500/20 rounded-xl sm:rounded-2xl">
-                  <Lightning className="h-5 w-5 sm:h-7 sm:w-7 text-blue-400" />
+                <div className="p-2 sm:p-3 bg-slate-600/20 rounded-xl sm:rounded-2xl">
+                  <Lightning className="h-5 w-5 sm:h-7 sm:w-7 text-slate-300" />
                 </div>
                 <div>
                   <h2 className="text-xl sm:text-2xl font-bold text-white">
@@ -829,9 +830,9 @@ export function VerusIDStakingDashboard({
                 </div>
               </div>
               {liveUTXOData && (
-                <div className="flex items-center space-x-3 bg-green-500/20 rounded-full px-3 sm:px-4 py-2 border border-green-500/30">
-                  <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
-                  <span className="text-xs sm:text-sm font-medium text-green-300">
+                <div className="flex items-center space-x-3 bg-slate-600/20 rounded-full px-3 sm:px-4 py-2 border border-slate-500/30">
+                  <div className="w-3 h-3 rounded-full bg-slate-300 animate-pulse"></div>
+                  <span className="text-xs sm:text-sm font-medium text-slate-300">
                     Live Data
                   </span>
                 </div>
@@ -844,48 +845,58 @@ export function VerusIDStakingDashboard({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {/* Staking Efficiency */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-              <div className="relative flex flex-col items-center justify-center bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-2xl p-6 hover:border-blue-500/50 transition-all">
+              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+              <div className="relative flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all">
                 <HealthScoreGauge
                   score={
-                    hybridUTXOHealth.total > 0
-                      ? (hybridUTXOHealth.eligible / hybridUTXOHealth.total) *
-                        100
-                      : 0
+                    liveUTXOData?.total > 0
+                      ? (liveUTXOData.eligible / liveUTXOData.total) * 100
+                      : hybridUTXOHealth.total > 0
+                        ? (hybridUTXOHealth.eligible / hybridUTXOHealth.total) *
+                          100
+                        : 0
                   }
                   size={100}
                   strokeWidth={8}
                   showLabel={true}
                 />
-                <div className="text-lg font-semibold text-blue-200 mt-4 text-center">
+                <div className="text-lg font-semibold text-gray-900 dark:text-white mt-4 text-center">
                   Staking Efficiency
                 </div>
-                <div className="text-sm text-gray-400 mt-2">
-                  {hybridUTXOHealth.eligible} / {hybridUTXOHealth.total} UTXOs
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  {liveUTXOData?.eligible || hybridUTXOHealth.eligible} /{' '}
+                  {liveUTXOData?.total || hybridUTXOHealth.total} UTXOs
+                  <button
+                    onClick={fetchLiveUTXOs}
+                    className="ml-2 p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                    title="Refresh UTXO data"
+                  >
+                    <ArrowsClockwise className="h-3 w-3" />
+                  </button>
                 </div>
               </div>
             </div>
 
             {/* Network Participation Rate */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-              <div className="relative bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-2xl p-6 hover:border-green-500/50 transition-all">
+              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+              <div className="relative bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="p-2 bg-green-500/20 rounded-xl">
-                    <GlobeHemisphereWest className="h-6 w-6 text-green-400" />
+                  <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
+                    <GlobeHemisphereWest className="h-6 w-6 text-gray-600 dark:text-gray-400" />
                   </div>
-                  <h5 className="text-lg font-semibold text-white">
+                  <h5 className="text-lg font-semibold text-gray-900 dark:text-white">
                     Network Participation
                   </h5>
                 </div>
                 <div className="space-y-4">
                   <div>
                     <div className="text-sm text-gray-400 mb-1">Your Share</div>
-                    <div className="text-2xl font-bold text-green-400">
+                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                       {networkParticipation ? (
                         networkParticipation.participationFormatted
                       ) : (
-                        <div className="animate-pulse bg-green-400/20 rounded h-8 w-20"></div>
+                        <div className="animate-pulse bg-slate-400/20 rounded h-8 w-20"></div>
                       )}
                     </div>
                     <div className="text-sm text-gray-400">
@@ -896,7 +907,7 @@ export function VerusIDStakingDashboard({
                     <div className="text-sm text-gray-400 mb-1">
                       Expected Next Stake
                     </div>
-                    <div className="text-lg font-bold text-cyan-400">
+                    <div className="text-lg font-bold text-gray-600 dark:text-gray-400">
                       {networkParticipation ? (
                         networkParticipation.expectedStakeTimeFormatted
                       ) : (
@@ -906,21 +917,21 @@ export function VerusIDStakingDashboard({
                   </div>
 
                   {/* Additional Info */}
-                  <div className="mt-3 pt-3 border-t border-green-500/20">
+                  <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div>
                         <div className="text-gray-400">Your Weight</div>
-                        <div className="text-green-300 font-medium">
+                        <div className="text-gray-700 dark:text-gray-300 font-medium">
                           {networkParticipation ? (
                             `${networkParticipation.yourWeightFormatted || networkParticipation.yourWeight?.toFixed(2) || '0'} VRSC`
                           ) : (
-                            <div className="animate-pulse bg-green-300/20 rounded h-4 w-12"></div>
+                            <div className="animate-pulse bg-slate-300/20 rounded h-4 w-12"></div>
                           )}
                         </div>
                       </div>
                       <div>
                         <div className="text-gray-400">Network</div>
-                        <div className="text-gray-300 font-medium">
+                        <div className="text-gray-600 dark:text-gray-400 font-medium">
                           {networkParticipation ? (
                             `${networkParticipation.networkWeightFormatted || networkParticipation.networkWeight?.toLocaleString() || '0'} VRSC`
                           ) : (
@@ -937,13 +948,13 @@ export function VerusIDStakingDashboard({
                       <div
                         className={`w-2 h-2 rounded-full ${
                           networkParticipation.status === 'active'
-                            ? 'bg-green-400'
+                            ? 'bg-green-500' // Green when live data is working
                             : networkParticipation.status === 'not_staking'
-                              ? 'bg-red-400'
+                              ? 'bg-slate-500'
                               : networkParticipation.status ===
                                   'data_unavailable'
-                                ? 'bg-orange-400'
-                                : 'bg-yellow-400'
+                                ? 'bg-slate-400'
+                                : 'bg-slate-600'
                         }`}
                       ></div>
                       <span className="text-xs text-gray-400">
@@ -961,138 +972,82 @@ export function VerusIDStakingDashboard({
               </div>
             </div>
 
-            {/* Staking Momentum */}
+            {/* Recent Activity (Simple Real Data) */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-              <div className="relative bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-2xl p-6 hover:border-purple-500/50 transition-all">
+              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+              <div className="relative bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="p-2 bg-purple-500/20 rounded-xl">
-                    <TrendUp className="h-6 w-6 text-purple-400" />
+                  <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
+                    <TrendUp className="h-6 w-6 text-gray-600 dark:text-gray-400" />
                   </div>
-                  <h5 className="text-lg font-semibold text-white">
-                    Staking Momentum
+                  <h5 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Recent Activity
                   </h5>
                 </div>
-                <div className="space-y-3">
-                  {stakingMomentum ? (
-                    stakingMomentum.momentum ? (
-                      <>
-                        <div>
-                          <div className="text-xs text-gray-400">
-                            Performance Trend
-                          </div>
-                          <div
-                            className={`text-lg font-bold ${
-                              stakingMomentum.momentum.color === 'green'
-                                ? 'text-green-400'
-                                : stakingMomentum.momentum.color === 'yellow'
-                                  ? 'text-yellow-400'
-                                  : 'text-red-400'
-                            }`}
-                          >
-                            {stakingMomentum.momentum.frequencyTrendFormatted}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {stakingMomentum.momentum.frequencyChangeFormatted}{' '}
-                            vs previous week
-                          </div>
+                <div className="space-y-4">
+                  {stakingMomentum && stakingMomentum.momentum ? (
+                    <>
+                      {/* Last 7 Days */}
+                      <div>
+                        <div className="text-xs text-gray-400 mb-1">
+                          Last 7 Days
                         </div>
-
-                        <div>
-                          <div className="text-xs text-gray-400">
-                            Performance Rating
-                          </div>
-                          <div className="text-lg font-bold text-purple-400">
-                            {stakingMomentum.performanceRating}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {stakingMomentum.performanceRatio.toFixed(1)}% of
-                            expected
-                          </div>
+                        <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                          {stakingMomentum.momentum.last7d} stake
+                          {stakingMomentum.momentum.last7d !== 1 ? 's' : ''}
                         </div>
+                      </div>
 
-                        {/* Activity Status */}
-                        <div className="mt-3 pt-3 border-t border-purple-500/20">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-xs text-gray-400">
-                                Last 7 Days
-                              </div>
-                              <div className="text-sm font-bold text-purple-300">
-                                {stakingMomentum.momentum.last7d} stakes
-                              </div>
+                      {/* Last Stake Date */}
+                      <div>
+                        <div className="text-xs text-gray-400 mb-1">
+                          Last Stake
+                        </div>
+                        <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                          {stakingMomentum.momentum.lastStakeDays !== null
+                            ? `${stakingMomentum.momentum.lastStakeDays} day${stakingMomentum.momentum.lastStakeDays !== 1 ? 's' : ''} ago`
+                            : 'Unknown'}
+                        </div>
+                      </div>
+
+                      {/* Recent Rewards (show if we can get this data) */}
+                      {(() => {
+                        // Calculate recent rewards from last 7 days chronologically
+                        const sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+                        const recentRewards =
+                          dailyData
+                            ?.filter((day: any) => {
+                              const dayDate = new Date(day.date);
+                              return dayDate >= sevenDaysAgo;
+                            })
+                            .reduce(
+                              (sum: number, day: any) =>
+                                sum + (day.totalRewardsVRSC || 0),
+                              0
+                            ) || 0;
+
+                        return recentRewards > 0 ? (
+                          <div className="pt-3 border-t border-gray-300 dark:border-gray-600">
+                            <div className="text-xs text-gray-400 mb-1">
+                              Recent Rewards
                             </div>
-                            <div className="text-right">
-                              <div className="text-xs text-gray-400">
-                                Status
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <div
-                                  className={`w-2 h-2 rounded-full ${
-                                    stakingMomentum.momentum.isActive
-                                      ? 'bg-green-400'
-                                      : 'bg-yellow-400'
-                                  }`}
-                                ></div>
-                                <span className="text-xs text-gray-400">
-                                  {stakingMomentum.momentum.isActive
-                                    ? 'Active'
-                                    : 'Inactive'}
-                                </span>
-                              </div>
+                            <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                              {recentRewards.toFixed(1)} VRSC
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              Last 7 days
                             </div>
                           </div>
-                        </div>
-                      </>
-                    ) : (
-                      // No historical data available - show current performance only
-                      <>
-                        <div>
-                          <div className="text-xs text-gray-400">
-                            Performance Rating
-                          </div>
-                          <div className="text-lg font-bold text-purple-400">
-                            {stakingMomentum.performanceRating}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {stakingMomentum.performanceRatio.toFixed(1)}% of
-                            expected
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="text-xs text-gray-400">
-                            Current Weight
-                          </div>
-                          <div className="text-lg font-bold text-purple-300">
-                            {stakingMomentum.yourWeight.toLocaleString()} VRSC
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            Expected frequency:{' '}
-                            {stakingMomentum.expectedFrequency.toFixed(3)}/day
-                          </div>
-                        </div>
-
-                        {/* Status */}
-                        <div className="mt-3 pt-3 border-t border-purple-500/20">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 rounded-full bg-orange-400"></div>
-                            <span className="text-xs text-gray-400">
-                              Historical data not available
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            Run stake scanner to enable trend analysis
-                          </div>
-                        </div>
-                      </>
-                    )
+                        ) : null;
+                      })()}
+                    </>
                   ) : (
-                    // Loading state
+                    // Loading or no data
                     <div className="space-y-2">
-                      <div className="animate-pulse bg-purple-400/20 rounded h-6 w-20"></div>
-                      <div className="animate-pulse bg-purple-400/20 rounded h-4 w-16"></div>
-                      <div className="animate-pulse bg-purple-400/20 rounded h-4 w-24"></div>
+                      <div className="animate-pulse bg-slate-400/20 rounded h-6 w-20"></div>
+                      <div className="animate-pulse bg-slate-400/20 rounded h-4 w-16"></div>
                     </div>
                   )}
                 </div>
@@ -1101,13 +1056,13 @@ export function VerusIDStakingDashboard({
 
             {/* Value at Stake */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-              <div className="relative bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-2xl p-6 hover:border-yellow-500/50 transition-all">
+              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+              <div className="relative bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="p-2 bg-yellow-500/20 rounded-xl">
-                    <Medal className="h-6 w-6 text-verus-teal" />
+                  <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
+                    <Medal className="h-6 w-6 text-gray-600 dark:text-gray-400" />
                   </div>
-                  <h5 className="text-lg font-semibold text-white">
+                  <h5 className="text-lg font-semibold text-gray-900 dark:text-white">
                     Value at Stake
                   </h5>
                 </div>
@@ -1116,9 +1071,10 @@ export function VerusIDStakingDashboard({
                     <div className="text-sm text-gray-400 mb-1">
                       Eligible Value
                     </div>
-                    <div className="text-2xl font-bold text-verus-teal">
+                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                       {formatFriendlyNumber(
-                        hybridUTXOHealth.eligibleValueVRSC,
+                        liveUTXOData?.eligibleValueVRSC ||
+                          hybridUTXOHealth.eligibleValueVRSC,
                         {
                           precision: 2,
                         }
@@ -1130,10 +1086,14 @@ export function VerusIDStakingDashboard({
                     <div className="text-sm text-gray-400 mb-1">
                       Total Value
                     </div>
-                    <div className="text-lg font-semibold text-yellow-300">
-                      {formatFriendlyNumber(hybridUTXOHealth.totalValueVRSC, {
-                        precision: 2,
-                      })}{' '}
+                    <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                      {formatFriendlyNumber(
+                        liveUTXOData?.totalValueVRSC ||
+                          hybridUTXOHealth.totalValueVRSC,
+                        {
+                          precision: 2,
+                        }
+                      )}{' '}
                       VRSC
                     </div>
                   </div>
@@ -1151,71 +1111,75 @@ export function VerusIDStakingDashboard({
           className="w-full flex items-center justify-between p-4 sm:p-6 hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center space-x-3">
-            <TrendUp className="h-6 w-6 text-verus-teal" />
-            <h4 className="text-xl font-semibold text-white">
+            <TrendUp className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+            <h4 className="text-xl font-semibold text-gray-900 dark:text-white">
               Performance Charts
             </h4>
           </div>
           {expandedSections.has('performance') ? (
-            <CaretDown className="h-5 w-5 text-yellow-300" />
+            <CaretDown className="h-5 w-5 text-gray-600 dark:text-gray-400" />
           ) : (
-            <CaretRight className="h-5 w-5 text-yellow-300" />
+            <CaretRight className="h-5 w-5 text-gray-600 dark:text-gray-400" />
           )}
         </button>
         {expandedSections.has('performance') && (
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 border-t border-white/10 overflow-hidden">
             {/* Big Summary Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 pt-4 sm:pt-6 mb-4 sm:mb-6">
-              <div className="bg-gradient-to-br from-verus-blue/20 to-verus-green/20 rounded-lg p-4 border border-verus-blue/30">
-                <div className="text-purple-300 text-sm font-medium mb-1">
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">
                   Total Stakes
                 </div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                   {stats.summary.totalStakes || 0}
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-lg p-4 border border-green-500/30">
-                <div className="text-green-300 text-sm font-medium mb-1">
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">
                   Total Earned
                 </div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                   {formatCryptoValue(stats.summary.totalRewardsVRSC || 0)}
                 </div>
-                <div className="text-green-300 text-xs mt-1">VRSC</div>
+                <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                  VRSC
+                </div>
               </div>
-              <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-lg p-4 border border-blue-500/30">
-                <div className="text-blue-300 text-sm font-medium mb-1">
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">
                   Avg per Stake
                 </div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                   {(
                     (stats.summary.totalRewardsVRSC || 0) /
                     (stats.summary.totalStakes || 1)
                   ).toFixed(2)}
                 </div>
-                <div className="text-blue-300 text-xs mt-1">VRSC</div>
+                <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                  VRSC
+                </div>
               </div>
               {achievements ? (
                 <div
-                  className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-lg p-4 border border-yellow-500/30 cursor-help"
+                  className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700 cursor-help"
                   title={`Earned ${achievements.total?.earned || 0} out of ${achievements.total?.available || 0} achievement badges`}
                 >
-                  <div className="text-yellow-300 text-sm font-medium mb-1">
+                  <div className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">
                     Badges
                   </div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                     {achievements.total?.earned || 0}
                   </div>
-                  <div className="text-yellow-300 text-xs mt-1">
+                  <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
                     of {achievements.total?.available || 0}
                   </div>
                 </div>
               ) : (
-                <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-lg p-4 border border-yellow-500/30">
-                  <div className="text-yellow-300 text-sm font-medium mb-1">
+                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
+                  <div className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">
                     Staking Since
                   </div>
-                  <div className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
+                  <div className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
                     {stats.summary.firstStake
                       ? new Date(stats.summary.firstStake).toLocaleDateString(
                           'en-US',
@@ -1223,7 +1187,7 @@ export function VerusIDStakingDashboard({
                         )
                       : 'N/A'}
                   </div>
-                  <div className="text-yellow-300 text-xs mt-1">
+                  <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
                     {monthlyData?.length || 0} months
                   </div>
                 </div>
@@ -1441,28 +1405,28 @@ export function VerusIDStakingDashboard({
             </h4>
           </div>
           {expandedSections.has('weekly') ? (
-            <CaretDown className="h-5 w-5 text-yellow-300" />
+            <CaretDown className="h-5 w-5 text-slate-300" />
           ) : (
-            <CaretRight className="h-5 w-5 text-yellow-300" />
+            <CaretRight className="h-5 w-5 text-slate-300" />
           )}
         </button>
         {expandedSections.has('weekly') && (
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 border-t border-white/10 overflow-hidden">
             {/* Weekly Summary Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 pt-4 sm:pt-6 mb-4 sm:mb-6">
-              <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-lg p-4 border border-blue-500/30">
-                <div className="text-blue-300 text-sm font-medium mb-1">
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">
                   Total Weeks
                 </div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                   {weeklyData?.length || 0}
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-lg p-4 border border-green-500/30">
-                <div className="text-green-300 text-sm font-medium mb-1">
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">
                   Avg Weekly Rewards
                 </div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                   {weeklyData && weeklyData.length > 0
                     ? (
                         weeklyData.reduce(
@@ -1473,26 +1437,30 @@ export function VerusIDStakingDashboard({
                       ).toFixed(2)
                     : '0.00'}
                 </div>
-                <div className="text-green-300 text-xs mt-1">VRSC</div>
+                <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                  VRSC
+                </div>
               </div>
-              <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-lg p-4 border border-purple-500/30">
-                <div className="text-purple-300 text-sm font-medium mb-1">
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">
                   Best Week
                 </div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                   {weeklyData && weeklyData.length > 0
                     ? Math.max(
                         ...weeklyData.map((w: any) => w.totalRewardsVRSC || 0)
                       ).toFixed(2)
                     : '0.00'}
                 </div>
-                <div className="text-purple-300 text-xs mt-1">VRSC</div>
+                <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                  VRSC
+                </div>
               </div>
-              <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-lg p-4 border border-yellow-500/30">
-                <div className="text-yellow-300 text-sm font-medium mb-1">
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">
                   Avg Weekly Stakes
                 </div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                   {weeklyData && weeklyData.length > 0
                     ? (
                         weeklyData.reduce(
@@ -1558,13 +1526,13 @@ export function VerusIDStakingDashboard({
       </div>
 
       {/* Data Export & Reports */}
-      <div className="bg-gradient-to-r from-verus-blue/10 to-verus-green/10 backdrop-blur-sm rounded-2xl border border-verus-blue/20 p-4 sm:p-6">
+      <div className="bg-gray-100 dark:bg-gray-800 backdrop-blur-sm rounded-2xl border border-gray-300 dark:border-gray-700 p-4 sm:p-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
           <div className="flex-1 min-w-0">
-            <h4 className="text-lg sm:text-xl font-semibold text-white mb-2">
+            <h4 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Export Your Data
             </h4>
-            <p className="text-sm text-blue-200">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Download your staking statistics for analysis or tax purposes
             </p>
           </div>

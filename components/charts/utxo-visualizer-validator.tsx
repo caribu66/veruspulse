@@ -192,11 +192,11 @@ export function UTXOVisualizerValidator({
 
   if (!hasIssues) {
     return (
-      <div className="mt-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-        <div className="text-green-400 font-semibold text-sm mb-1">
+      <div className="mt-2 p-3 bg-slate-600/10 border border-slate-500/20 rounded-lg">
+        <div className="text-slate-300 font-semibold text-sm mb-1">
           ✅ UTXO Visualizer: All Clear
         </div>
-        <div className="text-xs text-green-300">
+        <div className="text-xs text-slate-400">
           Total bubbles: {validationResults.totalBubbles} | All bubbles
           correctly positioned in their designated zones
         </div>
@@ -205,12 +205,12 @@ export function UTXOVisualizerValidator({
   }
 
   return (
-    <div className="mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-      <div className="text-red-400 font-semibold text-sm mb-2">
+    <div className="mt-2 p-3 bg-slate-700/10 border border-slate-600/20 rounded-lg">
+      <div className="text-slate-300 font-semibold text-sm mb-2">
         🚨 UTXO Visualizer Issues Detected
       </div>
 
-      <div className="text-xs text-red-300 space-y-1">
+      <div className="text-xs text-slate-400 space-y-1">
         <div>Total bubbles: {validationResults.totalBubbles}</div>
         <div>
           Status counts: Eligible({validationResults.statusCounts.eligible || 0}

@@ -96,6 +96,13 @@ export async function GET(
 
     const stats = statsResult.rows[0];
 
+    // Get total number of stakers
+    const totalStakersQuery = `
+      SELECT COUNT(*) as total FROM verusid_statistics WHERE total_stakes > 0
+    `;
+    const totalStakersResult = await db.query(totalStakersQuery);
+    const totalStakers = parseInt(totalStakersResult.rows[0]?.total) || 0;
+
     // Try to get creation info from RPC
     let creationInfo = null;
     try {
@@ -117,6 +124,7 @@ export async function GET(
     }
 
     // Generate COMPLETE monthly timeline data (ALL TIME, not just 12 months)
+    // Only include stakes where the VerusID staked directly with their I-address
     const monthlyQuery = `
       SELECT 
         DATE_TRUNC('month', block_time) as period_start,
@@ -125,7 +133,7 @@ export async function GET(
         MIN(block_time) as period_min,
         MAX(block_time) as period_max
       FROM staking_rewards
-      WHERE identity_address = $1
+      WHERE identity_address = $1 AND source_address = identity_address
       GROUP BY DATE_TRUNC('month', block_time)
       ORDER BY period_start ASC
     `;
@@ -143,6 +151,7 @@ export async function GET(
     }));
 
     // Generate COMPLETE weekly timeline data (ALL TIME)
+    // Only include stakes where the VerusID staked directly with their I-address
     const weeklyQuery = `
       SELECT 
         DATE_TRUNC('week', block_time) as period_start,
@@ -151,7 +160,7 @@ export async function GET(
         MIN(block_time) as period_min,
         MAX(block_time) as period_max
       FROM staking_rewards
-      WHERE identity_address = $1
+      WHERE identity_address = $1 AND source_address = identity_address
       GROUP BY DATE_TRUNC('week', block_time)
       ORDER BY period_start ASC
     `;
@@ -169,6 +178,7 @@ export async function GET(
     }));
 
     // Generate COMPLETE daily timeline data (ALL TIME)
+    // Only include stakes where the VerusID staked directly with their I-address
     const dailyQuery = `
       SELECT 
         DATE(block_time) as stake_date,
@@ -177,7 +187,7 @@ export async function GET(
         MIN(block_time) as period_min,
         MAX(block_time) as period_max
       FROM staking_rewards
-      WHERE identity_address = $1
+      WHERE identity_address = $1 AND source_address = identity_address
       GROUP BY DATE(block_time)
       ORDER BY stake_date ASC
     `;
@@ -359,6 +369,7 @@ export async function GET(
           network: stats.network_rank,
           percentile: parseFloat(stats.network_percentile) || 0,
           category: stats.category_rank,
+          totalStakers: totalStakers, // Added from query above
         },
         metadata: {
           lastCalculated: stats.last_calculated,

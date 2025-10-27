@@ -36,12 +36,12 @@ export function HealthScoreGauge({
     return null;
   }
 
-  // Determine color based on score
+  // Determine color based on score - GREEN FOR EFFICIENCY
   const getColor = (score: number) => {
-    if (score >= 80) return '#10b981'; // green
-    if (score >= 60) return '#3165d4'; // Verus blue
-    if (score >= 40) return '#f59e0b'; // yellow
-    return '#ef4444'; // red
+    if (score >= 80) return '#10b981'; // green-500 - excellent efficiency
+    if (score >= 60) return '#22c55e'; // green-400 - good efficiency
+    if (score >= 40) return '#16a34a'; // green-600 - fair efficiency
+    return '#15803d'; // green-700 - poor efficiency
   };
 
   const getGrade = (score: number) => {

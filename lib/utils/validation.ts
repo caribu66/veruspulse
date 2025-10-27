@@ -132,14 +132,174 @@ export class RateLimiter {
   }
 }
 
-// Input sanitization
-export function sanitizeInput(input: string): string {
+// Enhanced input validation with security focus
+export function sanitizeInput(input: string, maxLength: number = 1000): string {
   if (typeof input !== 'string') return '';
 
   return input
     .trim()
     .replace(/[<>]/g, '') // Remove potential HTML tags
-    .substring(0, 1000); // Limit length
+    .replace(/[&<>"']/g, match => {
+      // Escape HTML entities
+      const escapeMap: { [key: string]: string } = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+      };
+      return escapeMap[match];
+    })
+    .substring(0, maxLength); // Limit length
+}
+
+// Enhanced SQL injection protection
+export function sanitizeForSQL(input: string): string {
+  if (typeof input !== 'string') return '';
+
+  return input
+    .replace(/['"\\]/g, '') // Remove quotes and backslashes
+    .replace(/;.*$/g, '') // Remove everything after semicolon
+    .replace(/--.*$/g, '') // Remove SQL comments
+    .replace(/\/\*.*?\*\//g, '') // Remove block comments
+    .trim();
+}
+
+// Enhanced XSS protection
+export function sanitizeForXSS(input: string): string {
+  if (typeof input !== 'string') return '';
+
+  return input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // Remove iframe tags
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers
+    .trim();
+}
+
+// Request size validation
+export function validateRequestSize(
+  request: Request,
+  maxSizeBytes: number = 1024 * 1024
+): boolean {
+  const contentLength = request.headers.get('content-length');
+  if (contentLength) {
+    const size = parseInt(contentLength, 10);
+    return size <= maxSizeBytes;
+  }
+  return true; // If no content-length header, assume it's okay
+}
+
+// File upload validation
+export function validateFileUpload(
+  file: File,
+  allowedTypes: string[],
+  maxSizeBytes: number = 10 * 1024 * 1024
+): {
+  isValid: boolean;
+  error?: string;
+} {
+  if (!file) {
+    return { isValid: false, error: 'No file provided' };
+  }
+
+  if (file.size > maxSizeBytes) {
+    return {
+      isValid: false,
+      error: `File too large. Maximum size: ${maxSizeBytes} bytes`,
+    };
+  }
+
+  if (!allowedTypes.includes(file.type)) {
+    return {
+      isValid: false,
+      error: `Invalid file type. Allowed types: ${allowedTypes.join(', ')}`,
+    };
+  }
+
+  return { isValid: true };
+}
+
+// Enhanced rate limiting with IP tracking
+export class EnhancedRateLimiter {
+  private requests: Map<string, { count: number; resetTime: number }> =
+    new Map();
+  private readonly windowMs: number;
+  private readonly maxRequests: number;
+  private readonly blockDurationMs: number;
+
+  constructor(
+    windowMs: number = 60000,
+    maxRequests: number = 100,
+    blockDurationMs: number = 300000 // 5 minutes
+  ) {
+    this.windowMs = windowMs;
+    this.maxRequests = maxRequests;
+    this.blockDurationMs = blockDurationMs;
+  }
+
+  isAllowed(key: string): {
+    allowed: boolean;
+    remaining: number;
+    resetTime: number;
+  } {
+    const now = Date.now();
+    const requestData = this.requests.get(key);
+
+    if (!requestData) {
+      this.requests.set(key, {
+        count: 1,
+        resetTime: now + this.windowMs,
+      });
+      return {
+        allowed: true,
+        remaining: this.maxRequests - 1,
+        resetTime: now + this.windowMs,
+      };
+    }
+
+    // Check if window has expired
+    if (now > requestData.resetTime) {
+      this.requests.set(key, {
+        count: 1,
+        resetTime: now + this.windowMs,
+      });
+      return {
+        allowed: true,
+        remaining: this.maxRequests - 1,
+        resetTime: now + this.windowMs,
+      };
+    }
+
+    // Check if blocked
+    if (requestData.count >= this.maxRequests) {
+      return {
+        allowed: false,
+        remaining: 0,
+        resetTime: requestData.resetTime,
+      };
+    }
+
+    // Increment count
+    requestData.count++;
+    this.requests.set(key, requestData);
+
+    return {
+      allowed: true,
+      remaining: this.maxRequests - requestData.count,
+      resetTime: requestData.resetTime,
+    };
+  }
+
+  // Clean up expired entries periodically
+  cleanup(): void {
+    const now = Date.now();
+    for (const [key, data] of this.requests.entries()) {
+      if (now > data.resetTime + this.blockDurationMs) {
+        this.requests.delete(key);
+      }
+    }
+  }
 }
 
 // API error handling

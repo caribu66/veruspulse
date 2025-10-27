@@ -368,7 +368,9 @@ export function AddressExplorer() {
                 </div>
                 <div>
                   <div className="text-white font-semibold">Transactions</div>
-                  <div className="text-blue-200 text-sm">{balance.txcount}</div>
+                  <div className="text-slate-300 text-sm">
+                    {balance.txcount}
+                  </div>
                 </div>
               </div>
             </div>

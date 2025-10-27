@@ -124,30 +124,30 @@ export function TransactionsExplorer() {
   const getScriptTypeColor = (type: string) => {
     switch (type) {
       case 'pubkeyhash':
-        return 'bg-blue-500/20 text-blue-400';
+        return 'bg-slate-600/20 text-slate-300';
       case 'scripthash':
-        return 'bg-green-500/20 text-green-400';
+        return 'bg-slate-500/20 text-slate-200';
       case 'witness_v0_keyhash':
-        return 'bg-verus-blue/20 text-verus-blue';
+        return 'bg-slate-700/20 text-slate-300';
       case 'witness_v0_scripthash':
-        return 'bg-verus-teal/20 text-verus-teal';
+        return 'bg-slate-600/20 text-slate-200';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-slate-600/20 text-slate-400';
     }
   };
 
   const getTransactionTypeColor = (type: string) => {
     switch (type) {
       case 'Coinbase':
-        return 'bg-verus-teal/20 text-verus-teal';
+        return 'bg-slate-600/20 text-slate-200';
       case 'Stake Reward':
-        return 'bg-green-500/20 text-green-400';
+        return 'bg-slate-500/20 text-slate-200';
       case 'Burn':
-        return 'bg-red-500/20 text-red-400';
+        return 'bg-slate-700/20 text-slate-300';
       case 'Transfer':
-        return 'bg-blue-500/20 text-blue-400';
+        return 'bg-slate-600/20 text-slate-300';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-slate-600/20 text-slate-400';
     }
   };
 
@@ -157,19 +157,19 @@ export function TransactionsExplorer() {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <span className="ml-3 text-blue-200">Loading transactions...</span>
+        <span className="ml-3 text-slate-300">Loading transactions...</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
+      <div className="bg-slate-600/10 border border-slate-500/20 rounded-lg p-6">
         <div className="flex items-center space-x-3">
-          <WarningCircle className="h-5 w-5 text-red-400" />
+          <WarningCircle className="h-5 w-5 text-slate-300" />
           <div>
-            <div className="text-red-400 font-semibold">Error</div>
-            <div className="text-red-300 text-sm">{error}</div>
+            <div className="text-slate-300 font-semibold">Error</div>
+            <div className="text-slate-400 text-sm">{error}</div>
           </div>
         </div>
       </div>
@@ -184,11 +184,11 @@ export function TransactionsExplorer() {
           <h2 className="text-xl md:text-3xl font-bold">
             Transactions Explorer
           </h2>
-          <p className="text-blue-200 dark:text-blue-200 text-blue-600 text-sm mt-1">
+          <p className="text-slate-300 text-sm mt-1">
             Explore Verus blockchain transactions and UTXO movements
           </p>
         </div>
-        <div className="text-blue-200 dark:text-blue-200 text-blue-600 text-sm">
+        <div className="text-slate-300 text-sm">
           Total Transactions: {formatTransactionCount(totalTransactions)}
         </div>
       </div>
@@ -197,12 +197,12 @@ export function TransactionsExplorer() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-blue-500/20">
-              <Pulse className="h-5 w-5 text-blue-400" />
+            <div className="p-2 rounded-lg bg-slate-600/20">
+              <Pulse className="h-5 w-5 text-slate-300" />
             </div>
             <div>
               <div className="text-white font-semibold">Total Transactions</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-slate-300 text-sm">
                 {formatTransactionCount(totalTransactions)}
               </div>
             </div>
@@ -211,12 +211,12 @@ export function TransactionsExplorer() {
 
         <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-green-500/20">
-              <Coins className="h-5 w-5 text-green-400" />
+            <div className="p-2 rounded-lg bg-slate-500/20">
+              <Coins className="h-5 w-5 text-slate-200" />
             </div>
             <div>
               <div className="text-white font-semibold">Average Value</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-slate-300 text-sm">
                 {transactions.length > 0
                   ? formatCryptoValue(
                       transactions.reduce(
@@ -237,7 +237,7 @@ export function TransactionsExplorer() {
             </div>
             <div>
               <div className="text-white font-semibold">Average Size</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-slate-300 text-sm">
                 {transactions.length > 0
                   ? formatFileSize(
                       transactions.reduce((sum, tx) => sum + tx.size, 0) /
@@ -256,7 +256,7 @@ export function TransactionsExplorer() {
             </div>
             <div>
               <div className="text-white font-semibold">Latest Transaction</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-slate-300 text-sm">
                 {transactions.length > 0
                   ? formatTime(transactions[0]?.time || 0)
                   : 'N/A'}
@@ -298,49 +298,49 @@ export function TransactionsExplorer() {
                       <span className="text-xs">Copy TXID</span>
                     </button>
                   </div>
-                  <div className="text-blue-200 text-sm">
+                  <div className="text-slate-300 text-sm">
                     {formatTime(tx.time || 0)}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm mb-3">
                   <div>
-                    <div className="text-blue-200 mb-1">Transaction ID</div>
+                    <div className="text-slate-300 mb-1">Transaction ID</div>
                     <div className="text-white font-mono text-xs break-all">
                       {tx.txid}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-blue-200 mb-1">Value</div>
+                    <div className="text-slate-300 mb-1">Value</div>
                     <div className="text-white">
                       {formatCryptoValue(calculateTotalValue(tx))}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-blue-200 mb-1">Size</div>
+                    <div className="text-slate-300 mb-1">Size</div>
                     <div className="text-white">{formatFileSize(tx.size)}</div>
                   </div>
 
                   <div>
-                    <div className="text-blue-200 mb-1">Confirmations</div>
+                    <div className="text-slate-300 mb-1">Confirmations</div>
                     <div className="text-white">{tx.confirmations || 0}</div>
                   </div>
                 </div>
 
                 {/* Stake Reward Information */}
                 {(tx as any).stakeRewardInfo?.isStakeReward && (
-                  <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 mb-3">
+                  <div className="bg-slate-600/10 border border-slate-500/20 rounded-lg p-3 mb-3">
                     <div className="flex items-center space-x-2 mb-2">
-                      <Coins className="h-4 w-4 text-green-400" />
-                      <span className="text-green-400 font-semibold text-sm">
+                      <Coins className="h-4 w-4 text-slate-300" />
+                      <span className="text-slate-300 font-semibold text-sm">
                         Stake Reward
                       </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                       <div>
-                        <div className="text-green-200 mb-1">Stake Amount</div>
+                        <div className="text-slate-300 mb-1">Stake Amount</div>
                         <div className="text-white">
                           {formatCryptoValue(
                             (tx as any).stakeRewardInfo.stakeAmount || 0
@@ -348,7 +348,7 @@ export function TransactionsExplorer() {
                         </div>
                       </div>
                       <div>
-                        <div className="text-green-200 mb-1">Reward Amount</div>
+                        <div className="text-slate-300 mb-1">Reward Amount</div>
                         <div className="text-white">
                           {formatCryptoValue(
                             (tx as any).stakeRewardInfo.rewardAmount || 0
@@ -356,7 +356,7 @@ export function TransactionsExplorer() {
                         </div>
                       </div>
                       <div>
-                        <div className="text-green-200 mb-1">Stake Age</div>
+                        <div className="text-slate-300 mb-1">Stake Age</div>
                         <div className="text-white">
                           {(
                             (tx as any).stakeRewardInfo.stakeAge || 0
@@ -371,7 +371,7 @@ export function TransactionsExplorer() {
                 {/* Inputs and Outputs Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
-                    <div className="text-blue-200 mb-1 flex items-center">
+                    <div className="text-slate-300 mb-1 flex items-center">
                       <ArrowLeft className="h-3 w-3 mr-1" />
                       Inputs ({tx.vin.length})
                     </div>
@@ -386,7 +386,7 @@ export function TransactionsExplorer() {
                         </div>
                       ))}
                       {tx.vin.length > 3 && (
-                        <div className="text-blue-300">
+                        <div className="text-slate-300">
                           ... and {tx.vin.length - 3} more
                         </div>
                       )}
@@ -394,7 +394,7 @@ export function TransactionsExplorer() {
                   </div>
 
                   <div>
-                    <div className="text-blue-200 mb-1 flex items-center">
+                    <div className="text-slate-300 mb-1 flex items-center">
                       <ArrowDown className="h-3 w-3 mr-1" />
                       Outputs ({tx.vout.length})
                     </div>
@@ -411,13 +411,13 @@ export function TransactionsExplorer() {
                             ) || 'Unknown'}
                             ...
                           </span>
-                          <span className="text-green-400">
+                          <span className="text-slate-200">
                             {formatCryptoValue(output.value)}
                           </span>
                         </div>
                       ))}
                       {tx.vout.length > 3 && (
-                        <div className="text-blue-300">
+                        <div className="text-slate-300">
                           ... and {tx.vout.length - 3} more
                         </div>
                       )}
@@ -428,7 +428,7 @@ export function TransactionsExplorer() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 text-blue-200">
+          <div className="text-center py-8 text-slate-300">
             No transactions found
           </div>
         )}
@@ -445,7 +445,7 @@ export function TransactionsExplorer() {
               <span>Previous</span>
             </button>
 
-            <div className="text-blue-200 text-sm">
+            <div className="text-slate-300 text-sm">
               Page {currentPage + 1} of {totalPages}
             </div>
 

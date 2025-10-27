@@ -18,6 +18,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatHashRate, formatStake } from '@/lib/utils/number-formatting';
 import { useTheme } from '@/contexts/theme-context';
+import { SPACING_UTILS } from '@/lib/constants/design-tokens';
 
 interface HeroSectionProps {
   networkStats?: {
@@ -71,7 +72,7 @@ export function HeroSection({
       label: 'Block Height',
       value: networkStats?.blocks?.toLocaleString() || '...',
       icon: ChartBar,
-      color: 'text-blue-400',
+      color: 'text-slate-300',
     },
     {
       label: 'Network Hash',
@@ -79,7 +80,7 @@ export function HeroSection({
         ? formatHashRate(miningStats.networkhashps)
         : '...',
       icon: Cpu,
-      color: 'text-green-400',
+      color: 'text-slate-200',
     },
     {
       label: 'Circulating Supply',
@@ -87,7 +88,7 @@ export function HeroSection({
         ? `${(networkStats.circulatingSupply / 1000000).toFixed(2)}M VRSC`
         : '...',
       icon: UsersThree,
-      color: 'text-blue-400',
+      color: 'text-slate-300',
     },
     {
       label: 'Network Stake',
@@ -96,7 +97,7 @@ export function HeroSection({
           ? formatStake(stakingStats.netstakeweight)
           : '...',
       icon: TrendUp,
-      color: 'text-green-400',
+      color: 'text-slate-200',
     },
   ];
 
@@ -106,54 +107,40 @@ export function HeroSection({
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5 dark:opacity-5 opacity-10"></div>
 
       {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-28">
+      <div
+        className={`relative max-w-7xl mx-auto px-8 lg:px-12 ${SPACING_UTILS.hero}`}
+      >
         <div
           className={`transition-all duration-1000 transform ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`}
         >
           {/* Main Heading */}
-          <div className="text-center mb-12">
-            {/* Verus Logo */}
-            <div className="flex justify-center mb-8">
-              <Image
-                src={
-                  theme === 'light'
-                    ? '/verus-mark-slogan-blue.png'
-                    : '/verus-mark-slogan-white.png'
-                }
-                alt="Verus Protocol"
-                width={200}
-                height={80}
-                className="h-16 w-auto md:h-20"
-                priority
-              />
-            </div>
-
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+          <div className="text-center mb-16 lg:mb-20">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-gray-900 dark:text-white mb-8 leading-tight">
               The <span className="text-verus-blue">Internet of Value</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-4">
+            <p className="text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed">
               Explore the Verus Protocol ecosystem - where blockchain innovation
               meets real-world utility
             </p>
 
             {/* Rotating Feature */}
-            <div className="h-8 flex items-center justify-center">
+            <div className="h-12 flex items-center justify-center mb-12">
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
                   <div
                     key={index}
-                    className={`absolute transition-all duration-500 flex items-center gap-2 ${
+                    className={`absolute transition-all duration-500 flex items-center gap-3 ${
                       currentFeature === index
                         ? 'opacity-100 translate-y-0'
                         : 'opacity-0 translate-y-4'
                     }`}
                   >
-                    <Icon className="h-5 w-5 text-blue-400" />
-                    <span className="text-blue-600 dark:text-blue-200 font-medium">
+                    <Icon className="h-6 w-6 text-slate-300" />
+                    <span className="text-lg text-slate-200 dark:text-slate-100 font-semibold">
                       {feature.text}
                     </span>
                   </div>

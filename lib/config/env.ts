@@ -40,13 +40,26 @@ const envSchema = z.object({
   // Application Configuration
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
 
-  // Security Configuration
+  // Security Configuration - Enhanced
   JWT_SECRET: z
     .string()
-    .min(32, 'JWT_SECRET must be at least 32 characters')
+    .min(
+      64,
+      'JWT_SECRET must be at least 64 characters for production security'
+    )
+    .optional(),
+  CSRF_SECRET: z
+    .string()
+    .min(32, 'CSRF_SECRET must be at least 32 characters')
+    .optional(),
+  SESSION_SECRET: z
+    .string()
+    .min(32, 'SESSION_SECRET must be at least 32 characters')
     .optional(),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().positive().default(900000),
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().positive().default(100),
+  RATE_LIMIT_AUTH_WINDOW_MS: z.coerce.number().positive().default(300000), // 5 minutes for auth
+  RATE_LIMIT_AUTH_MAX_REQUESTS: z.coerce.number().positive().default(20), // 20 requests per 5 min for auth
 
   // Cache Configuration
   CACHE_TTL_BLOCKCHAIN: z.coerce.number().positive().default(30),

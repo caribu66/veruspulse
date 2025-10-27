@@ -11,7 +11,7 @@ import {
 } from '@phosphor-icons/react';
 import { MinimalPriceIndicator } from './minimal-price-indicator';
 import { ThemeToggleCompact } from './theme-toggle';
-import { ICON_SIZES } from '@/lib/constants/design-tokens';
+import { ICON_SIZES, SPACING_UTILS } from '@/lib/constants/design-tokens';
 import { useTheme } from '@/contexts/theme-context';
 
 // Ultra-simplified navigation - consolidated to 3 core sections
@@ -54,7 +54,7 @@ export function EnhancedNavigationBar({
   return (
     <div className="bg-transparent dark:bg-slate-950 border-b border-slate-300 dark:border-slate-700 sticky top-0 z-50 backdrop-blur-sm">
       {/* Top Row: Logo + Price Ticker */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
+      <div className="max-w-7xl mx-auto px-6 py-2 lg:px-8 lg:py-2.5">
         {/* Main Navigation Bar */}
         <nav
           id="navigation"
@@ -65,9 +65,9 @@ export function EnhancedNavigationBar({
           {/* Left: Logo */}
           <div className="flex items-center flex-shrink-0">
             <div className="flex items-center justify-center relative">
-              {/* Verus Logo - Responsive sizing */}
+              {/* Verus Logo - Ultra-compact size */}
               <div className="flex items-center">
-                <div className="relative h-10 sm:h-12 md:h-16 w-auto">
+                <div className="relative h-6 sm:h-7 md:h-8 w-auto">
                   <Image
                     src={
                       theme === 'dark'
@@ -77,7 +77,7 @@ export function EnhancedNavigationBar({
                     alt="Verus - Truth and Privacy for All"
                     width={300}
                     height={72}
-                    className="object-contain h-10 sm:h-12 md:h-16"
+                    className="object-contain h-6 sm:h-7 md:h-8"
                     priority
                   />
                 </div>
@@ -86,7 +86,7 @@ export function EnhancedNavigationBar({
           </div>
 
           {/* Right: Controls */}
-          <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
+          <div className="flex items-center space-x-3 md:space-x-4 lg:space-x-6 flex-shrink-0">
             {/* Minimal Price Indicator (Desktop) */}
             <div className="hidden lg:flex">
               <MinimalPriceIndicator refreshInterval={10000} maxAssets={3} />
@@ -118,9 +118,9 @@ export function EnhancedNavigationBar({
       </div>
 
       {/* Desktop Navigation Tabs Row */}
-      <div className="hidden md:block max-w-7xl mx-auto px-6 py-3">
+      <div className="hidden md:block max-w-7xl mx-auto px-6 py-1.5 lg:px-8 lg:py-2">
         <nav
-          className="flex gap-3 overflow-x-auto scrollbar-hide"
+          className="flex gap-4 lg:gap-6 overflow-x-auto scrollbar-hide"
           role="navigation"
           aria-label="Main sections"
         >
@@ -133,11 +133,11 @@ export function EnhancedNavigationBar({
                 key={item.key}
                 onClick={() => onTabChange(item.key)}
                 className={`
-                  flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-full
-                  transition-all duration-200 whitespace-nowrap
+                  flex items-center gap-2 px-3 py-1.5 min-h-[36px] rounded-md
+                  transition-all duration-300 whitespace-nowrap font-medium text-sm
                   ${
                     isActive
-                      ? 'bg-verus-blue text-white font-semibold shadow-lg border border-verus-blue'
+                      ? 'bg-verus-blue text-white font-semibold shadow-md border border-verus-blue'
                       : 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-slate-600 hover:border-verus-blue/60'
                   }
                 `}

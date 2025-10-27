@@ -95,50 +95,50 @@ const tierColors = {
     accent: 'bg-gray-500',
   },
   gold: {
-    bg: 'bg-yellow-900/30',
-    border: 'border-verus-teal/50',
-    text: 'text-verus-teal',
-    accent: 'bg-verus-teal',
+    bg: 'bg-slate-700/50',
+    border: 'border-slate-500/50',
+    text: 'text-slate-100',
+    accent: 'bg-slate-400',
   },
   platinum: {
-    bg: 'bg-blue-900/30',
-    border: 'border-verus-blue/50',
-    text: 'text-verus-blue',
-    accent: 'bg-verus-blue',
+    bg: 'bg-slate-600/50',
+    border: 'border-slate-400/50',
+    text: 'text-white',
+    accent: 'bg-slate-300',
   },
   legendary: {
-    bg: 'bg-gradient-to-br from-verus-blue/20 via-verus-green/20 to-verus-teal/20',
-    border: 'border-verus-blue/50',
+    bg: 'bg-slate-500/50',
+    border: 'border-slate-300/50',
     text: 'text-white',
-    accent: 'bg-gradient-to-r from-verus-blue to-verus-green',
+    accent: 'bg-slate-200',
   },
 };
 
 const rarityColors = {
   common: {
-    bg: 'bg-blue-900/30',
-    border: 'border-blue-500/50',
-    text: 'text-blue-300',
+    bg: 'bg-slate-800/30',
+    border: 'border-slate-600/50',
+    text: 'text-slate-300',
   },
   uncommon: {
-    bg: 'bg-green-900/30',
-    border: 'border-green-500/50',
-    text: 'text-green-300',
+    bg: 'bg-slate-700/30',
+    border: 'border-slate-500/50',
+    text: 'text-slate-200',
   },
   rare: {
-    bg: 'bg-purple-900/30',
-    border: 'border-purple-500/50',
-    text: 'text-purple-300',
+    bg: 'bg-slate-600/30',
+    border: 'border-slate-400/50',
+    text: 'text-slate-100',
   },
   epic: {
-    bg: 'bg-verus-blue/20',
-    border: 'border-verus-blue/50',
-    text: 'text-verus-blue',
+    bg: 'bg-slate-500/30',
+    border: 'border-slate-300/50',
+    text: 'text-white',
   },
   legendary: {
-    bg: 'bg-gradient-to-br from-verus-blue/20 via-verus-green/20 to-verus-teal/20',
-    border: 'border-verus-teal/50',
-    text: 'text-verus-teal',
+    bg: 'bg-slate-400/30',
+    border: 'border-slate-200/50',
+    text: 'text-white',
   },
 };
 
@@ -278,28 +278,28 @@ export function ProfessionalAchievementProgress({
           {/* Key Performance Indicators */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="text-center">
-              <div className="bg-white/5 border border-green-500/30 rounded-lg p-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-green-500/20 rounded-full mx-auto mb-3">
-                  <CheckCircle className="h-6 w-6 text-green-400" />
+              <div className="bg-white/5 border border-slate-600/30 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-slate-600/20 rounded-full mx-auto mb-3">
+                  <CheckCircle className="h-6 w-6 text-slate-300" />
                 </div>
                 <div className="text-2xl font-bold text-white">
                   {totalStats.earned}
                 </div>
-                <div className="text-sm text-green-300 font-medium">
+                <div className="text-sm text-slate-300 font-medium">
                   Achievements Earned
                 </div>
               </div>
             </div>
 
             <div className="text-center">
-              <div className="bg-white/5 border border-blue-500/30 rounded-lg p-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-blue-500/20 rounded-full mx-auto mb-3">
-                  <Target className="h-6 w-6 text-blue-400" />
+              <div className="bg-white/5 border border-slate-500/30 rounded-lg p-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-slate-500/20 rounded-full mx-auto mb-3">
+                  <Target className="h-6 w-6 text-slate-300" />
                 </div>
                 <div className="text-2xl font-bold text-white">
                   {totalStats.progress}
                 </div>
-                <div className="text-sm text-blue-300 font-medium">
+                <div className="text-sm text-slate-200 font-medium">
                   In Progress
                 </div>
               </div>
@@ -350,11 +350,11 @@ export function ProfessionalAchievementProgress({
               </div>
               <div className="w-full bg-white/10 rounded-full h-3">
                 <div
-                  className="bg-gradient-to-r from-verus-blue to-verus-green h-3 rounded-full transition-all duration-1000 ease-out"
+                  className="bg-gradient-to-r from-slate-600 to-slate-500 h-3 rounded-full transition-all duration-1000 ease-out"
                   style={{ width: `${completionRate}%` }}
                 ></div>
               </div>
-              <div className="flex justify-between text-xs text-blue-300">
+              <div className="flex justify-between text-xs text-slate-300">
                 <span>
                   {totalStats.earned} of {totalStats.available} achievements
                 </span>

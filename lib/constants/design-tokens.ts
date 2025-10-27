@@ -33,8 +33,8 @@ export const ICON_SIZES = {
 } as const;
 
 /**
- * Spacing Scale - 8pt Grid System
- * Consistent spacing for margins, padding, and gaps
+ * Spacing Scale - Enhanced 8pt Grid System
+ * Consistent spacing for margins, padding, and gaps with improved hierarchy
  *
  * @example
  * ```tsx
@@ -45,6 +45,8 @@ export const ICON_SIZES = {
 export const SPACING = {
   /** 0px - No spacing */
   none: '0',
+  /** 2px - Micro spacing */
+  micro: '0.5',
   /** 4px - Minimal spacing */
   xxs: '1',
   /** 8px - Extra small spacing */
@@ -59,10 +61,16 @@ export const SPACING = {
   xl: '6',
   /** 32px - Extra large spacing */
   '2xl': '8',
-  /** 48px - Section spacing */
-  '3xl': '12',
-  /** 64px - Major section spacing */
-  '4xl': '16',
+  /** 40px - Section spacing */
+  '3xl': '10',
+  /** 48px - Major section spacing */
+  '4xl': '12',
+  /** 64px - Hero section spacing */
+  '5xl': '16',
+  /** 80px - Page section spacing */
+  '6xl': '20',
+  /** 96px - Major page spacing */
+  '7xl': '24',
 } as const;
 
 /**
@@ -235,11 +243,13 @@ export const TRANSITIONS = {
 
 /**
  * Common Layout Patterns
- * Reusable layout utilities
+ * Reusable layout utilities with improved spacing
  */
 export const LAYOUTS = {
-  /** Centered content with max width */
-  container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
+  /** Centered content with max width and improved padding */
+  container: 'max-w-7xl mx-auto px-6 sm:px-8 lg:px-12',
+  /** Container with tighter padding for mobile */
+  containerTight: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
   /** Flex row with center alignment */
   flexCenter: 'flex items-center justify-center',
   /** Flex row with space between */
@@ -249,6 +259,43 @@ export const LAYOUTS = {
   /** Grid with responsive columns */
   gridResponsive:
     'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+  /** Section spacing pattern */
+  section: 'py-16 lg:py-24',
+  /** Card spacing pattern */
+  card: 'p-6 lg:p-8',
+  /** Button spacing pattern */
+  button: 'px-6 py-3',
+  /** Input spacing pattern */
+  input: 'px-4 py-3',
+} as const;
+
+/**
+ * Spacing Utilities
+ * Pre-configured spacing combinations for common patterns
+ */
+export const SPACING_UTILS = {
+  /** Navigation bar spacing */
+  navBar: 'px-6 py-4 lg:px-8 lg:py-6',
+  /** Hero section spacing */
+  hero: 'py-20 lg:py-32',
+  /** Section spacing */
+  section: 'py-16 lg:py-24',
+  /** Card padding */
+  card: 'p-6 lg:p-8',
+  /** Card margins */
+  cardMargin: 'mb-6 lg:mb-8',
+  /** Button padding */
+  button: 'px-6 py-3',
+  /** Button large padding */
+  buttonLarge: 'px-8 py-4',
+  /** Input padding */
+  input: 'px-4 py-3',
+  /** Form spacing */
+  form: 'space-y-6',
+  /** List spacing */
+  list: 'space-y-3',
+  /** Grid gap */
+  grid: 'gap-6 lg:gap-8',
 } as const;
 
 /**

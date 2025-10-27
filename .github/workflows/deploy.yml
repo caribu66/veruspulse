@@ -1,0 +1,98 @@
+name: Deploy VerusPulse to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  PRODUCTION_URL: 'https://www.veruspulse.com'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: npm audit --audit-level=moderate
+
+      - name: Run tests
+        run: npm test -- --coverage --watchAll=false
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_APP_URL: ${{ env.PRODUCTION_URL }}
+
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          script: |
+            # Update code
+            cd /home/explorer/verus-dapp
+            git pull origin main
+
+            # Install dependencies
+            npm ci --production
+
+            # Build application
+            npm run build
+
+            # Copy to production directory
+            sudo cp -r .next /var/www/veruspulse/
+            sudo cp -r public /var/www/veruspulse/
+            sudo cp -r scripts /var/www/veruspulse/
+            sudo cp -r lib /var/www/veruspulse/
+            sudo cp package*.json /var/www/veruspulse/
+            sudo cp next.config.js /var/www/veruspulse/
+            sudo cp .env.production /var/www/veruspulse/.env
+
+            # Set permissions
+            sudo chown -R www-data:www-data /var/www/veruspulse
+            sudo chmod -R 755 /var/www/veruspulse
+
+            # Restart services
+            sudo systemctl reload nginx
+            pm2 restart all
+
+            # Run Oink's method scanners
+            cd /var/www/veruspulse
+            pm2 start ecosystem.config.js --only oink-staking-scanner
+            pm2 start ecosystem.config.js --only oink-ultra-scanner
+            pm2 start ecosystem.config.js --only oink-hybrid-scanner
+
+            echo "✅ VerusPulse deployed successfully with Oink's methods!"
+
+      - name: Health check
+        run: |
+          sleep 30
+          curl -f ${{ env.PRODUCTION_URL }}/api/health || exit 1
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "🎉 VerusPulse successfully deployed to ${{ env.PRODUCTION_URL }}"
+          echo "🤖 Oink's efficient scanning methods are now active!"
+
+      - name: Notify deployment failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          exit 1

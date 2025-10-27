@@ -38,8 +38,8 @@ export function QuickActionsBar({ onTabChange }: QuickActionsBarProps) {
       label: 'Search',
       description: 'Find blocks, transactions, addresses',
       icon: MagnifyingGlass,
-      color: 'text-verus-blue',
-      bgColor: 'bg-verus-blue/20',
+      color: 'text-slate-300',
+      bgColor: 'bg-slate-600/20',
       action: () => onTabChange('explorer'),
     },
     {
@@ -47,8 +47,8 @@ export function QuickActionsBar({ onTabChange }: QuickActionsBarProps) {
       label: 'Latest Blocks',
       description: 'Recent blockchain activity',
       icon: Database,
-      color: 'text-verus-green',
-      bgColor: 'bg-verus-green/20',
+      color: 'text-slate-200',
+      bgColor: 'bg-slate-500/20',
       action: () => onTabChange('explorer'),
     },
     {
@@ -56,8 +56,8 @@ export function QuickActionsBar({ onTabChange }: QuickActionsBarProps) {
       label: 'VerusIDs',
       description: 'Identity system explorer',
       icon: UsersThree,
-      color: 'text-verus-blue',
-      bgColor: 'bg-verus-blue/20',
+      color: 'text-slate-300',
+      bgColor: 'bg-slate-600/20',
       action: () => onTabChange('verusids'),
     },
   ];

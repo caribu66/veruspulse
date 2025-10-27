@@ -63,21 +63,42 @@ export async function GET(request: NextRequest) {
 
     const query = `
       SELECT 
-        address,
-        friendly_name,
-        total_stakes,
-        total_rewards_satoshis,
-        apy_all_time,
-        apy_30d,
-        staking_efficiency,
-        last_stake_time,
-        network_rank,
-        network_percentile,
-        eligible_utxos,
-        current_utxos
-      FROM verusid_statistics
-      WHERE total_stakes >= $1
-      ORDER BY ${orderByColumn} DESC NULLS LAST
+        vs.address,
+        COALESCE(i.friendly_name, i.base_name || '.VRSC@', vs.address) as friendly_name,
+        vs.total_stakes,
+        vs.total_rewards_satoshis,
+        vs.apy_all_time,
+        vs.apy_30d,
+        vs.staking_efficiency,
+        vs.last_stake_time,
+        vs.network_rank,
+        vs.network_percentile,
+        vs.eligible_utxos,
+        vs.current_utxos,
+        -- Trend metrics
+        tm.recent_stakes_7d,
+        tm.recent_rewards_7d,
+        tm.recent_views_7d,
+        tm.stake_trend_percent,
+        tm.reward_trend_percent,
+        tm.view_trend_percent,
+        tm.overall_trend_score,
+        tm.last_calculated as trend_last_calculated,
+        -- View data
+        COALESCE(dv.total_views, 0) as total_views_7d
+      FROM verusid_statistics vs
+      LEFT JOIN identities i ON vs.address = i.identity_address
+      LEFT JOIN verusid_trend_metrics tm ON vs.address = tm.verusid_address
+      LEFT JOIN (
+        SELECT 
+          verusid_address,
+          SUM(total_views) as total_views
+        FROM verusid_daily_views
+        WHERE view_date >= CURRENT_DATE - INTERVAL '7 days'
+        GROUP BY verusid_address
+      ) dv ON vs.address = dv.verusid_address
+      WHERE vs.total_stakes >= $1
+      ORDER BY vs.${orderByColumn} DESC NULLS LAST
       LIMIT $2
     `;
 
@@ -99,6 +120,15 @@ export async function GET(request: NextRequest) {
       networkPercentile: parseFloat(row.network_percentile) || 0,
       eligibleUtxos: row.eligible_utxos,
       totalUtxos: row.current_utxos,
+      // Trend data
+      recentStakes7d: row.recent_stakes_7d || 0,
+      recentRewards7d: row.recent_rewards_7d || 0,
+      recentViews7d: row.total_views_7d || 0,
+      stakeTrendPercent: parseFloat(row.stake_trend_percent) || 0,
+      rewardTrendPercent: parseFloat(row.reward_trend_percent) || 0,
+      viewTrendPercent: parseFloat(row.view_trend_percent) || 0,
+      overallTrendScore: parseFloat(row.overall_trend_score) || 0,
+      trendLastCalculated: row.trend_last_calculated,
     }));
 
     // Get total count for pagination

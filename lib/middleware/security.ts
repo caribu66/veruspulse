@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { RateLimiter } from '@/lib/utils/validation';
+import { randomUUID } from 'crypto';
 
 // Rate limiting instances
 const apiRateLimiter = new RateLimiter(60000, 100); // 100 requests per minute
@@ -17,18 +18,25 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
     'camera=(), microphone=(), geolocation=()'
   );
 
-  // Enhanced CSP for Verus blockchain integration
+  // SECURITY: Strict CSP policy without unsafe directives
+  const nonce = randomUUID();
   response.headers.set(
     'Content-Security-Policy',
     "default-src 'self'; " +
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'; " +
-      "style-src 'self' 'unsafe-inline'; " +
+      "script-src 'self' 'nonce-" +
+      nonce +
+      "'; " +
+      "style-src 'self' 'nonce-" +
+      nonce +
+      "'; " +
       "img-src 'self' data: https: blob:; " +
       "font-src 'self' data:; " +
       "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://api.verus.io; " +
       "frame-ancestors 'none'; " +
       "base-uri 'self'; " +
-      "form-action 'self';"
+      "form-action 'self'; " +
+      "object-src 'none'; " +
+      'upgrade-insecure-requests;'
   );
 
   // Additional security headers for blockchain applications

@@ -507,13 +507,13 @@ export function VerusIDExplorer() {
         : String(status ?? '').toLowerCase();
     switch (normalized) {
       case 'active':
-        return 'text-green-400';
+        return 'text-slate-200';
       case 'revoked':
-        return 'text-red-400';
+        return 'text-slate-400';
       case 'pending':
-        return 'text-green-400';
+        return 'text-slate-300';
       default:
-        return 'text-gray-400';
+        return 'text-slate-400';
     }
   };
 
@@ -608,7 +608,7 @@ export function VerusIDExplorer() {
               {/* Breadcrumb added for accessibility and tests */}
               <nav
                 aria-label="Breadcrumb"
-                className="mb-2 text-sm text-blue-200"
+                className="mb-2 text-sm text-slate-300"
               >
                 <span className="mr-2">VerusPulse</span>
                 <span className="text-gray-400">/</span>
@@ -618,7 +618,7 @@ export function VerusIDExplorer() {
                 <UsersThree className="h-8 w-8 mr-3 text-verus-blue" />
                 VerusID Explorer
               </h2>
-              <p className="text-blue-200 text-sm mt-1">
+              <p className="text-slate-300 text-sm mt-1">
                 Explore VerusID identities and their associated addresses
               </p>
             </div>
@@ -628,7 +628,7 @@ export function VerusIDExplorer() {
                   onClick={() => setActiveTab('search')}
                   className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-md transition-colors text-sm ${
                     activeTab === 'search'
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-slate-600 text-white'
                       : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
                   }`}
                 >
@@ -639,7 +639,7 @@ export function VerusIDExplorer() {
                   onClick={() => setActiveTab('browse')}
                   className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-md transition-colors text-sm ${
                     activeTab === 'browse'
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-slate-600 text-white'
                       : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
                   }`}
                 >
@@ -650,7 +650,7 @@ export function VerusIDExplorer() {
                   onClick={() => setActiveTab('trending')}
                   className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-md transition-colors text-sm ${
                     activeTab === 'trending'
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-slate-600 text-white'
                       : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
                   }`}
                 >
@@ -687,7 +687,7 @@ export function VerusIDExplorer() {
               <button
                 onClick={() => void searchIdentity()}
                 disabled={loading || !identity.trim()}
-                className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base whitespace-nowrap"
+                className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-slate-600 hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base whitespace-nowrap"
               >
                 <MagnifyingGlass className="h-4 w-4" />
                 <span>{loading ? 'Searching...' : 'Search'}</span>
@@ -697,7 +697,7 @@ export function VerusIDExplorer() {
             {/* Recent Searches */}
             {recentSearches.length > 0 && (
               <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-3">
-                <p className="text-xs text-gray-600 dark:text-blue-200 mb-2 flex items-center">
+                <p className="text-xs text-gray-600 dark:text-slate-300 mb-2 flex items-center">
                   <Clock className="h-3 w-3 mr-1" />
                   Recent Searches:
                 </p>
@@ -709,7 +709,7 @@ export function VerusIDExplorer() {
                         setIdentity(search);
                         setTimeout(() => void searchIdentity(search), 100);
                       }}
-                      className="px-3 py-1 bg-gray-100 dark:bg-white/10 hover:bg-blue-100 dark:hover:bg-blue-500/30 border border-gray-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500/50 rounded-lg text-sm text-gray-700 dark:text-blue-100 hover:text-blue-800 dark:hover:text-white transition-all"
+                      className="px-3 py-1 bg-gray-100 dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-slate-600/30 border border-gray-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500/50 rounded-lg text-sm text-gray-700 dark:text-slate-200 hover:text-slate-800 dark:hover:text-white transition-all"
                     >
                       {search}
                     </button>
@@ -762,25 +762,25 @@ export function VerusIDExplorer() {
                       <span
                         className={`px-2 py-1 rounded-full text-xs ${
                           identity.status === 'active'
-                            ? 'bg-green-500/20 text-green-300'
+                            ? 'bg-slate-600/20 text-slate-200'
                             : 'bg-gray-500/20 text-gray-300'
                         }`}
                       >
                         {identity.status}
                       </span>
                     </div>
-                    <ArrowSquareOut className="h-4 w-4 text-blue-300" />
+                    <ArrowSquareOut className="h-4 w-4 text-slate-300" />
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <div className="text-blue-200">Balance</div>
-                      <div className="font-semibold text-green-400">
+                      <div className="text-slate-300">Balance</div>
+                      <div className="font-semibold text-slate-200">
                         {formatVRSCShort(identity.balance)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-blue-200">Transactions</div>
-                      <div className="font-semibold text-blue-300">
+                      <div className="text-slate-300">Transactions</div>
+                      <div className="font-semibold text-slate-200">
                         {identity.transactions}
                       </div>
                     </div>

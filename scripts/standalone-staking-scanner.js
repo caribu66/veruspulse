@@ -12,6 +12,19 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * I-ADDRESS STAKING RULE IMPLEMENTATION
+ *
+ * This scanner now implements the I-Address Staking Rule:
+ * - Only stakes where source_address = identity_address (I-address) are counted for VerusID statistics
+ * - VerusIDs that receive staking help from other addresses show 0 stakes
+ * - The getActualStakingAddress() function determines the real staking address
+ * - Direct I-address stakes are logged as "✅ Direct I-address stake"
+ * - Indirect stakes are logged as "📝 Indirect stake: I-address <- R-address"
+ *
+ * This ensures the VerusID page only shows VerusIDs that staked directly with their I-address.
+ */
+
 console.log('╔═══════════════════════════════════════════════════════════╗');
 console.log('║   Standalone Verus Staking Scanner                       ║');
 console.log('║   Scanning ALL VerusIDs from Dec 2020 to Tip             ║');
@@ -274,9 +287,67 @@ function findStakesInBlock(block, targetAddresses) {
   return stakes;
 }
 
-// Insert stake into database
+// Get the actual staking address from transaction inputs
+async function getActualStakingAddress(txid, identityAddress) {
+  try {
+    // Get the transaction details
+    const tx = await rpcCall('getrawtransaction', [txid, true]);
+
+    if (!tx || !tx.vin || tx.vin.length === 0) {
+      log(`⚠️  No inputs found for tx ${txid}`, 'WARN');
+      return identityAddress; // Fallback to identity address
+    }
+
+    // Look for the address that provided the stake
+    for (const vin of tx.vin) {
+      if (vin.txid && vin.vout !== undefined) {
+        try {
+          const prevTx = await rpcCall('getrawtransaction', [vin.txid, true]);
+          if (prevTx && prevTx.vout && prevTx.vout[vin.vout]) {
+            const prevVout = prevTx.vout[vin.vout];
+            if (prevVout.scriptPubKey && prevVout.scriptPubKey.addresses) {
+              const addresses = prevVout.scriptPubKey.addresses;
+              // Look for R-addresses (starting with 'R')
+              for (const addr of addresses) {
+                if (addr.startsWith('R')) {
+                  return addr; // Found the actual R-address that staked
+                }
+              }
+              // If no R-address found, return the first address
+              if (addresses.length > 0) {
+                return addresses[0];
+              }
+            }
+          }
+        } catch (err) {
+          log(
+            `⚠️  Error getting previous tx ${vin.txid}: ${err.message}`,
+            'WARN'
+          );
+          continue;
+        }
+      }
+    }
+
+    return identityAddress; // Fallback to identity address
+  } catch (err) {
+    log(
+      `⚠️  Error getting staking address for tx ${txid}: ${err.message}`,
+      'WARN'
+    );
+    return identityAddress; // Fallback to identity address
+  }
+}
+
+// Insert stake into database with proper I-Address Rule
 async function insertStake(stake) {
   try {
+    // Get the actual staking address
+    const actualStakingAddress = await getActualStakingAddress(
+      stake.txid,
+      stake.address
+    );
+
     await db.query(
       `
       INSERT INTO staking_rewards (
@@ -295,9 +366,20 @@ async function insertStake(stake) {
         stake.blockTime,
         stake.amount,
         'coinbase', // PoS rewards
-        stake.address,
+        actualStakingAddress, // Use the actual staking address
       ]
     );
+
+    // Log the attribution for verification
+    if (actualStakingAddress === stake.address) {
+      log(`   ✅ Direct I-address stake: ${stake.address}`, 'INFO');
+    } else {
+      log(
+        `   📝 Indirect stake: ${stake.address} <- ${actualStakingAddress}`,
+        'INFO'
+      );
+    }
+
     stats.stakeEventsFound++;
   } catch (error) {
     log(`Error inserting stake: ${error.message}`, 'ERROR');

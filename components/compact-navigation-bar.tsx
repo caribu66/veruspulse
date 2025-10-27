@@ -12,6 +12,7 @@ import {
 } from '@phosphor-icons/react';
 import { MinimalPriceIndicator } from './minimal-price-indicator';
 import { ThemeToggleCompact } from './theme-toggle';
+import { ICON_SIZES, SPACING_UTILS } from '@/lib/constants/design-tokens';
 import { useTheme } from '@/contexts/theme-context';
 
 // Ultra-compact navigation - 3 core sections
@@ -83,7 +84,7 @@ export function CompactNavigationBar({
 
   return (
     <div className="bg-black/20 backdrop-blur-sm border-b border-white/10 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className={`max-w-7xl mx-auto ${SPACING_UTILS.navBar}`}>
         {/* Main Navigation Bar */}
         <nav
           id="navigation"

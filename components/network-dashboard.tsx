@@ -276,7 +276,7 @@ export function NetworkDashboard({
             {/* Refresh Controls */}
             <div className="flex items-center space-x-2 md:space-x-4">
               {lastUpdate && (
-                <div className="text-sm text-blue-600 dark:text-blue-600 dark:text-blue-200 hidden md:block">
+                <div className="text-sm text-slate-300 dark:text-slate-200 hidden md:block">
                   Last updated:{' '}
                   {lastUpdate instanceof Date
                     ? lastUpdate.toLocaleTimeString()
@@ -407,15 +407,15 @@ export function NetworkDashboard({
               {/* Section 1: Mining & Security Metrics */}
               <div className="space-y-4">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
-                  <Cpu className="h-5 w-5 mr-2 text-purple-400" />
+                  <Cpu className="h-5 w-5 mr-2 text-slate-300" />
                   Mining & Security Metrics
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Hash Rate with Trend */}
                   <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="p-3 rounded-lg bg-purple-500/20">
-                        <Cpu className="h-6 w-6 text-purple-400" />
+                      <div className="p-3 rounded-lg bg-slate-600/20">
+                        <Cpu className="h-6 w-6 text-slate-300" />
                       </div>
                       <div className="text-right">
                         <div className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -423,10 +423,10 @@ export function NetworkDashboard({
                             ? formatHashRate(miningStats.networkhashps)
                             : 'N/A'}
                         </div>
-                        <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
+                        <div className="text-slate-300 dark:text-slate-200 text-sm font-medium">
                           Hash Rate
                         </div>
-                        <div className="text-green-400 text-xs flex items-center justify-end mt-1">
+                        <div className="text-slate-400 text-xs flex items-center justify-end mt-1">
                           <TrendUp className="h-3 w-3 mr-1" />
                           +2.3% 24h
                         </div>
@@ -446,10 +446,10 @@ export function NetworkDashboard({
                             ? formatDifficulty(miningStats.difficulty)
                             : 'N/A'}
                         </div>
-                        <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
+                        <div className="text-slate-300 dark:text-slate-200 text-sm font-medium">
                           Difficulty
                         </div>
-                        <div className="text-yellow-400 text-xs mt-1">
+                        <div className="text-slate-400 text-xs mt-1">
                           Next: +1.2%
                         </div>
                       </div>
@@ -468,10 +468,10 @@ export function NetworkDashboard({
                             ? formatBlockTime(60) // Default 60 seconds block time
                             : 'N/A'}
                         </div>
-                        <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
+                        <div className="text-slate-300 dark:text-slate-200 text-sm font-medium">
                           Block Time
                         </div>
-                        <div className="text-green-400 text-xs mt-1">
+                        <div className="text-slate-400 text-xs mt-1">
                           {miningStats?.difficulty
                             ? 'Target: 60s ✓'
                             : 'Real-time calculation'}
@@ -501,7 +501,7 @@ export function NetworkDashboard({
                             ? formatFileSize(networkStats.sizeOnDisk)
                             : 'N/A'}
                         </div>
-                        <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
+                        <div className="text-slate-300 dark:text-slate-200 text-sm font-medium">
                           Chain Size
                         </div>
                         <div className="text-blue-400 text-xs mt-1">
@@ -521,10 +521,10 @@ export function NetworkDashboard({
                         <div className="text-2xl font-bold text-gray-900 dark:text-white">
                           {networkStats?.commitments || 0}
                         </div>
-                        <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
+                        <div className="text-slate-300 dark:text-slate-200 text-sm font-medium">
                           Commitments
                         </div>
-                        <div className="text-green-400 text-xs mt-1">
+                        <div className="text-slate-400 text-xs mt-1">
                           ~2.1 TPS
                         </div>
                       </div>
@@ -541,10 +541,10 @@ export function NetworkDashboard({
                         <div className="text-2xl font-bold text-gray-900 dark:text-white">
                           {pbaasChains.length}
                         </div>
-                        <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
+                        <div className="text-slate-300 dark:text-slate-200 text-sm font-medium">
                           PBaaS Chains
                         </div>
-                        <div className="text-green-400 text-xs mt-1">
+                        <div className="text-slate-400 text-xs mt-1">
                           {pbaasChains.length > 0 ? 'Active' : 'None'}
                         </div>
                       </div>
@@ -579,10 +579,10 @@ export function NetworkDashboard({
                                 ).toFixed(2) + '%'
                               : 'N/A'}
                           </div>
-                          <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
+                          <div className="text-slate-300 dark:text-slate-200 text-sm font-medium">
                             Staking APY
                           </div>
-                          <div className="text-green-400 text-xs mt-1">
+                          <div className="text-slate-400 text-xs mt-1">
                             Current estimate
                           </div>
                         </div>
@@ -603,7 +603,7 @@ export function NetworkDashboard({
                               `${blockReward.currentBlockReward.toFixed(8)} VRSC`
                             )}
                           </div>
-                          <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
+                          <div className="text-slate-300 dark:text-slate-200 text-sm font-medium">
                             Block Reward
                           </div>
                           <div className="text-blue-400 text-xs mt-1">
@@ -702,10 +702,10 @@ export function NetworkDashboard({
                             ? `${(networkStats.verificationProgress * 100).toFixed(1)}%`
                             : 'N/A'}
                         </div>
-                        <div className="text-blue-600 dark:text-blue-200 text-sm font-medium">
+                        <div className="text-slate-300 dark:text-slate-200 text-sm font-medium">
                           Sync Progress
                         </div>
-                        <div className="text-yellow-400 text-xs mt-1">
+                        <div className="text-slate-400 text-xs mt-1">
                           {networkStats?.verificationProgress &&
                           networkStats.verificationProgress < 1
                             ? 'Syncing...'
@@ -728,7 +728,7 @@ export function NetworkDashboard({
                         <div className="text-blue-600 dark:text-blue-600 dark:text-blue-200 text-sm font-medium">
                           Network Status
                         </div>
-                        <div className="text-green-400 text-xs mt-1">
+                        <div className="text-slate-400 text-xs mt-1">
                           {networkStats?.networkActive
                             ? 'Healthy ✓'
                             : 'Issues Detected'}

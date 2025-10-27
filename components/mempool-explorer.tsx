@@ -164,19 +164,19 @@ export function MempoolExplorer() {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <span className="ml-3 text-blue-200">Loading mempool...</span>
+        <span className="ml-3 text-slate-300">Loading mempool...</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
+      <div className="bg-slate-600/10 border border-slate-500/20 rounded-lg p-6">
         <div className="flex items-center space-x-3">
-          <WarningCircle className="h-5 w-5 text-red-400" />
+          <WarningCircle className="h-5 w-5 text-slate-300" />
           <div>
-            <div className="text-red-400 font-semibold">Error</div>
-            <div className="text-red-300 text-sm">{error}</div>
+            <div className="text-slate-300 font-semibold">Error</div>
+            <div className="text-slate-400 text-sm">{error}</div>
           </div>
         </div>
       </div>
@@ -201,7 +201,7 @@ export function MempoolExplorer() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">Mempool Explorer</h2>
-          <p className="text-blue-200 text-sm mt-1">
+          <p className="text-slate-300 text-sm mt-1">
             View pending transactions waiting to be confirmed
           </p>
         </div>
@@ -210,7 +210,7 @@ export function MempoolExplorer() {
             onClick={() => setAutoRefresh(!autoRefresh)}
             className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
               autoRefresh
-                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                ? 'bg-slate-600/20 text-slate-200 border border-slate-500/30'
                 : 'bg-white/10 text-gray-400 hover:bg-white/20'
             }`}
           >
@@ -224,7 +224,7 @@ export function MempoolExplorer() {
           <button
             onClick={fetchMempool}
             disabled={loading}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 text-sm"
+            className="flex items-center space-x-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 text-sm"
           >
             <ArrowsClockwise
               className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
@@ -238,12 +238,12 @@ export function MempoolExplorer() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-blue-500/20">
-              <Pulse className="h-5 w-5 text-blue-400" />
+            <div className="p-2 rounded-lg bg-slate-600/20">
+              <Pulse className="h-5 w-5 text-slate-300" />
             </div>
             <div>
               <div className="text-white font-semibold">Total Transactions</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-slate-300 text-sm">
                 {formatFriendlyNumber(totalCount)}
               </div>
             </div>
@@ -252,12 +252,12 @@ export function MempoolExplorer() {
 
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-green-500/20">
-              <CurrencyDollar className="h-5 w-5 text-green-400" />
+            <div className="p-2 rounded-lg bg-slate-500/20">
+              <CurrencyDollar className="h-5 w-5 text-slate-200" />
             </div>
             <div>
               <div className="text-white font-semibold">Total Fees</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-slate-300 text-sm">
                 {formatCryptoValue(totalFees)}
               </div>
             </div>
@@ -271,7 +271,7 @@ export function MempoolExplorer() {
             </div>
             <div>
               <div className="text-white font-semibold">Total Size</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-slate-300 text-sm">
                 {formatFileSize(totalSize)}
               </div>
             </div>
@@ -285,7 +285,7 @@ export function MempoolExplorer() {
             </div>
             <div>
               <div className="text-white font-semibold">Average Fee</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-slate-300 text-sm">
                 {formatCryptoValue(avgFee)}
               </div>
             </div>
@@ -299,7 +299,7 @@ export function MempoolExplorer() {
             </div>
             <div>
               <div className="text-white font-semibold">Average Size</div>
-              <div className="text-blue-200 text-sm">
+              <div className="text-slate-300 text-sm">
                 {formatFileSize(avgSize)}
               </div>
             </div>
@@ -318,7 +318,7 @@ export function MempoolExplorer() {
           <div className="flex items-center space-x-3">
             {/* Sort Controls */}
             <div className="flex items-center space-x-2">
-              <ArrowsDownUp className="h-4 w-4 text-blue-400" />
+              <ArrowsDownUp className="h-4 w-4 text-slate-300" />
               <select
                 value={sortField}
                 onChange={e => setSortField(e.target.value as SortField)}
@@ -349,7 +349,7 @@ export function MempoolExplorer() {
               <DownloadSimple className="h-4 w-4 text-verus-blue" />
               <button
                 onClick={exportToJSON}
-                className="px-3 py-1.5 bg-gradient-to-r from-blue-500/20 to-blue-600/20 hover:from-blue-500/30 hover:to-blue-600/30 text-blue-400 text-xs font-medium rounded-lg border border-blue-500/30 hover:border-blue-500/50 transition-all duration-200"
+                className="px-3 py-1.5 bg-gradient-to-r from-slate-600/20 to-slate-700/20 hover:from-slate-600/30 hover:to-slate-700/30 text-slate-300 text-xs font-medium rounded-lg border border-slate-600/30 hover:border-slate-600/50 transition-all duration-200"
               >
                 JSON
               </button>
@@ -368,7 +368,7 @@ export function MempoolExplorer() {
                   <div className="flex-1 space-y-3">
                     {/* Transaction ID */}
                     <div className="flex items-center space-x-3">
-                      <Hash className="h-4 w-4 text-blue-400 flex-shrink-0" />
+                      <Hash className="h-4 w-4 text-slate-300 flex-shrink-0" />
                       <div className="flex items-center space-x-2 flex-1">
                         <span className="text-gray-400 text-sm">TX ID:</span>
                         <code className="text-white font-mono text-sm">
@@ -382,7 +382,7 @@ export function MempoolExplorer() {
                           title="Copy transaction ID"
                         >
                           {copied === `tx-${tx.txid}` ? (
-                            <Check className="h-4 w-4 text-green-400" />
+                            <Check className="h-4 w-4 text-slate-300" />
                           ) : (
                             <Copy className="h-4 w-4 text-gray-400" />
                           )}
@@ -394,7 +394,7 @@ export function MempoolExplorer() {
                             addToHistory(currentUrl);
                             router.push(`/transaction/${tx.txid}`);
                           }}
-                          className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+                          className="text-slate-300 hover:text-slate-200 text-sm transition-colors"
                         >
                           View Details →
                         </button>

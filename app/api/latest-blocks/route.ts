@@ -114,12 +114,12 @@ export async function GET(request: NextRequest) {
               // Fallback: Use estimated rewards based on block type and height
               if (block.blocktype === 'minted') {
                 rewardType = 'pos';
-                // Estimate PoS reward (typically around 48 VRSC)
-                reward = 48.0;
+                // Current PoS reward (3 VRSC after January 2025 halving)
+                reward = 3.0;
                 stakeRewardInfo = {
                   isStakeReward: true,
                   blockType: 'pos',
-                  rewardAmount: 48.0,
+                  rewardAmount: 3.0,
                   stakeAmount: 1000.0, // Estimated stake
                   stakeAge: 100, // Estimated stake age
                   stakedInputs: 1,
@@ -127,16 +127,16 @@ export async function GET(request: NextRequest) {
                 };
               } else if (block.blocktype === 'mined') {
                 rewardType = 'pow';
-                // Estimate PoW reward (typically around 48 VRSC)
-                reward = 48.0;
+                // Current PoW reward (3 VRSC after January 2025 halving)
+                reward = 3.0;
                 stakeRewardInfo = {
                   isStakeReward: false,
                   blockType: 'pow',
-                  rewardAmount: 48.0,
+                  rewardAmount: 3.0,
                 };
               } else {
                 // Default fallback for unknown block types
-                reward = 48.0;
+                reward = 3.0;
                 rewardType = 'pow';
               }
             }

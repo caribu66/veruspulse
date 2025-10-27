@@ -123,9 +123,9 @@ export function AchievementBadge({
             bg-gradient-to-br ${tierStyling.bg.replace('/20', '/30')} ${tierStyling.border} 
             shadow-lg hover:shadow-2xl backdrop-blur-sm
             hover:scale-105 hover:rotate-1
-            ${tier === 'legendary' ? 'animate-pulse' : ''}
-            ${tier === 'platinum' ? 'shadow-purple-500/20' : ''}
-            ${tier === 'gold' ? 'shadow-yellow-500/20' : ''}
+            ${tier === 'legendary' ? 'shadow-slate-200/10' : ''}
+            ${tier === 'platinum' ? 'shadow-slate-300/10' : ''}
+            ${tier === 'gold' ? 'shadow-slate-400/10' : ''}
           `
             : `
             bg-gray-800/30 border-gray-600/30 hover:border-gray-500/50 
@@ -134,7 +134,7 @@ export function AchievementBadge({
           `
         }
         ${onClick ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900' : ''}
-        ${isRecent ? 'ring-2 ring-yellow-400/50 animate-bounce' : ''}
+        ${isRecent ? 'ring-2 ring-slate-400/50 animate-bounce' : ''}
         ${className}
         group
       `}
@@ -152,7 +152,7 @@ export function AchievementBadge({
       {/* Recent indicator */}
       {isRecent && (
         <div className="absolute -top-2 -right-2 z-10">
-          <Badge className="bg-yellow-500 text-yellow-900 text-xs px-2 py-1 animate-pulse">
+          <Badge className="bg-slate-500 text-slate-900 text-xs px-2 py-1 animate-pulse">
             New!
           </Badge>
         </div>
@@ -180,8 +180,8 @@ export function AchievementBadge({
                 ${tierStyling.bg} ${tierStyling.icon} 
                 shadow-lg group-hover:shadow-xl
                 ${tier === 'legendary' ? 'animate-spin-slow' : ''}
-                ${tier === 'platinum' ? 'shadow-purple-500/30' : ''}
-                ${tier === 'gold' ? 'shadow-yellow-500/30' : ''}
+                ${tier === 'platinum' ? 'shadow-slate-300/20' : ''}
+                ${tier === 'gold' ? 'shadow-slate-400/20' : ''}
               `
                 : 'bg-gray-700/50 text-gray-500 group-hover:bg-gray-600/50'
             }
@@ -196,10 +196,10 @@ export function AchievementBadge({
           {/* Floating sparkles for legendary badges */}
           {earned && tier === 'legendary' && (
             <>
-              <div className="absolute -top-1 -right-1 text-yellow-300 animate-ping text-xs">
+              <div className="absolute -top-1 -right-1 text-slate-300 animate-ping text-xs">
                 ✨
               </div>
-              <div className="absolute -bottom-1 -left-1 text-pink-300 animate-pulse text-xs">
+              <div className="absolute -bottom-1 -left-1 text-slate-200 animate-pulse text-xs">
                 ⭐
               </div>
             </>
@@ -272,10 +272,10 @@ export function AchievementBadge({
                     fill="none"
                     stroke={
                       percentage > 75
-                        ? '#10b981'
+                        ? '#64748b'
                         : percentage > 50
-                          ? '#3165d4'
-                          : '#f59e0b'
+                          ? '#475569'
+                          : '#334155'
                     }
                     strokeWidth="3"
                     strokeLinecap="round"
@@ -301,17 +301,17 @@ export function AchievementBadge({
               </div>
               {/* Encouragement message */}
               {percentage > 75 && (
-                <div className="text-xs text-center text-green-400 font-medium">
+                <div className="text-xs text-center text-slate-300 font-medium">
                   🎯 Almost there!
                 </div>
               )}
               {percentage > 50 && percentage <= 75 && (
-                <div className="text-xs text-center text-blue-400 font-medium">
+                <div className="text-xs text-center text-slate-200 font-medium">
                   📈 Great progress!
                 </div>
               )}
               {percentage <= 50 && percentage > 0 && (
-                <div className="text-xs text-center text-verus-teal font-medium">
+                <div className="text-xs text-center text-slate-400 font-medium">
                   🌱 Getting started
                 </div>
               )}
@@ -332,9 +332,9 @@ export function AchievementBadge({
             )}
 
             {/* Achievement Status */}
-            <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-3">
+            <div className="bg-slate-800/20 border border-slate-600/30 rounded-lg p-3">
               <div className="text-center space-y-2">
-                <div className="text-xs text-green-400 font-bold flex items-center justify-center">
+                <div className="text-xs text-slate-300 font-bold flex items-center justify-center">
                   <span className="mr-1">✅</span>
                   Achievement Unlocked!
                 </div>
@@ -409,7 +409,7 @@ export function AchievementBadge({
 
                 {/* Progress encouragement */}
                 {target > 0 && (
-                  <div className="text-xs text-blue-400">
+                  <div className="text-xs text-slate-300">
                     {percentage > 75 && '🎯 Almost there!'}
                     {percentage > 50 && percentage <= 75 && '📈 Good progress!'}
                     {percentage <= 50 && percentage > 0 && '🌱 Getting started'}

@@ -517,7 +517,7 @@ export function VerusExplorer() {
                   }}
                   className="p-6 bg-slate-800 border border-slate-600 hover:bg-slate-700 rounded-xl transition-all text-left group"
                 >
-                  <Database className="h-8 w-8 mb-3 text-blue-400 group-hover:scale-110 transition-transform" />
+                  <Database className="h-8 w-8 mb-3 text-slate-300 group-hover:scale-110 transition-transform" />
                   <h3 className="text-lg font-semibold mb-1 text-white">
                     Blocks
                   </h3>
@@ -547,7 +547,7 @@ export function VerusExplorer() {
                   }}
                   className="p-6 bg-slate-800 border border-slate-600 hover:bg-slate-700 rounded-xl transition-all text-left group"
                 >
-                  <User className="h-8 w-8 mb-3 text-green-400 group-hover:scale-110 transition-transform" />
+                  <User className="h-8 w-8 mb-3 text-slate-300 group-hover:scale-110 transition-transform" />
                   <h3 className="text-lg font-semibold mb-1 text-white">
                     Addresses
                   </h3>

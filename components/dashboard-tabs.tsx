@@ -68,11 +68,11 @@ export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
               onClick={() => onTabChange(tab.id)}
               className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-all whitespace-nowrap ${
                 isActive
-                  ? 'border-blue-500 text-white bg-blue-500 border border-blue-500'
+                  ? 'border-slate-500 text-white bg-slate-600 border border-slate-500'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5'
               }`}
             >
-              <Icon className={`h-5 w-5 ${isActive ? 'text-blue-400' : ''}`} />
+              <Icon className={`h-5 w-5 ${isActive ? 'text-slate-200' : ''}`} />
               <div className="text-left">
                 <div className="font-semibold">{tab.label}</div>
                 <div className="text-xs opacity-75">{tab.description}</div>

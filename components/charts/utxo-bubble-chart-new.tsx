@@ -515,7 +515,7 @@ export function UTXOBubbleChartNew({
       {/* Status Legend */}
       <div className="flex justify-center mt-4 space-x-6">
         <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+          <div className="w-3 h-3 rounded-full bg-slate-300"></div>
           <span className="text-sm text-gray-300">
             Eligible (
             {
@@ -528,7 +528,7 @@ export function UTXOBubbleChartNew({
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+          <div className="w-3 h-3 rounded-full bg-slate-400"></div>
           <span className="text-sm text-gray-300">
             Cooldown (
             {
@@ -560,8 +560,8 @@ export function UTXOBubbleChartNew({
         originalCounts.cooldown > 50 ||
         originalCounts.inactive > 50) && (
         <div className="flex justify-center mt-3">
-          <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg px-3 py-2">
-            <span className="text-sm text-yellow-300">
+          <div className="bg-slate-500/20 border border-slate-400/30 rounded-lg px-3 py-2">
+            <span className="text-sm text-slate-300">
               📊 Showing {Math.min(originalCounts.eligible, 50)}/
               {originalCounts.eligible} eligible,
               {Math.min(originalCounts.cooldown, 50)}/{originalCounts.cooldown}{' '}
@@ -569,7 +569,7 @@ export function UTXOBubbleChartNew({
               {Math.min(originalCounts.inactive, 50)}/{originalCounts.inactive}{' '}
               inactive UTXOs
               <br />
-              <span className="text-xs text-yellow-400">
+              <span className="text-xs text-slate-400">
                 Priority: Stake UTXOs → BIGGEST UTXOs first (no dust!)
               </span>
             </span>
@@ -583,7 +583,7 @@ export function UTXOBubbleChartNew({
         <div className="flex justify-center mt-3 space-x-6">
           {bubbles.some(b => b.isStakeInput) && (
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              <div className="w-3 h-3 rounded-full bg-slate-500"></div>
               <span className="text-sm text-gray-300">
                 Input Stake ({bubbles.filter(b => b.isStakeInput).length})
               </span>
@@ -591,7 +591,7 @@ export function UTXOBubbleChartNew({
           )}
           {bubbles.some(b => b.isStakeOutput) && (
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+              <div className="w-3 h-3 rounded-full bg-slate-600"></div>
               <span className="text-sm text-gray-300">
                 Output Stake ({bubbles.filter(b => b.isStakeOutput).length})
               </span>

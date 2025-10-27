@@ -120,7 +120,7 @@ export function HeroSection({
                 src={
                   theme === 'light'
                     ? '/verus-mark-slogan-blue.png'
-                    : '/verus-icon-slogan-white.svg'
+                    : '/verus-mark-slogan-white.png'
                 }
                 alt="Verus Protocol"
                 width={200}

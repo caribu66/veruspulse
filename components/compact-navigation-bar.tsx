@@ -97,7 +97,7 @@ export function CompactNavigationBar({
               <Image
                 src={
                   theme === 'dark'
-                    ? '/verus-icon-slogan-white.svg'
+                    ? '/verus-mark-slogan-white.png'
                     : '/verus-mark-slogan-blue.png'
                 }
                 alt="Verus - Truth and Privacy for All"

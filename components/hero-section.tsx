@@ -119,7 +119,7 @@ export function HeroSection({
               <Image
                 src={
                   theme === 'light'
-                    ? '/verus-icon-slogan-blue.svg'
+                    ? '/verus-mark-slogan-blue.png'
                     : '/verus-icon-slogan-white.svg'
                 }
                 alt="Verus Protocol"

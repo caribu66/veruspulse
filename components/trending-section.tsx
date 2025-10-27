@@ -124,22 +124,22 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
     <Link
       href={item.link}
       onClick={handleClick}
-      className={`group relative bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60 rounded-xl p-4 transition-all duration-300 hover:shadow-lg ${
+      className={`group relative bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60 rounded-xl p-3 sm:p-4 transition-all duration-300 hover:shadow-lg touch-manipulation ${
         isTopThree ? 'ring-1 ring-verus-blue/30' : ''
       }`}
     >
       {/* Hot Badge for Top Item */}
       {rank === 1 && (
-        <div className="absolute -top-2 -right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-full font-bold flex items-center gap-1 shadow-lg">
-          <Fire className="h-3 w-3" />
-          HOT
+        <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-gray-800 text-white text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full font-bold flex items-center gap-1 shadow-lg">
+          <Fire className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+          <span className="hidden sm:inline">HOT</span>
         </div>
       )}
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         {/* Rank Badge */}
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-lg flex-shrink-0 ${
+          className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-lg flex-shrink-0 ${
             rank === 1
               ? 'bg-gray-800 text-white'
               : rank === 2
@@ -154,37 +154,41 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
 
         {/* Icon */}
         <div
-          className={`p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 group-hover:scale-105 transition-transform flex-shrink-0`}
+          className={`p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 group-hover:scale-105 transition-transform flex-shrink-0`}
         >
-          <Icon className={`h-4 w-4 text-slate-600 dark:text-slate-300`} />
+          <Icon
+            className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-600 dark:text-slate-300`}
+          />
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-gray-900 dark:text-white font-semibold truncate flex items-center gap-2">
-              {item.name}
-              <ArrowUpRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+          <div className="flex items-start justify-between mb-1.5 sm:mb-2">
+            <h4 className="text-gray-900 dark:text-white font-semibold truncate flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
+              <span className="truncate">{item.name}</span>
+              <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
             </h4>
           </div>
 
-          <div className="flex items-center gap-4 text-sm mb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm mb-1.5 sm:mb-2">
             <span className="font-medium text-gray-700 dark:text-gray-300">
               {item.value}
             </span>
             {item.views && (
               <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
-                <Eye className="h-3 w-3" />
-                {item.views.toLocaleString()} views
+                <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                <span className="truncate">
+                  {item.views.toLocaleString()} views
+                </span>
               </span>
             )}
           </div>
 
           {/* Trend Indicator */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
             <div className="flex items-center gap-1">
               <TrendUp
-                className={`h-4 w-4 ${
+                className={`h-3 w-3 sm:h-4 sm:w-4 ${
                   item.trend > 0
                     ? 'text-gray-600 dark:text-gray-400'
                     : item.trend < 0
@@ -193,7 +197,7 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
                 }`}
               />
               <span
-                className={`text-sm font-bold ${
+                className={`text-xs sm:text-sm font-bold ${
                   item.trend > 0
                     ? 'text-gray-600 dark:text-gray-400'
                     : item.trend < 0
@@ -204,43 +208,47 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
                 {item.trend > 0 ? '+' : ''}
                 {item.trend}%
               </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                trending
+              </span>
             </div>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              trending
-            </span>
 
             {/* Metadata */}
             {item.metadata && (
-              <div className="text-xs text-gray-500 dark:text-gray-400 ml-auto flex items-center gap-2">
+              <div className="text-xs text-gray-500 dark:text-gray-400 sm:ml-auto flex flex-wrap items-center gap-1 sm:gap-2">
                 {item.type === 'verusid' && (
                   <>
                     {item.metadata.apy > 0 && (
-                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-700">
+                      <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-700 text-xs">
                         {item.metadata.apy.toFixed(1)}% APY
                       </span>
                     )}
                     {item.metadata.efficiency > 0 && (
-                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-700">
+                      <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-700 text-xs">
                         {(item.metadata.efficiency * 100).toFixed(0)}% Eff
                       </span>
                     )}
                     {item.metadata.stakes > 0 && (
-                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-700">
+                      <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-700 text-xs">
                         {item.metadata.stakes} stakes
                       </span>
                     )}
                   </>
                 )}
                 {item.type === 'block' && item.metadata.height && (
-                  <span>Height: {item.metadata.height.toLocaleString()}</span>
+                  <span className="text-xs">
+                    Height: {item.metadata.height.toLocaleString()}
+                  </span>
                 )}
-                {item.metadata.rank && <span>Rank #{item.metadata.rank}</span>}
+                {item.metadata.rank && (
+                  <span className="text-xs">Rank #{item.metadata.rank}</span>
+                )}
               </div>
             )}
           </div>
 
           {/* Progress Bar (Performance Visualization) */}
-          <div className="mt-3 h-1 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div className="mt-2 sm:mt-3 h-0.5 sm:h-1 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-1000 ${
                 item.type === 'verusid'
@@ -510,30 +518,31 @@ export function TrendingSection({
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700 overflow-hidden shadow-lg">
       {/* Header */}
-      <div className="p-6 border-b border-slate-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
-              <Fire className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+      <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-slate-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-1.5 sm:p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+              <Fire className="h-4 w-4 sm:h-6 sm:w-6 text-gray-600 dark:text-gray-400" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                Trending Now
-                <Sparkle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-1 sm:gap-2">
+                <span className="hidden sm:inline">Trending Now</span>
+                <span className="sm:hidden">Trending</span>
+                <Sparkle className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-400" />
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 What&apos;s hot on Verus blockchain
               </p>
             </div>
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            Live
+            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+            <span className="hidden sm:inline">Live</span>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 overflow-x-auto">
+        <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide pb-2">
           {[
             {
               key: 'all',
@@ -563,14 +572,15 @@ export function TrendingSection({
             <button
               key={key}
               onClick={() => setActiveTab(key as any)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
+              className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all whitespace-nowrap text-xs sm:text-sm touch-manipulation ${
                 activeTab === key
                   ? 'bg-gray-800 text-white shadow-md'
                   : 'bg-white dark:bg-slate-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-600 hover:text-gray-900 dark:hover:text-white border border-slate-300 dark:border-slate-600'
               }`}
             >
-              <Icon className="h-4 w-4" />
-              <span>{label}</span>
+              <Icon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden sm:inline">{label}</span>
+              <span className="sm:hidden">{label.split(' ')[0]}</span>
               <span className="text-xs opacity-75">({count})</span>
             </button>
           ))}
@@ -578,21 +588,21 @@ export function TrendingSection({
       </div>
 
       {/* Trending Items */}
-      <div className="p-6">
+      <div className="px-4 sm:px-6 py-4 sm:py-6">
         {isLoading && currentItems.length === 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-3 sm:space-y-4">
             {[1, 2, 3, 4, 5].map(i => (
               <TrendingItemSkeleton key={i} />
             ))}
           </div>
         ) : currentItems.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
-            <TrendUp className="h-12 w-12 mx-auto mb-2 opacity-50" />
-            <p>No trending items yet</p>
+          <div className="text-center py-6 sm:py-8 text-gray-400">
+            <TrendUp className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-2 opacity-50" />
+            <p className="text-sm sm:text-base">No trending items yet</p>
             <p className="text-xs mt-1">Check back soon!</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 sm:space-y-4">
             {currentItems.map((item, index) => (
               <TrendingCard key={item.id} item={item} rank={index + 1} />
             ))}
@@ -627,14 +637,14 @@ export function TrendingSection({
       )}
 
       {/* View More Link */}
-      <div className="px-6 pb-6">
+      <div className="px-4 sm:px-6 pb-4 sm:pb-6">
         <Link
           href="/?tab=explorer"
-          className="group w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-600 text-white rounded-lg transition-all shadow-md hover:shadow-lg"
+          className="group w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-600 text-white rounded-lg transition-all shadow-md hover:shadow-lg touch-manipulation text-sm sm:text-base"
         >
-          <TrendUp className="h-4 w-4" />
+          <TrendUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span className="font-medium">Explore All Trending</span>
-          <ArrowUpRight className="h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
         </Link>
       </div>
     </div>

@@ -108,9 +108,11 @@ PHASE-*.md
 *-STRATEGY.md
 *-REFERENCE.md
 
-# Security documentation (may contain sensitive info)
-SECURITY-CONFIGURATION.md
-SECURITY-CHECKLIST.md
+# Security documentation (safe to commit - contains guidelines, not secrets)
+!SECURITY-*-COMPLETE.md
+!SECURITY-*-REPORT.md
+!SECURITY-*-CHECKLIST.md
+!SECURITY-CONFIGURATION.md
 
 # Test data and scan results
 *.csv

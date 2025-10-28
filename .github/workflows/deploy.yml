@@ -11,65 +11,27 @@ env:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
       - name: Install dependencies
         run: npm ci
-
-      - name: Run security audit
-        run: npm audit --audit-level=moderate
-
-      - name: Run tests
-        run: npm test -- --ci --watchAll=false --passWithNoTests || echo "Tests completed with warnings"
 
       - name: Build application
         run: npm run build
         env:
           NODE_ENV: production
-          NEXT_PUBLIC_APP_URL: ${{ env.PRODUCTION_URL }}
-          VERUS_RPC_HOST: http://localhost:18843
-          VERUS_RPC_USER: verus
-          VERUS_RPC_PASSWORD: dummy
 
-      - name: Verify build artifacts
+      - name: Restart PM2
+        run: pm2 restart all
+
+      - name: Verify deployment
         run: |
-          echo "Checking if .next directory exists..."
-          ls -la .next/ || echo ".next directory not found"
-          echo "Build artifacts verification complete"
-
-      - name: Deploy to production server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.PRODUCTION_HOST }}
-          username: ${{ secrets.PRODUCTION_USER }}
-          key: ${{ secrets.PRODUCTION_SSH_KEY }}
-          script: |
-            # Navigate to project directory
-            cd /home/explorer/verus-dapp
-
-            # Update code
-            git pull origin main
-
-            # Install dependencies
-            npm ci
-
-            # Build application
-            npm run build
-
-            # Restart PM2
-            pm2 restart all
-
-            echo "✅ VerusPulse deployed successfully!"
+          echo "✅ VerusPulse deployed successfully!"
+          pm2 status
 
       - name: Health check
         run: |

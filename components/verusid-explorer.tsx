@@ -86,14 +86,6 @@ interface VerusIDBalance {
   identityAddress: string;
 }
 
-interface TrendingIdentity {
-  name: string;
-  balance: number;
-  transactions: number;
-  lastActivity: number;
-  status: string;
-}
-
 export function VerusIDExplorer() {
   const [identity, setIdentity] = useState('');
   const [verusID, setVerusID] = useState<VerusID | null>(null);
@@ -104,9 +96,6 @@ export function VerusIDExplorer() {
   }>({});
   const [identityHistory, setIdentityHistory] = useState<any | null>(null);
   const [balance, setBalance] = useState<VerusIDBalance | null>(null);
-  const [trendingIdentities, setTrendingIdentities] = useState<
-    TrendingIdentity[]
-  >([]);
   const [loading, setLoading] = useState(false);
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [stakingLoading, setStakingLoading] = useState(false);
@@ -119,9 +108,7 @@ export function VerusIDExplorer() {
   const [copied, setCopied] = useState<string | null>(null);
   const [showScanProgress, setShowScanProgress] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'search' | 'browse' | 'trending'>(
-    'search'
-  );
+  const [activeTab, setActiveTab] = useState<'search' | 'browse'>('search');
   const [detailsTab, setDetailsTab] = useState<
     'overview' | 'staking' | 'utxo' | 'achievements' | 'identity'
   >('overview');
@@ -143,10 +130,8 @@ export function VerusIDExplorer() {
   // API fetch helper (retryable)
   const { apiFetch } = useApiFetch();
 
-  // Load trending identities and recent searches on mount
+  // Load recent searches on mount
   useEffect(() => {
-    loadTrendingIdentities();
-
     // Load recent searches from localStorage
     try {
       const saved = localStorage.getItem('verusid-recent-searches');
@@ -192,44 +177,6 @@ export function VerusIDExplorer() {
       document.title = 'VerusID Explorer - VerusPulse';
     }
   }, [verusID]);
-
-  const loadTrendingIdentities = async () => {
-    try {
-      // Mock trending data - in real implementation, this would come from an API
-      setTrendingIdentities([
-        {
-          name: '@alice',
-          balance: 12500000000,
-          transactions: 45,
-          lastActivity: Date.now() - 3600000,
-          status: 'active',
-        },
-        {
-          name: '@bob',
-          balance: 8900000000,
-          transactions: 32,
-          lastActivity: Date.now() - 7200000,
-          status: 'active',
-        },
-        {
-          name: '@charlie',
-          balance: 15600000000,
-          transactions: 67,
-          lastActivity: Date.now() - 1800000,
-          status: 'active',
-        },
-        {
-          name: '@diana',
-          balance: 2340000000,
-          transactions: 23,
-          lastActivity: Date.now() - 10800000,
-          status: 'active',
-        },
-      ]);
-    } catch (error) {
-      // Silent error handling for trending identities
-    }
-  };
 
   const fetchBalance = async (verusid: string, signal?: AbortSignal) => {
     try {
@@ -664,17 +611,6 @@ export function VerusIDExplorer() {
                   <Eye className="h-4 w-4" />
                   <span className="hidden sm:inline">Browse</span>
                 </button>
-                <button
-                  onClick={() => setActiveTab('trending')}
-                  className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-md transition-colors text-sm ${
-                    activeTab === 'trending'
-                      ? 'bg-slate-600 text-white'
-                      : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
-                  }`}
-                >
-                  <TrendUp className="h-4 w-4" />
-                  <span className="hidden sm:inline">Trending</span>
-                </button>
               </div>
             </div>
           </div>
@@ -741,77 +677,6 @@ export function VerusIDExplorer() {
                 </div>
               </div>
             )}
-          </div>
-        )}
-
-        {/* Trending Identities */}
-        {activeTab === 'trending' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Trending VerusIDs</h3>
-              <div className="flex items-center space-x-2">
-                <Funnel className="h-4 w-4 text-verus-blue" />
-                <select
-                  value={sortBy}
-                  onChange={e => setSortBy(e.target.value as any)}
-                  className="bg-slate-800/50 backdrop-blur-sm border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-verus-blue/50 focus:border-verus-blue/50 transition-all duration-200 hover:border-slate-500/50"
-                >
-                  <option value="balance" className="bg-slate-800 text-white">
-                    Balance
-                  </option>
-                  <option value="activity" className="bg-slate-800 text-white">
-                    Activity
-                  </option>
-                  <option value="name" className="bg-slate-800 text-white">
-                    Name
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-              {trendingIdentities.map((identity, index) => (
-                <div
-                  key={index}
-                  className="bg-slate-800 border border-slate-700 rounded-lg p-4 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => {
-                    setIdentity(identity.name);
-                    searchIdentity();
-                    setActiveTab('search');
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <User className="h-4 w-4 text-verus-blue" />
-                      <span className="font-medium">{identity.name}</span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          identity.status === 'active'
-                            ? 'bg-slate-600/20 text-slate-200'
-                            : 'bg-gray-500/20 text-gray-300'
-                        }`}
-                      >
-                        {identity.status}
-                      </span>
-                    </div>
-                    <ArrowSquareOut className="h-4 w-4 text-slate-300" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <div className="text-slate-300">Balance</div>
-                      <div className="font-semibold text-slate-200">
-                        {formatVRSCShort(identity.balance)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-slate-300">Transactions</div>
-                      <div className="font-semibold text-slate-200">
-                        {identity.transactions}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         )}
 

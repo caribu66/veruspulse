@@ -1489,6 +1489,19 @@ nav a:hover::after,
   min-height: calc(var(--vh, 1vh) * 100);
 }
 
+/* Mobile bottom navigation spacing */
+.pb-mobile-nav {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* Light theme - Backdrop & Effects */
 [data-theme='light'] .backdrop-blur-sm {
   background-color: rgb(255 255 255 / 90%) !important;

@@ -214,7 +214,7 @@ export function VerusIDTableView({
             {/* Actions Column */}
             <div className="col-span-1 flex items-center justify-center">
               <Link
-                href={`/verusid?search=${encodeURIComponent(identity.address)}`}
+                href={`/verusid/${encodeURIComponent(identity.address)}`}
                 className="p-2 text-blue-300 hover:text-blue-200 transition-colors"
                 onClick={e => e.stopPropagation()}
                 title="View Details"

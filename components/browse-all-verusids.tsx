@@ -328,9 +328,9 @@ export function BrowseAllVerusIDs() {
   };
 
   const handleIdentityClick = (identity: VerusIDBrowseData) => {
-    // Navigate to the VerusID explorer with this identity
-    // Always use I-address for reliable lookups (baseName might be "unknown")
-    window.location.href = `/verusid?search=${encodeURIComponent(identity.address)}`;
+    // Navigate directly to the VerusID detail page
+    // Use I-address for reliable lookups (baseName might be "unknown")
+    window.location.href = `/verusid/${encodeURIComponent(identity.address)}`;
   };
 
   if (loading) {

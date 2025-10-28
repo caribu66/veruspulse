@@ -159,7 +159,7 @@ export function VerusIDCardGrid({
             </div>
 
             <Link
-              href={`/verusid?search=${encodeURIComponent(identity.address)}`}
+              href={`/verusid/${encodeURIComponent(identity.address)}`}
               className="text-xs text-blue-300 hover:text-blue-200 transition-colors"
               onClick={e => e.stopPropagation()}
             >

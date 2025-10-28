@@ -84,6 +84,17 @@ div {
   overflow-wrap: break-word;
 }
 
+/* Override word-wrap for truncated elements */
+.truncate,
+[style*="text-overflow: ellipsis"],
+[style*="text-overflow:ellipsis"] {
+  word-wrap: normal !important;
+  overflow-wrap: normal !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
 /* ================================================================
    VERUS OFFICIAL COLOR SYSTEM - Professional Brand Palette
    Following 60-30-10 Design Rule & WCAG AA Accessibility

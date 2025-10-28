@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { VerusIDStakingDashboard } from '@/components/verusid-staking-dashboard';
 import { DonationBanner } from '@/components/donation-banner';
 import { DonationWidget } from '@/components/donation-widget';
+import { BackButton } from '@/components/ui/back-button';
 // Removed direct import of server-side function
 import { WarningCircle, Spinner } from '@phosphor-icons/react';
 
@@ -113,12 +114,20 @@ export default function VerusIDDetailPage({
               VerusID Not Found
             </h2>
             <p className="text-red-300 text-sm">{error}</p>
-            <button
-              onClick={() => router.push('/verusid')}
-              className="px-4 py-2 bg-verus-blue hover:bg-verus-blue/80 rounded-lg text-white text-sm font-medium transition-colors"
-            >
-              Browse VerusIDs
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <BackButton
+                fallbackPath="/?tab=verusids"
+                label="Back to Browse"
+                size="md"
+                variant="default"
+              />
+              <button
+                onClick={() => router.push('/verusid')}
+                className="px-4 py-2 bg-verus-blue hover:bg-verus-blue/80 rounded-lg text-white text-sm font-medium transition-colors"
+              >
+                Browse VerusIDs
+              </button>
+            </div>
           </div>
         </div>
         <DonationWidget position="bottom-right" dismissible={true} />
@@ -133,6 +142,7 @@ export default function VerusIDDetailPage({
           iaddr={resolvedIaddr}
           layout="full"
           verusID={iaddr}
+          showBackButton={true}
         />
         <DonationBanner />
         <DonationWidget position="bottom-right" dismissible={true} />

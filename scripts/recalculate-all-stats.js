@@ -63,7 +63,10 @@ async function recalculateStats(identityAddress) {
       MAX(block_time) as last_stake_time,
       MAX(amount_sats) as highest_reward_satoshis,
       MIN(amount_sats) as lowest_reward_satoshis,
-      AVG(amount_sats) as avg_reward_amount_satoshis
+      AVG(amount_sats) as avg_reward_amount_satoshis,
+      COUNT(stake_amount_sats) as stakes_with_amounts,
+      AVG(stake_amount_sats) as avg_stake_amount_sats,
+      SUM(stake_amount_sats) as total_stake_amount_sats
     FROM staking_rewards
     WHERE identity_address = $1 
     AND source_address = identity_address
@@ -76,12 +79,38 @@ async function recalculateStats(identityAddress) {
     return null; // No stakes for this identity
   }
 
-  // Calculate APY
-  const apyAllTime = calculateAPY(
-    parseFloat(stats.total_rewards_satoshis),
-    stats.first_stake_time,
-    stats.last_stake_time
-  );
+  // Calculate APY using actual stake amounts if available
+  let apyAllTime = 0;
+  let calculationMethod = 'estimated';
+  let avgStakeAmountVRSC = null;
+
+  const stakesWithAmounts = parseInt(stats.stakes_with_amounts) || 0;
+  const totalStakes = parseInt(stats.total_stakes);
+
+  if (stakesWithAmounts >= 10) {
+    // Use actual stake amounts for APY calculation
+    const avgStakeAmountSats = parseFloat(stats.avg_stake_amount_sats);
+    avgStakeAmountVRSC = avgStakeAmountSats / 100000000;
+
+    const daysDiff =
+      (new Date(stats.last_stake_time) - new Date(stats.first_stake_time)) /
+      (1000 * 60 * 60 * 24);
+    if (daysDiff > 0 && avgStakeAmountVRSC > 0) {
+      const totalRewardsVRSC =
+        parseFloat(stats.total_rewards_satoshis) / 100000000;
+      apyAllTime =
+        (totalRewardsVRSC / avgStakeAmountVRSC) * (365 / daysDiff) * 100;
+      calculationMethod = stakesWithAmounts >= 30 ? 'actual' : 'hybrid';
+    }
+  } else {
+    // Fall back to estimation
+    apyAllTime = calculateAPY(
+      parseFloat(stats.total_rewards_satoshis),
+      stats.first_stake_time,
+      stats.last_stake_time
+    );
+    calculationMethod = 'estimated';
+  }
 
   // Calculate average days between stakes
   let avgDaysBetween = 0;
@@ -114,6 +143,10 @@ async function recalculateStats(identityAddress) {
     avg_reward_amount_satoshis: Math.floor(
       parseFloat(stats.avg_reward_amount_satoshis)
     ),
+    // New fields for stake amount tracking
+    apy_calculation_method: calculationMethod,
+    stakes_with_real_amounts: stakesWithAmounts,
+    avg_stake_amount_vrsc: avgStakeAmountVRSC,
   };
 }
 
@@ -133,9 +166,12 @@ async function upsertStats(stats) {
       highest_reward_satoshis,
       lowest_reward_satoshis,
       avg_reward_amount_satoshis,
+      apy_calculation_method,
+      stakes_with_real_amounts,
+      avg_stake_amount_vrsc,
       last_calculated,
       updated_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), NOW())
     ON CONFLICT (address) 
     DO UPDATE SET
       total_stakes = EXCLUDED.total_stakes,
@@ -149,6 +185,9 @@ async function upsertStats(stats) {
       highest_reward_satoshis = EXCLUDED.highest_reward_satoshis,
       lowest_reward_satoshis = EXCLUDED.lowest_reward_satoshis,
       avg_reward_amount_satoshis = EXCLUDED.avg_reward_amount_satoshis,
+      apy_calculation_method = EXCLUDED.apy_calculation_method,
+      stakes_with_real_amounts = EXCLUDED.stakes_with_real_amounts,
+      avg_stake_amount_vrsc = EXCLUDED.avg_stake_amount_vrsc,
       last_calculated = NOW(),
       updated_at = NOW()
   `;
@@ -166,6 +205,9 @@ async function upsertStats(stats) {
     stats.highest_reward_satoshis,
     stats.lowest_reward_satoshis,
     stats.avg_reward_amount_satoshis,
+    stats.apy_calculation_method,
+    stats.stakes_with_real_amounts,
+    stats.avg_stake_amount_vrsc,
   ]);
 }
 

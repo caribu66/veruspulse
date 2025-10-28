@@ -1,6 +1,5 @@
 import { Pool } from 'pg';
 import { logger } from '@/lib/utils/logger';
-import { extractStakeAmount } from '@/lib/utils/stake-amount-extractor';
 
 /**
  * Priority VerusID Scanner
@@ -115,7 +114,6 @@ function findStakesForVerusID(block: any, targetAddress: string) {
     txid: string;
     vout: number;
     blockHash: string;
-    coinstakeTx: any; // Include coinstake tx for stake amount extraction
   }> = [];
 
   if (!block || !block.tx || block.tx.length === 0) return stakes;
@@ -144,7 +142,6 @@ function findStakesForVerusID(block: any, targetAddress: string) {
           txid: coinstake.txid,
           vout: voutIdx,
           blockHash: block.hash,
-          coinstakeTx: coinstake, // Store coinstake tx for extraction
         });
       }
     }
@@ -153,8 +150,8 @@ function findStakesForVerusID(block: any, targetAddress: string) {
   return stakes;
 }
 
-// Insert stake into database (with optional stake amount)
-async function insertStake(stake: any, stakeAmountSats?: number | null) {
+// Insert stake into database
+async function insertStake(stake: any) {
   const db = getDbPool();
   if (!db) return;
 
@@ -163,9 +160,9 @@ async function insertStake(stake: any, stakeAmountSats?: number | null) {
       `
       INSERT INTO staking_rewards (
         identity_address, txid, vout, block_height, block_hash, 
-        block_time, amount_sats, classifier, source_address, stake_amount_sats
+        block_time, amount_sats, classifier, source_address
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       ON CONFLICT (txid, vout) DO NOTHING
     `,
       [
@@ -178,7 +175,6 @@ async function insertStake(stake: any, stakeAmountSats?: number | null) {
         stake.amount,
         'coinbase', // PoS rewards
         stake.address,
-        stakeAmountSats || null, // Store stake amount if available
       ]
     );
   } catch (error) {
@@ -285,26 +281,7 @@ export async function priorityScanVerusID(identityAddress: string): Promise<{
 
           const stakes = findStakesForVerusID(block, identityAddress);
           for (const stake of stakes) {
-            // Extract stake amount from coinstake transaction
-            let stakeAmountSats: number | null = null;
-            if (stake.coinstakeTx) {
-              try {
-                const extractionResult: any = await extractStakeAmount(
-                  stake.coinstakeTx,
-                  identityAddress,
-                  rpcCall,
-                  { includeDetails: false, rateLimit: 25 }
-                );
-                stakeAmountSats = extractionResult.stakeAmount || null;
-              } catch (extractError) {
-                // Continue without stake amount if extraction fails
-                logger.debug(
-                  `Could not extract stake amount for ${stake.txid}: ${extractError}`
-                );
-              }
-            }
-
-            await insertStake(stake, stakeAmountSats);
+            await insertStake(stake);
             stakesFound++;
           }
 
@@ -366,18 +343,13 @@ async function calculateVerusIDStatistics(identityAddress: string) {
     );
 
     // Calculate new statistics (only count direct I-address stakes)
-    // ENHANCED: Include stake amount data for accurate APY calculation
     const statsResult = await db.query(
       `
       SELECT 
         COUNT(*) as total_stakes,
         SUM(amount_sats) as total_rewards_satoshis,
         MIN(block_time) as first_stake_time,
-        MAX(block_time) as last_stake_time,
-        -- Stake amount statistics
-        AVG(stake_amount_sats) FILTER (WHERE stake_amount_sats IS NOT NULL) as avg_stake_amount_sats,
-        COUNT(*) FILTER (WHERE stake_amount_sats IS NOT NULL) as stakes_with_amount,
-        SUM(stake_amount_sats) FILTER (WHERE stake_amount_sats IS NOT NULL) as total_stake_amount_sats
+        MAX(block_time) as last_stake_time
       FROM staking_rewards 
       WHERE identity_address = $1
         AND source_address = identity_address
@@ -388,6 +360,7 @@ async function calculateVerusIDStatistics(identityAddress: string) {
     const stats = statsResult.rows[0];
     if (!stats || stats.total_stakes === '0') return;
 
+    // Calculate APY (simplified)
     const totalRewardsVRSC =
       parseFloat(stats.total_rewards_satoshis) / 100000000;
     const firstStake = new Date(stats.first_stake_time);
@@ -395,43 +368,12 @@ async function calculateVerusIDStatistics(identityAddress: string) {
     const daysActive =
       (lastStake.getTime() - firstStake.getTime()) / (1000 * 60 * 60 * 24);
 
-    // Calculate APY using actual stake amounts when available
-    let apyAllTime;
-    let calculationMethod;
-    let avgStakeAmountVRSC = null;
-    const stakesWithAmount = parseInt(stats.stakes_with_amount) || 0;
-    const totalStakes = parseInt(stats.total_stakes) || 0;
-
-    if (stakesWithAmount >= 30) {
-      // USE ACTUAL STAKE AMOUNTS - High confidence!
-      const avgStakeAmountSats = parseFloat(stats.avg_stake_amount_sats);
-      avgStakeAmountVRSC = avgStakeAmountSats / 100000000;
-
-      apyAllTime =
-        daysActive > 0 && avgStakeAmountVRSC > 0
-          ? (totalRewardsVRSC / avgStakeAmountVRSC / (daysActive / 365.25)) *
-            100
-          : 0;
-
-      calculationMethod = stakesWithAmount >= 100 ? 'actual' : 'hybrid';
-
-      logger.info(
-        `🎯 Using ACTUAL stake amounts for ${identityAddress}: ${stakesWithAmount}/${totalStakes} stakes with data`
-      );
-    } else {
-      // Fallback to estimation for insufficient data
-      const estimatedStakeAmount = Math.max(totalRewardsVRSC * 20, 10000);
-      apyAllTime =
-        daysActive > 0
-          ? (totalRewardsVRSC / estimatedStakeAmount) * (365 / daysActive) * 100
-          : 0;
-
-      calculationMethod = 'estimated';
-
-      logger.debug(
-        `📊 Using ESTIMATED stake amounts for ${identityAddress}: only ${stakesWithAmount}/${totalStakes} stakes with data`
-      );
-    }
+    // Estimate stake amount based on rewards (rough calculation)
+    const estimatedStakeAmount = Math.max(totalRewardsVRSC * 20, 10000); // Conservative estimate
+    const apyAllTime =
+      daysActive > 0
+        ? (totalRewardsVRSC / estimatedStakeAmount) * (365 / daysActive) * 100
+        : 0;
 
     if (existingResult.rows.length > 0) {
       // Update existing statistics
@@ -443,9 +385,6 @@ async function calculateVerusIDStatistics(identityAddress: string) {
           first_stake_time = $4,
           last_stake_time = $5,
           apy_all_time = $6,
-          apy_calculation_method = $7,
-          stakes_with_real_amounts = $8,
-          avg_stake_amount_vrsc = $9,
           updated_at = NOW()
         WHERE address = $1
       `,
@@ -456,9 +395,6 @@ async function calculateVerusIDStatistics(identityAddress: string) {
           stats.first_stake_time,
           stats.last_stake_time,
           apyAllTime,
-          calculationMethod,
-          stakesWithAmount,
-          avgStakeAmountVRSC,
         ]
       );
     } else {
@@ -467,11 +403,9 @@ async function calculateVerusIDStatistics(identityAddress: string) {
         `
         INSERT INTO verusid_statistics (
           address, friendly_name, total_stakes, total_rewards_satoshis,
-          first_stake_time, last_stake_time, apy_all_time, 
-          apy_calculation_method, stakes_with_real_amounts, avg_stake_amount_vrsc,
-          created_at, updated_at
+          first_stake_time, last_stake_time, apy_all_time, created_at, updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
       `,
         [
           identityAddress,
@@ -481,9 +415,6 @@ async function calculateVerusIDStatistics(identityAddress: string) {
           stats.first_stake_time,
           stats.last_stake_time,
           apyAllTime,
-          calculationMethod,
-          stakesWithAmount,
-          avgStakeAmountVRSC,
         ]
       );
     }

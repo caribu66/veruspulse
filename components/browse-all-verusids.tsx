@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Database,
   GridFour,
@@ -35,6 +36,7 @@ import { useMobileOptimizations } from './mobile-optimizations';
 const ITEMS_PER_PAGE = 50;
 
 export function BrowseAllVerusIDs() {
+  const router = useRouter();
   const { isMobile } = useMobileOptimizations();
 
   // State management
@@ -328,9 +330,9 @@ export function BrowseAllVerusIDs() {
   };
 
   const handleIdentityClick = (identity: VerusIDBrowseData) => {
-    // Navigate directly to the VerusID detail page
+    // Navigate directly to the VerusID detail page using Next.js router
     // Use I-address for reliable lookups (baseName might be "unknown")
-    window.location.href = `/verusid/${encodeURIComponent(identity.address)}`;
+    router.push(`/verusid/${encodeURIComponent(identity.address)}`);
   };
 
   if (loading) {

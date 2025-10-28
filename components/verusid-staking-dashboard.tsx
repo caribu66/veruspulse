@@ -38,6 +38,7 @@ import { NetworkParticipationData, StakingMomentumData } from './types';
 import { ProfessionalAchievementProgress } from './professional-achievement-progress';
 import { Badge } from '@/components/ui/badge';
 import { useRealtimeEvents } from '@/lib/hooks/use-realtime-events';
+import { BackButton } from '@/components/ui/back-button';
 import { AnimatedCounter } from './animations/counter-animation';
 import { SparklineChart } from './animations/sparkline-chart';
 import { HealthScoreGauge } from './animations/health-score-gauge';
@@ -69,12 +70,14 @@ interface DashboardProps {
   iaddr: string;
   layout?: 'full' | 'compact';
   verusID?: string; // Add VerusID prop for better error handling
+  showBackButton?: boolean; // Add option to show back button
 }
 
 export function VerusIDStakingDashboard({
   iaddr,
   layout = 'full',
   verusID,
+  showBackButton = false,
 }: DashboardProps) {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -587,6 +590,18 @@ export function VerusIDStakingDashboard({
       {/* Page Header */}
       {stats.friendlyName && (
         <div className="bg-gradient-to-r from-slate-600/20 to-slate-500/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-6 xl:p-8 border border-slate-500/30 text-center shadow-2xl">
+          {/* Back Button */}
+          {showBackButton && (
+            <div className="flex justify-start mb-4">
+              <BackButton
+                fallbackPath="/?tab=verusids"
+                label="Back to Browse"
+                size="sm"
+                variant="ghost"
+              />
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-4">
             <div className="p-2 sm:p-3 bg-gray-200 dark:bg-gray-700 rounded-xl sm:rounded-2xl">
               <Medal className="h-6 w-6 sm:h-8 sm:w-8 text-gray-600 dark:text-gray-400" />
@@ -727,7 +742,27 @@ export function VerusIDStakingDashboard({
                   suffix="%"
                 />
               </div>
-              <div className="text-sm text-slate-300">APY (All Time)</div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="text-sm text-slate-300">APY (All Time)</div>
+                {stats.apy?.confidenceLevel && (
+                  <div
+                    className={`text-xs px-2 py-0.5 rounded-full border ${
+                      stats.apy.confidenceLevel.level === 'very-high'
+                        ? 'bg-green-500/20 border-green-400/40 text-green-300'
+                        : stats.apy.confidenceLevel.level === 'high'
+                          ? 'bg-blue-500/20 border-blue-400/40 text-blue-300'
+                          : stats.apy.confidenceLevel.level === 'medium'
+                            ? 'bg-yellow-500/20 border-yellow-400/40 text-yellow-300'
+                            : stats.apy.confidenceLevel.level === 'low'
+                              ? 'bg-orange-500/20 border-orange-400/40 text-orange-300'
+                              : 'bg-gray-500/20 border-gray-400/40 text-gray-300'
+                    }`}
+                    title={stats.apy.confidenceLevel.description}
+                  >
+                    {stats.apy.confidenceLevel.label}
+                  </div>
+                )}
+              </div>
               {stats.trends?.apy?.['30d'] && (
                 <div
                   className={`text-xs mt-2 flex items-center space-x-1 ${

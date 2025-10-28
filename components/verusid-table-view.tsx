@@ -142,13 +142,19 @@ export function VerusIDTableView({
           >
             {/* Name Column */}
             <div className="col-span-4 min-w-0">
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-blue-500/20 flex-shrink-0">
                   <User className="h-4 w-4 text-blue-400" />
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1" style={{ maxWidth: '100%' }}>
                   <div
-                    className="font-medium text-white truncate"
+                    className="font-medium text-white text-sm"
+                    style={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: '100%',
+                    }}
                     title={identity.friendlyName}
                   >
                     {identity.displayName}

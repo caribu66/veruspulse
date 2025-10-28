@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Heart,
   X,
@@ -8,7 +8,12 @@ import {
   Check,
   ArrowSquareOut,
   Gift,
+  QrCode,
+  Wallet,
+  DeviceMobile,
 } from '@phosphor-icons/react';
+import Image from 'next/image';
+import QRCode from 'qrcode';
 
 interface DonationWidgetProps {
   position?: 'bottom-right' | 'bottom-left';
@@ -23,6 +28,8 @@ export function DonationWidget({
   const [isDismissed, setIsDismissed] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showRecognitionForm, setShowRecognitionForm] = useState(false);
+  const [showQR, setShowQR] = useState(false);
+  const [qrCodeDataURL, setQrCodeDataURL] = useState<string>('');
   const [formData, setFormData] = useState({
     displayName: '',
     message: '',
@@ -30,8 +37,8 @@ export function DonationWidget({
     anonymous: false,
   });
 
-  // VRSC donation address (replace with your actual address)
-  const DONATION_ADDRESS = 'RYourVerusDonationAddressHere123456789';
+  // VRSC donation address - replace with your actual address
+  const DONATION_ADDRESS = 'RPJ39AoZBN3s2uBaCAKdsT6rvSYCGRTwWE';
 
   useEffect(() => {
     // Check if user has dismissed the widget
@@ -46,6 +53,30 @@ export function DonationWidget({
     localStorage.setItem('donation-widget-dismissed', 'true');
   };
 
+  const generateQRCode = useCallback(async () => {
+    try {
+      // Generate simple QR code with just the address
+      const qrDataURL = await QRCode.toDataURL(DONATION_ADDRESS, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF',
+        },
+      });
+      setQrCodeDataURL(qrDataURL);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+    }
+  }, []);
+
+  // Generate QR code when modal opens and QR is shown
+  useEffect(() => {
+    if (isOpen && showQR) {
+      generateQRCode();
+    }
+  }, [isOpen, showQR, generateQRCode]);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(DONATION_ADDRESS);
@@ -53,6 +84,20 @@ export function DonationWidget({
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       // Silent error handling for clipboard
+    }
+  };
+
+  const toggleQR = () => {
+    setShowQR(!showQR);
+  };
+
+  const copyAmountToClipboard = async (amount: number) => {
+    try {
+      await navigator.clipboard.writeText(`${amount} VRSC`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Silent error handling
     }
   };
 
@@ -151,15 +196,32 @@ export function DonationWidget({
                         </button>
                       </div>
 
-                      {/* QR Code Placeholder */}
-                      <div className="flex justify-center py-4">
-                        <div className="bg-white p-4 rounded-lg">
-                          <div className="w-48 h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-                            QR Code
-                            <br />
-                            (Generate with address)
+                      {/* QR Code Section */}
+                      <div className="flex flex-col items-center py-4 space-y-3">
+                        <button
+                          onClick={toggleQR}
+                          className="flex items-center space-x-2 px-4 py-2 bg-verus-blue/20 hover:bg-verus-blue/30 border border-verus-blue/30 rounded-lg transition-colors text-verus-blue/80 hover:text-verus-blue"
+                        >
+                          <QrCode className="h-4 w-4" />
+                          <span className="text-sm font-medium">
+                            {showQR ? 'Hide QR Code' : 'Show QR Code'}
+                          </span>
+                        </button>
+
+                        {showQR && qrCodeDataURL && (
+                          <div className="bg-white p-4 rounded-lg shadow-lg">
+                            <Image
+                              src={qrCodeDataURL}
+                              alt="VRSC Donation QR Code"
+                              width={200}
+                              height={200}
+                              className="w-48 h-48"
+                            />
+                            <p className="text-center text-xs text-gray-600 mt-2 font-medium">
+                              Scan to donate VRSC
+                            </p>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -178,6 +240,7 @@ export function DonationWidget({
                       ].map(tier => (
                         <button
                           key={tier.amount}
+                          onClick={() => copyAmountToClipboard(tier.amount)}
                           className="bg-gradient-to-r from-verus-blue/20 to-verus-green/20 hover:from-verus-blue/30 hover:to-verus-green/30 border border-verus-blue/30 hover:border-verus-blue/50 rounded-lg p-4 transition-all group"
                         >
                           <div className="text-2xl font-bold text-white mb-1">
@@ -185,6 +248,9 @@ export function DonationWidget({
                           </div>
                           <div className="text-xs text-verus-blue/80">
                             {tier.label}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Click to copy amount
                           </div>
                         </button>
                       ))}

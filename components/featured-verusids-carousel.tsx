@@ -297,11 +297,11 @@ export function FeaturedVerusIDsCarousel({
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:border-white/30 transition-all transform hover:scale-[1.02]">
               {/* Avatar/Icon */}
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-verus-blue to-verus-green flex items-center justify-center text-white text-2xl font-bold">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-verus-blue to-verus-green flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
                   {currentID.name.charAt(0).toUpperCase()}
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-2xl font-bold text-white mb-1">
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <h4 className="text-2xl font-bold text-white mb-1 truncate">
                     {currentID.friendlyName}
                   </h4>
                   <p className="text-sm text-gray-400 font-mono truncate">
@@ -533,11 +533,11 @@ export function FeaturedVerusIDsCompact() {
             </div>
 
             {/* Info */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 overflow-hidden">
               <div className="text-white font-semibold truncate">
                 {id.friendlyName}
               </div>
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-gray-400 truncate">
                 {id.stats.stakingRewards?.toFixed(2)} VRSC earned
               </div>
             </div>

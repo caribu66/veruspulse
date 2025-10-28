@@ -98,6 +98,55 @@ class IncrementalStakerScanner {
     }
   }
 
+  async extractStakeAmountFromUTXOs(identityAddress) {
+    try {
+      const rpcUser = process.env.VERUS_RPC_USER || 'verus';
+      const rpcPass = process.env.VERUS_RPC_PASSWORD || 'verus';
+      const rpcHost = process.env.VERUS_RPC_HOST || '127.0.0.1';
+      const rpcPort = process.env.VERUS_RPC_PORT || '18843';
+
+      // Get current block height
+      const blockCmd = `curl -s --user ${rpcUser}:${rpcPass} --data-binary '{"jsonrpc":"1.0","id":"scanner","method":"getblockcount","params":[]}' -H 'content-type: text/plain;' http://${rpcHost}:${rpcPort}/`;
+      const blockResult = JSON.parse(
+        execSync(blockCmd, { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 })
+      );
+      const currentBlockHeight = blockResult.result;
+
+      // Get UTXOs for this identity
+      const utxoCmd = `curl -s --user ${rpcUser}:${rpcPass} --data-binary '{"jsonrpc":"1.0","id":"scanner","method":"getaddressutxos","params":[{"addresses":["${identityAddress}"]}]}' -H 'content-type: text/plain;' http://${rpcHost}:${rpcPort}/`;
+      const utxoResult = JSON.parse(
+        execSync(utxoCmd, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 })
+      );
+      const utxos = utxoResult.result;
+
+      if (!utxos || utxos.length === 0) {
+        return null;
+      }
+
+      // Filter UTXOs with 150+ confirmations
+      const stakingUtxos = utxos.filter(utxo => {
+        const vrsc = utxo.satoshis / 100000000;
+        const confirmations = currentBlockHeight - utxo.height + 1;
+        return vrsc >= 0.001 && confirmations >= 150;
+      });
+
+      if (stakingUtxos.length === 0) {
+        return null;
+      }
+
+      // Calculate average stake amount
+      const totalStakingSats = stakingUtxos.reduce(
+        (sum, utxo) => sum + utxo.satoshis,
+        0
+      );
+      const avgStakeAmountSats = totalStakingSats / stakingUtxos.length;
+
+      return Math.round(avgStakeAmountSats);
+    } catch (error) {
+      throw new Error(`UTXO analysis failed: ${error.message}`);
+    }
+  }
+
   async getBlockHash(height) {
     try {
       const result = execSync(
@@ -223,12 +272,24 @@ class IncrementalStakerScanner {
         // Ensure identity exists
         await this.ensureIdentityExists(stake.address);
 
-        // Insert stake
+        // Extract stake amount using simple UTXO analysis
+        let stakeAmountSats = null;
+        try {
+          stakeAmountSats = await this.extractStakeAmountFromUTXOs(
+            stake.address
+          );
+        } catch (extractError) {
+          console.log(
+            `⚠️  Could not extract stake amount for ${stake.txid}: ${extractError.message}`
+          );
+        }
+
+        // Insert stake with UTXO-extracted amount
         await this.pool.query(
           `INSERT INTO staking_rewards 
            (identity_address, txid, vout, block_height, block_hash, block_time, 
-            amount_sats, classifier, source_address)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            amount_sats, classifier, source_address, stake_amount_sats)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
            ON CONFLICT (txid, vout) DO NOTHING`,
           [
             stake.address,
@@ -240,6 +301,7 @@ class IncrementalStakerScanner {
             stake.amount_sats,
             stake.classifier,
             stake.source_address,
+            stakeAmountSats,
           ]
         );
 

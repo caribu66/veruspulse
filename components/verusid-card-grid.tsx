@@ -52,27 +52,31 @@ export function VerusIDCardGrid({
           onClick={() => onIdentityClick?.(identity)}
         >
           {/* Header */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-2">
-              <div className="p-2 rounded-lg bg-blue-500/20">
-                <User className="h-4 w-4 text-blue-400" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h4
-                  className="font-medium text-white truncate"
-                  title={identity.friendlyName}
-                >
-                  {identity.displayName}
-                </h4>
-                <p
-                  className="text-xs text-blue-200 truncate"
-                  title={identity.address}
-                >
-                  {identity.address.slice(0, 16)}...
-                </p>
-              </div>
+          <div className="flex items-center mb-3 gap-2 w-full">
+            <div className="p-2 rounded-lg bg-blue-500/20 flex-shrink-0">
+              <User className="h-4 w-4 text-blue-400" />
             </div>
-            <ArrowSquareOut className="h-4 w-4 text-blue-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="min-w-0 flex-1" style={{ maxWidth: '100%' }}>
+              <h4
+                className="font-medium text-white text-sm"
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  maxWidth: '100%',
+                }}
+                title={identity.friendlyName}
+              >
+                {identity.displayName}
+              </h4>
+              <p
+                className="text-xs text-blue-200 truncate"
+                title={identity.address}
+              >
+                {identity.address.slice(0, 16)}...
+              </p>
+            </div>
+            <ArrowSquareOut className="h-4 w-4 text-blue-300 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
           </div>
 
           {/* Stats Grid */}

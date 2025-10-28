@@ -17,27 +17,124 @@
  * - We extract: stakeAmount = 10,000 VRSC, reward = 5 VRSC
  */
 
+// Types
+export interface CoinstakeTransaction {
+  vin: TransactionInput[];
+  vout: TransactionOutput[];
+  txid: string;
+}
+
+export interface TransactionInput {
+  txid: string;
+  vout: number;
+  coinbase?: string;
+}
+
+export interface TransactionOutput {
+  value: number;
+  scriptPubKey?: {
+    addresses?: string[];
+  };
+}
+
+export interface PreviousTransaction {
+  vout: TransactionOutput[];
+  txid: string;
+}
+
+export interface InputDetail {
+  txid: string;
+  vout: number;
+  value_sats?: number;
+  value_vrsc?: number;
+  addresses?: string[];
+  matched?: boolean;
+  skipped?: boolean;
+  type?: string;
+  reason?: string;
+  error?: string;
+}
+
+export interface ExtractionResult {
+  stakeAmount: number | null;
+  success: boolean;
+  successfulInputs?: number;
+  failedInputs?: number;
+  stakeAmountVRSC?: number | null;
+  inputDetails?: InputDetail[];
+  totalOutputSats?: number;
+  rewardSats?: number | null;
+  reason?: string;
+  error?: string;
+}
+
+export interface ExtractionOptions {
+  includeDetails?: boolean;
+  rateLimit?: number;
+}
+
+export interface BatchExtractionOptions extends ExtractionOptions {
+  batchSize?: number;
+  progressCallback?: (progress: {
+    processed: number;
+    total: number;
+    successCount: number;
+  }) => void;
+}
+
+export interface APYConfidence {
+  level: 'very-high' | 'high' | 'medium' | 'low' | 'very-low';
+  method: 'actual' | 'hybrid' | 'estimated';
+  label: string;
+}
+
+export type RPCCallFunction = (method: string, params: any[]) => Promise<any>;
+
 const RATE_LIMIT_MS = 50; // Delay between RPC calls to avoid overload
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
 
+// Helper functions
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fetchWithRetry(
+  rpcCall: RPCCallFunction,
+  txid: string,
+  retries: number = MAX_RETRIES,
+  delay: number = RETRY_DELAY_MS
+): Promise<PreviousTransaction | null> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const result = await rpcCall('getrawtransaction', [txid, true]);
+      if (result) return result;
+    } catch (error) {
+      if (i < retries - 1) {
+        await sleep(delay * (i + 1)); // Exponential backoff
+      } else {
+        throw error;
+      }
+    }
+  }
+  return null;
+}
+
 /**
  * Extract the actual staked amount from a coinstake transaction
  *
- * @param {Object} coinstakeTx - The coinstake transaction object
- * @param {string} identityAddress - The identity address that staked (I-address)
- * @param {Function} rpcCall - RPC call function (method, params) => Promise
- * @param {Object} options - Optional configuration
- * @param {boolean} options.includeDetails - Include detailed breakdown
- * @param {number} options.rateLimit - Milliseconds to wait between RPC calls
- * @returns {Promise<Object>} Result object with stake amount and details
+ * @param coinstakeTx - The coinstake transaction object
+ * @param identityAddress - The identity address that staked (I-address)
+ * @param rpcCall - RPC call function (method, params) => Promise
+ * @param options - Optional configuration
+ * @returns Result object with stake amount and details
  */
-async function extractStakeAmount(
-  coinstakeTx,
-  identityAddress,
-  rpcCall,
-  options = {}
-) {
+export async function extractStakeAmount(
+  coinstakeTx: CoinstakeTransaction,
+  identityAddress: string,
+  rpcCall: RPCCallFunction,
+  options: ExtractionOptions = {}
+): Promise<ExtractionResult> {
   const { includeDetails = false, rateLimit = RATE_LIMIT_MS } = options;
 
   try {
@@ -46,7 +143,7 @@ async function extractStakeAmount(
     }
 
     let totalStakedAmount = 0;
-    const inputDetails = [];
+    const inputDetails: InputDetail[] = [];
     let successfulInputs = 0;
     let failedInputs = 0;
 
@@ -58,7 +155,9 @@ async function extractStakeAmount(
       if (vin.coinbase) {
         if (includeDetails) {
           inputDetails.push({
-            index: i,
+            txid: 'coinbase',
+            vout: -1,
+            value_vrsc: 0,
             type: 'coinbase',
             skipped: true,
           });
@@ -71,7 +170,9 @@ async function extractStakeAmount(
         failedInputs++;
         if (includeDetails) {
           inputDetails.push({
-            index: i,
+            txid: 'unknown',
+            vout: -1,
+            value_vrsc: 0,
             type: 'invalid',
             skipped: true,
             reason: 'Missing txid or vout',
@@ -88,9 +189,9 @@ async function extractStakeAmount(
           failedInputs++;
           if (includeDetails) {
             inputDetails.push({
-              index: i,
               txid: vin.txid,
               vout: vin.vout,
+              value_vrsc: 0,
               type: 'not_found',
               skipped: true,
               reason: 'Previous output not found',
@@ -112,7 +213,6 @@ async function extractStakeAmount(
 
           if (includeDetails) {
             inputDetails.push({
-              index: i,
               txid: vin.txid,
               vout: vin.vout,
               value_sats: inputValueSats,
@@ -121,10 +221,9 @@ async function extractStakeAmount(
             });
           }
         } else {
-          // Input belongs to a different address (mixed coinstake)
+          // Input belongs to a different address
           if (includeDetails) {
             inputDetails.push({
-              index: i,
               txid: vin.txid,
               vout: vin.vout,
               value_sats: Math.round(prevOutput.value * 100000000),
@@ -136,39 +235,29 @@ async function extractStakeAmount(
           }
         }
 
-        // Rate limiting to avoid overwhelming the daemon
-        if (rateLimit > 0 && i < coinstakeTx.vin.length - 1) {
-          await sleep(rateLimit);
-        }
-      } catch (error) {
+        await sleep(rateLimit);
+      } catch (error: any) {
         failedInputs++;
         if (includeDetails) {
           inputDetails.push({
-            index: i,
             txid: vin.txid,
             vout: vin.vout,
+            value_vrsc: 0,
             type: 'error',
             skipped: true,
             error: error.message,
           });
         }
-        // Continue processing other inputs
+        // Log error but continue processing other inputs
+        console.warn(
+          `Error fetching previous transaction ${vin.txid}:${vin.vout} for ${identityAddress}: ${error.message}`
+        );
       }
     }
 
-    // Calculate total outputs for validation (optional)
-    let totalOutput = 0;
-    if (coinstakeTx.vout) {
-      totalOutput = coinstakeTx.vout.reduce((sum, vout) => {
-        return sum + (vout.value || 0) * 100000000;
-      }, 0);
-    }
-
-    // Return result
-    const result = {
+    const result: ExtractionResult = {
       stakeAmount: totalStakedAmount > 0 ? totalStakedAmount : null,
-      success: successfulInputs > 0,
-      totalInputs: coinstakeTx.vin.length,
+      success: true,
       successfulInputs,
       failedInputs,
       stakeAmountVRSC:
@@ -177,15 +266,20 @@ async function extractStakeAmount(
 
     if (includeDetails) {
       result.inputDetails = inputDetails;
-      result.totalOutputSats = Math.round(totalOutput);
+      result.totalOutputSats = Math.round(
+        coinstakeTx.vout.reduce(
+          (sum, vout) => sum + (vout.value || 0) * 100000000,
+          0
+        )
+      );
       result.rewardSats =
         totalStakedAmount > 0
-          ? Math.round(totalOutput - totalStakedAmount)
+          ? Math.round(result.totalOutputSats! - totalStakedAmount)
           : null;
     }
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     return {
       stakeAmount: null,
       success: false,
@@ -196,42 +290,22 @@ async function extractStakeAmount(
 }
 
 /**
- * Fetch a transaction with automatic retries
- */
-async function fetchWithRetry(rpcCall, txid, retries = MAX_RETRIES) {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      return await rpcCall('getrawtransaction', [txid, true]);
-    } catch (error) {
-      if (attempt === retries) {
-        throw error;
-      }
-      // Wait before retrying
-      await sleep(RETRY_DELAY_MS * attempt);
-    }
-  }
-}
-
-/**
- * Sleep helper
- */
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/**
  * Batch extract stake amounts for multiple coinstake transactions
  * Processes in batches to manage RPC load
  *
- * @param {Array} coinstakes - Array of { tx, identityAddress } objects
- * @param {Function} rpcCall - RPC call function
- * @param {Object} options - Configuration options
- * @returns {Promise<Array>} Array of results
+ * @param coinstakes - Array of { tx, identityAddress } objects
+ * @param rpcCall - RPC call function
+ * @param options - Configuration options
+ * @returns Array of results
  */
-async function batchExtractStakeAmounts(coinstakes, rpcCall, options = {}) {
+export async function batchExtractStakeAmounts(
+  coinstakes: Array<{ tx: CoinstakeTransaction; identityAddress: string }>,
+  rpcCall: RPCCallFunction,
+  options: BatchExtractionOptions = {}
+): Promise<ExtractionResult[]> {
   const { batchSize = 10, progressCallback = null } = options;
 
-  const results = [];
+  const results: ExtractionResult[] = [];
 
   for (let i = 0; i < coinstakes.length; i += batchSize) {
     const batch = coinstakes.slice(
@@ -263,16 +337,16 @@ async function batchExtractStakeAmounts(coinstakes, rpcCall, options = {}) {
 /**
  * Calculate APY using actual stake amounts
  *
- * @param {number} totalRewardsSats - Total rewards earned (satoshis)
- * @param {number} avgStakeAmountSats - Average staked amount (satoshis)
- * @param {number} days - Number of days staking
- * @returns {number} APY percentage
+ * @param totalRewardsSats - Total rewards earned (satoshis)
+ * @param avgStakeAmountSats - Average staked amount (satoshis)
+ * @param days - Number of days staking
+ * @returns APY percentage
  */
-function calculateAPYFromStakeAmount(
-  totalRewardsSats,
-  avgStakeAmountSats,
-  days
-) {
+export function calculateAPYFromStakeAmount(
+  totalRewardsSats: number,
+  avgStakeAmountSats: number,
+  days: number
+): number | null {
   if (!avgStakeAmountSats || avgStakeAmountSats <= 0 || days <= 0) {
     return null;
   }
@@ -281,7 +355,6 @@ function calculateAPYFromStakeAmount(
   const avgStakeAmountVRSC = avgStakeAmountSats / 100000000;
   const years = days / 365.25;
 
-  // APY = (Total Rewards / Average Staked Amount / Years) * 100
   const apy = (totalRewardsVRSC / avgStakeAmountVRSC / years) * 100;
 
   return apy;
@@ -290,7 +363,10 @@ function calculateAPYFromStakeAmount(
 /**
  * Determine APY calculation method and confidence level
  */
-function getAPYConfidence(totalStakes, stakesWithAmounts) {
+export function getAPYConfidence(
+  totalStakes: number,
+  stakesWithAmounts: number
+): APYConfidence {
   const completeness =
     totalStakes > 0 ? (stakesWithAmounts / totalStakes) * 100 : 0;
 
@@ -307,13 +383,10 @@ function getAPYConfidence(totalStakes, stakesWithAmounts) {
   } else if (stakesWithAmounts >= 10) {
     return { level: 'low', method: 'hybrid', label: '📈 Low Confidence' };
   } else {
-    return { level: 'very-low', method: 'estimated', label: '⚠️ Estimated' };
+    return {
+      level: 'very-low',
+      method: 'estimated',
+      label: '⚠️ Estimated',
+    };
   }
 }
-
-module.exports = {
-  extractStakeAmount,
-  batchExtractStakeAmounts,
-  calculateAPYFromStakeAmount,
-  getAPYConfidence,
-};

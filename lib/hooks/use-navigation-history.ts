@@ -188,22 +188,51 @@ export function useNavigationHistory() {
   const goBack = useCallback(
     (customFallback?: string) => {
       const currentPath = pathname || '/';
+      const history = getHistory();
+      const currentFullPath = currentPath + (window.location.search || '');
 
-      // Simple logic: if we're on a block detail page, go to explorer tab
+      // Clean up history - remove duplicates and current page
+      const cleanedHistory = history.filter((path, index) => {
+        const normalizedPath = normalizePath(path);
+        const normalizedCurrentPath = normalizePath(currentFullPath);
+
+        // Remove current page (compare normalized paths)
+        if (normalizedPath === normalizedCurrentPath) return false;
+        // Remove duplicates (keep only the last occurrence)
+        return history.lastIndexOf(path) === index;
+      });
+
+      // Try to find a valid previous page in history
+      const previousPath = cleanedHistory[cleanedHistory.length - 1];
+
+      if (
+        previousPath &&
+        normalizePath(previousPath) !== normalizePath(currentFullPath)
+      ) {
+        // Use the actual previous page from history
+        router.push(previousPath);
+        return;
+      }
+
+      // Fallback to smart navigation based on current page type
       if (currentPath.startsWith('/block/')) {
         router.push('/?tab=explorer');
         return;
       }
 
-      // If we're on a transaction detail page, go to explorer tab
       if (currentPath.startsWith('/transaction/')) {
         router.push('/?tab=explorer');
         return;
       }
 
-      // If we're on a VerusID detail page, go to VerusID tab
       if (currentPath.startsWith('/verusid/') && currentPath !== '/verusid') {
-        router.push('/?tab=verusids');
+        // Check if we have a custom fallback for VerusID pages
+        if (customFallback) {
+          router.push(customFallback);
+        } else {
+          // Default to VerusID tab, but prefer browse page if available
+          router.push('/?tab=verusids');
+        }
         return;
       }
 
@@ -211,7 +240,7 @@ export function useNavigationHistory() {
       const fallbackPath = customFallback || '/';
       router.push(fallbackPath);
     },
-    [pathname, router]
+    [pathname, router, getHistory, normalizePath]
   );
 
   /**
@@ -246,25 +275,47 @@ export function useNavigationHistory() {
    */
   const getBackPath = useCallback((): string => {
     const currentPath = pathname || '/';
+    const history = getHistory();
+    const currentFullPath = currentPath + (window.location.search || '');
 
-    // Simple logic: if we're on a block detail page, go to explorer tab
+    // Clean up history - remove duplicates and current page
+    const cleanedHistory = history.filter((path, index) => {
+      const normalizedPath = normalizePath(path);
+      const normalizedCurrentPath = normalizePath(currentFullPath);
+
+      // Remove current page (compare normalized paths)
+      if (normalizedPath === normalizedCurrentPath) return false;
+      // Remove duplicates (keep only the last occurrence)
+      return history.lastIndexOf(path) === index;
+    });
+
+    // Try to find a valid previous page in history
+    const previousPath = cleanedHistory[cleanedHistory.length - 1];
+
+    if (
+      previousPath &&
+      normalizePath(previousPath) !== normalizePath(currentFullPath)
+    ) {
+      // Return the actual previous page from history
+      return previousPath;
+    }
+
+    // Fallback to smart navigation based on current page type
     if (currentPath.startsWith('/block/')) {
       return '/?tab=explorer';
     }
 
-    // If we're on a transaction detail page, go to explorer tab
     if (currentPath.startsWith('/transaction/')) {
       return '/?tab=explorer';
     }
 
-    // If we're on a VerusID detail page, go to VerusID tab
     if (currentPath.startsWith('/verusid/') && currentPath !== '/verusid') {
       return '/?tab=verusids';
     }
 
     // For everything else, go to main page
     return '/';
-  }, [pathname]);
+  }, [pathname, getHistory, normalizePath]);
 
   /**
    * Clear navigation history

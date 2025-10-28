@@ -22,12 +22,12 @@ jobs:
 
       - name: Build application
         run: |
-          # Load environment variables and run build
-          set -a
+          # Load environment variables from .env.production
           if [ -f .env.production ]; then
-            source .env.production
+            set -o allexport
+            source <(cat .env.production | grep -v '^#' | grep -v '^$')
+            set +o allexport
           fi
-          set +a
           npm run build
         env:
           NODE_ENV: production

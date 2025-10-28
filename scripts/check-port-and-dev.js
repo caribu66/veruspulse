@@ -5,7 +5,7 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const LOCK_FILE = path.join(__dirname, '..', '.dev-server.lock');
 
 /**

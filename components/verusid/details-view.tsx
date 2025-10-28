@@ -137,7 +137,7 @@ export function VerusIDDetailsView({
       {/* Tabs for Different Views */}
       <div className="space-y-6">
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-300 dark:border-white/10 overflow-x-auto scrollbar-thin">
+        <div className="flex gap-1 border-b border-slate-300 dark:border-white/10 overflow-x-auto scrollbar-hide -mb-px">
           {[
             {
               value: 'overview',
@@ -168,16 +168,19 @@ export function VerusIDDetailsView({
             <button
               key={tab.value}
               onClick={() => setActiveTab(tab.value as any)}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 sm:py-3 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-xs sm:text-sm font-medium rounded-t-lg ${
                 activeTab === tab.value
-                  ? 'border-blue-500 text-white bg-blue-500'
-                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  ? 'border-verus-blue text-white bg-verus-blue'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5'
               }`}
               role="tab"
               aria-selected={activeTab === tab.value}
             >
-              {tab.icon}
-              {tab.label}
+              <span className="flex-shrink-0">{tab.icon}</span>
+              <span className="hidden xs:inline">{tab.label}</span>
+              <span className="inline xs:hidden">
+                {tab.label.split(' ')[0]}
+              </span>
             </button>
           ))}
         </div>

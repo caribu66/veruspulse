@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   ChartBar,
@@ -32,16 +32,27 @@ export function EnhancedNavigationBar({
   const { theme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Navigation items with icons
+  // Navigation items with icons and keyboard shortcuts
   const navigationItems = useMemo(
     () => [
-      { key: 'dashboard' as ExplorerTab, label: 'Dashboard', icon: ChartBar },
+      {
+        key: 'dashboard' as ExplorerTab,
+        label: 'Dashboard',
+        icon: ChartBar,
+        shortcut: '⌥1',
+      },
       {
         key: 'explorer' as ExplorerTab,
         label: 'Search',
         icon: MagnifyingGlass,
+        shortcut: '⌥2',
       },
-      { key: 'verusids' as ExplorerTab, label: 'VerusIDs', icon: UsersThree },
+      {
+        key: 'verusids' as ExplorerTab,
+        label: 'VerusIDs',
+        icon: UsersThree,
+        shortcut: '⌥3',
+      },
     ],
     []
   );
@@ -51,48 +62,129 @@ export function EnhancedNavigationBar({
     setMobileMenuOpen(false);
   };
 
+  // Keyboard shortcuts for navigation
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Only trigger if not typing in an input/textarea
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      // Alt/Option + Number for quick navigation
+      if (e.altKey) {
+        switch (e.key) {
+          case '1':
+            e.preventDefault();
+            onTabChange('dashboard');
+            break;
+          case '2':
+            e.preventDefault();
+            onTabChange('explorer');
+            break;
+          case '3':
+            e.preventDefault();
+            onTabChange('verusids');
+            break;
+        }
+      }
+
+      // Escape to close mobile menu
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [onTabChange, mobileMenuOpen]);
+
   return (
-    <div className="bg-transparent dark:bg-slate-950 border-b border-slate-300 dark:border-slate-700 sticky top-0 z-50 backdrop-blur-sm">
-      {/* Top Row: Logo + Price Ticker */}
-      <div className="max-w-7xl mx-auto px-6 py-2 lg:px-8 lg:py-2.5">
-        {/* Main Navigation Bar */}
+    <div className="bg-white/95 dark:bg-slate-950/95 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50 backdrop-blur-md shadow-sm">
+      {/* Single Row Professional Navigation */}
+      <div className={`max-w-7xl mx-auto ${SPACING_UTILS.navBar}`}>
         <nav
           id="navigation"
-          className="flex items-center justify-between"
+          className="flex items-center justify-between gap-4"
           role="navigation"
           aria-label="Primary navigation"
         >
-          {/* Left: Logo */}
-          <div className="flex items-center flex-shrink-0">
-            <div className="flex items-center justify-center relative">
-              {/* Verus Logo - Simple icon only */}
-              <div className="flex items-center gap-2">
-                <div className="relative h-7 sm:h-8 md:h-9 w-auto">
-                  <Image
-                    src="/verus-icon-blue.svg"
-                    alt="Verus"
-                    width={32}
-                    height={32}
-                    className="object-contain h-7 sm:h-8 md:h-9"
-                    priority
-                  />
-                </div>
-                <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+          {/* Left: Brand Identity */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-2.5">
+              <Image
+                src="/verus-icon-blue.svg"
+                alt="Verus"
+                width={36}
+                height={36}
+                className="w-9 h-9"
+                priority
+              />
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
                   VerusPulse
+                </span>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 leading-none">
+                  Blockchain Explorer
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Right: Controls */}
-          <div className="flex items-center space-x-3 md:space-x-4 lg:space-x-6 flex-shrink-0">
-            {/* Minimal Price Indicator (Desktop) */}
-            <div className="hidden lg:flex">
+          {/* Center: Navigation Tabs (Desktop/Tablet) */}
+          <div className="hidden md:flex items-center justify-center flex-1 gap-1">
+            {navigationItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.key;
+
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => onTabChange(item.key)}
+                  className={`
+                    group relative flex items-center gap-2 px-4 py-2 rounded-lg
+                    transition-all duration-200 whitespace-nowrap font-medium text-sm
+                    ${
+                      isActive
+                        ? 'text-verus-blue dark:text-verus-blue bg-slate-50 dark:bg-slate-800/50'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                    }
+                  `}
+                  aria-current={isActive ? 'page' : undefined}
+                  title={item.label}
+                >
+                  <Icon
+                    className={`${ICON_SIZES.sm} ${isActive ? 'text-verus-blue' : 'group-hover:text-verus-blue dark:group-hover:text-verus-blue'}`}
+                  />
+                  <span
+                    className={
+                      isActive
+                        ? 'text-verus-blue'
+                        : 'group-hover:text-verus-blue dark:group-hover:text-verus-blue'
+                    }
+                  >
+                    {item.label}
+                  </span>
+                  {/* Active indicator line */}
+                  {isActive && (
+                    <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-verus-blue rounded-full" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right: Utilities */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            {/* Price Indicator (Large Desktop) */}
+            <div className="hidden xl:flex">
               <MinimalPriceIndicator refreshInterval={10000} maxAssets={3} />
             </div>
 
-            {/* Minimal Price Indicator (Tablet) */}
-            <div className="hidden md:flex lg:hidden">
+            {/* Price Indicator (Desktop) */}
+            <div className="hidden lg:flex xl:hidden">
               <MinimalPriceIndicator refreshInterval={10000} maxAssets={2} />
             </div>
 
@@ -102,7 +194,7 @@ export function EnhancedNavigationBar({
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] p-2 rounded-lg bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 hover:border-verus-blue/60 text-gray-700 dark:text-slate-300 transition-colors"
+              className="md:hidden flex items-center justify-center min-h-[40px] min-w-[40px] p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 transition-colors"
               aria-label="Toggle mobile menu"
               aria-expanded={mobileMenuOpen}
             >
@@ -116,73 +208,52 @@ export function EnhancedNavigationBar({
         </nav>
       </div>
 
-      {/* Desktop Navigation Tabs Row */}
-      <div className="hidden md:block max-w-7xl mx-auto px-6 py-1.5 lg:px-8 lg:py-2">
-        <nav
-          className="flex gap-4 lg:gap-6 overflow-x-auto scrollbar-hide"
-          role="navigation"
-          aria-label="Main sections"
-        >
-          {navigationItems.map(item => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.key;
-
-            return (
-              <button
-                key={item.key}
-                onClick={() => onTabChange(item.key)}
-                className={`
-                  flex items-center gap-2 px-3 py-1.5 min-h-[36px] rounded-md
-                  transition-all duration-300 whitespace-nowrap font-medium text-sm
-                  ${
-                    isActive
-                      ? 'bg-verus-blue text-white font-semibold shadow-md border border-verus-blue'
-                      : 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-slate-600 hover:border-verus-blue/60'
-                  }
-                `}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                <Icon className={ICON_SIZES.sm} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-
-      {/* Mobile Menu Dropdown */}
+      {/* Enhanced Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 animate-in slide-in-from-top-2 duration-200">
-          <nav
-            className="max-w-7xl mx-auto px-4 py-3 space-y-2"
-            role="navigation"
-            aria-label="Mobile navigation"
-          >
-            {navigationItems.map(item => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.key;
+        <div className="md:hidden border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            {/* Mobile Price Indicator */}
+            <div className="mb-3 pb-3 border-b border-slate-200 dark:border-slate-700">
+              <MinimalPriceIndicator refreshInterval={10000} maxAssets={2} />
+            </div>
 
-              return (
-                <button
-                  key={item.key}
-                  onClick={() => handleTabChange(item.key)}
-                  className={`
-                    w-full flex items-center gap-3 px-4 py-3 min-h-[44px] rounded-lg
-                    transition-all duration-200 text-left
-                    ${
-                      isActive
-                        ? 'bg-verus-blue text-white font-semibold shadow-md'
-                        : 'bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600'
-                    }
-                  `}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  <Icon className={ICON_SIZES.md} />
-                  <span className="text-base">{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
+            {/* Mobile Navigation */}
+            <nav
+              className="space-y-1"
+              role="navigation"
+              aria-label="Mobile navigation"
+            >
+              {navigationItems.map(item => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.key;
+
+                return (
+                  <button
+                    key={item.key}
+                    onClick={() => handleTabChange(item.key)}
+                    className={`
+                      w-full flex items-center gap-3 px-4 py-3 rounded-lg
+                      transition-all duration-200 text-left font-medium
+                      ${
+                        isActive
+                          ? 'bg-slate-100 dark:bg-slate-800 text-verus-blue dark:text-verus-blue border-l-2 border-verus-blue'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                      }
+                    `}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    <Icon
+                      className={`${ICON_SIZES.md} ${isActive ? 'text-verus-blue' : ''}`}
+                    />
+                    <span className="text-base">{item.label}</span>
+                    {isActive && (
+                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-verus-blue" />
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
         </div>
       )}
     </div>

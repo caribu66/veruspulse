@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { House, MagnifyingGlass, TrendUp, User } from '@phosphor-icons/react';
+import { House, MagnifyingGlass, User } from '@phosphor-icons/react';
 import { useMobileOptimizations } from './mobile-optimizations';
 import { haptics } from '@/lib/utils/haptics';
 
@@ -29,7 +29,6 @@ export function MobileBottomNav() {
   const navItems: NavItem[] = [
     { icon: House, label: 'Home', href: '/' },
     { icon: MagnifyingGlass, label: 'Search', href: '/verusid' },
-    { icon: TrendUp, label: 'Trending', href: '/trending' },
     { icon: User, label: 'Browse', href: '/verusid/browse' },
   ];
 

@@ -112,18 +112,6 @@
       ]
     },
     {
-      "name": "Trending",
-      "short_name": "Trending",
-      "description": "View trending content",
-      "url": "/trending",
-      "icons": [
-        {
-          "src": "/icons/icon-192x192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
       "name": "Browse VerusIDs",
       "short_name": "Browse",
       "description": "Explore all VerusIDs",

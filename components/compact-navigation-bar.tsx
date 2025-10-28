@@ -112,7 +112,7 @@ export function CompactNavigationBar({
                         handleTabChange(nav.key as ExplorerTab)
                       )
                     }
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
+                    className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
                       isActive
                         ? 'bg-white/20 text-white shadow-lg border border-white/10'
                         : 'text-white/80 hover:text-white hover:bg-white/10 hover:shadow-md'
@@ -150,7 +150,7 @@ export function CompactNavigationBar({
               onKeyDown={e =>
                 handleKeyDown(e, () => setMobileMenuOpen(!mobileMenuOpen))
               }
-              className="lg:hidden p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="lg:hidden p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-navigation"
@@ -168,7 +168,7 @@ export function CompactNavigationBar({
         {mobileMenuOpen && (
           <div
             id="mobile-navigation"
-            className="lg:hidden mt-4 p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm"
+            className="lg:hidden mt-2 p-3 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation menu"
@@ -195,7 +195,7 @@ export function CompactNavigationBar({
                         handleTabChange(nav.key as ExplorerTab)
                       )
                     }
-                    className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
                       isActive
                         ? 'bg-white/20 text-white border border-white/20'
                         : 'text-white/80 hover:text-white hover:bg-white/10'

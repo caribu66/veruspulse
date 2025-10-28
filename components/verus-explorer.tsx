@@ -630,14 +630,14 @@ export function VerusExplorer() {
       <aside
         role="complementary"
         aria-label="Network status"
-        className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6"
+        className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3"
       >
         {/* Blockchain Sync Progress */}
-        <BlockchainSyncProgress className="mb-4" />
+        <BlockchainSyncProgress className="mb-2" />
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-500/10 backdrop-blur-sm rounded-lg p-4 border border-red-500/20 mb-4">
+          <div className="bg-red-500/10 backdrop-blur-sm rounded-lg p-4 border border-red-500/20 mb-2">
             <div className="flex items-center space-x-3">
               <WarningCircle className="h-5 w-5 text-red-400" />
               <div className="text-gray-900 dark:text-white font-semibold">

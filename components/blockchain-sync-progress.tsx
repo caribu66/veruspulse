@@ -108,7 +108,7 @@ export function BlockchainSyncProgress({
     <div
       className={`bg-blue-500/10 dark:bg-blue-500/20 backdrop-blur-sm rounded-lg border border-blue-500/30 ${className}`}
     >
-      <div className="p-4 sm:p-6">
+      <div className="p-3 sm:p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">

@@ -275,7 +275,7 @@ export const LAYOUTS = {
  */
 export const SPACING_UTILS = {
   /** Navigation bar spacing */
-  navBar: 'px-6 py-4 lg:px-8 lg:py-6',
+  navBar: 'px-6 py-2 lg:px-8 lg:py-3',
   /** Hero section spacing */
   hero: 'py-20 lg:py-32',
   /** Section spacing */

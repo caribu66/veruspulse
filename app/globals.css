@@ -918,8 +918,8 @@ html.dark body {
 nav,
 .navbar,
 .navigation {
-  min-height: 50px;
-  padding: 0.75rem 2rem; /* Added horizontal padding for breathing room */
+  min-height: 40px;
+  padding: 0.5rem 2rem; /* Reduced vertical padding for breathing room */
   border-radius: 0; /* Clean, professional edges for navigation */
   margin: 0;
 }
@@ -929,50 +929,47 @@ nav,
 [data-theme='light'] .navbar,
 [data-theme='light'] .navigation {
   background-color: var(--bg-elevated) !important;
-  border-bottom: 1px solid var(--border-primary) !important;
-  box-shadow: 0 4px 12px rgb(163 177 198 / 30%) !important;
+  border-bottom: 1px solid var(--border-secondary) !important;
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
 }
 
-/* Navigation Content Spacing */
-nav > *:first-child,
-.navbar > *:first-child,
-.navigation > *:first-child {
-  margin-left: 1rem !important; /* Extra breathing room for logo/branding */
+/* Professional Header Branding */
+.header-brand {
+  transition: opacity 0.2s ease-in-out;
 }
 
-nav > *:last-child,
-.navbar > *:last-child,
-.navigation > *:last-child {
-  margin-right: 1rem !important; /* Extra breathing room for right-side elements */
+.header-brand:hover {
+  opacity: 0.85;
 }
 
-/* Specific spacing for common navigation elements */
-nav .logo,
-.navbar .logo,
-.navigation .logo,
-nav [class*='logo'],
-.navbar [class*='logo'],
-.navigation [class*='logo'] {
-  margin-left: 1.5rem !important; /* Extra breathing room for logos */
+/* Navigation Link Styles */
+nav a,
+.navbar a,
+.navigation a {
+  position: relative;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
 }
 
-nav button,
-.navbar button,
-.navigation button,
-nav [role='button'],
-.navbar [role='button'],
-.navigation [role='button'] {
-  margin-left: 0.5rem !important;
-  margin-right: 0.5rem !important; /* Breathing room around buttons */
+nav a::after,
+.navbar a::after,
+.navigation a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--verus-blue);
+  transition: width 0.3s ease-in-out;
 }
 
-nav button:last-child,
-.navbar button:last-child,
-.navigation button:last-child,
-nav [role='button']:last-child,
-.navbar [role='button']:last-child,
-.navigation [role='button']:last-child {
-  margin-right: 1.5rem !important; /* Extra breathing room for last button */
+nav a:hover::after,
+.navbar a:hover::after,
+.navigation a:hover::after {
+  width: 100%;
 }
 
 [data-theme='light'] nav a,
@@ -1005,13 +1002,13 @@ nav [role='button']:last-child,
 }
 
 .backdrop-blur-sm {
-  min-height: 50px;
-  padding: 0.75rem;
+  min-height: 40px;
+  padding: 0.5rem;
 }
 
 .backdrop-blur-md {
-  min-height: 65px;
-  padding: 1rem;
+  min-height: 50px;
+  padding: 0.75rem;
 }
 
 .backdrop-blur-lg {

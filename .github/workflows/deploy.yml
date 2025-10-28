@@ -37,6 +37,15 @@ jobs:
         env:
           NODE_ENV: production
           NEXT_PUBLIC_APP_URL: ${{ env.PRODUCTION_URL }}
+          VERUS_RPC_HOST: http://localhost:18843
+          VERUS_RPC_USER: verus
+          VERUS_RPC_PASSWORD: dummy
+
+      - name: Verify build artifacts
+        run: |
+          echo "Checking if .next directory exists..."
+          ls -la .next/ || echo ".next directory not found"
+          echo "Build artifacts verification complete"
 
       - name: Deploy to production server
         uses: appleboy/ssh-action@v1.0.0

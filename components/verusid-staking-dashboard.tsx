@@ -1250,7 +1250,7 @@ export function VerusIDStakingDashboard({
                     tooltip: {
                       trigger: 'axis',
                       backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                      borderColor: '#4ade80',
+                      borderColor: '#4285F4',
                       textStyle: { color: '#fff', fontSize: 14 },
                       formatter: (params: any) => {
                         const month = params[0].axisValue;
@@ -1305,7 +1305,7 @@ export function VerusIDStakingDashboard({
                             },
                             []
                           ) || [],
-                        itemStyle: { color: '#4ade80' },
+                        itemStyle: { color: '#4285F4' },
                         lineStyle: { width: 3 },
                         smooth: true,
                         areaStyle: {
@@ -1316,8 +1316,8 @@ export function VerusIDStakingDashboard({
                             x2: 0,
                             y2: 1,
                             colorStops: [
-                              { offset: 0, color: 'rgba(74, 222, 128, 0.3)' },
-                              { offset: 1, color: 'rgba(74, 222, 128, 0.05)' },
+                              { offset: 0, color: 'rgba(66, 133, 244, 0.4)' },
+                              { offset: 1, color: 'rgba(66, 133, 244, 0.05)' },
                             ],
                           },
                         },
@@ -1333,8 +1333,8 @@ export function VerusIDStakingDashboard({
                           monthlyData?.map((d: any) => d.totalRewardsVRSC) ||
                           [],
                         itemStyle: {
-                          color: 'rgba(251, 191, 36, 0.6)',
-                          borderColor: '#fbbf24',
+                          color: 'rgba(251, 188, 4, 0.7)',
+                          borderColor: '#FBBC04',
                           borderWidth: 1,
                         },
                         barMaxWidth: 30,
@@ -1346,15 +1346,15 @@ export function VerusIDStakingDashboard({
                         start: 0,
                         end: 100,
                         bottom: 15,
-                        borderColor: '#4ade80',
-                        fillerColor: 'rgba(74, 222, 128, 0.25)',
+                        borderColor: '#4285F4',
+                        fillerColor: 'rgba(66, 133, 244, 0.25)',
                         handleStyle: {
-                          color: '#4ade80',
-                          borderColor: '#34d399',
+                          color: '#4285F4',
+                          borderColor: '#5A9BF5',
                           borderWidth: 2,
                           size: 20,
                           shadowBlur: 6,
-                          shadowColor: 'rgba(74, 222, 128, 0.5)',
+                          shadowColor: 'rgba(66, 133, 244, 0.5)',
                         },
                         handleIcon:
                           'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z',

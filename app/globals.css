@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,24 +15,23 @@
 /* Import achievement animations */
 @import '../styles/achievement-animations.css';
 
-/* Custom styles for VerusCoin Explorer */
+/* Custom styles with Google Material Design Typography */
 body {
   font-family:
-    'Poppins',
+    'Inter',
+    'Roboto',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
-    'Roboto',
-    'Oxygen',
-    'Ubuntu',
-    'Cantarell',
-    'Fira Sans',
-    'Droid Sans',
     'Helvetica Neue',
+    Arial,
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
 }
 
 /* Prevent horizontal overflow globally */
@@ -89,92 +90,132 @@ div {
    ================================================================ */
 
 :root {
-  /* ============ Background Colors (60% usage) ============ */
+  /* ============ Background Colors (60% usage) - Material Design inspired ============ */
   --bg-primary: #0a0e1a; /* Main dark background */
   --bg-secondary: #141b2d; /* Secondary background */
-  --bg-tertiary: #1a2332; /* Cards, panels */
-  --bg-elevated: rgb(20 27 45 / 60%); /* Elevated elements */
-  --bg-elevated-hover: rgb(20 27 45 / 80%); /* Elevated hover */
+  --bg-tertiary: #1e293b; /* Cards, panels - slightly lighter */
+  --bg-elevated: #1e293b; /* Elevated elements */
+  --bg-elevated-hover: #334155; /* Elevated hover - more noticeable */
 
   /* ============ Text Colors - WCAG AA Compliant ============ */
-  --text-primary: #fff; /* Primary text - 7:1 contrast */
+  --text-primary: #ffffff; /* Primary text - 7:1 contrast */
   --text-secondary: #e2e8f0; /* Secondary text - 4.5:1 contrast */
-  --text-muted: #cbd5e1; /* Muted text - 4.5:1 contrast */
+  --text-muted: #94a3b8; /* Muted text - 4.5:1 contrast */
   --text-on-dark: #f8fafc; /* Text on dark - WCAG AAA */
 
-  /* ============ Verus Official Brand Colors ============ */
-  --verus-blue: #3165d4; /* Official Verus Blue - primary brand color */
-  --verus-blue-light: #4a7ce8; /* Hover states */
-  --verus-blue-dark: #2650b3; /* Active states */
-  --verus-green: #4aa658; /* Official Verus Green - success, positive */
-  --verus-green-light: #5cb96a; /* Green highlights */
-  --verus-green-dark: #3d8a49; /* Green active */
-  --verus-red: #d4313e; /* Official Verus Red - errors, alerts */
-  --verus-red-light: #e04b56; /* Red highlights */
-  --verus-red-dark: #b52732; /* Red active */
+  /* ============ Google Material Design Colors - Primary Palette ============ */
+  --google-blue: #4285F4; /* Google Blue - primary interactive */
+  --google-blue-light: #5A9BF5; /* Hover state */
+  --google-blue-dark: #3367D6; /* Active state */
+  --google-red: #EA4335; /* Google Red - errors, destructive */
+  --google-red-light: #EE6B5E; /* Hover state */
+  --google-red-dark: #D33426; /* Active state */
+  --google-yellow: #FBBC04; /* Google Yellow - warnings */
+  --google-yellow-light: #FCC934; /* Hover state */
+  --google-yellow-dark: #F9AB00; /* Active state */
+  --google-green: #34A853; /* Google Green - success */
+  --google-green-light: #5FBB72; /* Hover state */
+  --google-green-dark: #2D904A; /* Active state */
 
-  /* ============ Semantic Colors (official palette only) ============ */
-  --color-success: #4aa658; /* Success states (official green) */
-  --color-warning: #f59e0b; /* Warning states */
-  --color-error: #d4313e; /* Error states (official red) */
-  --color-info: #3165d4; /* Info states (official blue) */
+  /* ============ Verus Official Brand Colors (maintained for branding) ============ */
+  --verus-blue: #4285F4; /* Updated to Google Blue for consistency */
+  --verus-blue-light: #5A9BF5; /* Hover states */
+  --verus-blue-dark: #3367D6; /* Active states */
+  --verus-green: #34A853; /* Updated to Google Green */
+  --verus-green-light: #5FBB72; /* Green highlights */
+  --verus-green-dark: #2D904A; /* Green active */
+  --verus-red: #EA4335; /* Updated to Google Red */
+  --verus-red-light: #EE6B5E; /* Red highlights */
+  --verus-red-dark: #D33426; /* Red active */
 
-  /* ============ Border Colors ============ */
-  --border-primary: rgb(49 101 212 / 20%); /* Verus blue borders */
-  --border-secondary: rgba(255, 255, 255, 0.08); /* Subtle borders */
-  --border-elevated: rgb(49 101 212 / 30%); /* Elevated borders */
+  /* ============ Semantic Colors - Google Material Design ============ */
+  --color-success: #34A853; /* Success states (Google green) */
+  --color-warning: #FBBC04; /* Warning states (Google yellow) */
+  --color-error: #EA4335; /* Error states (Google red) */
+  --color-info: #4285F4; /* Info states (Google blue) */
+
+  /* ============ Border Colors - Softer, more modern ============ */
+  --border-primary: rgba(148, 163, 184, 0.2); /* Subtle gray borders */
+  --border-secondary: rgba(255, 255, 255, 0.08); /* Ultra-subtle borders */
+  --border-elevated: rgba(66, 133, 244, 0.3); /* Google blue tint for emphasis */
+
+  /* ============ Material Design Elevation Shadows ============ */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
   /* ============ Legacy Variables (for compatibility) ============ */
-  --accent-primary: var(--verus-blue);
-  --accent-secondary: var(--verus-green);
-  --accent-success: var(--verus-green);
+  --accent-primary: var(--google-blue);
+  --accent-secondary: var(--google-green);
+  --accent-success: var(--google-green);
   --card-bg: var(--bg-elevated);
   --card-bg-hover: var(--bg-elevated-hover);
   --text-secondary-on-dark: var(--text-secondary);
   --text-muted-on-dark: var(--text-muted);
 }
 
-/* ============ Light Theme - WCAG AA Compliant - 2025 Best Practices ============ */
+/* ============ Light Theme - Google Material Design - WCAG AA Compliant ============ */
 [data-theme='light'] {
-  /* Backgrounds - Sophisticated layering system */
-  --bg-primary: #fafbfc; /* Soft off-white, easier on eyes than pure white */
-  --bg-secondary: #f3f4f6; /* gray-100 - subtle separation */
-  --bg-tertiary: #e5e7eb; /* gray-200 - clear hierarchy */
-  --bg-elevated: #fff; /* Pure white for cards/elevated elements */
-  --bg-elevated-hover: #f9fafb; /* gray-50 - subtle hover */
+  /* Backgrounds - Clean Material Design aesthetic */
+  --bg-primary: #ffffff; /* Pure white for Material Design */
+  --bg-secondary: #f8f9fa; /* Light gray - subtle depth */
+  --bg-tertiary: #f1f3f4; /* Slightly darker - clear hierarchy */
+  --bg-elevated: #ffffff; /* White cards with shadows */
+  --bg-elevated-hover: #f8f9fa; /* Subtle hover state */
 
-  /* Text Colors - Optimized readability */
-  --text-primary: #111827; /* gray-900 - WCAG AAA on light backgrounds */
-  --text-secondary: #4b5563; /* gray-600 - 7:1 contrast */
-  --text-muted: #6b7280; /* gray-500 - 4.6:1 contrast, WCAG AA */
-  --text-on-light: #111827;
+  /* Text Colors - Material Design Typography */
+  --text-primary: #202124; /* Google's primary text color */
+  --text-secondary: #5f6368; /* Google's secondary text */
+  --text-muted: #80868b; /* Google's muted text */
+  --text-on-light: #202124;
 
-  /* Brand Colors remain consistent */
-  --verus-blue: #2563eb; /* Slightly deeper blue for better light mode visibility */
-  --verus-blue-light: #3b82f6;
-  --verus-blue-dark: #1e40af;
-  --verus-green: #059669; /* emerald-600 - better contrast in light mode */
-  --verus-green-light: #10b981;
-  --verus-green-dark: #047857;
-  --verus-red: #dc2626; /* red-600 - stronger visibility */
-  --verus-red-light: #ef4444;
-  --verus-red-dark: #b91c1c;
+  /* Google Material Design Colors - Light Theme */
+  --google-blue: #1a73e8; /* Darker blue for light backgrounds */
+  --google-blue-light: #4285F4;
+  --google-blue-dark: #174ea6;
+  --google-red: #d93025; /* Darker red for better contrast */
+  --google-red-light: #EA4335;
+  --google-red-dark: #b31412;
+  --google-yellow: #ea8600; /* Darker yellow for readability */
+  --google-yellow-light: #FBBC04;
+  --google-yellow-dark: #d17d00;
+  --google-green: #1e8e3e; /* Darker green for contrast */
+  --google-green-light: #34A853;
+  --google-green-dark: #188038;
 
-  /* Semantic Colors */
-  --color-success: #059669;
-  --color-warning: #d97706; /* amber-600 - better contrast */
-  --color-error: #dc2626;
-  --color-info: #2563eb;
+  /* Brand Colors - Light Mode Optimized */
+  --verus-blue: #1a73e8;
+  --verus-blue-light: #4285F4;
+  --verus-blue-dark: #174ea6;
+  --verus-green: #1e8e3e;
+  --verus-green-light: #34A853;
+  --verus-green-dark: #188038;
+  --verus-red: #d93025;
+  --verus-red-light: #EA4335;
+  --verus-red-dark: #b31412;
 
-  /* Borders - Subtle but visible */
-  --border-primary: #d1d5db; /* gray-300 - clean, visible borders */
-  --border-secondary: #e5e7eb; /* gray-200 - ultra-subtle */
-  --border-elevated: rgb(37 99 235 / 20%); /* blue tint for special borders */
+  /* Semantic Colors - Light Mode */
+  --color-success: #1e8e3e;
+  --color-warning: #ea8600;
+  --color-error: #d93025;
+  --color-info: #1a73e8;
+
+  /* Borders - Material Design */
+  --border-primary: #dadce0; /* Google's border color */
+  --border-secondary: #e8eaed; /* Lighter borders */
+  --border-elevated: rgba(26, 115, 232, 0.2); /* Blue tint */
+
+  /* Material Design Elevation Shadows - Light Mode */
+  --shadow-sm: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  --shadow-md: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+  --shadow-lg: 0 4px 8px 3px rgba(60, 64, 67, 0.15), 0 1px 3px rgba(60, 64, 67, 0.3);
+  --shadow-xl: 0 8px 12px 6px rgba(60, 64, 67, 0.15), 0 4px 4px rgba(60, 64, 67, 0.3);
 
   /* Legacy */
-  --accent-primary: var(--verus-blue);
-  --accent-secondary: var(--verus-green);
-  --accent-success: var(--verus-green);
+  --accent-primary: var(--google-blue);
+  --accent-secondary: var(--google-green);
+  --accent-success: var(--google-green);
   --card-bg: var(--bg-elevated);
   --card-bg-hover: var(--bg-elevated-hover);
   --text-secondary-on-light: var(--text-secondary);
@@ -215,32 +256,256 @@ div {
   --spacing-7xl: 6rem; /* 96px */
 }
 
-/* Enhanced typography hierarchy */
-h1 {
+/* ============ Material Design Typography Scale ============ */
+h1, .text-display {
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-size: 3.75rem; /* 60px */
+  font-weight: 300;
   line-height: 1.1;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.015em;
 }
 
-h2 {
+h2, .text-headline {
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-size: 3rem; /* 48px */
+  font-weight: 400;
   line-height: 1.2;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.0125em;
 }
 
-h3 {
+h3, .text-title {
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-size: 2.125rem; /* 34px */
+  font-weight: 500;
   line-height: 1.3;
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
 }
 
-/* Improved button spacing */
+h4, .text-subheading {
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-size: 1.5rem; /* 24px */
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+h5 {
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-size: 1.25rem; /* 20px */
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.0125em;
+}
+
+h6 {
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.015em;
+}
+
+.text-body-1 {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.03125em;
+}
+
+.text-body-2 {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  line-height: 1.43;
+  letter-spacing: 0.01786em;
+}
+
+.text-caption {
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
+  line-height: 1.33;
+  letter-spacing: 0.03333em;
+  color: var(--text-muted);
+}
+
+.text-overline {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 2;
+  letter-spacing: 0.1666em;
+  text-transform: uppercase;
+}
+
+/* ============ Material Design Button Components ============ */
+.btn-material {
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.0892em;
+  text-transform: uppercase;
+  padding: 10px 24px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+}
+
+.btn-material:hover {
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+  transform: translateY(-1px);
+}
+
+.btn-material:active {
+  box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
+  transform: translateY(0);
+}
+
+/* Material Design Button Variants */
+.btn-primary {
+  background: var(--google-blue);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--google-blue-light);
+}
+
+.btn-primary:active {
+  background: var(--google-blue-dark);
+}
+
+.btn-success {
+  background: var(--google-green);
+  color: white;
+}
+
+.btn-success:hover {
+  background: var(--google-green-light);
+}
+
+.btn-danger {
+  background: var(--google-red);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: var(--google-red-light);
+}
+
+.btn-warning {
+  background: var(--google-yellow);
+  color: #202124;
+}
+
+.btn-warning:hover {
+  background: var(--google-yellow-light);
+}
+
+/* Outlined Buttons */
+.btn-outlined {
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  color: var(--google-blue);
+  box-shadow: none;
+}
+
+.btn-outlined:hover {
+  background: rgba(66, 133, 244, 0.04);
+  border-color: var(--google-blue);
+}
+
+/* Text Buttons */
+.btn-text {
+  background: transparent;
+  box-shadow: none;
+  color: var(--google-blue);
+  padding: 8px 16px;
+}
+
+.btn-text:hover {
+  background: rgba(66, 133, 244, 0.04);
+}
+
+/* Icon Buttons */
+.btn-icon {
+  padding: 12px;
+  border-radius: 50%;
+  min-width: 48px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: 6px 16px;
+  font-size: 0.8125rem;
+}
+
+.btn-lg {
+  padding: 12px 32px;
+  font-size: 0.9375rem;
+}
+
+/* Disabled State */
+button:disabled, .btn-material:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Legacy button styles */
 button {
-  letter-spacing: 0.025em;
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.0892em;
+  font-size: 0.875rem;
+}
+
+/* ============ Material Design Card Components ============ */
+.card-material {
+  background: var(--bg-elevated);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-secondary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-material:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  background: var(--bg-elevated-hover);
+}
+
+.card-material-sm {
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.card-material-lg {
+  padding: 32px;
+  border-radius: 16px;
 }
 
 /* Enhanced card spacing */
 .card-enhanced {
   padding: var(--spacing-xl);
   margin-bottom: var(--spacing-lg);
-  border-radius: 0.75rem;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-secondary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-enhanced:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 @media (min-width: 1024px) {
@@ -248,6 +513,83 @@ button {
     padding: var(--spacing-2xl);
     margin-bottom: var(--spacing-xl);
   }
+}
+
+/* ============ Material Design Chart Colors ============ */
+:root {
+  /* Primary Chart Colors - Google Palette */
+  --chart-primary: #4285F4; /* Google Blue */
+  --chart-success: #34A853; /* Google Green */
+  --chart-warning: #FBBC04; /* Google Yellow */
+  --chart-danger: #EA4335; /* Google Red */
+  
+  /* Extended Chart Palette */
+  --chart-blue-light: #5A9BF5;
+  --chart-blue-dark: #3367D6;
+  --chart-green-light: #5FBB72;
+  --chart-green-dark: #2D904A;
+  --chart-yellow-light: #FCC934;
+  --chart-yellow-dark: #F9AB00;
+  --chart-red-light: #EE6B5E;
+  --chart-red-dark: #D33426;
+  
+  /* Additional Chart Colors */
+  --chart-purple: #9334E6;
+  --chart-orange: #FF6D00;
+  --chart-teal: #00BFA5;
+  --chart-pink: #E91E63;
+  --chart-indigo: #3F51B5;
+  --chart-cyan: #00BCD4;
+  
+  /* Chart Gradients */
+  --chart-gradient-blue: linear-gradient(180deg, rgba(66, 133, 244, 0.8) 0%, rgba(66, 133, 244, 0.2) 100%);
+  --chart-gradient-green: linear-gradient(180deg, rgba(52, 168, 83, 0.8) 0%, rgba(52, 168, 83, 0.2) 100%);
+  --chart-gradient-yellow: linear-gradient(180deg, rgba(251, 188, 4, 0.8) 0%, rgba(251, 188, 4, 0.2) 100%);
+  --chart-gradient-red: linear-gradient(180deg, rgba(234, 67, 53, 0.8) 0%, rgba(234, 67, 53, 0.2) 100%);
+}
+
+/* ============ Material Design Stats Cards ============ */
+.stats-card {
+  background: var(--bg-elevated);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-secondary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stats-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: var(--border-elevated);
+}
+
+.stats-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-center;
+  margin-bottom: 12px;
+}
+
+.stats-card-value {
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.stats-card-label {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* Ensure theme is applied */
@@ -303,11 +645,11 @@ html.dark body {
   display: none; /* Chrome, Safari and Opera */
 }
 
-/* Enhanced mobile-friendly scrollbar for Cumulative Rewards Growth */
+/* Enhanced mobile-friendly scrollbar for Cumulative Rewards Growth - Google Blue */
 .cumulative-rewards-scroll {
   /* Firefox - thicker scrollbar on mobile */
   scrollbar-width: auto;
-  scrollbar-color: rgb(74 222 128 / 80%) rgb(20 27 45 / 50%);
+  scrollbar-color: rgb(66 133 244 / 80%) rgb(20 27 45 / 50%);
   /* Add padding below for scrollbar space */
   padding-bottom: 8px;
 }
@@ -320,30 +662,30 @@ html.dark body {
   background: rgb(20 27 45 / 50%);
   border-radius: 10px;
   margin: 0 12px; /* Space on sides */
-  border: 1px solid rgb(74 222 128 / 20%);
+  border: 1px solid rgb(66 133 244 / 20%);
 }
 
 .cumulative-rewards-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgb(74 222 128 / 70%), rgb(74 222 128 / 85%));
+  background: linear-gradient(180deg, rgb(66 133 244 / 70%), rgb(66 133 244 / 85%));
   border-radius: 10px;
   border: 3px solid rgb(20 27 45 / 60%);
   background-clip: padding-box;
   min-width: 50px;
-  box-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+  box-shadow: 0 0 10px rgba(66, 133, 244, 0.3);
 }
 
 .cumulative-rewards-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgb(74 222 128 / 90%), rgb(74 222 128 / 100%));
+  background: linear-gradient(180deg, rgb(66 133 244 / 90%), rgb(66 133 244 / 100%));
   border: 3px solid rgb(20 27 45 / 60%);
   background-clip: padding-box;
-  box-shadow: 0 0 15px rgba(74, 222, 128, 0.5);
+  box-shadow: 0 0 15px rgba(66, 133, 244, 0.5);
 }
 
 .cumulative-rewards-scroll::-webkit-scrollbar-thumb:active {
-  background: rgb(74 222 128 / 100%);
-  border: 2px solid rgb(74 222 128);
+  background: rgb(66 133 244 / 100%);
+  border: 2px solid rgb(66 133 244);
   background-clip: padding-box;
-  box-shadow: 0 0 20px rgba(74, 222, 128, 0.7);
+  box-shadow: 0 0 20px rgba(66, 133, 244, 0.7);
 }
 
 /* Mobile-specific enhancements - EXTRA LARGE for easy touch */
@@ -360,19 +702,19 @@ html.dark body {
     background: rgb(20 27 45 / 60%);
     border-radius: 12px;
     margin: 0 16px;
-    border: 2px solid rgb(74 222 128 / 30%);
+    border: 2px solid rgb(66 133 244 / 30%);
   }
   
   .cumulative-rewards-scroll::-webkit-scrollbar-thumb {
     min-width: 80px; /* Extra large minimum thumb size on mobile */
     border: 4px solid rgb(20 27 45 / 70%);
-    box-shadow: 0 2px 15px rgba(74, 222, 128, 0.5);
-    background: linear-gradient(180deg, rgb(74 222 128 / 80%), rgb(74 222 128 / 95%));
+    box-shadow: 0 2px 15px rgba(66, 133, 244, 0.5);
+    background: linear-gradient(180deg, rgb(66 133 244 / 80%), rgb(66 133 244 / 95%));
   }
   
   .cumulative-rewards-scroll::-webkit-scrollbar-thumb:active {
-    border: 3px solid rgb(74 222 128);
-    box-shadow: 0 2px 20px rgba(74, 222, 128, 0.8);
+    border: 3px solid rgb(66 133 244);
+    box-shadow: 0 2px 20px rgba(66, 133, 244, 0.8);
   }
 }
 

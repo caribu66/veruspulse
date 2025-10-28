@@ -2238,7 +2238,7 @@ function AdvancedUTXOVisualizer({
             xAxis: {
               type: 'category',
               data: ['0-10 VRSC', '10-100 VRSC', '100-1000 VRSC', '1000+ VRSC'],
-              axisLine: { lineStyle: { color: '#3165d4' } },
+              axisLine: { lineStyle: { color: '#4285F4' } },
               axisLabel: { color: '#888', fontSize: 10 },
             },
             yAxis: [
@@ -2246,9 +2246,9 @@ function AdvancedUTXOVisualizer({
                 type: 'value',
                 name: 'Count',
                 position: 'left',
-                axisLine: { lineStyle: { color: '#3165d4' } },
+                axisLine: { lineStyle: { color: '#4285F4' } },
                 splitLine: {
-                  lineStyle: { color: 'rgba(49, 101, 212, 0.1)' },
+                  lineStyle: { color: 'rgba(66, 133, 244, 0.1)' },
                 },
                 axisLabel: { color: '#888' },
               },
@@ -2256,7 +2256,7 @@ function AdvancedUTXOVisualizer({
                 type: 'value',
                 name: 'VRSC Value',
                 position: 'right',
-                axisLine: { lineStyle: { color: '#ef4444' } },
+                axisLine: { lineStyle: { color: '#EA4335' } },
                 splitLine: { show: false },
                 axisLabel: { color: '#888' },
               },
@@ -2271,7 +2271,7 @@ function AdvancedUTXOVisualizer({
                   sizeDistribution.medium.count,
                   sizeDistribution.large.count,
                 ],
-                itemStyle: { color: '#3165d4' },
+                itemStyle: { color: '#4285F4' },
                 barMaxWidth: 60,
               },
               {
@@ -2284,7 +2284,7 @@ function AdvancedUTXOVisualizer({
                   sizeDistribution.medium.valueVRSC,
                   sizeDistribution.large.valueVRSC,
                 ],
-                itemStyle: { color: '#ef4444' },
+                itemStyle: { color: '#EA4335' },
                 lineStyle: { width: 3 },
                 smooth: true,
                 symbol: 'circle',

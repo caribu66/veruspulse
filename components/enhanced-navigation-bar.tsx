@@ -65,22 +65,21 @@ export function EnhancedNavigationBar({
           {/* Left: Logo */}
           <div className="flex items-center flex-shrink-0">
             <div className="flex items-center justify-center relative">
-              {/* Verus Logo - Ultra-compact size */}
-              <div className="flex items-center">
-                <div className="relative h-6 sm:h-7 md:h-8 w-auto">
+              {/* Verus Logo - Simple icon only */}
+              <div className="flex items-center gap-2">
+                <div className="relative h-7 sm:h-8 md:h-9 w-auto">
                   <Image
-                    src={
-                      theme === 'dark'
-                        ? '/verus-icon-slogan-white.svg'
-                        : '/verus-icon-slogan-blue.svg'
-                    }
+                    src="/verus-icon-blue.svg"
                     alt="Verus"
-                    width={120}
+                    width={32}
                     height={32}
-                    className="object-contain h-6 sm:h-7 md:h-8"
+                    className="object-contain h-7 sm:h-8 md:h-9"
                     priority
                   />
                 </div>
+                <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                  VerusPulse
+                </span>
               </div>
             </div>
           </div>

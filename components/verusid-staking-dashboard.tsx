@@ -1236,7 +1236,14 @@ export function VerusIDStakingDashboard({
                   )
                 </span>
               </h5>
-              <div className="w-full overflow-x-auto">
+              <div
+                className="w-full overflow-x-auto pb-8 md:pb-4 cumulative-rewards-scroll relative"
+                style={{
+                  WebkitOverflowScrolling: 'touch',
+                  scrollbarWidth: 'auto',
+                  touchAction: 'pan-x',
+                }}
+              >
                 <ReactEChartsCore
                   echarts={echarts}
                   option={{
@@ -1338,12 +1345,29 @@ export function VerusIDStakingDashboard({
                         type: 'slider',
                         start: 0,
                         end: 100,
-                        bottom: 10,
+                        bottom: 15,
                         borderColor: '#4ade80',
-                        fillerColor: 'rgba(74, 222, 128, 0.2)',
-                        handleStyle: { color: '#4ade80' },
+                        fillerColor: 'rgba(74, 222, 128, 0.25)',
+                        handleStyle: {
+                          color: '#4ade80',
+                          borderColor: '#34d399',
+                          borderWidth: 2,
+                          size: 20,
+                          shadowBlur: 6,
+                          shadowColor: 'rgba(74, 222, 128, 0.5)',
+                        },
+                        handleIcon:
+                          'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z',
+                        moveHandleSize: 16,
+                        height: 40,
+                        brushSelect: false,
                       },
-                      { type: 'inside' },
+                      {
+                        type: 'inside',
+                        zoomOnMouseWheel: false,
+                        moveOnMouseMove: true,
+                        moveOnMouseWheel: false,
+                      },
                     ],
                   }}
                   style={{ height: '450px', minWidth: '600px' }}

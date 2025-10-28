@@ -21,6 +21,25 @@ import {
   Funnel,
   ArrowsClockwise,
 } from '@phosphor-icons/react';
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import * as echarts from 'echarts/core';
+import { BarChart, LineChart } from 'echarts/charts';
+import {
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+} from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+
+// Register ECharts components
+echarts.use([
+  BarChart,
+  LineChart,
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  CanvasRenderer,
+]);
 
 interface UTXO {
   value: number; // Value in satoshis
@@ -228,6 +247,16 @@ function AdvancedUTXOVisualizer({
   const [hoveredUTXO, setHoveredUTXO] = useState<string | null>(null);
   const [showSelectionPanel, setShowSelectionPanel] = useState(false);
 
+  // Sorting state
+  const [sortBy, setSortBy] = useState<'value' | 'confirmations' | 'status'>(
+    'value'
+  );
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  // List view enhancement state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+
   // Zoom and pan state
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
@@ -297,8 +326,59 @@ function AdvancedUTXOVisualizer({
       filtered = filtered.filter(u => u.isStakeInput || u.isStakeOutput);
     }
 
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        u =>
+          u.txid.toLowerCase().includes(searchLower) ||
+          (u.valueVRSC || u.value / 100000000)
+            .toString()
+            .includes(searchLower) ||
+          u.status.toLowerCase().includes(searchLower) ||
+          u.confirmations.toString().includes(searchLower)
+      );
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aValue: number | string;
+      let bValue: number | string;
+
+      switch (sortBy) {
+        case 'value':
+          aValue = a.valueVRSC || a.value / 100000000;
+          bValue = b.valueVRSC || b.value / 100000000;
+          break;
+        case 'confirmations':
+          aValue = a.confirmations;
+          bValue = b.confirmations;
+          break;
+        case 'status':
+          aValue = a.status;
+          bValue = b.status;
+          break;
+        default:
+          aValue = a.valueVRSC || a.value / 100000000;
+          bValue = b.valueVRSC || b.value / 100000000;
+      }
+
+      if (sortOrder === 'desc') {
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      } else {
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      }
+    });
+
     return filtered;
-  }, [validatedUtxos, filterStatus, showStakeOnly]);
+  }, [
+    validatedUtxos,
+    filterStatus,
+    showStakeOnly,
+    searchTerm,
+    sortBy,
+    sortOrder,
+  ]);
 
   // Calculate statistics with optimized memoization
   const stats = useMemo(() => {
@@ -1971,142 +2051,8 @@ function AdvancedUTXOVisualizer({
       </svg>
     );
   }, [processedUtxos, safeWidth, safeHeight, height, width]);
-
-  // Histogram visualization
-  const renderHistogram = useCallback(() => {
-    if (processedUtxos.length === 0) {
-      return (
-        <div className="flex items-center justify-center h-full text-gray-400">
-          No UTXOs to display
-        </div>
-      );
-    }
-
-    const padding = 60;
-    const plotWidth = Math.max(100, safeWidth - padding * 2);
-    const plotHeight = Math.max(100, safeHeight - padding * 2);
-    const barCount = 20;
-
-    // Create value buckets
-    const values = processedUtxos.map(u => u.valueVRSC || u.value / 100000000);
-    const minValue = Math.min(...values);
-    const maxValue = Math.max(...values);
-    const valueRange = maxValue - minValue;
-    const bucketSize = valueRange > 0 ? valueRange / barCount : 1;
-
-    const buckets = Array(barCount)
-      .fill(0)
-      .map((_, i) => ({
-        min: minValue + i * bucketSize,
-        max: minValue + (i + 1) * bucketSize,
-        count: 0,
-        eligible: 0,
-        cooldown: 0,
-        inactive: 0,
-      }));
-
-    // Count UTXOs in each bucket
-    processedUtxos.forEach(utxo => {
-      const value = utxo.valueVRSC || utxo.value / 100000000;
-      const bucketIndex =
-        valueRange > 0
-          ? Math.min(Math.floor((value - minValue) / bucketSize), barCount - 1)
-          : 0;
-      buckets[bucketIndex].count++;
-      buckets[bucketIndex][utxo.status]++;
-    });
-
-    const maxCount = Math.max(...buckets.map(b => b.count));
-    const barWidth = plotWidth / barCount;
-
-    return (
-      <svg
-        width={safeWidth}
-        height={safeHeight}
-        className="bg-gray-900/30 rounded-lg border border-white/10"
-      >
-        {/* Axes */}
-        <line
-          x1={padding}
-          y1={height - padding}
-          x2={width - padding}
-          y2={height - padding}
-          stroke="rgba(255,255,255,0.3)"
-          strokeWidth={1}
-        />
-        <line
-          x1={padding}
-          y1={padding}
-          x2={padding}
-          y2={height - padding}
-          stroke="rgba(255,255,255,0.3)"
-          strokeWidth={1}
-        />
-
-        {/* Bars */}
-        {buckets.map((bucket, i) => {
-          const barHeight =
-            maxCount > 0 ? (bucket.count / maxCount) * plotHeight : 0;
-          const x = padding + i * barWidth;
-          const y = safeHeight - padding - barHeight;
-
-          return (
-            <g key={i}>
-              {/* Eligible */}
-              {bucket.count > 0 && (
-                <rect
-                  x={x}
-                  y={
-                    y +
-                    ((bucket.cooldown + bucket.inactive) / bucket.count) *
-                      barHeight
-                  }
-                  width={barWidth - 2}
-                  height={(bucket.eligible / bucket.count) * barHeight}
-                  fill="#10b981"
-                />
-              )}
-              {/* Cooldown */}
-              {bucket.count > 0 && (
-                <rect
-                  x={x}
-                  y={y + (bucket.inactive / bucket.count) * barHeight}
-                  width={barWidth - 2}
-                  height={(bucket.cooldown / bucket.count) * barHeight}
-                  fill="#f59e0b"
-                />
-              )}
-              {/* Inactive */}
-              {bucket.count > 0 && (
-                <rect
-                  x={x}
-                  y={y}
-                  width={barWidth - 2}
-                  height={(bucket.inactive / bucket.count) * barHeight}
-                  fill="#6b7280"
-                />
-              )}
-
-              {/* Value labels */}
-              <text
-                x={x + barWidth / 2}
-                y={safeHeight - padding + 15}
-                textAnchor="middle"
-                className="fill-gray-400 text-xs"
-                transform={`rotate(-45 ${x + barWidth / 2} ${safeHeight - padding + 15})`}
-              >
-                {bucket.min.toFixed(2)}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-    );
-  }, [processedUtxos, safeWidth, safeHeight, height, width]);
-
-  // List visualization
+  // List visualization with enhanced features
   const renderList = useCallback(() => {
-    const itemsPerPage = 50;
     const totalPages = Math.ceil(processedUtxos.length / itemsPerPage);
     const startIndex = currentPage * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, processedUtxos.length);
@@ -2114,16 +2060,40 @@ function AdvancedUTXOVisualizer({
 
     return (
       <div className="space-y-4">
-        {/* Pagination */}
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-400">
-            Showing {startIndex + 1}-{endIndex} of {processedUtxos.length} UTXOs
+        {/* Search and Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              placeholder="Search UTXOs..."
+              value={searchTerm}
+              onChange={e => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(0); // Reset to first page when searching
+              }}
+              className="px-3 py-1 bg-gray-700 text-white rounded text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 w-48"
+            />
+            <select
+              value={itemsPerPage}
+              onChange={e => {
+                setItemsPerPage(parseInt(e.target.value));
+                setCurrentPage(0); // Reset to first page when changing page size
+              }}
+              className="px-2 py-1 bg-gray-700 text-white rounded text-xs border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+            >
+              <option value={25}>25 per page</option>
+              <option value={50}>50 per page</option>
+              <option value={100}>100 per page</option>
+              <option value={200}>200 per page</option>
+            </select>
           </div>
+
+          {/* Pagination */}
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
               disabled={currentPage === 0}
-              className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-50"
+              className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-50 hover:bg-gray-600 transition-colors"
             >
               Previous
             </button>
@@ -2135,11 +2105,21 @@ function AdvancedUTXOVisualizer({
                 setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
               }
               disabled={currentPage === totalPages - 1}
-              className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-50"
+              className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-50 hover:bg-gray-600 transition-colors"
             >
               Next
             </button>
           </div>
+        </div>
+
+        {/* Results Summary */}
+        <div className="text-sm text-gray-400">
+          Showing {startIndex + 1}-{endIndex} of {processedUtxos.length} UTXOs
+          {searchTerm && (
+            <span className="text-blue-400 ml-2">
+              (filtered by &quot;{searchTerm}&quot;)
+            </span>
+          )}
         </div>
 
         {/* UTXO List */}
@@ -2197,7 +2177,126 @@ function AdvancedUTXOVisualizer({
         </div>
       </div>
     );
-  }, [processedUtxos, currentPage, setCurrentPage]);
+  }, [processedUtxos, currentPage, setCurrentPage, itemsPerPage, searchTerm]);
+
+  // Calculate size distribution for histogram
+  const sizeDistribution = useMemo(() => {
+    const distribution = {
+      tiny: { count: 0, valueVRSC: 0 },
+      small: { count: 0, valueVRSC: 0 },
+      medium: { count: 0, valueVRSC: 0 },
+      large: { count: 0, valueVRSC: 0 },
+    };
+
+    processedUtxos.forEach(utxo => {
+      const value = utxo.valueVRSC || utxo.value / 100000000;
+
+      if (value < 10) {
+        distribution.tiny.count++;
+        distribution.tiny.valueVRSC += value;
+      } else if (value < 100) {
+        distribution.small.count++;
+        distribution.small.valueVRSC += value;
+      } else if (value < 1000) {
+        distribution.medium.count++;
+        distribution.medium.valueVRSC += value;
+      } else {
+        distribution.large.count++;
+        distribution.large.valueVRSC += value;
+      }
+    });
+
+    return distribution;
+  }, [processedUtxos]);
+
+  const renderHistogram = useCallback(() => {
+    return (
+      <div className="w-full h-full flex items-center justify-center p-4">
+        <ReactEChartsCore
+          echarts={echarts}
+          option={{
+            tooltip: {
+              trigger: 'axis',
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              textStyle: { color: '#fff' },
+              axisPointer: {
+                type: 'shadow',
+              },
+            },
+            legend: {
+              data: ['UTXO Count', 'Total Value'],
+              textStyle: { color: '#fff' },
+              top: 10,
+            },
+            grid: {
+              left: '10%',
+              right: '10%',
+              bottom: '15%',
+              top: '20%',
+              containLabel: true,
+            },
+            xAxis: {
+              type: 'category',
+              data: ['0-10 VRSC', '10-100 VRSC', '100-1000 VRSC', '1000+ VRSC'],
+              axisLine: { lineStyle: { color: '#3165d4' } },
+              axisLabel: { color: '#888', fontSize: 10 },
+            },
+            yAxis: [
+              {
+                type: 'value',
+                name: 'Count',
+                position: 'left',
+                axisLine: { lineStyle: { color: '#3165d4' } },
+                splitLine: {
+                  lineStyle: { color: 'rgba(49, 101, 212, 0.1)' },
+                },
+                axisLabel: { color: '#888' },
+              },
+              {
+                type: 'value',
+                name: 'VRSC Value',
+                position: 'right',
+                axisLine: { lineStyle: { color: '#ef4444' } },
+                splitLine: { show: false },
+                axisLabel: { color: '#888' },
+              },
+            ],
+            series: [
+              {
+                name: 'UTXO Count',
+                type: 'bar',
+                data: [
+                  sizeDistribution.tiny.count,
+                  sizeDistribution.small.count,
+                  sizeDistribution.medium.count,
+                  sizeDistribution.large.count,
+                ],
+                itemStyle: { color: '#3165d4' },
+                barMaxWidth: 60,
+              },
+              {
+                name: 'Total Value',
+                type: 'line',
+                yAxisIndex: 1,
+                data: [
+                  sizeDistribution.tiny.valueVRSC,
+                  sizeDistribution.small.valueVRSC,
+                  sizeDistribution.medium.valueVRSC,
+                  sizeDistribution.large.valueVRSC,
+                ],
+                itemStyle: { color: '#ef4444' },
+                lineStyle: { width: 3 },
+                smooth: true,
+                symbol: 'circle',
+                symbolSize: 8,
+              },
+            ],
+          }}
+          style={{ height: `${safeHeight}px`, width: '100%' }}
+        />
+      </div>
+    );
+  }, [sizeDistribution, safeHeight]);
 
   const renderVisualization = useCallback(() => {
     switch (visualizationMode) {
@@ -2360,6 +2459,37 @@ function AdvancedUTXOVisualizer({
               />
               <span>Stake Only</span>
             </label>
+          </div>
+
+          {/* Sorting Controls */}
+          <div
+            className={`flex items-center space-x-2 ${isMobile ? 'w-full justify-center' : ''}`}
+          >
+            <span className="text-sm text-gray-300">Sort by:</span>
+            <select
+              value={sortBy}
+              onChange={e =>
+                setSortBy(
+                  e.target.value as 'value' | 'confirmations' | 'status'
+                )
+              }
+              className="px-2 py-1 bg-gray-700 text-white rounded text-xs border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+              aria-label="Sort UTXOs by field"
+            >
+              <option value="value">VRSC Value</option>
+              <option value="confirmations">Confirmations</option>
+              <option value="status">Status</option>
+            </select>
+            <button
+              onClick={() =>
+                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')
+              }
+              className="px-2 py-1 bg-gray-700 text-white rounded text-xs border border-gray-600 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+              aria-label={`Sort ${sortOrder === 'desc' ? 'ascending' : 'descending'}`}
+              title={`Sort ${sortOrder === 'desc' ? 'ascending' : 'descending'}`}
+            >
+              {sortOrder === 'desc' ? '↓' : '↑'}
+            </button>
           </div>
         </div>
 

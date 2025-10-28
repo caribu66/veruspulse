@@ -303,6 +303,79 @@ html.dark body {
   display: none; /* Chrome, Safari and Opera */
 }
 
+/* Enhanced mobile-friendly scrollbar for Cumulative Rewards Growth */
+.cumulative-rewards-scroll {
+  /* Firefox - thicker scrollbar on mobile */
+  scrollbar-width: auto;
+  scrollbar-color: rgb(74 222 128 / 80%) rgb(20 27 45 / 50%);
+  /* Add padding below for scrollbar space */
+  padding-bottom: 8px;
+}
+
+.cumulative-rewards-scroll::-webkit-scrollbar {
+  height: 18px; /* Taller horizontal scrollbar for easier touch */
+}
+
+.cumulative-rewards-scroll::-webkit-scrollbar-track {
+  background: rgb(20 27 45 / 50%);
+  border-radius: 10px;
+  margin: 0 12px; /* Space on sides */
+  border: 1px solid rgb(74 222 128 / 20%);
+}
+
+.cumulative-rewards-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgb(74 222 128 / 70%), rgb(74 222 128 / 85%));
+  border-radius: 10px;
+  border: 3px solid rgb(20 27 45 / 60%);
+  background-clip: padding-box;
+  min-width: 50px;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+}
+
+.cumulative-rewards-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgb(74 222 128 / 90%), rgb(74 222 128 / 100%));
+  border: 3px solid rgb(20 27 45 / 60%);
+  background-clip: padding-box;
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.5);
+}
+
+.cumulative-rewards-scroll::-webkit-scrollbar-thumb:active {
+  background: rgb(74 222 128 / 100%);
+  border: 2px solid rgb(74 222 128);
+  background-clip: padding-box;
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.7);
+}
+
+/* Mobile-specific enhancements - EXTRA LARGE for easy touch */
+@media (max-width: 768px) {
+  .cumulative-rewards-scroll {
+    padding-bottom: 12px;
+  }
+  
+  .cumulative-rewards-scroll::-webkit-scrollbar {
+    height: 32px; /* VERY tall on mobile for easy finger access */
+  }
+  
+  .cumulative-rewards-scroll::-webkit-scrollbar-track {
+    background: rgb(20 27 45 / 60%);
+    border-radius: 12px;
+    margin: 0 16px;
+    border: 2px solid rgb(74 222 128 / 30%);
+  }
+  
+  .cumulative-rewards-scroll::-webkit-scrollbar-thumb {
+    min-width: 80px; /* Extra large minimum thumb size on mobile */
+    border: 4px solid rgb(20 27 45 / 70%);
+    box-shadow: 0 2px 15px rgba(74, 222, 128, 0.5);
+    background: linear-gradient(180deg, rgb(74 222 128 / 80%), rgb(74 222 128 / 95%));
+  }
+  
+  .cumulative-rewards-scroll::-webkit-scrollbar-thumb:active {
+    border: 3px solid rgb(74 222 128);
+    box-shadow: 0 2px 20px rgba(74, 222, 128, 0.8);
+  }
+}
+
 /* ================================================================
    PROFESSIONAL COLOR MAPPING - Redirects to Verus Palette
    Maps all scattered color classes to unified Verus brand colors

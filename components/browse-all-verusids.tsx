@@ -332,7 +332,13 @@ export function BrowseAllVerusIDs() {
   const handleIdentityClick = (identity: VerusIDBrowseData) => {
     // Navigate directly to the VerusID detail page using Next.js router
     // Use I-address for reliable lookups (baseName might be "unknown")
-    router.push(`/verusid/${encodeURIComponent(identity.address)}`);
+    // Include returnTo parameter to preserve browse tab state
+    const returnTo = window.location.pathname.includes('/verusid/browse')
+      ? '/verusid/browse'
+      : '/?tab=verusids';
+    router.push(
+      `/verusid/${encodeURIComponent(identity.address)}?returnTo=${encodeURIComponent(returnTo)}`
+    );
   };
 
   if (loading) {

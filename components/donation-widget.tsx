@@ -1,17 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Heart,
-  X,
-  Copy,
-  Check,
-  ArrowSquareOut,
-  Gift,
-  QrCode,
-  Wallet,
-  DeviceMobile,
-} from '@phosphor-icons/react';
+import { Heart, X, Copy, Check, Gift, QrCode } from '@phosphor-icons/react';
 import Image from 'next/image';
 import QRCode from 'qrcode';
 
@@ -27,9 +17,9 @@ export function DonationWidget({
   const [isOpen, setIsOpen] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showRecognitionForm, setShowRecognitionForm] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [qrCodeDataURL, setQrCodeDataURL] = useState<string>('');
+  const [showRecognitionForm, setShowRecognitionForm] = useState(false);
   const [formData, setFormData] = useState({
     displayName: '',
     message: '',
@@ -55,7 +45,6 @@ export function DonationWidget({
 
   const generateQRCode = useCallback(async () => {
     try {
-      // Generate simple QR code with just the address
       const qrDataURL = await QRCode.toDataURL(DONATION_ADDRESS, {
         width: 200,
         margin: 2,
@@ -89,16 +78,6 @@ export function DonationWidget({
 
   const toggleQR = () => {
     setShowQR(!showQR);
-  };
-
-  const copyAmountToClipboard = async (amount: number) => {
-    try {
-      await navigator.clipboard.writeText(`${amount} VRSC`);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      // Silent error handling
-    }
   };
 
   const handleSubmitRecognition = async () => {
@@ -226,37 +205,6 @@ export function DonationWidget({
                     </div>
                   </div>
 
-                  {/* Suggested Amounts */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Suggested Amounts
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {[
-                        { amount: 10, label: 'Supporter' },
-                        { amount: 50, label: 'Generous' },
-                        { amount: 100, label: 'Epic' },
-                        { amount: 500, label: 'Legendary' },
-                      ].map(tier => (
-                        <button
-                          key={tier.amount}
-                          onClick={() => copyAmountToClipboard(tier.amount)}
-                          className="bg-gradient-to-r from-verus-blue/20 to-verus-green/20 hover:from-verus-blue/30 hover:to-verus-green/30 border border-verus-blue/30 hover:border-verus-blue/50 rounded-lg p-4 transition-all group"
-                        >
-                          <div className="text-2xl font-bold text-white mb-1">
-                            {tier.amount} VRSC
-                          </div>
-                          <div className="text-xs text-verus-blue/80">
-                            {tier.label}
-                          </div>
-                          <div className="text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            Click to copy amount
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* After Donation */}
                   <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
                     <p className="text-sm text-blue-200 mb-3">
@@ -268,7 +216,6 @@ export function DonationWidget({
                       className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
                     >
                       <span>Yes, Add My Recognition</span>
-                      <ArrowSquareOut className="h-4 w-4" />
                     </button>
                     <p className="text-xs text-gray-400 mt-2 text-center">
                       Optional • Privacy-first • You can stay anonymous

@@ -1,7 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { VerusIDStakingDashboard } from '@/components/verusid-staking-dashboard';
 import { DonationBanner } from '@/components/donation-banner';
@@ -17,9 +17,13 @@ export default function VerusIDDetailPage({
 }) {
   const { iaddr } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [resolvedIaddr, setResolvedIaddr] = useState<string | null>(null);
+
+  // Get the returnTo parameter from URL
+  const returnTo = searchParams.get('returnTo') || '/verusid';
 
   useEffect(() => {
     const resolveIdentity = async () => {
@@ -116,13 +120,13 @@ export default function VerusIDDetailPage({
             <p className="text-red-300 text-sm">{error}</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <BackButton
-                fallbackPath="/?tab=verusids"
+                fallbackPath={returnTo}
                 label="Back to Browse"
                 size="md"
                 variant="default"
               />
               <button
-                onClick={() => router.push('/verusid')}
+                onClick={() => router.push(returnTo)}
                 className="px-4 py-2 bg-verus-blue hover:bg-verus-blue/80 rounded-lg text-white text-sm font-medium transition-colors"
               >
                 Browse VerusIDs
@@ -143,6 +147,7 @@ export default function VerusIDDetailPage({
           layout="full"
           verusID={iaddr}
           showBackButton={true}
+          returnTo={returnTo}
         />
         <DonationBanner />
         <DonationWidget position="bottom-right" dismissible={true} />

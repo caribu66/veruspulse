@@ -71,6 +71,7 @@ interface DashboardProps {
   layout?: 'full' | 'compact';
   verusID?: string; // Add VerusID prop for better error handling
   showBackButton?: boolean; // Add option to show back button
+  returnTo?: string; // Add returnTo prop for back navigation
 }
 
 export function VerusIDStakingDashboard({
@@ -78,6 +79,7 @@ export function VerusIDStakingDashboard({
   layout = 'full',
   verusID,
   showBackButton = false,
+  returnTo = '/?tab=verusids',
 }: DashboardProps) {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -594,7 +596,7 @@ export function VerusIDStakingDashboard({
           {showBackButton && (
             <div className="flex justify-start mb-4">
               <BackButton
-                fallbackPath="/?tab=verusids"
+                fallbackPath={returnTo}
                 label="Back to Browse"
                 size="sm"
                 variant="ghost"

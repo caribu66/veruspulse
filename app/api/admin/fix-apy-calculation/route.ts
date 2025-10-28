@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDbPool } from '@/lib/database/db-pool';
+import { Pool } from 'pg';
+import { logger } from '@/lib/utils/logger';
 
 /**
  * FIX: Recalculate APY with correct formula
@@ -10,15 +11,16 @@ import { getDbPool } from '@/lib/database/db-pool';
  * Since we don't track actual staked balances, we estimate conservatively.
  */
 export async function POST(request: NextRequest) {
-  const db = getDbPool();
-  if (!db) {
-    return NextResponse.json(
-      { success: false, error: 'Database not available' },
-      { status: 500 }
-    );
-  }
+  // Initialize database connection
+  const db = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  });
 
   try {
+    logger.info('🔧 Starting APY recalculation...');
     console.log('🔧 Fixing APY calculations...');
 
     // Get all identities with suspicious APY values (> 100% or NULL)
@@ -116,6 +118,8 @@ export async function POST(request: NextRequest) {
 
     const stats = statsResult.rows[0];
 
+    logger.info(`✅ Fixed APY for ${fixedIdentities.length} identities`);
+
     return NextResponse.json({
       success: true,
       message: `Fixed APY for ${fixedIdentities.length} identities`,
@@ -131,7 +135,7 @@ export async function POST(request: NextRequest) {
       samples: fixedIdentities.slice(0, 10), // Show first 10 as examples
     });
   } catch (error) {
-    console.error('Error fixing APY:', error);
+    logger.error('Error fixing APY:', error);
     return NextResponse.json(
       {
         success: false,
@@ -140,5 +144,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
+  } finally {
+    await db.end();
   }
 }

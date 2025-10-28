@@ -54,40 +54,22 @@ jobs:
           username: ${{ secrets.PRODUCTION_USER }}
           key: ${{ secrets.PRODUCTION_SSH_KEY }}
           script: |
-            # Update code
+            # Navigate to project directory
             cd /home/explorer/verus-dapp
+
+            # Update code
             git pull origin main
 
             # Install dependencies
-            npm ci --production
+            npm ci
 
             # Build application
             npm run build
 
-            # Copy to production directory
-            sudo cp -r .next /var/www/veruspulse/
-            sudo cp -r public /var/www/veruspulse/
-            sudo cp -r scripts /var/www/veruspulse/
-            sudo cp -r lib /var/www/veruspulse/
-            sudo cp package*.json /var/www/veruspulse/
-            sudo cp next.config.js /var/www/veruspulse/
-            sudo cp .env.production /var/www/veruspulse/.env
-
-            # Set permissions
-            sudo chown -R www-data:www-data /var/www/veruspulse
-            sudo chmod -R 755 /var/www/veruspulse
-
-            # Restart services
-            sudo systemctl reload nginx
+            # Restart PM2
             pm2 restart all
 
-            # Run Oink's method scanners
-            cd /var/www/veruspulse
-            pm2 start ecosystem.config.js --only oink-staking-scanner
-            pm2 start ecosystem.config.js --only oink-ultra-scanner
-            pm2 start ecosystem.config.js --only oink-hybrid-scanner
-
-            echo "✅ VerusPulse deployed successfully with Oink's methods!"
+            echo "✅ VerusPulse deployed successfully!"
 
       - name: Health check
         run: |

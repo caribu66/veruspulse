@@ -17,6 +17,51 @@ function getDbPool() {
   return dbPool;
 }
 
+// Helper function to determine APY confidence level
+function getAPYConfidenceLevel(
+  totalStakes: number,
+  stakesWithAmounts: number
+): {
+  level: string;
+  label: string;
+  description: string;
+} {
+  const completeness =
+    totalStakes > 0 ? (stakesWithAmounts / totalStakes) * 100 : 0;
+
+  if (stakesWithAmounts >= 100 && completeness >= 80) {
+    return {
+      level: 'very-high',
+      label: '🎯 Very High Confidence',
+      description: 'APY calculated from 100+ actual stake amounts',
+    };
+  } else if (stakesWithAmounts >= 50 && completeness >= 50) {
+    return {
+      level: 'high',
+      label: '✅ High Confidence',
+      description: 'APY calculated from 50+ actual stake amounts',
+    };
+  } else if (stakesWithAmounts >= 30) {
+    return {
+      level: 'medium',
+      label: '📊 Medium Confidence',
+      description: 'APY calculated from 30+ actual stake amounts',
+    };
+  } else if (stakesWithAmounts >= 10) {
+    return {
+      level: 'low',
+      label: '📈 Low Confidence',
+      description: 'APY partially calculated, limited data available',
+    };
+  } else {
+    return {
+      level: 'estimated',
+      label: '⚠️ Estimated',
+      description: 'APY estimated - actual stake amounts not yet extracted',
+    };
+  }
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
@@ -299,6 +344,23 @@ export async function GET(
             '90d': parseFloat(stats.apy_90d) || 0,
             '30d': parseFloat(stats.apy_30d) || 0,
             '7d': parseFloat(stats.apy_7d) || 0,
+            // APY calculation quality indicators
+            calculationMethod: stats.apy_calculation_method || 'estimated',
+            stakesWithRealAmounts:
+              parseInt(stats.stakes_with_real_amounts) || 0,
+            avgStakeAmountVRSC: parseFloat(stats.avg_stake_amount_vrsc) || null,
+            dataCompleteness:
+              summary.totalStakes > 0
+                ? Math.round(
+                    ((parseInt(stats.stakes_with_real_amounts) || 0) /
+                      summary.totalStakes) *
+                      100
+                  )
+                : 0,
+            confidenceLevel: getAPYConfidenceLevel(
+              summary.totalStakes,
+              parseInt(stats.stakes_with_real_amounts) || 0
+            ),
           },
           roi: {
             allTime: parseFloat(stats.roi_all_time) || 0,

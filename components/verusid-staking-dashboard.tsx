@@ -602,9 +602,14 @@ export function VerusIDStakingDashboard({
           {/* Real-time Status Indicator */}
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 bg-black/20 rounded-full px-3 sm:px-4 py-2 mx-auto w-fit mb-3">
             <div className="flex items-center space-x-2">
-              <div
-                className={`w-3 h-3 rounded-full ${realtimeConnected ? 'bg-slate-300 animate-pulse' : 'bg-slate-500'}`}
-              ></div>
+              <div className="relative">
+                <div
+                  className={`w-3 h-3 rounded-full ${realtimeConnected ? 'bg-green-500 animate-pulse' : 'bg-slate-500'}`}
+                ></div>
+                {realtimeConnected && (
+                  <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 animate-ping opacity-75"></div>
+                )}
+              </div>
               <span className="text-xs sm:text-sm font-medium text-gray-200">
                 {realtimeConnected
                   ? 'Live Updates Active'

@@ -48,17 +48,32 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100); // Max 100
     const offset = (page - 1) * limit;
 
-    // Build search condition
+    // Build search condition with TRENDING RULES: Only direct I-address stakers, active in last 30 days
     let searchCondition = '';
     let queryParams: any[] = [limit, offset];
+    let paramIndex = 3;
+
+    // CRITICAL FILTER: Only show VerusIDs with direct I-address stakes (not delegated)
+    // AND recently active (last 30 days)
+    const trendingFilter = `
+      WHERE EXISTS (
+        SELECT 1 FROM staking_rewards sr
+        WHERE sr.identity_address = i.identity_address
+        AND sr.source_address = sr.identity_address
+        AND sr.block_time >= NOW() - INTERVAL '30 days'
+      )
+    `;
 
     if (search) {
-      searchCondition = `WHERE (
-        i.base_name ILIKE $3 
-        OR i.friendly_name ILIKE $3 
-        OR i.identity_address ILIKE $3
+      searchCondition = `${trendingFilter} AND (
+        i.base_name ILIKE $${paramIndex}
+        OR i.friendly_name ILIKE $${paramIndex}
+        OR i.identity_address ILIKE $${paramIndex}
       )`;
       queryParams.push(`%${search}%`);
+      paramIndex++;
+    } else {
+      searchCondition = trendingFilter;
     }
 
     // Build order by clause - ALWAYS sort by stakes to show active stakers first
@@ -66,6 +81,7 @@ export async function GET(request: NextRequest) {
       'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
 
     // Main query with left join to staking stats and earliest block fallback
+    // ONLY shows VerusIDs with direct I-address stakes in last 30 days
     const query = `
       SELECT 
         i.identity_address,
@@ -85,6 +101,7 @@ export async function GET(request: NextRequest) {
       LEFT JOIN (
         SELECT identity_address, MIN(block_height) as earliest_block
         FROM staking_rewards
+        WHERE source_address = identity_address
         GROUP BY identity_address
       ) sr ON i.identity_address = sr.identity_address
       ${searchCondition}
@@ -94,7 +111,7 @@ export async function GET(request: NextRequest) {
 
     const result = await db.query(query, queryParams);
 
-    // Get total count for pagination
+    // Get total count for pagination with SAME trending filter
     const countQuery = `
       SELECT COUNT(*) as total 
       FROM identities i

@@ -101,7 +101,7 @@ export function validateVerusIDFormat(input: string): VerusIDValidationResult {
  * Get helpful examples for VerusID format
  */
 export function getVerusIDFormatExamples(): string[] {
-  return ['pancho77@', 'pancho77.VRSC@', 'joanna@', 'allbits@'];
+  return ['veruspulse@', 'veruspulse.VRSC@', 'username@', 'myid@'];
 }
 
 /**

@@ -691,7 +691,7 @@ export function VerusIDExplorer() {
                   type="text"
                   value={identity}
                   onChange={e => setIdentity(e.target.value)}
-                  placeholder="Enter VerusID (e.g., username@ or joanna@)"
+                  placeholder="Enter VerusID (e.g., veruspulse@ or username@)"
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   onKeyPress={e => {
                     if (e.key === 'Enter') {

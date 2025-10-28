@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
           error: validation.error,
           suggestion: validation.suggestion,
           correctedFormat: validation.correctedFormat,
-          examples: ['pancho77@', 'joanna@', 'allbits.VRSC@'],
+          examples: ['veruspulse@', 'veruspulse.VRSC@', 'username@', 'myid@'],
         },
         { status: 400 }
       );

@@ -221,10 +221,16 @@ export function formatVRSCAmount(amount: number): string {
 
 /**
  * Format APY for display
+ * Note: Caps at 100% to handle calculation errors from missing staked amount data
  */
 export function formatAPY(apy: number | null): string {
-  if (apy === null) return 'N/A';
-  return `${apy.toFixed(1)}%`;
+  if (apy === null || apy === 0) return 'N/A';
+
+  // Cap at 100% - values higher than this indicate calculation errors
+  // (APY calculation requires staked amount which we don't always track)
+  const cappedAPY = Math.min(apy, 100);
+
+  return `${cappedAPY.toFixed(1)}%`;
 }
 
 /**

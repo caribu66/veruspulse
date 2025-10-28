@@ -20,17 +20,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Load environment variables
-        run: |
-          if [ -f .env.production ]; then
-            export $(cat .env.production | xargs)
-          fi
-
       - name: Build application
         run: |
+          # Load environment variables and run build
+          set -a
           if [ -f .env.production ]; then
-            export $(cat .env.production | grep -v '^#' | xargs)
+            source .env.production
           fi
+          set +a
           npm run build
         env:
           NODE_ENV: production

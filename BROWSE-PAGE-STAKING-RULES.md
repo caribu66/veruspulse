@@ -16,14 +16,26 @@ The `/verusid/browse` page correctly implements the **trending staking rules**:
 
 **Implementation:**
 
-- Browse API uses `verusid_statistics` table
-- This table is populated with filtered data: `WHERE source_address = identity_address`
-- All delegated rewards from R-addresses are excluded
+```sql
+WHERE EXISTS (
+  SELECT 1 FROM staking_rewards sr
+  WHERE sr.identity_address = i.identity_address
+  AND sr.source_address = sr.identity_address  -- CRITICAL: Direct I-address only
+  AND sr.block_time >= NOW() - INTERVAL '30 days'  -- Recently active
+)
+```
+
+**What This Does:**
+
+- ✅ Only shows VerusIDs that have **directly staked** with their I-address
+- ❌ Excludes VerusIDs that only **receive delegated stakes** (like Verus Coin Foundation, Verus Community Pool)
+- ✅ Verifies stake authenticity via `staking_rewards` table at query time
+- ✅ Must have staked in the **last 30 days** (active requirement)
 
 **Files Ensuring This:**
 
-- `app/api/verusids/browse/route.ts` (lines 84)
-- `verusid_statistics` table (populated by corrected scripts)
+- `app/api/verusids/browse/route.ts` (lines 56-77, 104)
+- `staking_rewards` table (verified at query time with EXISTS subquery)
 
 ### Rule #2: Highest Stakers First ✅
 
@@ -87,19 +99,35 @@ LIMIT 50
 
 ---
 
-## 🏆 **Top Stakers (Real Data)**
+## 🏆 **Top Stakers (Direct I-Address Only)**
 
-**As of October 28, 2025:**
+**UPDATED: October 28, 2025**
 
-| Rank | VerusID               | Stakes | Rewards      | Method           |
-| ---- | --------------------- | ------ | ------------ | ---------------- |
-| 1    | Verus Coin Foundation | 28,235 | 58,745 VRSC  | Direct I-address |
-| 2    | Verus Community Pool  | 16,936 | 88,937 VRSC  | Direct I-address |
-| 3    | staker                | 16,102 | 120,620 VRSC | Direct I-address |
-| 4    | unknown               | 15,756 | 189,592 VRSC | Direct I-address |
-| 5    | RockPi                | 10,681 | 87,553 VRSC  | Direct I-address |
+### ⚠️ **Important Change**
 
-**All verified with:** `source_address = identity_address`
+**Removed from leaderboard:**
+
+- ❌ **Verus Coin Foundation** - Receives delegated stakes (not direct I-address)
+- ❌ **Verus Community Pool** - Receives delegated stakes (not direct I-address)
+
+**Why they were removed:**
+
+These VerusIDs receive stakes FROM other addresses (delegated rewards), not by staking with their own I-address. The Browse page now correctly filters these out.
+
+### ✅ **True Top Stakers (Direct I-Address Only)**
+
+These VerusIDs stake **with their own I-address** and are **recently active** (last 30 days):
+
+| Rank | VerusID | Stakes | Rewards      | Method           |
+| ---- | ------- | ------ | ------------ | ---------------- |
+| 1    | staker  | 16,102 | 120,620 VRSC | Direct I-address |
+| 2    | unknown | 15,756 | 189,592 VRSC | Direct I-address |
+| 3    | RockPi  | 10,681 | 87,553 VRSC  | Direct I-address |
+
+**All verified with:**
+
+- ✅ `source_address = identity_address` (direct staking)
+- ✅ `block_time >= NOW() - INTERVAL '30 days'` (recently active)
 
 ---
 

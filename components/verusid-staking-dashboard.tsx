@@ -835,36 +835,36 @@ export function VerusIDStakingDashboard({
             </div>
 
             {/* Live Data Indicator - Positioned to the right */}
-            <div className="flex items-center space-x-2 rounded-full px-4 py-2 border shadow-lg transition-all duration-300">
+            <div className="flex items-center space-x-2 rounded-full px-4 py-2 border border-slate-600/30 shadow-lg transition-all duration-300">
               {realtimeConnected && liveUTXOData ? (
-                // Fully connected state - Green animation
-                <div className="flex items-center space-x-2 bg-green-500/10 border-green-500/30">
+                // Fully connected state - Green animation (only dot pulses, not background)
+                <div className="flex items-center space-x-2">
                   <div className="relative">
                     {/* Outer pulsing ring */}
                     <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 animate-ping opacity-75"></div>
                     {/* Inner solid dot */}
                     <div className="relative w-3 h-3 rounded-full bg-green-400"></div>
                   </div>
-                  <span className="text-xs sm:text-sm font-medium text-green-300">
+                  <span className="text-xs sm:text-sm font-medium text-slate-300">
                     Live Data
                   </span>
                 </div>
               ) : realtimeConnected ? (
-                // Connected but no live UTXO data - Yellow animation
-                <div className="flex items-center space-x-2 bg-yellow-500/10 border-yellow-500/30">
+                // Connected but no live UTXO data - Yellow animation (only dot pulses, not background)
+                <div className="flex items-center space-x-2">
                   <div className="relative">
                     {/* Outer pulsing ring */}
                     <div className="absolute inset-0 w-3 h-3 rounded-full bg-yellow-400 animate-pulse opacity-75"></div>
                     {/* Inner solid dot */}
                     <div className="relative w-3 h-3 rounded-full bg-yellow-400"></div>
                   </div>
-                  <span className="text-xs sm:text-sm font-medium text-yellow-300">
+                  <span className="text-xs sm:text-sm font-medium text-slate-300">
                     Connected
                   </span>
                 </div>
               ) : (
-                // Disconnected state - Gray static
-                <div className="flex items-center space-x-2 bg-slate-500/10 border-slate-500/30">
+                // Disconnected state - Gray static (no background)
+                <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 rounded-full bg-slate-400"></div>
                   <span className="text-xs sm:text-sm font-medium text-slate-400">
                     Offline

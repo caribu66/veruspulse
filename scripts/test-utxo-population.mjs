@@ -53,7 +53,8 @@ async function testUTXOPopulation() {
       const height = utxo.height || 0;
       const blocktime = utxo.blocktime || 0;
       const txid = utxo.txid;
-      const vout = utxo.outputIndex !== undefined ? utxo.outputIndex : utxo.vout;
+      const vout =
+        utxo.outputIndex !== undefined ? utxo.outputIndex : utxo.vout;
 
       if (!txid || vout === undefined) {
         console.log(`   ⚠️  Skipping invalid UTXO (missing txid or vout)`);
@@ -91,18 +92,21 @@ async function testUTXOPopulation() {
     const finalUnspent = finalUtxos.filter(u => !u.isSpent).length;
     console.log(`   Unspent: ${finalUnspent}`);
     console.log(`   Eligible: ${eligibleCount}`);
-    console.log(`   Total value: ${(totalValue / 100000000).toFixed(2)} VRSC\n`);
+    console.log(
+      `   Total value: ${(totalValue / 100000000).toFixed(2)} VRSC\n`
+    );
 
     // Compare with daemon
     console.log('📊 Comparison:');
     console.log(`   Daemon UTXOs: ${daemonUtxos.length}`);
     console.log(`   Database UTXOs (unspent): ${finalUnspent}`);
-    console.log(`   Match: ${daemonUtxos.length === finalUnspent ? '✅ YES' : '❌ NO'}\n`);
+    console.log(
+      `   Match: ${daemonUtxos.length === finalUnspent ? '✅ YES' : '❌ NO'}\n`
+    );
 
     console.log('╔════════════════════════════════════════════════════╗');
     console.log('║              TEST COMPLETE                         ║');
     console.log('╚════════════════════════════════════════════════════╝\n');
-
   } catch (error) {
     console.error('\n❌ Error:', error);
     process.exit(1);
@@ -110,4 +114,3 @@ async function testUTXOPopulation() {
 }
 
 testUTXOPopulation().catch(console.error);
-

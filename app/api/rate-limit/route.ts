@@ -6,19 +6,6 @@ import {
 } from '@/lib/utils/user-rate-limiter';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
-
-/**
- * Rate Limiting Status API
- * Provides real-time monitoring of rate limiting status
- */
-import { NextRequest, NextResponse } from 'next/server';
-import {
-  apiRateLimiter,
-  searchRateLimiter,
-  authRateLimiter,
-} from '@/lib/utils/user-rate-limiter';
-import { addSecurityHeaders } from '@/lib/middleware/security';
-import { logger } from '@/lib/utils/logger';
 import { AuthService } from '@/lib/auth/auth-service';
 
 /**

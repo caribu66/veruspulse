@@ -186,16 +186,20 @@ export class UserRateLimiter {
    */
   private cleanupExpiredEntries(now: number): void {
     // Clean up request counts
-    for (const [key, entry] of this.requestCounts.entries()) {
-      if (now >= entry.resetTime) {
+    const requestKeys = Array.from(this.requestCounts.keys());
+    for (const key of requestKeys) {
+      const entry = this.requestCounts.get(key);
+      if (entry && now >= entry.resetTime) {
         this.requestCounts.delete(key);
       }
     }
 
     // Clean up old sessions (older than 24 hours)
     const sessionExpiry = 24 * 60 * 60 * 1000; // 24 hours
-    for (const [key, session] of this.sessions.entries()) {
-      if (now - session.lastSeen > sessionExpiry) {
+    const sessionKeys = Array.from(this.sessions.keys());
+    for (const key of sessionKeys) {
+      const session = this.sessions.get(key);
+      if (session && now - session.lastSeen > sessionExpiry) {
         this.sessions.delete(key);
       }
     }

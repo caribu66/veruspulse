@@ -1,101 +1,167 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VerusPulse Scanner Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .status-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .status-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
-        .status-healthy { background: #27ae60; }
-        .status-unhealthy { background: #e74c3c; }
-        .status-warning { background: #f39c12; }
-        .metric { margin: 10px 0; }
-        .metric-label { font-weight: bold; color: #2c3e50; }
-        .metric-value { color: #34495e; }
-        .log-container { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; }
-        .refresh-btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 10px 0; }
-        .refresh-btn:hover { background: #2980b9; }
-        .timestamp { color: #7f8c8d; font-size: 11px; }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .header {
+        background: #2c3e50;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+      .status-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+      .status-healthy {
+        background: #27ae60;
+      }
+      .status-unhealthy {
+        background: #e74c3c;
+      }
+      .status-warning {
+        background: #f39c12;
+      }
+      .metric {
+        margin: 10px 0;
+      }
+      .metric-label {
+        font-weight: bold;
+        color: #2c3e50;
+      }
+      .metric-value {
+        color: #34495e;
+      }
+      .log-container {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .refresh-btn {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 10px 0;
+      }
+      .refresh-btn:hover {
+        background: #2980b9;
+      }
+      .timestamp {
+        color: #7f8c8d;
+        font-size: 11px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <h1>🤖 VerusPulse Autonomous Scanner Dashboard</h1>
-            <p class="timestamp">Last updated: <span id="timestamp"></span></p>
-            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+      <div class="header">
+        <h1>🤖 VerusPulse Autonomous Scanner Dashboard</h1>
+        <p class="timestamp">Last updated: <span id="timestamp"></span></p>
+        <button class="refresh-btn" onclick="location.reload()">
+          🔄 Refresh
+        </button>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-card">
+          <h3>🏥 Infrastructure Health</h3>
+          <div class="metric">
+            <span class="metric-label">RPC Connection:</span>
+            <span class="status-indicator" id="rpc-status"></span>
+            <span class="metric-value" id="rpc-text">Checking...</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Database:</span>
+            <span class="status-indicator" id="db-status"></span>
+            <span class="metric-value" id="db-text">Checking...</span>
+          </div>
         </div>
-        
-        <div class="status-grid">
-            <div class="status-card">
-                <h3>🏥 Infrastructure Health</h3>
-                <div class="metric">
-                    <span class="metric-label">RPC Connection:</span>
-                    <span class="status-indicator" id="rpc-status"></span>
-                    <span class="metric-value" id="rpc-text">Checking...</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Database:</span>
-                    <span class="status-indicator" id="db-status"></span>
-                    <span class="metric-value" id="db-text">Checking...</span>
-                </div>
-            </div>
-            
-            <div class="status-card">
-                <h3>🔍 Scanner Status</h3>
-                <div class="metric">
-                    <span class="metric-label">Staking Scanner:</span>
-                    <span class="status-indicator" id="staking-status"></span>
-                    <span class="metric-value" id="staking-text">Checking...</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">VerusID Discovery:</span>
-                    <span class="status-indicator" id="verusid-status"></span>
-                    <span class="metric-value" id="verusid-text">Checking...</span>
-                </div>
-            </div>
-            
-            <div class="status-card">
-                <h3>📊 Database Statistics</h3>
-                <div class="metric">
-                    <span class="metric-label">Total Staking Rewards:</span>
-                    <span class="metric-value" id="stake-count">Loading...</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Total VerusIDs:</span>
-                    <span class="metric-value" id="verusid-count">Loading...</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Latest Block:</span>
-                    <span class="metric-value" id="latest-block">Loading...</span>
-                </div>
-            </div>
-            
-            <div class="status-card">
-                <h3>📝 Recent Activity</h3>
-                <div class="log-container" id="recent-logs">
-                    Loading recent activity...
-                </div>
-            </div>
+
+        <div class="status-card">
+          <h3>🔍 Scanner Status</h3>
+          <div class="metric">
+            <span class="metric-label">Staking Scanner:</span>
+            <span class="status-indicator" id="staking-status"></span>
+            <span class="metric-value" id="staking-text">Checking...</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">VerusID Discovery:</span>
+            <span class="status-indicator" id="verusid-status"></span>
+            <span class="metric-value" id="verusid-text">Checking...</span>
+          </div>
         </div>
+
+        <div class="status-card">
+          <h3>📊 Database Statistics</h3>
+          <div class="metric">
+            <span class="metric-label">Total Staking Rewards:</span>
+            <span class="metric-value" id="stake-count">Loading...</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Total VerusIDs:</span>
+            <span class="metric-value" id="verusid-count">Loading...</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Latest Block:</span>
+            <span class="metric-value" id="latest-block">Loading...</span>
+          </div>
+        </div>
+
+        <div class="status-card">
+          <h3>📝 Recent Activity</h3>
+          <div class="log-container" id="recent-logs">
+            Loading recent activity...
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-        // Update timestamp
-        document.getElementById('timestamp').textContent = new Date().toLocaleString();
-        
-        // Auto-refresh every 30 seconds
-        setInterval(() => {
-            location.reload();
-        }, 30000);
-        
-        // You can add JavaScript here to fetch real-time data via API
-        // For now, the page refreshes every 30 seconds
+      // Update timestamp
+      document.getElementById('timestamp').textContent =
+        new Date().toLocaleString();
+
+      // Auto-refresh every 30 seconds
+      setInterval(() => {
+        location.reload();
+      }, 30000);
+
+      // You can add JavaScript here to fetch real-time data via API
+      // For now, the page refreshes every 30 seconds
     </script>
-</body>
+  </body>
 </html>

@@ -143,7 +143,7 @@ describe('Validation Utilities', () => {
     it('should sanitize input strings', () => {
       expect(sanitizeInput('  test  ')).toBe('test');
       expect(sanitizeInput('<script>alert("xss")</script>')).toBe(
-        'scriptalert("xss")/script'
+        'scriptalert(&quot;xss&quot;)/script'
       );
       expect(sanitizeInput('a'.repeat(2000))).toHaveLength(1000);
     });

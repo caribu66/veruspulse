@@ -2,77 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { circuitBreakerManager } from '@/lib/utils/circuit-breaker';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
-
-/**
- * Circuit Breaker Status API
- * Provides real-time monitoring of circuit breaker states
- */
-export async function GET(request: NextRequest) {
-  try {
-    logger.info('🔍 Fetching circuit breaker status');
-
-    const stats = circuitBreakerManager.getAllStats();
-
-    // Calculate overall health
-    const totalBreakers = Object.keys(stats).length;
-    const openBreakers = Object.values(stats).filter(
-      s => s.state === 'OPEN'
-    ).length;
-    const halfOpenBreakers = Object.values(stats).filter(
-      s => s.state === 'HALF_OPEN'
-    ).length;
-
-    const overallHealth =
-      totalBreakers === 0
-        ? 'unknown'
-        : openBreakers === 0
-          ? 'healthy'
-          : halfOpenBreakers > 0
-            ? 'degraded'
-            : 'unhealthy';
-
-    const response = NextResponse.json({
-      success: true,
-      data: {
-        overallHealth,
-        summary: {
-          totalBreakers,
-          openBreakers,
-          halfOpenBreakers,
-          closedBreakers: totalBreakers - openBreakers - halfOpenBreakers,
-        },
-        breakers: stats,
-        timestamp: new Date().toISOString(),
-      },
-    });
-
-    return addSecurityHeaders(response);
-  } catch (error: any) {
-    logger.error('❌ Failed to fetch circuit breaker status:', error);
-
-    const response = NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to fetch circuit breaker status',
-        details: error.message,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
-
-    return addSecurityHeaders(response);
-  }
-}
-
-/**
- * Reset Circuit Breaker API
- * Allows manual reset of circuit breakers (admin only)
- */
-import { NextRequest, NextResponse } from 'next/server';
-import { circuitBreakerManager } from '@/lib/utils/circuit-breaker';
-import { addSecurityHeaders } from '@/lib/middleware/security';
-import { logger } from '@/lib/utils/logger';
-import { AuthMiddleware, AuthService } from '@/lib/auth/auth-service';
+import { AuthService } from '@/lib/auth/auth-service';
 
 /**
  * Circuit Breaker Status API

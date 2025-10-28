@@ -44,7 +44,8 @@ async function populateUTXOsFromDaemon() {
     for (let i = 0; i < allIdentities.length; i++) {
       const identity = allIdentities[i];
       const iaddr = identity.identity_address;
-      const name = identity.name || identity.friendly_name || iaddr.substring(0, 10);
+      const name =
+        identity.name || identity.friendly_name || iaddr.substring(0, 10);
 
       try {
         console.log(`[${i + 1}/${allIdentities.length}] Processing ${name}...`);
@@ -71,7 +72,8 @@ async function populateUTXOsFromDaemon() {
           const height = utxo.height || 0;
           const blocktime = utxo.blocktime || 0;
           const txid = utxo.txid;
-          const vout = utxo.outputIndex !== undefined ? utxo.outputIndex : utxo.vout;
+          const vout =
+            utxo.outputIndex !== undefined ? utxo.outputIndex : utxo.vout;
 
           if (!txid || vout === undefined) {
             console.log(`   ⚠️  Skipping invalid UTXO (missing txid or vout)`);
@@ -120,13 +122,18 @@ async function populateUTXOsFromDaemon() {
           const etaSeconds = remaining / rate;
           const etaMinutes = Math.ceil(etaSeconds / 60);
 
-          console.log(`\n⏳ Progress: ${i + 1}/${allIdentities.length} (${((i + 1) / allIdentities.length * 100).toFixed(1)}%)`);
+          console.log(
+            `\n⏳ Progress: ${i + 1}/${allIdentities.length} (${(((i + 1) / allIdentities.length) * 100).toFixed(1)}%)`
+          );
           console.log(`   💰 Total UTXOs: ${totalUTXOs}`);
-          console.log(`   💎 Total value: ${(totalValue / 100000000).toFixed(2)} VRSC`);
-          console.log(`   🏃 Rate: ${rate.toFixed(1)} IDs/sec, ETA: ${etaMinutes}min`);
+          console.log(
+            `   💎 Total value: ${(totalValue / 100000000).toFixed(2)} VRSC`
+          );
+          console.log(
+            `   🏃 Rate: ${rate.toFixed(1)} IDs/sec, ETA: ${etaMinutes}min`
+          );
           console.log(`   ❌ Errors: ${errorCount}\n`);
         }
-
       } catch (error) {
         console.error(`   ❌ Error processing ${name}: ${error.message}`);
         errorCount++;
@@ -140,13 +147,16 @@ async function populateUTXOsFromDaemon() {
     console.log('\n╔════════════════════════════════════════════════════╗');
     console.log('║              POPULATION COMPLETE                   ║');
     console.log('╚════════════════════════════════════════════════════╝');
-    console.log(`⏱️  Total time: ${totalSeconds.toFixed(0)}s (${totalMinutes}min)`);
+    console.log(
+      `⏱️  Total time: ${totalSeconds.toFixed(0)}s (${totalMinutes}min)`
+    );
     console.log(`📊 VerusIDs processed: ${totalProcessed}`);
     console.log(`💰 Total UTXOs: ${totalUTXOs}`);
     console.log(`💎 Total value: ${(totalValue / 100000000).toFixed(2)} VRSC`);
     console.log(`❌ Errors: ${errorCount}`);
-    console.log(`🏃 Average rate: ${(totalProcessed / totalSeconds).toFixed(1)} IDs/sec\n`);
-
+    console.log(
+      `🏃 Average rate: ${(totalProcessed / totalSeconds).toFixed(1)} IDs/sec\n`
+    );
   } catch (error) {
     console.error('\n❌ Fatal error:', error);
     process.exit(1);
@@ -154,4 +164,3 @@ async function populateUTXOsFromDaemon() {
 }
 
 populateUTXOsFromDaemon().catch(console.error);
-

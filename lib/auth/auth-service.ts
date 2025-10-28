@@ -5,7 +5,7 @@
 
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
-import { logger } from './logger';
+import { logger } from '@/lib/utils/logger';
 
 export interface User {
   id: string;

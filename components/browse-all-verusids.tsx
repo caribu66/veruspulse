@@ -47,8 +47,8 @@ export function BrowseAllVerusIDs() {
   const [viewMode, setViewMode] = useState<ViewMode['mode']>('cards');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOptions, setSortOptions] = useState<SortOptions>({
-    sortBy: 'name',
-    sortOrder: 'asc',
+    sortBy: 'stakes',
+    sortOrder: 'desc',
   });
   const [filters, setFilters] = useState<FilterState>({
     stakeRange: [0, 100000], // Increased max to include more identities

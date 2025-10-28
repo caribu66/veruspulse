@@ -6,7 +6,7 @@ import {
   Pulse,
   UsersThree,
   TrendUp,
-  Fire,
+  Eye,
 } from '@phosphor-icons/react';
 
 export type DashboardTab =
@@ -14,7 +14,7 @@ export type DashboardTab =
   | 'network'
   | 'activity'
   | 'featured'
-  | 'trending';
+  | 'browse';
 
 interface DashboardTabsProps {
   activeTab: DashboardTab;
@@ -48,10 +48,10 @@ export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
       description: 'Community spotlight',
     },
     {
-      id: 'trending' as DashboardTab,
-      label: 'Trending',
-      icon: Fire,
-      description: "What's hot",
+      id: 'browse' as DashboardTab,
+      label: 'Browse',
+      icon: Eye,
+      description: 'Explore all VerusIDs',
     },
   ];
 

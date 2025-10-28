@@ -231,6 +231,13 @@ export function BrowseAllVerusIDs() {
     }));
   };
 
+  const toggleSortOrder = () => {
+    setSortOptions(prev => ({
+      ...prev,
+      sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
+    }));
+  };
+
   // Search RPC for identities not in database
   const searchRPCForIdentity = async (query: string) => {
     if (!query.trim()) {
@@ -543,6 +550,27 @@ export function BrowseAllVerusIDs() {
                   ))}
               </button>
             ))}
+            {/* Reverse Order Button */}
+            <div className="w-px h-6 bg-slate-700 mx-1" /> {/* Divider */}
+            <button
+              onClick={toggleSortOrder}
+              className="flex items-center space-x-2 px-4 py-2 min-h-[44px] bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors border border-slate-600"
+              title={`Reverse order (currently ${sortOptions.sortOrder === 'asc' ? 'ascending' : 'descending'})`}
+            >
+              {sortOptions.sortOrder === 'asc' ? (
+                <>
+                  <SortAscending className="h-4 w-4" />
+                  <span className="hidden sm:inline">First to Last</span>
+                  <span className="sm:hidden">↑</span>
+                </>
+              ) : (
+                <>
+                  <SortDescending className="h-4 w-4" />
+                  <span className="hidden sm:inline">Last to First</span>
+                  <span className="sm:hidden">↓</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>

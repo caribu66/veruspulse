@@ -25,10 +25,10 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
     "default-src 'self'; " +
       "script-src 'self' 'nonce-" +
       nonce +
-      "'; " +
+      "' 'unsafe-inline' 'unsafe-eval'; " +
       "style-src 'self' 'nonce-" +
       nonce +
-      "'; " +
+      "' 'unsafe-inline'; " +
       "img-src 'self' data: https: blob:; " +
       "font-src 'self' data:; " +
       "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://api.verus.io; " +

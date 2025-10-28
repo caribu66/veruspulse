@@ -62,7 +62,11 @@ class RPCClient {
       ? new RateLimiter(rateLimitConfig)
       : defaultRateLimiter;
 
-    // Validate required environment variables
+    // Note: Environment variable validation is deferred to runtime (first RPC call)
+    // to allow Next.js build-time imports without requiring RPC credentials
+  }
+
+  private validateCredentials(): void {
     if (!process.env.VERUS_RPC_USER || !process.env.VERUS_RPC_PASSWORD) {
       throw new Error(
         'VERUS_RPC_USER and VERUS_RPC_PASSWORD environment variables are required'
@@ -75,6 +79,9 @@ class RPCClient {
    */
   async call<T = any>(method: RPCMethod, params: any[] = []): Promise<T> {
     return this.rateLimiter.execute(async () => {
+      // Validate credentials before making RPC call
+      this.validateCredentials();
+
       try {
         logger.info(`🔍 RPC Call: ${method}`, { params });
 

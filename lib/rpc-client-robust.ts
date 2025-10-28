@@ -28,7 +28,11 @@ class VerusAPIClient {
       ? new RateLimiter(rateLimitConfig)
       : defaultRateLimiter;
 
-    // Validate required environment variables
+    // Note: Environment variable validation is deferred to runtime (first RPC call)
+    // to allow Next.js build-time imports without requiring RPC credentials
+  }
+
+  private validateCredentials(): void {
     if (!process.env.VERUS_RPC_USER || !process.env.VERUS_RPC_PASSWORD) {
       throw new Error(
         'VERUS_RPC_USER and VERUS_RPC_PASSWORD environment variables are required'
@@ -100,6 +104,9 @@ class VerusAPIClient {
     maxRetries: number = 3,
     signal?: AbortSignal
   ): Promise<any> {
+    // Validate credentials before making any RPC calls
+    this.validateCredentials();
+
     let lastError: any;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {

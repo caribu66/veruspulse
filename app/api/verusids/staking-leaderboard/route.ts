@@ -70,7 +70,8 @@ export async function GET(request: NextRequest) {
         vs.apy_all_time,
         vs.apy_30d,
         vs.staking_efficiency,
-        vs.last_stake_time,
+        -- Get actual last stake time from staking_rewards table (more reliable than cached value)
+        sr_latest.last_stake_time,
         vs.network_rank,
         vs.network_percentile,
         vs.eligible_utxos,
@@ -89,6 +90,14 @@ export async function GET(request: NextRequest) {
       FROM verusid_statistics vs
       LEFT JOIN identities i ON vs.address = i.identity_address
       LEFT JOIN verusid_trend_metrics tm ON vs.address = tm.verusid_address
+      -- Get actual latest stake time from staking_rewards table
+      LEFT JOIN (
+        SELECT 
+          identity_address,
+          MAX(block_time) as last_stake_time
+        FROM staking_rewards
+        GROUP BY identity_address
+      ) sr_latest ON vs.address = sr_latest.identity_address
       LEFT JOIN (
         SELECT 
           verusid_address,
@@ -98,6 +107,9 @@ export async function GET(request: NextRequest) {
         GROUP BY verusid_address
       ) dv ON vs.address = dv.verusid_address
       WHERE vs.total_stakes >= $1
+        -- Filter for active stakers: must have staked in last 30 days
+        AND sr_latest.last_stake_time IS NOT NULL
+        AND sr_latest.last_stake_time >= NOW() - INTERVAL '30 days'
       ORDER BY vs.${orderByColumn} DESC NULLS LAST
       LIMIT $2
     `;
@@ -131,9 +143,18 @@ export async function GET(request: NextRequest) {
       trendLastCalculated: row.trend_last_calculated,
     }));
 
-    // Get total count for pagination
+    // Get total count for pagination (only active stakers)
     const countResult = await db.query(
-      'SELECT COUNT(*) as total FROM verusid_statistics WHERE total_stakes >= $1',
+      `SELECT COUNT(*) as total 
+       FROM verusid_statistics vs
+       LEFT JOIN (
+         SELECT identity_address, MAX(block_time) as last_stake_time
+         FROM staking_rewards
+         GROUP BY identity_address
+       ) sr_latest ON vs.address = sr_latest.identity_address
+       WHERE vs.total_stakes >= $1 
+         AND sr_latest.last_stake_time IS NOT NULL
+         AND sr_latest.last_stake_time >= NOW() - INTERVAL '30 days'`,
       [minStakes]
     );
     const total = parseInt(countResult.rows[0]?.total) || 0;

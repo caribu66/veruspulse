@@ -339,13 +339,14 @@ export function TrendingSection({
         }));
 
       // Process VerusIDs for trending (using real data)
-      // Only show VerusIDs that earned their stakes with their I-address
-      // This implements the I-Address Staking Rule: VerusIDs that received staking help
-      // from other addresses (R-addresses) are filtered out and won't appear in trending
+      // Only show ACTIVE VerusIDs that:
+      // 1. Have staked within the last 30 days (filtered by API)
+      // 2. Earned their stakes with their I-address (not R-addresses)
+      // This ensures trending shows only actively staking VerusIDs
       const trendingVerusIDs: TrendingItem[] = (
         verusidsData?.data?.leaderboard || []
       )
-        .filter((id: any) => (id.totalStakes || id.total_stakes || 0) > 0) // Only VerusIDs with direct I-address stakes
+        .filter((id: any) => (id.totalStakes || id.total_stakes || 0) > 0) // Verify stakes exist
         .slice(0, 10)
         .map((id: any, index: number) => {
           // Prioritize friendlyName from the database

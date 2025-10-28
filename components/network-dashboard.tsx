@@ -17,7 +17,6 @@ import {
   WarningCircle,
   CheckCircle,
   ArrowsClockwise,
-  Fire,
   Cpu,
 } from '@phosphor-icons/react';
 import {
@@ -386,15 +385,15 @@ export function NetworkDashboard({
                 </button>
 
                 <button
-                  onClick={() => setActiveTab('trending')}
+                  onClick={() => setActiveTab('browse')}
                   className="p-6 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 hover:border-verus-blue/60 transition-all text-left group w-full h-full"
                 >
-                  <Fire className="h-8 w-8 mb-3 text-verus-green transition-transform group-hover:scale-110" />
+                  <Database className="h-8 w-8 mb-3 text-verus-green transition-transform group-hover:scale-110" />
                   <h3 className="text-lg font-semibold mb-1 text-white">
-                    What&apos;s Trending
+                    Browse VerusIDs
                   </h3>
                   <p className="text-sm text-slate-300">
-                    Hot content right now
+                    Explore all identities
                   </p>
                 </button>
               </div>
@@ -535,7 +534,7 @@ export function NetworkDashboard({
                   <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
                     <div className="flex items-center justify-between mb-4">
                       <div className="p-3 rounded-lg bg-pink-500/20">
-                        <Fire className="h-6 w-6 text-pink-400" />
+                        <Network className="h-6 w-6 text-pink-400" />
                       </div>
                       <div className="text-right">
                         <div className="text-2xl font-bold text-gray-900 dark:text-white">

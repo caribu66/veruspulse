@@ -35,7 +35,7 @@ import { HeroSection } from './hero-section';
 import { PBaaSPriceTicker } from './pbaas-price-ticker';
 import { QuickStatsTicker } from './quick-stats-ticker';
 // import { FeaturedVerusIDsCarousel } from './featured-verusids-carousel';
-import { TrendingSection } from './trending-section';
+import { BrowseAllVerusIDs } from './browse-all-verusids';
 import { DashboardTabs, DashboardTab } from './dashboard-tabs';
 import { RealtimeStatus } from './realtime-status';
 
@@ -760,10 +760,10 @@ export function NetworkDashboard({
             </div>
           )}
 
-          {/* TRENDING TAB */}
-          {activeTab === 'trending' && (
+          {/* BROWSE TAB */}
+          {activeTab === 'browse' && (
             <div className="space-y-6">
-              <TrendingSection autoRefresh={true} refreshInterval={60000} />
+              <BrowseAllVerusIDs />
             </div>
           )}
         </div>

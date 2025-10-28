@@ -3,14 +3,6 @@
 import { useState } from 'react';
 import { DonationWidget } from '@/components/donation-widget';
 import { DonationBanner } from '@/components/donation-banner';
-import WalletTestComponent from '@/components/wallet-test';
-import QRAndCopyTest from '@/components/qr-copy-test';
-import {
-  VERUS_WALLETS,
-  generateQRCodeData,
-  generateWalletDeepLink,
-  type DonationParams,
-} from '@/lib/wallet-integration';
 import QRCode from 'qrcode';
 
 export default function DonationTestPage() {
@@ -19,8 +11,7 @@ export default function DonationTestPage() {
 
   const testQRGeneration = async () => {
     try {
-      const qrData = generateQRCodeData({ address: testAddress });
-      const qrDataURL = await QRCode.toDataURL(qrData, {
+      const qrDataURL = await QRCode.toDataURL(testAddress, {
         width: 200,
         margin: 2,
         color: {
@@ -32,20 +23,6 @@ export default function DonationTestPage() {
     } catch (error) {
       console.error('QR generation test failed:', error);
     }
-  };
-
-  const testWalletLinks = () => {
-    const params: DonationParams = {
-      address: testAddress,
-      amount: 10,
-      label: 'Test Donation',
-    };
-
-    console.log('Testing wallet deep links:');
-    VERUS_WALLETS.forEach(wallet => {
-      const link = generateWalletDeepLink(wallet, params);
-      console.log(`${wallet.name}: ${link}`);
-    });
   };
 
   return (
@@ -66,13 +43,6 @@ export default function DonationTestPage() {
             >
               Test QR Generation
             </button>
-
-            <button
-              onClick={testWalletLinks}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-            >
-              Test Wallet Links (Console)
-            </button>
           </div>
 
           {testQR && (
@@ -86,43 +56,6 @@ export default function DonationTestPage() {
             </div>
           )}
         </div>
-
-        {/* Available Wallets */}
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">
-            Available Wallets
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {VERUS_WALLETS.map(wallet => (
-              <div key={wallet.name} className="bg-gray-700 rounded-lg p-4">
-                <h3 className="font-medium text-white">{wallet.name}</h3>
-                <p className="text-sm text-gray-300 mt-1">
-                  {wallet.description}
-                </p>
-                <p className="text-xs text-gray-400 mt-2">
-                  Type: {wallet.type}
-                </p>
-                <p className="text-xs text-gray-400">Scheme: {wallet.scheme}</p>
-                {wallet.downloadUrl && (
-                  <a
-                    href={wallet.downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 text-sm mt-2 inline-block"
-                  >
-                    Download →
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* QR Code & Copy Test */}
-        <QRAndCopyTest />
-
-        {/* Wallet Integration Test */}
-        <WalletTestComponent />
 
         {/* Test Components */}
         <div className="bg-gray-800 rounded-lg p-6">

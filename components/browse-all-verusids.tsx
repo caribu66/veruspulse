@@ -330,15 +330,10 @@ export function BrowseAllVerusIDs() {
   };
 
   const handleIdentityClick = (identity: VerusIDBrowseData) => {
-    // Navigate directly to the VerusID detail page using Next.js router
+    // Open VerusID detail page in a new tab for better UX
     // Use I-address for reliable lookups (baseName might be "unknown")
-    // Include returnTo parameter to preserve browse tab state
-    const returnTo = window.location.pathname.includes('/verusid/browse')
-      ? '/verusid/browse'
-      : '/?tab=verusids';
-    router.push(
-      `/verusid/${encodeURIComponent(identity.address)}?returnTo=${encodeURIComponent(returnTo)}`
-    );
+    const url = `/verusid/${encodeURIComponent(identity.address)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   if (loading) {

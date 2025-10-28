@@ -162,13 +162,20 @@ export function VerusIDCardGrid({
               </span>
             </div>
 
-            <Link
-              href={`/verusid/${encodeURIComponent(identity.address)}`}
-              className="text-xs text-blue-300 hover:text-blue-200 transition-colors"
-              onClick={e => e.stopPropagation()}
+            <button
+              onClick={e => {
+                e.stopPropagation();
+                window.open(
+                  `/verusid/${encodeURIComponent(identity.address)}`,
+                  '_blank',
+                  'noopener,noreferrer'
+                );
+              }}
+              className="text-xs text-blue-300 hover:text-blue-200 transition-colors flex items-center gap-1"
             >
-              View Details →
-            </Link>
+              View Details
+              <ArrowSquareOut className="h-3 w-3" />
+            </button>
           </div>
         </div>
       ))}

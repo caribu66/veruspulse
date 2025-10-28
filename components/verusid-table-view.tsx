@@ -219,14 +219,20 @@ export function VerusIDTableView({
 
             {/* Actions Column */}
             <div className="col-span-1 flex items-center justify-center">
-              <Link
-                href={`/verusid/${encodeURIComponent(identity.address)}`}
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  window.open(
+                    `/verusid/${encodeURIComponent(identity.address)}`,
+                    '_blank',
+                    'noopener,noreferrer'
+                  );
+                }}
                 className="p-2 text-blue-300 hover:text-blue-200 transition-colors"
-                onClick={e => e.stopPropagation()}
-                title="View Details"
+                title="View Details (opens in new tab)"
               >
                 <ArrowSquareOut className="h-4 w-4" />
-              </Link>
+              </button>
             </div>
           </div>
         ))}

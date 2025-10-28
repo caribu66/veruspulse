@@ -19,13 +19,6 @@ export function DonationWidget({
   const [copied, setCopied] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [qrCodeDataURL, setQrCodeDataURL] = useState<string>('');
-  const [showRecognitionForm, setShowRecognitionForm] = useState(false);
-  const [formData, setFormData] = useState({
-    displayName: '',
-    message: '',
-    showOnWall: false,
-    anonymous: false,
-  });
 
   // VRSC donation address - replace with your actual address
   const DONATION_ADDRESS = 'RPJ39AoZBN3s2uBaCAKdsT6rvSYCGRTwWE';
@@ -80,14 +73,6 @@ export function DonationWidget({
     setShowQR(!showQR);
   };
 
-  const handleSubmitRecognition = async () => {
-    // TODO: Send recognition data to API
-    setShowRecognitionForm(false);
-    setIsOpen(false);
-    // Show success toast
-    alert('Thank you! Your recognition preferences have been saved.');
-  };
-
   if (isDismissed && !isOpen) {
     return null;
   }
@@ -124,7 +109,7 @@ export function DonationWidget({
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-verus-blue/30 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-verus-blue/30 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-verus-blue/20 to-verus-green/20 border-b border-verus-blue/30 p-6 flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -150,191 +135,71 @@ export function DonationWidget({
 
             {/* Content */}
             <div className="p-6 space-y-6">
-              {!showRecognitionForm ? (
-                <>
-                  {/* Donation Address */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      VRSC Donation Address
-                    </label>
-                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <code className="text-sm text-verus-blue/80 break-all font-mono">
-                          {DONATION_ADDRESS}
-                        </code>
-                        <button
-                          onClick={handleCopy}
-                          className="ml-2 p-2 bg-verus-blue/20 hover:bg-verus-blue/20 rounded-lg transition-colors flex-shrink-0"
-                          title="Copy address"
-                        >
-                          {copied ? (
-                            <Check className="h-4 w-4 text-green-400" />
-                          ) : (
-                            <Copy className="h-4 w-4 text-verus-blue/80" />
-                          )}
-                        </button>
-                      </div>
-
-                      {/* QR Code Section */}
-                      <div className="flex flex-col items-center py-4 space-y-3">
-                        <button
-                          onClick={toggleQR}
-                          className="flex items-center space-x-2 px-4 py-2 bg-verus-blue/20 hover:bg-verus-blue/30 border border-verus-blue/30 rounded-lg transition-colors text-verus-blue/80 hover:text-verus-blue"
-                        >
-                          <QrCode className="h-4 w-4" />
-                          <span className="text-sm font-medium">
-                            {showQR ? 'Hide QR Code' : 'Show QR Code'}
-                          </span>
-                        </button>
-
-                        {showQR && qrCodeDataURL && (
-                          <div className="bg-white p-4 rounded-lg shadow-lg">
-                            <Image
-                              src={qrCodeDataURL}
-                              alt="VRSC Donation QR Code"
-                              width={200}
-                              height={200}
-                              className="w-48 h-48"
-                            />
-                            <p className="text-center text-xs text-gray-600 mt-2 font-medium">
-                              Scan to donate VRSC
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* After Donation */}
-                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                    <p className="text-sm text-blue-200 mb-3">
-                      <strong>After donating:</strong> Would you like to be
-                      recognized on our supporter wall?
-                    </p>
+              {/* Donation Address */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  VRSC Donation Address
+                </label>
+                <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <code className="text-sm text-verus-blue/80 break-all font-mono">
+                      {DONATION_ADDRESS}
+                    </code>
                     <button
-                      onClick={() => setShowRecognitionForm(true)}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                      onClick={handleCopy}
+                      className="ml-2 p-2 bg-verus-blue/20 hover:bg-verus-blue/20 rounded-lg transition-colors flex-shrink-0"
+                      title="Copy address"
                     >
-                      <span>Yes, Add My Recognition</span>
+                      {copied ? (
+                        <Check className="h-4 w-4 text-green-400" />
+                      ) : (
+                        <Copy className="h-4 w-4 text-verus-blue/80" />
+                      )}
                     </button>
-                    <p className="text-xs text-gray-400 mt-2 text-center">
-                      Optional • Privacy-first • You can stay anonymous
-                    </p>
                   </div>
 
-                  {/* Impact Statement */}
-                  <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-yellow-300 mb-2">
-                      💡 Your Donation Helps Us:
-                    </h4>
-                    <ul className="text-sm text-gray-300 space-y-1">
-                      <li>• Maintain and improve the explorer</li>
-                      <li>• Add new features and analytics</li>
-                      <li>• Cover server and infrastructure costs</li>
-                      <li>• Support the Verus ecosystem</li>
-                    </ul>
-                  </div>
-                </>
-              ) : (
-                /* Recognition Form */
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-white">
-                    Recognition Preferences
-                  </h4>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Display Name (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.displayName}
-                      onChange={e =>
-                        setFormData({
-                          ...formData,
-                          displayName: e.target.value,
-                        })
-                      }
-                      placeholder="Your name or VerusID"
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-verus-blue"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Message/Dedication (Optional, max 100 chars)
-                    </label>
-                    <textarea
-                      value={formData.message}
-                      onChange={e =>
-                        setFormData({
-                          ...formData,
-                          message: e.target.value.slice(0, 100),
-                        })
-                      }
-                      placeholder="Optional message"
-                      maxLength={100}
-                      rows={2}
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-verus-blue"
-                    />
-                    <p className="text-xs text-gray-400 mt-1">
-                      {formData.message.length}/100 characters
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.showOnWall}
-                        onChange={e =>
-                          setFormData({
-                            ...formData,
-                            showOnWall: e.target.checked,
-                          })
-                        }
-                        className="w-5 h-5 bg-gray-800 border-gray-700 rounded focus:ring-2 focus:ring-verus-blue"
-                      />
-                      <span className="text-sm text-gray-300">
-                        Display on supporter wall (opt-in)
+                  {/* QR Code Section */}
+                  <div className="flex flex-col items-center py-4 space-y-3">
+                    <button
+                      onClick={toggleQR}
+                      className="flex items-center space-x-2 px-4 py-2 bg-verus-blue/20 hover:bg-verus-blue/30 border border-verus-blue/30 rounded-lg transition-colors text-verus-blue/80 hover:text-verus-blue"
+                    >
+                      <QrCode className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        {showQR ? 'Hide QR Code' : 'Show QR Code'}
                       </span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.anonymous}
-                        onChange={e =>
-                          setFormData({
-                            ...formData,
-                            anonymous: e.target.checked,
-                          })
-                        }
-                        className="w-5 h-5 bg-gray-800 border-gray-700 rounded focus:ring-2 focus:ring-verus-blue"
-                      />
-                      <span className="text-sm text-gray-300">
-                        Stay anonymous (shows as &quot;Anonymous
-                        Supporter&quot;)
-                      </span>
-                    </label>
-                  </div>
-
-                  <div className="flex space-x-3 pt-4">
-                    <button
-                      onClick={() => setShowRecognitionForm(false)}
-                      className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                    >
-                      Back
                     </button>
-                    <button
-                      onClick={handleSubmitRecognition}
-                      className="flex-1 bg-gradient-to-r from-verus-blue to-verus-green hover:from-verus-blue-dark hover:to-verus-green-dark text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                    >
-                      Save Preferences
-                    </button>
+
+                    {showQR && qrCodeDataURL && (
+                      <div className="bg-white p-4 rounded-lg shadow-lg">
+                        <Image
+                          src={qrCodeDataURL}
+                          alt="VRSC Donation QR Code"
+                          width={200}
+                          height={200}
+                          className="w-48 h-48"
+                        />
+                        <p className="text-center text-xs text-gray-600 mt-2 font-medium">
+                          Scan to donate VRSC
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
+
+              {/* Impact Statement */}
+              <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-lg p-4">
+                <h4 className="text-sm font-semibold text-yellow-300 mb-2">
+                  💡 Your Donation Helps Us:
+                </h4>
+                <ul className="text-sm text-gray-300 space-y-1">
+                  <li>• Maintain and improve the explorer</li>
+                  <li>• Add new features and analytics</li>
+                  <li>• Cover server and infrastructure costs</li>
+                  <li>• Support the Verus ecosystem</li>
+                </ul>
+              </div>
             </div>
 
             {/* Footer */}

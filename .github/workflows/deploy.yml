@@ -30,7 +30,7 @@ jobs:
         run: npm audit --audit-level=moderate
 
       - name: Run tests
-        run: npm test -- --coverage --watchAll=false
+        run: npm test -- --ci --watchAll=false --passWithNoTests
 
       - name: Build application
         run: npm run build

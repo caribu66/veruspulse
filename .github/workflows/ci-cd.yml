@@ -71,7 +71,7 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npm test -- --coverage || echo "Tests not configured yet"
+        run: npm test -- --ci --watchAll=false --passWithNoTests
 
       - name: Upload coverage
         if: success()

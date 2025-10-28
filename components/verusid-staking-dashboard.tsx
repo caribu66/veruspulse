@@ -815,25 +815,54 @@ export function VerusIDStakingDashboard({
       <div className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-3xl border border-slate-600/30 shadow-2xl">
         <div className="p-4 sm:p-6 lg:p-8 border-b border-slate-600/30">
           <div className="flex items-center justify-between">
-            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-              <div className="flex items-center space-x-3 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-slate-600/20 rounded-xl sm:rounded-2xl">
-                  <Lightning className="h-5 w-5 sm:h-7 sm:w-7 text-slate-300" />
-                </div>
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white">
-                    Live Performance
-                  </h2>
-                  <p className="text-gray-400 text-sm sm:text-base">
-                    Real-time staking metrics and UTXO health
-                  </p>
-                </div>
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="p-2 sm:p-3 bg-slate-600/20 rounded-xl sm:rounded-2xl">
+                <Lightning className="h-5 w-5 sm:h-7 sm:w-7 text-slate-300" />
               </div>
-              {liveUTXOData && (
-                <div className="flex items-center space-x-3 bg-slate-600/20 rounded-full px-3 sm:px-4 py-2 border border-slate-500/30">
-                  <div className="w-3 h-3 rounded-full bg-slate-300 animate-pulse"></div>
-                  <span className="text-xs sm:text-sm font-medium text-slate-300">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white">
+                  Live Performance
+                </h2>
+                <p className="text-gray-400 text-sm sm:text-base">
+                  Real-time staking metrics and UTXO health
+                </p>
+              </div>
+            </div>
+
+            {/* Live Data Indicator - Positioned to the right */}
+            <div className="flex items-center space-x-2 rounded-full px-4 py-2 border shadow-lg transition-all duration-300">
+              {realtimeConnected && liveUTXOData ? (
+                // Fully connected state - Green animation
+                <div className="flex items-center space-x-2 bg-green-500/10 border-green-500/30">
+                  <div className="relative">
+                    {/* Outer pulsing ring */}
+                    <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 animate-ping opacity-75"></div>
+                    {/* Inner solid dot */}
+                    <div className="relative w-3 h-3 rounded-full bg-green-400"></div>
+                  </div>
+                  <span className="text-xs sm:text-sm font-medium text-green-300">
                     Live Data
+                  </span>
+                </div>
+              ) : realtimeConnected ? (
+                // Connected but no live UTXO data - Yellow animation
+                <div className="flex items-center space-x-2 bg-yellow-500/10 border-yellow-500/30">
+                  <div className="relative">
+                    {/* Outer pulsing ring */}
+                    <div className="absolute inset-0 w-3 h-3 rounded-full bg-yellow-400 animate-pulse opacity-75"></div>
+                    {/* Inner solid dot */}
+                    <div className="relative w-3 h-3 rounded-full bg-yellow-400"></div>
+                  </div>
+                  <span className="text-xs sm:text-sm font-medium text-yellow-300">
+                    Connected
+                  </span>
+                </div>
+              ) : (
+                // Disconnected state - Gray static
+                <div className="flex items-center space-x-2 bg-slate-500/10 border-slate-500/30">
+                  <div className="w-3 h-3 rounded-full bg-slate-400"></div>
+                  <span className="text-xs sm:text-sm font-medium text-slate-400">
+                    Offline
                   </span>
                 </div>
               )}

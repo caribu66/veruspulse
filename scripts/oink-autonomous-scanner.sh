@@ -49,7 +49,7 @@ kill_process() {
 # Check RPC connection with timeout
 check_rpc_health() {
     local timeout=10
-    local response=$(timeout $timeout curl -s -X POST http://127.0.0.1:18843 \
+    local response=$(timeout $timeout curl -s -X POST http://verus:1CvFqDVqdPlznV4pksyoiyZ1eKhLoRKb@127.0.0.1:18843 \
         -H "Content-Type: application/json" \
         -d '{"method":"getblockchaininfo","params":[],"id":1}' 2>/dev/null)
     

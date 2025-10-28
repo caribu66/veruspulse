@@ -1447,6 +1447,48 @@ nav a:hover::after,
   padding: 1.25rem;
 }
 
+/* =================================================================
+   MOBILE SAFE AREA INSETS
+   Handles iPhone notches, gesture bars, and system UI
+   ================================================================= */
+
+/* Safe area inset utilities */
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-inset-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-inset-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* All safe area insets at once */
+.safe-area-insets {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Minimum safe area for buttons/interactive elements */
+.safe-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile viewport height fix */
+.min-h-screen-mobile {
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+
 /* Light theme - Backdrop & Effects */
 [data-theme='light'] .backdrop-blur-sm {
   background-color: rgb(255 255 255 / 90%) !important;

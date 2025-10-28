@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { haptics } from '@/lib/utils/haptics';
 // import { UnifiedStakingAnalytics } from './unified-staking-analytics'; // Removed
 import {
   UsersThree,
@@ -685,30 +686,36 @@ export function VerusIDExplorer() {
         {/* Search Interface */}
         {activeTab === 'search' && (
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <div className="flex-1 min-w-0">
-                <input
-                  type="text"
-                  value={identity}
-                  onChange={e => setIdentity(e.target.value)}
-                  placeholder="Enter VerusID (e.g., veruspulse@ or username@)"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
-                  onKeyPress={e => {
-                    if (e.key === 'Enter') {
-                      const val = (e.currentTarget as HTMLInputElement).value;
-                      void searchIdentity(val);
-                    }
+            {/* Sticky search bar on mobile */}
+            <div className="sticky top-0 z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 sm:py-0 bg-slate-900/95 sm:bg-transparent backdrop-blur-lg sm:backdrop-blur-none border-b border-slate-700 sm:border-0 safe-area-inset-top">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                <div className="flex-1 min-w-0">
+                  <input
+                    type="text"
+                    value={identity}
+                    onChange={e => setIdentity(e.target.value)}
+                    placeholder="Enter VerusID (e.g., veruspulse@ or username@)"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base safe-touch-target"
+                    onKeyPress={e => {
+                      if (e.key === 'Enter') {
+                        const val = (e.currentTarget as HTMLInputElement).value;
+                        void searchIdentity(val);
+                      }
+                    }}
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    haptics.light();
+                    void searchIdentity();
                   }}
-                />
+                  disabled={loading || !identity.trim()}
+                  className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-slate-600 hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base whitespace-nowrap safe-touch-target"
+                >
+                  <MagnifyingGlass className="h-4 w-4" />
+                  <span>{loading ? 'Searching...' : 'Search'}</span>
+                </button>
               </div>
-              <button
-                onClick={() => void searchIdentity()}
-                disabled={loading || !identity.trim()}
-                className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-slate-600 hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base whitespace-nowrap"
-              >
-                <MagnifyingGlass className="h-4 w-4" />
-                <span>{loading ? 'Searching...' : 'Search'}</span>
-              </button>
             </div>
 
             {/* Recent Searches */}

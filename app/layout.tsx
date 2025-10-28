@@ -5,7 +5,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { GlobalErrorFallback } from '@/components/global-error-fallback';
 import { ThemeProvider } from '@/contexts/theme-context';
 import { SkipNavigation } from '@/components/skip-navigation';
-import { MobileViewportFix } from '@/components/mobile-optimizations';
+import { MobileViewportFix } from '@/components/mobile-viewport-fix';
 import { ToastProvider } from '@/components/ui/toast';
 import { RealtimeDataProvider } from '@/components/realtime-data-provider';
 

@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { RateLimiter } from '@/lib/utils/validation';
-import { randomUUID } from 'crypto';
+import { nonceProvider } from '@/lib/utils/nonce-provider';
+import { VerusValidator } from '@/lib/utils/verus-validator';
+import {
+  UserRateLimiter,
+  RATE_LIMIT_CONFIGS,
+} from '@/lib/utils/user-rate-limiter';
 
-// Rate limiting instances
-const apiRateLimiter = new RateLimiter(60000, 100); // 100 requests per minute
-const searchRateLimiter = new RateLimiter(60000, 20); // 20 searches per minute
+// User-based rate limiting instances
+const apiRateLimiter = new UserRateLimiter(RATE_LIMIT_CONFIGS.API);
+const searchRateLimiter = new UserRateLimiter(RATE_LIMIT_CONFIGS.SEARCH);
+const authRateLimiter = new UserRateLimiter(RATE_LIMIT_CONFIGS.AUTH);
 
 // Enhanced security headers following Mike Toutonghi's security-first approach
 export function addSecurityHeaders(response: NextResponse): NextResponse {
@@ -19,16 +24,16 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
   );
 
   // SECURITY: Strict CSP policy without unsafe directives
-  const nonce = randomUUID();
+  const nonce = nonceProvider.getNonce();
   response.headers.set(
     'Content-Security-Policy',
     "default-src 'self'; " +
       "script-src 'self' 'nonce-" +
       nonce +
-      "' 'unsafe-inline' 'unsafe-eval'; " +
+      "'; " +
       "style-src 'self' 'nonce-" +
       nonce +
-      "' 'unsafe-inline'; " +
+      "'; " +
       "img-src 'self' data: https: blob:; " +
       "font-src 'self' data:; " +
       "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://api.verus.io; " +
@@ -36,6 +41,8 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
       "base-uri 'self'; " +
       "form-action 'self'; " +
       "object-src 'none'; " +
+      "worker-src 'self'; " +
+      "manifest-src 'self'; " +
       'upgrade-insecure-requests;'
   );
 
@@ -53,34 +60,65 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
 
 // Rate limiting middleware
 export function rateLimitMiddleware(request: NextRequest): NextResponse | null {
-  const ip =
+  const ipAddress =
     request.headers.get('x-forwarded-for') ||
     request.headers.get('x-real-ip') ||
     'unknown';
+  const userAgent = request.headers.get('user-agent') || 'unknown';
   const pathname = request.nextUrl.pathname;
 
-  let rateLimiter: RateLimiter;
+  // Extract user ID from cookies or headers if available
+  const userId =
+    request.cookies.get('user_id')?.value ||
+    request.headers.get('x-user-id') ||
+    undefined;
 
-  if (pathname.startsWith('/api/')) {
-    rateLimiter = apiRateLimiter;
-  } else if (pathname.includes('search')) {
-    rateLimiter = searchRateLimiter;
+  const sessionId =
+    request.cookies.get('session_id')?.value ||
+    request.headers.get('x-session-id') ||
+    undefined;
+
+  // Create request object for rate limiter
+  const req = {
+    userId,
+    sessionId,
+    ipAddress,
+    userAgent,
+    pathname,
+  };
+
+  let limiter: UserRateLimiter;
+
+  if (pathname.startsWith('/api/auth/')) {
+    limiter = authRateLimiter;
+  } else if (pathname.includes('search') || pathname.includes('lookup')) {
+    limiter = searchRateLimiter;
+  } else if (pathname.startsWith('/api/')) {
+    limiter = apiRateLimiter;
   } else {
     return null; // No rate limiting for other routes
   }
 
-  if (!rateLimiter.isAllowed(ip)) {
+  const { allowed, info } = limiter.isAllowed(req);
+
+  if (!allowed) {
     return new NextResponse(
       JSON.stringify({
         success: false,
         error: 'Rate limit exceeded. Please try again later.',
-        retryAfter: 60,
+        retryAfter: info.retryAfter,
+        limit: info.limit,
+        remaining: info.remaining,
+        resetTime: new Date(info.resetTime).toISOString(),
       }),
       {
         status: 429,
         headers: {
           'Content-Type': 'application/json',
-          'Retry-After': '60',
+          'Retry-After': info.retryAfter?.toString() || '60',
+          'X-RateLimit-Limit': info.limit.toString(),
+          'X-RateLimit-Remaining': info.remaining.toString(),
+          'X-RateLimit-Reset': new Date(info.resetTime).toISOString(),
         },
       }
     );
@@ -94,36 +132,21 @@ export function validateInput(request: NextRequest): NextResponse | null {
   const url = request.nextUrl;
   const searchParams = url.searchParams;
 
-  // Validate common parameters
-  const address = searchParams.get('address');
-  const txId = searchParams.get('txid');
-  const blockHash = searchParams.get('hash');
+  // Collect all parameters for validation
+  const params: Record<string, any> = {};
+  searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
 
-  if (address && !/^[a-zA-Z0-9@._-]+$/.test(address)) {
+  // Validate all parameters using VerusValidator
+  const validation = VerusValidator.validateApiParams(params);
+
+  if (!validation.valid) {
     return new NextResponse(
       JSON.stringify({
         success: false,
-        error: 'Invalid address format',
-      }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
-
-  if (txId && !/^[a-fA-F0-9]{64}$/.test(txId)) {
-    return new NextResponse(
-      JSON.stringify({
-        success: false,
-        error: 'Invalid transaction ID format',
-      }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
-
-  if (blockHash && !/^[a-fA-F0-9]{64}$/.test(blockHash)) {
-    return new NextResponse(
-      JSON.stringify({
-        success: false,
-        error: 'Invalid block hash format',
+        error: 'Invalid input parameters',
+        details: validation.errors,
       }),
       { status: 400, headers: { 'Content-Type': 'application/json' } }
     );

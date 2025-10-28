@@ -61,6 +61,13 @@ class RPCClient {
     this.rateLimiter = rateLimitConfig
       ? new RateLimiter(rateLimitConfig)
       : defaultRateLimiter;
+
+    // Validate required environment variables
+    if (!process.env.VERUS_RPC_USER || !process.env.VERUS_RPC_PASSWORD) {
+      throw new Error(
+        'VERUS_RPC_USER and VERUS_RPC_PASSWORD environment variables are required'
+      );
+    }
   }
 
   /**
@@ -78,7 +85,7 @@ class RPCClient {
             Authorization:
               'Basic ' +
               Buffer.from(
-                `${process.env.VERUS_RPC_USER || 'verus'}:${process.env.VERUS_RPC_PASSWORD || 'verus'}`
+                `${process.env.VERUS_RPC_USER}:${process.env.VERUS_RPC_PASSWORD}`
               ).toString('base64'),
           },
           body: JSON.stringify({
@@ -129,7 +136,7 @@ class RPCClient {
             Authorization:
               'Basic ' +
               Buffer.from(
-                `${process.env.VERUS_RPC_USER || 'verus'}:${process.env.VERUS_RPC_PASSWORD || 'verus'}`
+                `${process.env.VERUS_RPC_USER}:${process.env.VERUS_RPC_PASSWORD}`
               ).toString('base64'),
           },
           body: JSON.stringify(
@@ -187,7 +194,7 @@ class RPCClient {
             Authorization:
               'Basic ' +
               Buffer.from(
-                `${process.env.VERUS_RPC_USER || 'verus'}:${process.env.VERUS_RPC_PASSWORD || 'verus'}`
+                `${process.env.VERUS_RPC_USER}:${process.env.VERUS_RPC_PASSWORD}`
               ).toString('base64'),
           },
           body: JSON.stringify(

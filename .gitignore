@@ -34,7 +34,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Local env files
+# Local env files - CRITICAL: Never commit these!
 .env
 .env*.local
 .env.local
@@ -46,6 +46,20 @@ yarn-error.log*
 .env.bak
 .env*.backup*
 *.env.bak
+
+# Security-sensitive files
+env.production.secure
+*.secure
+secrets/
+.secrets/
+credentials/
+.credentials/
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cert
 
 # Vercel
 .vercel
@@ -93,6 +107,10 @@ PHASE-*.md
 *-CHECKLIST.md
 *-STRATEGY.md
 *-REFERENCE.md
+
+# Security documentation (may contain sensitive info)
+SECURITY-CONFIGURATION.md
+SECURITY-CHECKLIST.md
 
 # Test data and scan results
 *.csv

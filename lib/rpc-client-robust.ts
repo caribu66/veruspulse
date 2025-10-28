@@ -3,6 +3,10 @@ import { enhancedLogger } from './utils/enhanced-logger';
 import { RPCErrorHandler } from './utils/rpc-error-handler';
 import { ListIdentitiesParams, RateLimitConfig } from './types/verus-rpc-types';
 import { RateLimiter, defaultRateLimiter } from './utils/rate-limiter';
+import {
+  circuitBreakerManager,
+  CIRCUIT_BREAKER_CONFIGS,
+} from './utils/circuit-breaker';
 
 interface RPCResponse {
   result?: any;
@@ -23,6 +27,13 @@ class VerusAPIClient {
     this.rateLimiter = rateLimitConfig
       ? new RateLimiter(rateLimitConfig)
       : defaultRateLimiter;
+
+    // Validate required environment variables
+    if (!process.env.VERUS_RPC_USER || !process.env.VERUS_RPC_PASSWORD) {
+      throw new Error(
+        'VERUS_RPC_USER and VERUS_RPC_PASSWORD environment variables are required'
+      );
+    }
   }
 
   private async sleep(ms: number): Promise<void> {
@@ -123,7 +134,7 @@ class VerusAPIClient {
             Authorization:
               'Basic ' +
               Buffer.from(
-                `${process.env.VERUS_RPC_USER || 'verus'}:${process.env.VERUS_RPC_PASSWORD || 'verus'}`
+                `${process.env.VERUS_RPC_USER}:${process.env.VERUS_RPC_PASSWORD}`
               ).toString('base64'),
           },
           body: JSON.stringify({
@@ -211,7 +222,11 @@ class VerusAPIClient {
     params: any[] = [],
     signal?: AbortSignal
   ): Promise<any> {
-    return this.callWithRetry(method, params, 3, signal);
+    return circuitBreakerManager.execute(
+      'RPC',
+      () => this.callWithRetry(method, params, 3, signal),
+      CIRCUIT_BREAKER_CONFIGS.RPC
+    );
   }
 
   /**
@@ -223,62 +238,68 @@ class VerusAPIClient {
     calls: Array<{ method: string; params?: any[] }>,
     signal?: AbortSignal
   ): Promise<Array<{ result?: T; error?: { code: number; message: string } }>> {
-    try {
-      logger.info(`🔍 Batch RPC Call: ${calls.length} requests`, {
-        methods: calls.map(c => c.method),
-      });
+    return circuitBreakerManager.execute(
+      'RPC_BATCH',
+      async () => {
+        try {
+          logger.info(`🔍 Batch RPC Call: ${calls.length} requests`, {
+            methods: calls.map(c => c.method),
+          });
 
-      // Rate limiting for batch calls
-      await this.rateLimiter.waitForAllow();
+          // Rate limiting for batch calls
+          await this.rateLimiter.waitForAllow();
 
-      const response = await fetch(`${this.baseUrl}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            'Basic ' +
-            Buffer.from(
-              `${process.env.VERUS_RPC_USER || 'verus'}:${process.env.VERUS_RPC_PASSWORD || 'verus'}`
-            ).toString('base64'),
-        },
-        body: JSON.stringify(
-          calls.map((call, index) => ({
-            jsonrpc: '2.0',
-            id: Date.now() + index,
-            method: call.method,
-            params: call.params || [],
-          }))
-        ),
-        signal: this.composeAbortSignal(signal, this.timeout),
-      });
+          const response = await fetch(`${this.baseUrl}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization:
+                'Basic ' +
+                Buffer.from(
+                  `${process.env.VERUS_RPC_USER || 'verus'}:${process.env.VERUS_RPC_PASSWORD || 'verus'}`
+                ).toString('base64'),
+            },
+            body: JSON.stringify(
+              calls.map((call, index) => ({
+                jsonrpc: '2.0',
+                id: Date.now() + index,
+                method: call.method,
+                params: call.params || [],
+              }))
+            ),
+            signal: this.composeAbortSignal(signal, this.timeout),
+          });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
 
-      const data: RPCResponse[] = await response.json();
+          const data: RPCResponse[] = await response.json();
 
-      const successCount = data.filter(item => !item.error).length;
-      const errorCount = data.filter(item => item.error).length;
+          const successCount = data.filter(item => !item.error).length;
+          const errorCount = data.filter(item => item.error).length;
 
-      logger.info(
-        `✅ Batch RPC Complete: ${successCount} success, ${errorCount} errors`
-      );
+          logger.info(
+            `✅ Batch RPC Complete: ${successCount} success, ${errorCount} errors`
+          );
 
-      return data.map(item => ({
-        result: item.result,
-        error: item.error,
-      }));
-    } catch (error: any) {
-      logger.error(`❌ Batch RPC Error:`, error);
-      // Return error for all calls
-      return calls.map(() => ({
-        error: {
-          code: -1,
-          message: error.message || 'Batch RPC failed',
-        },
-      }));
-    }
+          return data.map(item => ({
+            result: item.result,
+            error: item.error,
+          }));
+        } catch (error: any) {
+          logger.error(`❌ Batch RPC Error:`, error);
+          // Return error for all calls
+          return calls.map(() => ({
+            error: {
+              code: -1,
+              message: error.message || 'Batch RPC failed',
+            },
+          }));
+        }
+      },
+      CIRCUIT_BREAKER_CONFIGS.RPC
+    );
   }
 
   // Convenience methods for common RPC calls

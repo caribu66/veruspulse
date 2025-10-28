@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { CachedRPCClient } from '@/lib/cache/cached-rpc-client';
 import { verusAPI } from '@/lib/rpc-client-robust';
 import { logger } from '@/lib/utils/logger';
+import { ErrorSanitizer } from '@/lib/utils/error-sanitizer';
 
 export async function GET() {
   try {
@@ -97,13 +98,20 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Error fetching blockchain info:', error);
+    logger.error('Error fetching blockchain info:', error);
+
+    const sanitizedError = ErrorSanitizer.createSanitizedError(error, {
+      endpoint: '/api/blockchain-info',
+      method: 'GET',
+    });
 
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to fetch blockchain information',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        error: sanitizedError.message,
+        code: sanitizedError.code,
+        requestId: sanitizedError.requestId,
+        timestamp: sanitizedError.timestamp,
       },
       { status: 500 }
     );

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { WarningCircle, ArrowsClockwise } from '@phosphor-icons/react';
 import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
+import { ErrorSanitizer } from '@/lib/utils/error-sanitizer';
 
 export default function Error({
   error,
@@ -14,9 +15,18 @@ export default function Error({
   const { goBack } = useNavigationHistory();
 
   useEffect(() => {
-    // Log the error to an error reporting service
-    console.error('Application error:', error);
+    // Log the error to an error reporting service with sanitization
+    const sanitizedError = ErrorSanitizer.createSanitizedError(error, {
+      endpoint: 'error-boundary',
+      method: 'render',
+    });
+
+    console.error('Application error:', sanitizedError);
   }, [error]);
+
+  // Sanitize error message for display
+  const sanitizedMessage = ErrorSanitizer.sanitizeMessage(error.message);
+  const sanitizedStack = ErrorSanitizer.sanitizeStack(error.stack || '');
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-verus-blue/20 to-verus-green/20">
@@ -39,11 +49,11 @@ export default function Error({
           {process.env.NODE_ENV === 'development' && (
             <details className="mb-6 text-left">
               <summary className="text-blue-300 cursor-pointer mb-2">
-                Error Details (Development)
+                Error Details (Development - Sanitized)
               </summary>
               <pre className="bg-black/20 p-3 rounded text-xs text-red-300 overflow-auto">
-                {error.message}
-                {error.stack && `\n\n${error.stack}`}
+                {sanitizedMessage}
+                {sanitizedStack && `\n\n${sanitizedStack}`}
               </pre>
             </details>
           )}

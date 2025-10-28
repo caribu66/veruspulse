@@ -5,6 +5,7 @@ import {
   getCachedIdentity,
   cacheIdentity,
 } from '@/lib/verusid-cache';
+import { validateVerusIDFormat } from '@/lib/utils/verusid-validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,6 +15,21 @@ export async function POST(request: NextRequest) {
     if (!input) {
       return NextResponse.json(
         { success: false, error: 'VerusID input required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate VerusID format and provide helpful error messages
+    const validation = validateVerusIDFormat(input);
+    if (!validation.isValid) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: validation.error,
+          suggestion: validation.suggestion,
+          correctedFormat: validation.correctedFormat,
+          examples: ['pancho77@', 'joanna@', 'allbits.VRSC@'],
+        },
         { status: 400 }
       );
     }

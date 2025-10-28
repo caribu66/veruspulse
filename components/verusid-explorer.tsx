@@ -110,6 +110,11 @@ export function VerusIDExplorer() {
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [stakingLoading, setStakingLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = useState<{
+    suggestion?: string;
+    correctedFormat?: string;
+    examples?: string[];
+  } | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [showScanProgress, setShowScanProgress] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
@@ -280,6 +285,7 @@ export function VerusIDExplorer() {
     try {
       setLoading(true);
       setError(null);
+      setErrorDetails(null);
 
       // Use apiFetch for retries; if it fails, it will throw or return null
       const result = await apiFetch('/api/verusid/lookup', {
@@ -293,6 +299,7 @@ export function VerusIDExplorer() {
 
       if (!result) {
         setError('Network error while fetching identity');
+        setErrorDetails(null);
         return;
       }
 
@@ -463,7 +470,17 @@ export function VerusIDExplorer() {
           }
         })();
       } else {
+        // Show detailed error with suggestions if available
         setError(result.error || 'Identity not found');
+        if (result.suggestion || result.correctedFormat || result.examples) {
+          setErrorDetails({
+            suggestion: result.suggestion,
+            correctedFormat: result.correctedFormat,
+            examples: result.examples,
+          });
+        } else {
+          setErrorDetails(null);
+        }
       }
     } catch (err) {
       if ((err as any)?.name === 'AbortError') {
@@ -674,7 +691,7 @@ export function VerusIDExplorer() {
                   type="text"
                   value={identity}
                   onChange={e => setIdentity(e.target.value)}
-                  placeholder="Enter VerusID (e.g., @username)"
+                  placeholder="Enter VerusID (e.g., username@ or joanna@)"
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   onKeyPress={e => {
                     if (e.key === 'Enter') {
@@ -1660,8 +1677,60 @@ export function VerusIDExplorer() {
               </div>
               <div className="text-red-300 text-sm mt-1">{error}</div>
 
+              {/* Format error details with helpful suggestions */}
+              {errorDetails && (
+                <div className="mt-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                  {errorDetails.suggestion && (
+                    <div className="mb-3">
+                      <p className="text-blue-200 text-sm font-medium mb-1">
+                        💡 Suggestion:
+                      </p>
+                      <p className="text-blue-100 text-sm">
+                        {errorDetails.suggestion}
+                      </p>
+                    </div>
+                  )}
+
+                  {errorDetails.correctedFormat && (
+                    <div className="mb-3">
+                      <button
+                        onClick={() => {
+                          setIdentity(errorDetails.correctedFormat!);
+                          setError(null);
+                          setErrorDetails(null);
+                          void searchIdentity(errorDetails.correctedFormat!);
+                        }}
+                        className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors flex items-center gap-2"
+                      >
+                        <span>Try: {errorDetails.correctedFormat}</span>
+                        <span>→</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {errorDetails.examples &&
+                    errorDetails.examples.length > 0 && (
+                      <div>
+                        <p className="text-blue-200 text-sm font-medium mb-2">
+                          Valid formats:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {errorDetails.examples.map((example, idx) => (
+                            <code
+                              key={idx}
+                              className="px-2 py-1 bg-blue-500/20 text-blue-100 rounded text-xs"
+                            >
+                              {example}
+                            </code>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                </div>
+              )}
+
               {/* Helpful suggestions for "not found" errors */}
-              {error.toLowerCase().includes('not found') && (
+              {error.toLowerCase().includes('not found') && !errorDetails && (
                 <div className="mt-4 bg-red-500/10 rounded-lg p-4">
                   <p className="text-red-200 text-sm font-medium mb-2">
                     💡 Suggestions:
@@ -1669,8 +1738,7 @@ export function VerusIDExplorer() {
                   <ul className="text-red-200 text-sm space-y-1 list-disc list-inside">
                     <li>Check the spelling of the VerusID</li>
                     <li>
-                      Try with or without the @ symbol (e.g.,
-                      &quot;username@&quot; or &quot;@username&quot;)
+                      VerusID names end with @ (e.g., &quot;username@&quot;)
                     </li>
                     <li>Ensure the identity is registered on the main chain</li>
                     <li>
@@ -1682,17 +1750,20 @@ export function VerusIDExplorer() {
               )}
 
               {/* Retry button */}
-              <button
-                onClick={() => {
-                  setError(null);
-                  if (identity.trim()) {
-                    searchIdentity();
-                  }
-                }}
-                className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition-colors"
-              >
-                Try Again
-              </button>
+              {!errorDetails?.correctedFormat && (
+                <button
+                  onClick={() => {
+                    setError(null);
+                    setErrorDetails(null);
+                    if (identity.trim()) {
+                      searchIdentity();
+                    }
+                  }}
+                  className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition-colors"
+                >
+                  Try Again
+                </button>
+              )}
             </div>
           </div>
         </div>

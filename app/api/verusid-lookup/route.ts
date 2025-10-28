@@ -6,6 +6,10 @@ import { enhancedLogger } from '@/lib/utils/enhanced-logger';
 import { SearchDatabaseService } from '@/lib/services/search-database';
 import { getCachedIdentity, cacheIdentity } from '@/lib/verusid-cache';
 import { needsPriorityScan } from '@/lib/services/priority-verusid-scanner';
+import {
+  validateVerusIDFormat,
+  autoCorrectVerusID,
+} from '@/lib/utils/verusid-validation';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -21,6 +25,22 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Identity is required',
+        },
+        { status: 400 }
+      );
+      return addSecurityHeaders(response);
+    }
+
+    // Validate VerusID format and provide helpful error messages
+    const validation = validateVerusIDFormat(identity);
+    if (!validation.isValid) {
+      const response = NextResponse.json(
+        {
+          success: false,
+          error: validation.error,
+          suggestion: validation.suggestion,
+          correctedFormat: validation.correctedFormat,
+          examples: ['pancho77@', 'joanna@', 'allbits.VRSC@'],
         },
         { status: 400 }
       );

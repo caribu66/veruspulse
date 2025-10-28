@@ -1502,6 +1502,31 @@ nav a:hover::after,
   }
 }
 
+/* PWA Install Prompt Animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* PWA Fullscreen adjustments */
+@media (display-mode: standalone) {
+  /* Add any PWA-specific styles here */
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
 /* Light theme - Backdrop & Effects */
 [data-theme='light'] .backdrop-blur-sm {
   background-color: rgb(255 255 255 / 90%) !important;

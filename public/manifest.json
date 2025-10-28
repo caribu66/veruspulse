@@ -1,0 +1,130 @@
+{
+  "name": "VerusPulse - Verus Protocol Explorer",
+  "short_name": "VerusPulse",
+  "description": "Explore the Verus Protocol ecosystem - The Internet of Value. Track transactions, monitor staking, explore VerusID, and discover the multi-chain Verus network.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3165d4",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "blockchain", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Search VerusID",
+      "short_name": "Search",
+      "description": "Look up a VerusID",
+      "url": "/verusid",
+      "icons": [
+        {
+          "src": "/icons/icon-search.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Trending",
+      "short_name": "Trending",
+      "description": "View trending content",
+      "url": "/trending",
+      "icons": [
+        {
+          "src": "/icons/icon-trending.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Browse VerusIDs",
+      "short_name": "Browse",
+      "description": "Explore all VerusIDs",
+      "url": "/verusid/browse",
+      "icons": [
+        {
+          "src": "/icons/icon-browse.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "scope": "/",
+  "id": "/?source=pwa",
+  "iarc_rating_id": "",
+  "share_target": {
+    "action": "/verusid",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

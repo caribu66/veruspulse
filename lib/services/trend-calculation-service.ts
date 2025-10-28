@@ -14,11 +14,12 @@ export class TrendCalculationService {
     try {
       console.log('Starting trend calculation for all VerusIDs...');
 
-      // Get all VerusIDs with recent staking activity
+      // Get all VerusIDs with recent staking activity (direct I-address stakes only)
       const verusidsQuery = `
         SELECT DISTINCT identity_address 
         FROM staking_rewards 
         WHERE block_time >= NOW() - INTERVAL '14 days'
+          AND source_address = identity_address
         ORDER BY identity_address
       `;
 
@@ -102,6 +103,7 @@ export class TrendCalculationService {
       SELECT DISTINCT identity_address 
       FROM staking_rewards 
       WHERE block_time >= NOW() - INTERVAL '14 days'
+        AND source_address = identity_address
         AND identity_address NOT IN (
           SELECT verusid_address 
           FROM verusid_trend_metrics 

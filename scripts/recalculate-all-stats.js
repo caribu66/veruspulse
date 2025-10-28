@@ -54,6 +54,7 @@ async function getIdentitiesWithStakes() {
 // Recalculate statistics for a single identity
 async function recalculateStats(identityAddress) {
   // Get aggregated stats from staking_rewards
+  // CRITICAL: Only count stakes where source_address = identity_address (direct I-address stakes)
   const statsQuery = `
     SELECT 
       COUNT(*) as total_stakes,
@@ -64,7 +65,8 @@ async function recalculateStats(identityAddress) {
       MIN(amount_sats) as lowest_reward_satoshis,
       AVG(amount_sats) as avg_reward_amount_satoshis
     FROM staking_rewards
-    WHERE identity_address = $1
+    WHERE identity_address = $1 
+    AND source_address = identity_address
   `;
 
   const result = await pool.query(statsQuery, [identityAddress]);

@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
         COALESCE(i.friendly_name, i.base_name || '.VRSC@') as friendly_name
       FROM staking_rewards sr
       LEFT JOIN identities i ON sr.identity_address = i.identity_address
+      WHERE sr.source_address = sr.identity_address  -- CRITICAL: Only count direct I-address stakes
       ORDER BY sr.identity_address
     `;
 
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
     for (const identity of identities) {
       try {
         // Get stats for this identity
+        // CRITICAL: Only count stakes where source_address = identity_address (direct I-address stakes)
         const statsQuery = `
           SELECT 
             COUNT(*) as total_stakes,
@@ -47,6 +49,7 @@ export async function POST(request: NextRequest) {
             MAX(block_time) as last_stake_time
           FROM staking_rewards
           WHERE identity_address = $1
+          AND source_address = identity_address
         `;
 
         const statsResult = await db.query(statsQuery, [

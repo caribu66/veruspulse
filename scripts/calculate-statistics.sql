@@ -53,6 +53,7 @@ SELECT
             SELECT SUM(amount_sats)::float / 100000000 
             FROM staking_rewards 
             WHERE identity_address = sr.identity_address 
+            AND source_address = identity_address  -- CRITICAL: Only count direct I-address stakes
             AND block_time > NOW() - INTERVAL '30 days'
         ) / 
         (CASE 
@@ -86,6 +87,7 @@ SELECT
     NOW() as updated_at
 FROM staking_rewards sr
 JOIN identities i ON sr.identity_address = i.identity_address
+WHERE sr.source_address = sr.identity_address  -- CRITICAL: Only count direct I-address stakes
 GROUP BY sr.identity_address, i.friendly_name, i.base_name
 HAVING COUNT(*) > 0;
 

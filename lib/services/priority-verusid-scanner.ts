@@ -66,6 +66,7 @@ async function hasCompleteStakingData(
       SELECT COUNT(*) as stake_count
       FROM staking_rewards 
       WHERE identity_address = $1
+        AND source_address = identity_address
     `,
       [identityAddress]
     );
@@ -81,6 +82,7 @@ async function hasCompleteStakingData(
       SELECT MAX(block_time) as last_stake
       FROM staking_rewards 
       WHERE identity_address = $1
+        AND source_address = identity_address
     `,
       [identityAddress]
     );
@@ -234,6 +236,7 @@ export async function priorityScanVerusID(identityAddress: string): Promise<{
       SELECT MAX(block_height) as last_height
       FROM staking_rewards 
       WHERE identity_address = $1
+        AND source_address = identity_address
     `,
       [identityAddress]
     );
@@ -339,7 +342,7 @@ async function calculateVerusIDStatistics(identityAddress: string) {
       [identityAddress]
     );
 
-    // Calculate new statistics
+    // Calculate new statistics (only count direct I-address stakes)
     const statsResult = await db.query(
       `
       SELECT 
@@ -349,6 +352,7 @@ async function calculateVerusIDStatistics(identityAddress: string) {
         MAX(block_time) as last_stake_time
       FROM staking_rewards 
       WHERE identity_address = $1
+        AND source_address = identity_address
     `,
       [identityAddress]
     );

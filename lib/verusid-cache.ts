@@ -146,8 +146,8 @@ export async function resolveVerusID(input: string): Promise<{
 export async function getCachedStats(identityAddress: string) {
   const result = await pool.query(
     `SELECT 
-       (SELECT COUNT(*)::int FROM staking_rewards WHERE identity_address = $1) as total_rewards,
-       (SELECT COALESCE(SUM(amount_sats), 0)::bigint FROM staking_rewards WHERE identity_address = $1) as total_sats,
+       (SELECT COUNT(*)::int FROM staking_rewards WHERE identity_address = $1 AND source_address = identity_address) as total_rewards,
+       (SELECT COALESCE(SUM(amount_sats), 0)::bigint FROM staking_rewards WHERE identity_address = $1 AND source_address = identity_address) as total_sats,
        (SELECT array_agg(json_build_object('day', day, 'rewards', rewards, 'vrsc', (total_sats::numeric / 100000000)) ORDER BY day DESC) 
         FROM staking_daily WHERE identity_address = $1 LIMIT 90) as daily_stats
     `,

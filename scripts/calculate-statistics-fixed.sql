@@ -54,6 +54,7 @@ SELECT
             SELECT COALESCE(SUM(amount_sats)::numeric, 0) / 100000000 
             FROM staking_rewards 
             WHERE identity_address = sr.identity_address 
+            AND source_address = identity_address
             AND block_time > NOW() - INTERVAL '30 days'
         ) / 30 * 365 * 100
         ELSE 0 
@@ -98,7 +99,7 @@ SELECT
     
     -- Highest/lowest rewards
     MAX(sr.amount_sats) as highest_reward_satoshis,
-    (SELECT block_time FROM staking_rewards WHERE identity_address = sr.identity_address ORDER BY amount_sats DESC LIMIT 1) as highest_reward_date,
+    (SELECT block_time FROM staking_rewards WHERE identity_address = sr.identity_address AND source_address = identity_address ORDER BY amount_sats DESC LIMIT 1) as highest_reward_date,
     MIN(sr.amount_sats) as lowest_reward_satoshis,
     
     NOW() as last_calculated,
@@ -107,6 +108,7 @@ SELECT
     
 FROM staking_rewards sr
 LEFT JOIN identities i ON sr.identity_address = i.identity_address
+WHERE sr.source_address = sr.identity_address  -- CRITICAL: Only count direct I-address stakes
 GROUP BY sr.identity_address, i.friendly_name, i.base_name
 HAVING COUNT(*) > 0;
 

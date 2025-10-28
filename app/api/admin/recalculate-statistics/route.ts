@@ -28,32 +28,21 @@ export async function POST(request: NextRequest) {
         total_rewards_satoshis,
         first_stake_time,
         last_stake_time,
-        apy_all_time,
-        staking_efficiency,
-        network_rank,
         created_at,
         updated_at
       )
       SELECT 
         sr.identity_address as address,
         COALESCE(i.friendly_name, i.base_name || '.VRSC@') as friendly_name,
-        COUNT(*) as total_stakes,
-        SUM(sr.amount_sats) as total_rewards_satoshis,
+        COUNT(*)::integer as total_stakes,
+        SUM(sr.amount_sats)::bigint as total_rewards_satoshis,
         MIN(sr.block_time) as first_stake_time,
         MAX(sr.block_time) as last_stake_time,
-        -- Simple APY calculation
-        CASE 
-          WHEN EXTRACT(EPOCH FROM (MAX(sr.block_time) - MIN(sr.block_time))) > 86400 
-          THEN (SUM(sr.amount_sats)::numeric / 100000000) / 
-               (EXTRACT(EPOCH FROM (MAX(sr.block_time) - MIN(sr.block_time))) / 31536000) * 100
-          ELSE 0 
-        END as apy_all_time,
-        0 as staking_efficiency,
-        ROW_NUMBER() OVER (ORDER BY SUM(sr.amount_sats) DESC) as network_rank,
         NOW() as created_at,
         NOW() as updated_at
       FROM staking_rewards sr
       LEFT JOIN identities i ON sr.identity_address = i.identity_address
+      WHERE sr.source_address = sr.identity_address  -- CRITICAL: Only count direct I-address stakes
       GROUP BY sr.identity_address, i.friendly_name, i.base_name
       HAVING COUNT(*) > 0
     `;
@@ -61,10 +50,8 @@ export async function POST(request: NextRequest) {
     await db.query(recalcQuery);
     logger.info('✅ Recalculated verusid_statistics');
 
-    // Refresh materialized views
-    logger.info('🔄 Refreshing materialized views...');
-    await db.query('REFRESH MATERIALIZED VIEW staking_daily');
-    logger.info('✅ Refreshed staking_daily materialized view');
+    // Skip materialized view refresh for now (may cause overflow)
+    logger.info('⏭️  Skipping materialized view refresh');
 
     // Get final stats
     const statsQuery = `

@@ -119,6 +119,7 @@ BEGIN
   INTO recent_stakes, recent_rewards
   FROM staking_rewards 
   WHERE identity_address = target_address 
+    AND source_address = identity_address  -- CRITICAL: Only count direct I-address stakes
     AND block_time >= NOW() - INTERVAL '7 days';
   
   -- Get recent views (last 7 days)
@@ -135,6 +136,7 @@ BEGIN
   INTO baseline_stakes, baseline_rewards
   FROM staking_rewards 
   WHERE identity_address = target_address 
+    AND source_address = identity_address  -- CRITICAL: Only count direct I-address stakes
     AND block_time >= NOW() - INTERVAL '14 days'
     AND block_time < NOW() - INTERVAL '7 days';
   

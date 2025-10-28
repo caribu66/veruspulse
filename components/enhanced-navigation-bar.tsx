@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Image from 'next/image';
 import {
   ChartBar,
   MagnifyingGlass,
@@ -62,28 +61,7 @@ export function EnhancedNavigationBar({
           role="navigation"
           aria-label="Primary navigation"
         >
-          {/* Left: Logo */}
-          <div className="flex items-center flex-shrink-0">
-            <div className="flex items-center justify-center relative">
-              {/* Verus Logo - Ultra-compact size */}
-              <div className="flex items-center">
-                <div className="relative h-6 sm:h-7 md:h-8 w-auto">
-                  <Image
-                    src={
-                      theme === 'dark'
-                        ? '/verus-mark-slogan-white.png'
-                        : '/verus-mark-slogan-blue.png'
-                    }
-                    alt="Verus - Truth and Privacy for All"
-                    width={300}
-                    height={72}
-                    className="object-contain h-6 sm:h-7 md:h-8"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Left: Logo - Removed */}
 
           {/* Right: Controls */}
           <div className="flex items-center space-x-3 md:space-x-4 lg:space-x-6 flex-shrink-0">

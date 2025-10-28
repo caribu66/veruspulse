@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import Image from 'next/image';
 import {
   List,
   X,
@@ -92,23 +91,7 @@ export function CompactNavigationBar({
           role="navigation"
           aria-label="Primary navigation"
         >
-          {/* Left: Logo */}
-          <div className="flex items-center flex-shrink-0">
-            <div className="relative h-12 w-auto">
-              <Image
-                src={
-                  theme === 'dark'
-                    ? '/verus-mark-slogan-white.png'
-                    : '/verus-mark-slogan-blue.png'
-                }
-                alt="Verus - Truth and Privacy for All"
-                width={200}
-                height={48}
-                className="object-contain h-12"
-                priority
-              />
-            </div>
-          </div>
+          {/* Left: Logo - Removed */}
 
           {/* Center: Compact Navigation */}
           <div className="hidden lg:flex items-center space-x-2 flex-1 justify-center mx-6">

@@ -210,6 +210,12 @@ jobs:
           # Security
           JWT_SECRET=${{ secrets.JWT_SECRET }}
 
+          # Redis Configuration
+          REDIS_HOST=${{ secrets.REDIS_HOST }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          REDIS_DB=${{ secrets.REDIS_DB }}
+
           # Cache Configuration
           CACHE_TTL_BLOCKCHAIN=30
           CACHE_TTL_BLOCK=300
@@ -270,6 +276,12 @@ jobs:
           VERUS_RPC_USER=${{ secrets.STAGING_VERUS_RPC_USER }}
           VERUS_RPC_PASSWORD=${{ secrets.STAGING_VERUS_RPC_PASSWORD }}
           NODE_ENV=development
+
+          # Redis Configuration
+          REDIS_HOST=${{ secrets.REDIS_HOST }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          REDIS_DB=${{ secrets.REDIS_DB }}
           EOF
 
       - name: Build application

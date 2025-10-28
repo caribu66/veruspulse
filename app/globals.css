@@ -573,7 +573,7 @@ button {
   border-radius: 12px;
   display: flex;
   align-items: center;
-  justify-center;
+  justify-content: center;
   margin-bottom: 12px;
 }
 

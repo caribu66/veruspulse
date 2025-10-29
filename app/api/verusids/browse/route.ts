@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
+// Disable caching - always fetch fresh data
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 let dbPool: Pool | null = null;
 
 function getDbPool() {
@@ -118,7 +122,9 @@ export async function GET(request: NextRequest) {
       LIMIT $1 OFFSET $2
     `;
 
+    console.log('Executing browse query with params:', queryParams.slice(0, 5));
     const result = await db.query(query, queryParams);
+    console.log('Query returned', result.rows.length, 'rows');
 
     // Get total count for pagination with SAME trending filter
     const countQuery = `
@@ -126,28 +132,53 @@ export async function GET(request: NextRequest) {
       FROM identities i
       ${searchCondition}
     `;
-    const countParams = search ? [`%${search}%`] : [];
+    // Use same params as main query, but without limit/offset
+    const countParams = queryParams.slice(2);
     const countResult = await db.query(countQuery, countParams);
     const total = parseInt(countResult.rows[0]?.total) || 0;
 
     // Format results - USE THE DATABASE DATA DIRECTLY!
-    const identities = result.rows.map(row => ({
-      address: row.identity_address,
-      name: row.base_name || 'unknown',
-      friendlyName: row.friendly_name || `${row.base_name || 'unknown'}.VRSC@`,
-      displayName: row.friendly_name || row.base_name || row.identity_address,
-      firstSeenBlock: row.effective_first_seen_block, // Use the fallback value
-      lastScannedBlock: row.last_scanned_block,
-      lastRefreshed: row.last_refreshed_at,
-      totalStakes: row.total_stakes || 0,
-      totalRewardsVRSC: row.total_rewards_satoshis
-        ? parseFloat(row.total_rewards_satoshis) / 100000000
-        : 0,
-      lastStake: row.last_stake_time,
-      apyAllTime: row.apy_all_time ? parseFloat(row.apy_all_time) : null,
-      networkRank: row.network_rank,
-      totalValueVRSC: 0, // We'll get balance data separately if needed
-    }));
+    const identities = result.rows.map(row => {
+      const lastStakeTime = row.last_stake_time;
+      const now = new Date();
+      const lastStake = lastStakeTime ? new Date(lastStakeTime) : null;
+      const daysSinceLastStake = lastStake
+        ? Math.floor(
+            (now.getTime() - lastStake.getTime()) / (1000 * 60 * 60 * 24)
+          )
+        : null;
+
+      // Determine activity status based on last stake time
+      let activityStatus: 'active' | 'inactive' = 'inactive';
+      if (lastStake && daysSinceLastStake !== null) {
+        if (daysSinceLastStake <= 7) {
+          activityStatus = 'active';
+        } else if (daysSinceLastStake <= 30) {
+          activityStatus = 'active';
+        }
+      }
+
+      return {
+        address: row.identity_address,
+        name: row.base_name || 'unknown',
+        friendlyName:
+          row.friendly_name || `${row.base_name || 'unknown'}.VRSC@`,
+        displayName: row.friendly_name || row.base_name || row.identity_address,
+        firstSeenBlock: row.effective_first_seen_block, // Use the fallback value
+        lastScannedBlock: row.last_scanned_block,
+        lastRefreshed: row.last_refreshed_at,
+        totalStakes: row.total_stakes || 0,
+        totalRewardsVRSC: row.total_rewards_satoshis
+          ? parseFloat(row.total_rewards_satoshis) / 100000000
+          : 0,
+        lastStake: row.last_stake_time,
+        apyAllTime: row.apy_all_time ? parseFloat(row.apy_all_time) : null,
+        networkRank: row.network_rank,
+        totalValueVRSC: 0, // We'll get balance data separately if needed
+        activityStatus,
+        daysSinceLastStake,
+      };
+    });
 
     // Calculate pagination metadata
     const totalPages = Math.ceil(total / limit);

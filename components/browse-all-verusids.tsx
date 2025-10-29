@@ -110,17 +110,8 @@ export function BrowseAllVerusIDs() {
             lowestRewardVRSC: 0,
             lastCalculated: null,
             dataCompleteness: 100,
-            activityStatus: identity.lastStake
-              ? 'active'
-              : identity.totalValueVRSC > 0
-                ? 'active'
-                : 'inactive',
-            daysSinceLastStake: identity.lastStake
-              ? Math.floor(
-                  (Date.now() - new Date(identity.lastStake).getTime()) /
-                    (1000 * 60 * 60 * 24)
-                )
-              : null,
+            activityStatus: identity.activityStatus || 'inactive',
+            daysSinceLastStake: identity.daysSinceLastStake || null,
           })
         );
         setIdentities(mappedIdentities);

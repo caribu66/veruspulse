@@ -52,6 +52,8 @@ import { HeatmapCalendar } from './charts/heatmap-calendar';
 import { StakingReportExporter } from './staking-report-exporter';
 import { DashboardSkeleton } from './animations/skeleton-loader';
 import { VerusIDLoadingWithSync } from './verusid-loading-with-sync';
+import { ActivitySnapshot } from './activity-snapshot';
+import { RecentStakesTimeline } from './recent-stakes-timeline';
 
 // Register ECharts components
 echarts.use([
@@ -85,7 +87,7 @@ export function VerusIDStakingDashboard({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(['hero', 'performance', 'overview', 'weekly'])
+    new Set(['hero', 'activity-snapshot', 'performance', 'recent-stakes'])
   );
   const [liveUTXOData, setLiveUTXOData] = useState<any>(null);
   const [achievements, setAchievements] = useState<any>(null);
@@ -656,8 +658,16 @@ export function VerusIDStakingDashboard({
         </div>
       )}
 
+      {/* Activity Snapshot - NEW */}
+      <ActivitySnapshot
+        iaddr={iaddr}
+        stats={stats}
+        networkParticipation={networkParticipation}
+        stakingMomentum={stakingMomentum}
+      />
+
       {/* Key Performance Metrics */}
-      <div className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-6 xl:p-8 border border-slate-600/30 shadow-2xl">
+      <div className="bg-slate-800/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-6 xl:p-8 border border-slate-600/50 shadow-2xl">
         <div className="mb-3 sm:mb-4 lg:mb-6">
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-1 sm:mb-2">
             Key Performance Metrics
@@ -669,8 +679,8 @@ export function VerusIDStakingDashboard({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {/* Total Rewards */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-500/20 to-slate-400/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-            <div className="relative bg-gradient-to-br from-slate-500/10 to-slate-400/10 border border-slate-500/30 rounded-xl p-3 sm:p-4 lg:p-5 hover:border-slate-500/50 transition-all">
+            <div className="absolute inset-0 bg-slate-500/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="relative bg-slate-700/30 border border-slate-500/30 rounded-xl p-3 sm:p-4 lg:p-5 hover:border-slate-500/50 transition-all">
               <div className="flex items-center justify-between mb-2 sm:mb-3">
                 <div className="p-1.5 sm:p-2 bg-slate-600/20 rounded-lg">
                   <Medal className="h-5 w-5 sm:h-6 sm:w-6 text-slate-300" />
@@ -714,8 +724,8 @@ export function VerusIDStakingDashboard({
 
           {/* APY */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-600/20 to-slate-500/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-            <div className="relative bg-gradient-to-br from-slate-600/10 to-slate-500/10 border border-slate-600/30 rounded-xl p-5 hover:border-slate-600/50 transition-all">
+            <div className="absolute inset-0 bg-slate-600/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="relative bg-slate-700/30 border border-slate-600/30 rounded-xl p-5 hover:border-slate-600/50 transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-slate-600/20 rounded-lg">
                   <TrendUp className="h-6 w-6 text-slate-300" />
@@ -790,8 +800,8 @@ export function VerusIDStakingDashboard({
 
           {/* Total Stakes */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-700/20 to-slate-600/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-            <div className="relative bg-gradient-to-br from-slate-700/10 to-slate-600/10 border border-slate-700/30 rounded-xl p-5 hover:border-slate-700/50 transition-all">
+            <div className="absolute inset-0 bg-slate-700/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="relative bg-slate-700/30 border border-slate-700/30 rounded-xl p-5 hover:border-slate-700/50 transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-slate-700/20 rounded-lg">
                   <Pulse className="h-6 w-6 text-slate-300" />
@@ -829,8 +839,8 @@ export function VerusIDStakingDashboard({
 
           {/* Network Rank */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-800/20 to-slate-700/20 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
-            <div className="relative bg-gradient-to-br from-slate-800/10 to-slate-700/10 border border-slate-800/30 rounded-xl p-5 hover:border-slate-800/50 transition-all">
+            <div className="absolute inset-0 bg-slate-800/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="relative bg-slate-700/30 border border-slate-800/30 rounded-xl p-5 hover:border-slate-800/50 transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-slate-800/20 rounded-lg">
                   <Trophy className="h-6 w-6 text-slate-300" />
@@ -854,7 +864,7 @@ export function VerusIDStakingDashboard({
       </div>
 
       {/* Live Performance Dashboard */}
-      <div className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-3xl border border-slate-600/30 shadow-2xl">
+      <div className="bg-slate-800/80 backdrop-blur-sm rounded-3xl border border-slate-600/50 shadow-2xl">
         <div className="p-4 sm:p-6 lg:p-8 border-b border-slate-600/30">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 sm:space-x-4">
@@ -1486,6 +1496,31 @@ export function VerusIDStakingDashboard({
           </div>
         )}
       </div>
+
+      {/* Recent Stakes Timeline - NEW */}
+      <RecentStakesTimeline
+        iaddr={iaddr}
+        recentStakes={
+          stats?.timeSeries?.daily
+            ? stats.timeSeries.daily
+                .filter((day: any) => day.stakeCount > 0)
+                .flatMap((day: any) => {
+                  // Create an entry for each stake on that day
+                  return Array(day.stakeCount).fill({
+                    blockHeight: null, // No block height available from daily aggregates
+                    blockTime: day.date,
+                    amountVRSC: day.totalRewardsVRSC / day.stakeCount,
+                  });
+                })
+                .sort(
+                  (a: any, b: any) =>
+                    new Date(b.blockTime).getTime() -
+                    new Date(a.blockTime).getTime()
+                )
+                .slice(0, 50) // Get last 50 stake events
+            : []
+        }
+      />
 
       {/* Weekly Rewards Chart */}
       <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden">

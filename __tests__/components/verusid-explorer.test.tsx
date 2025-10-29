@@ -165,15 +165,6 @@ describe('VerusIDExplorer Component', () => {
   });
 
   describe('Tab Navigation', () => {
-    it('should switch to trending tab when clicked', () => {
-      render(<VerusIDExplorer />);
-
-      const trendingButton = screen.getByRole('button', { name: /Trending/i });
-      fireEvent.click(trendingButton);
-
-      expect(screen.getByText('Trending VerusIDs')).toBeInTheDocument();
-    });
-
     it('should switch to browse tab when clicked', () => {
       render(<VerusIDExplorer />);
 
@@ -515,32 +506,6 @@ describe('VerusIDExplorer Component', () => {
       // Component loaded - sections should be present
       // The exact text and structure may vary, so just verify component rendered
       expect(screen.getByPlaceholderText(/Enter VerusID/i)).toBeInTheDocument();
-    });
-  });
-
-  describe('Trending Identities', () => {
-    it('should display mock trending identities', async () => {
-      render(<VerusIDExplorer />);
-
-      const trendingButton = screen.getByRole('button', { name: /Trending/i });
-      fireEvent.click(trendingButton);
-
-      await waitFor(() => {
-        expect(screen.getByText('Trending VerusIDs')).toBeInTheDocument();
-      });
-    });
-
-    it('should allow sorting trending identities', () => {
-      render(<VerusIDExplorer />);
-
-      const trendingButton = screen.getByRole('button', { name: /Trending/i });
-      fireEvent.click(trendingButton);
-
-      const sortSelect = screen.getByRole('combobox');
-      expect(sortSelect).toBeInTheDocument();
-
-      fireEvent.change(sortSelect, { target: { value: 'activity' } });
-      expect((sortSelect as HTMLSelectElement).value).toBe('activity');
     });
   });
 

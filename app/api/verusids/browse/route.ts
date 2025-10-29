@@ -82,6 +82,7 @@ export async function GET(request: NextRequest) {
 
     // Main query with left join to staking stats and earliest block fallback
     // ONLY shows VerusIDs with direct I-address stakes in last 30 days
+    // Get last_stake_time directly from staking_rewards for real-time data
     const query = `
       SELECT 
         i.identity_address,
@@ -92,7 +93,7 @@ export async function GET(request: NextRequest) {
         i.last_refreshed_at,
         s.total_stakes,
         s.total_rewards_satoshis,
-        s.last_stake_time,
+        COALESCE(sr_recent.last_stake_time, s.last_stake_time) as last_stake_time,
         s.apy_all_time,
         s.network_rank,
         COALESCE(i.first_seen_block, sr.earliest_block) as effective_first_seen_block
@@ -104,6 +105,14 @@ export async function GET(request: NextRequest) {
         WHERE source_address = identity_address
         GROUP BY identity_address
       ) sr ON i.identity_address = sr.identity_address
+      LEFT JOIN (
+        SELECT 
+          identity_address, 
+          MAX(block_time) as last_stake_time
+        FROM staking_rewards
+        WHERE source_address = identity_address
+        GROUP BY identity_address
+      ) sr_recent ON i.identity_address = sr_recent.identity_address
       ${searchCondition}
       ${orderByClause}
       LIMIT $1 OFFSET $2

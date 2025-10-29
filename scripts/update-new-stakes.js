@@ -249,6 +249,8 @@ class IncrementalStakerScanner {
   }
 
   async saveStakes(stakes) {
+    const affectedAddresses = new Set();
+    
     for (const stake of stakes) {
       try {
         // CRITICAL: Only save stakes where rewards go to I-addresses
@@ -285,12 +287,13 @@ class IncrementalStakerScanner {
         }
 
         // Insert stake with UTXO-extracted amount
-        await this.pool.query(
+        const result = await this.pool.query(
           `INSERT INTO staking_rewards 
            (identity_address, txid, vout, block_height, block_hash, block_time, 
             amount_sats, classifier, source_address, stake_amount_sats)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-           ON CONFLICT (txid, vout) DO NOTHING`,
+           ON CONFLICT (txid, vout) DO NOTHING
+           RETURNING identity_address`,
           [
             stake.address,
             stake.txid,
@@ -305,10 +308,79 @@ class IncrementalStakerScanner {
           ]
         );
 
-        this.newStakesFound++;
+        // Track affected addresses (only if a new row was inserted)
+        if (result.rows.length > 0) {
+          affectedAddresses.add(stake.address);
+          this.newStakesFound++;
+        }
       } catch (error) {
         console.error(`❌ Error saving stake ${stake.txid}:`, error.message);
       }
+    }
+
+    // Update statistics for all affected addresses
+    if (affectedAddresses.size > 0) {
+      await this.updateStatisticsForAddresses(Array.from(affectedAddresses));
+    }
+  }
+
+  /**
+   * Update verusid_statistics.last_stake_time for affected addresses
+   */
+  async updateStatisticsForAddresses(identityAddresses) {
+    try {
+      // Update or create last_stake_time and total_stakes for each affected address
+      for (const address of identityAddresses) {
+        await this.pool.query(
+          `
+          INSERT INTO verusid_statistics (
+            address, 
+            last_stake_time,
+            total_stakes,
+            total_rewards_satoshis,
+            first_stake_time,
+            updated_at
+          )
+          SELECT 
+            $1,
+            MAX(block_time),
+            COUNT(*),
+            SUM(amount_sats),
+            MIN(block_time),
+            NOW()
+          FROM staking_rewards 
+          WHERE identity_address = $1 
+            AND source_address = identity_address
+          ON CONFLICT (address) 
+          DO UPDATE SET
+            last_stake_time = (
+              SELECT MAX(block_time) 
+              FROM staking_rewards 
+              WHERE identity_address = $1 
+                AND source_address = identity_address
+            ),
+            total_stakes = (
+              SELECT COUNT(*) 
+              FROM staking_rewards 
+              WHERE identity_address = $1 
+                AND source_address = identity_address
+            ),
+            total_rewards_satoshis = (
+              SELECT SUM(amount_sats) 
+              FROM staking_rewards 
+              WHERE identity_address = $1 
+                AND source_address = identity_address
+            ),
+            updated_at = NOW()
+          `,
+          [address]
+        );
+      }
+    } catch (error) {
+      console.error(
+        `⚠️  Error updating statistics for addresses: ${error.message}`
+      );
+      // Don't fail the whole operation if statistics update fails
     }
   }
 

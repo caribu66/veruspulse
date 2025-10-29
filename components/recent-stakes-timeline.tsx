@@ -9,6 +9,12 @@ import {
   CaretUp,
 } from '@phosphor-icons/react';
 import { formatCryptoValue } from '@/lib/utils/number-formatting';
+import {
+  ICON_SIZES,
+  ELEVATION,
+  TRANSITIONS,
+  HOVER_PATTERNS,
+} from '@/lib/constants/design-tokens';
 
 interface RecentStakesTimelineProps {
   iaddr: string;
@@ -53,7 +59,7 @@ export function RecentStakesTimeline({
     ? filteredStakes
     : filteredStakes.slice(0, showLimit);
 
-  // Format time ago
+  // Format time ago - now uses individual timestamps from database
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -92,7 +98,7 @@ export function RecentStakesTimeline({
 
   return (
     <div
-      className="bg-slate-800/80 backdrop-blur-sm rounded-3xl border border-slate-600/50 shadow-2xl overflow-hidden"
+      className={`bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-slate-600/50 ${ELEVATION.modal} overflow-hidden`}
       id="recent-stakes-timeline"
     >
       {/* Header */}
@@ -100,7 +106,7 @@ export function RecentStakesTimeline({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-purple-500/20 rounded-xl">
-              <Lightning className="h-6 w-6 text-purple-400" />
+              <Lightning className={`${ICON_SIZES.lg} text-purple-400`} />
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">Recent Stakes</h2>
@@ -192,12 +198,12 @@ export function RecentStakesTimeline({
             {displayStakes.map((stake: any, index: number) => (
               <div
                 key={stake.txid || index}
-                className="flex items-start space-x-4 bg-slate-700/30 hover:bg-slate-700/50 border border-slate-600/30 hover:border-purple-500/30 rounded-xl p-4 transition-all"
+                className={`flex items-start space-x-4 bg-slate-700/30 border border-slate-600/30 hover:border-purple-500/30 rounded-xl p-4 ${HOVER_PATTERNS.background} ${TRANSITIONS.all}`}
               >
                 {/* Timeline connector */}
                 <div className="flex flex-col items-center pt-1">
                   <div className="w-10 h-10 rounded-full bg-purple-500/20 border-2 border-purple-400/50 flex items-center justify-center flex-shrink-0">
-                    <Lightning className="h-4 w-4 text-purple-400" />
+                    <Lightning className={`${ICON_SIZES.sm} text-purple-400`} />
                   </div>
                   {index < displayStakes.length - 1 && (
                     <div className="w-0.5 h-full bg-slate-600/50 mt-2" />
@@ -220,13 +226,21 @@ export function RecentStakesTimeline({
                       </div>
                       <div className="flex items-center space-x-3 text-xs text-gray-400">
                         <span className="flex items-center space-x-1">
-                          <Clock className="h-3 w-3" />
+                          <Clock className={ICON_SIZES.xs} />
                           <span>{getTimeAgo(stake.blockTime)}</span>
                         </span>
-                        <span className="flex items-center space-x-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(stake.blockTime)}</span>
-                        </span>
+                        {stake.blockHeight ? (
+                          <span className="flex items-center space-x-1">
+                            <span className="font-mono">
+                              {stake.blockHeight}
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="flex items-center space-x-1">
+                            <Calendar className={ICON_SIZES.xs} />
+                            <span>{formatDate(stake.blockTime)}</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -248,18 +262,18 @@ export function RecentStakesTimeline({
                   setExpanded(true);
                 }
               }}
-              className="w-full px-4 py-2 bg-slate-700/50 hover:bg-slate-700/70 border border-slate-600/30 hover:border-purple-500/30 rounded-lg text-purple-300 hover:text-purple-200 transition-all flex items-center justify-center space-x-2"
+              className={`w-full px-4 py-2 bg-slate-700/50 border border-slate-600/30 hover:border-purple-500/30 hover:bg-slate-700/70 rounded-lg text-purple-300 hover:text-purple-200 ${HOVER_PATTERNS.button} ${TRANSITIONS.all} flex items-center justify-center space-x-2`}
             >
               {expanded ? (
                 <>
-                  <CaretUp className="h-4 w-4" />
+                  <CaretUp className={ICON_SIZES.sm} />
                   <span className="text-sm font-medium">
                     Show Less ({showLimit} stakes)
                   </span>
                 </>
               ) : (
                 <>
-                  <CaretDown className="h-4 w-4" />
+                  <CaretDown className={ICON_SIZES.sm} />
                   <span className="text-sm font-medium">
                     Show All {filteredStakes.length} Stakes
                   </span>

@@ -54,6 +54,11 @@ import { DashboardSkeleton } from './animations/skeleton-loader';
 import { VerusIDLoadingWithSync } from './verusid-loading-with-sync';
 import { ActivitySnapshot } from './activity-snapshot';
 import { RecentStakesTimeline } from './recent-stakes-timeline';
+import {
+  ICON_SIZES,
+  ELEVATION,
+  TRANSITIONS,
+} from '@/lib/constants/design-tokens';
 
 // Register ECharts components
 echarts.use([
@@ -95,6 +100,7 @@ export function VerusIDStakingDashboard({
     useState<NetworkParticipationData | null>(null);
   const [stakingMomentum, setStakingMomentum] =
     useState<StakingMomentumData | null>(null);
+  const [recentStakes, setRecentStakes] = useState<any[]>([]);
 
   // Real-time events for live updates - REDUCED FREQUENCY
   const {
@@ -202,6 +208,49 @@ export function VerusIDStakingDashboard({
     }
   }, [iaddr]);
 
+  const fetchRecentStakes = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/address/${iaddr}/utxo-history`);
+      const data = await response.json();
+
+      if (data.success && data.data.timeline) {
+        // Map to the format expected by RecentStakesTimeline
+        const stakes = data.data.timeline.map((event: any) => ({
+          blockHeight: event.blockHeight,
+          blockTime: event.blockTime,
+          amountVRSC: event.rewardAmount / 100000000, // Convert satoshis to VRSC
+          txid: event.txid,
+        }));
+
+        // Sort by block time descending and limit to 50
+        setRecentStakes(
+          stakes
+            .sort(
+              (a: any, b: any) =>
+                new Date(b.blockTime).getTime() -
+                new Date(a.blockTime).getTime()
+            )
+            .slice(0, 50)
+        );
+      }
+    } catch (err: any) {
+      console.warn('Failed to fetch individual stake events:', err);
+      // Fallback: use aggregated data if individual events fail
+      if (stats?.timeSeries?.daily) {
+        const fallbackStakes = stats.timeSeries.daily
+          .filter((day: any) => day.stakeCount > 0)
+          .flatMap((day: any) => {
+            return Array(day.stakeCount).fill({
+              blockHeight: null,
+              blockTime: day.date,
+              amountVRSC: day.totalRewardsVRSC / day.stakeCount,
+            });
+          });
+        setRecentStakes(fallbackStakes);
+      }
+    }
+  }, [iaddr, stats]);
+
   // Fetch all data when iaddr changes
   useEffect(() => {
     if (!iaddr) return;
@@ -219,6 +268,13 @@ export function VerusIDStakingDashboard({
     fetchNetworkParticipation,
     fetchStakingMomentum,
   ]);
+
+  // Fetch individual stake events after stats are loaded
+  useEffect(() => {
+    if (iaddr && stats) {
+      fetchRecentStakes();
+    }
+  }, [iaddr, stats, fetchRecentStakes]);
 
   const toggleSection = (section: string) => {
     const newExpanded = new Set(expandedSections);
@@ -593,7 +649,9 @@ export function VerusIDStakingDashboard({
     <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6 px-2 sm:px-4 lg:px-6 xl:px-8">
       {/* Page Header */}
       {stats.friendlyName && (
-        <div className="bg-gradient-to-r from-slate-600/20 to-slate-500/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-6 xl:p-8 border border-slate-500/30 text-center shadow-2xl">
+        <div
+          className={`bg-gradient-to-r from-slate-600/20 to-slate-500/20 backdrop-blur-sm rounded-2xl p-3 sm:p-4 lg:p-6 xl:p-8 border border-slate-500/30 text-center ${ELEVATION.modal}`}
+        >
           {/* Back Button */}
           {showBackButton && (
             <div className="flex justify-start mb-4">
@@ -667,7 +725,9 @@ export function VerusIDStakingDashboard({
       />
 
       {/* Key Performance Metrics */}
-      <div className="bg-slate-800/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-6 xl:p-8 border border-slate-600/50 shadow-2xl">
+      <div
+        className={`bg-slate-800/80 backdrop-blur-sm rounded-2xl p-3 sm:p-4 lg:p-6 xl:p-8 border border-slate-600/50 ${ELEVATION.modal}`}
+      >
         <div className="mb-3 sm:mb-4 lg:mb-6">
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-1 sm:mb-2">
             Key Performance Metrics
@@ -864,7 +924,9 @@ export function VerusIDStakingDashboard({
       </div>
 
       {/* Live Performance Dashboard */}
-      <div className="bg-slate-800/80 backdrop-blur-sm rounded-3xl border border-slate-600/50 shadow-2xl">
+      <div
+        className={`bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-slate-600/50 ${ELEVATION.modal}`}
+      >
         <div className="p-4 sm:p-6 lg:p-8 border-b border-slate-600/30">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 sm:space-x-4">
@@ -1497,30 +1559,8 @@ export function VerusIDStakingDashboard({
         )}
       </div>
 
-      {/* Recent Stakes Timeline - NEW */}
-      <RecentStakesTimeline
-        iaddr={iaddr}
-        recentStakes={
-          stats?.timeSeries?.daily
-            ? stats.timeSeries.daily
-                .filter((day: any) => day.stakeCount > 0)
-                .flatMap((day: any) => {
-                  // Create an entry for each stake on that day
-                  return Array(day.stakeCount).fill({
-                    blockHeight: null, // No block height available from daily aggregates
-                    blockTime: day.date,
-                    amountVRSC: day.totalRewardsVRSC / day.stakeCount,
-                  });
-                })
-                .sort(
-                  (a: any, b: any) =>
-                    new Date(b.blockTime).getTime() -
-                    new Date(a.blockTime).getTime()
-                )
-                .slice(0, 50) // Get last 50 stake events
-            : []
-        }
-      />
+      {/* Recent Stakes Timeline - Using Individual Stake Events */}
+      <RecentStakesTimeline iaddr={iaddr} recentStakes={recentStakes} />
 
       {/* Weekly Rewards Chart */}
       <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden">

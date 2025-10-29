@@ -1,53 +1,33 @@
+/**
+ * @deprecated This file has been consolidated into components/animations/skeleton-loader.tsx
+ * Please import from '@/components/animations/skeleton-loader' instead
+ *
+ * This file is kept for backward compatibility only.
+ */
+
 'use client';
 
-import { cn } from '@/lib/utils';
+// Re-export everything from the consolidated location
+export * from './animations/skeleton-loader';
 
-interface SkeletonProps {
-  className?: string;
-  variant?: 'text' | 'circular' | 'rectangular' | 'rounded';
-  width?: string | number;
-  height?: string | number;
-  animation?: 'pulse' | 'wave' | 'none';
-}
+// Legacy exports for backward compatibility
+import {
+  SkeletonLoader,
+  HeroStatsSkeleton,
+  ChartSkeleton,
+  UTXOHealthSkeleton,
+  DashboardSkeleton,
+} from './animations/skeleton-loader';
 
-export function Skeleton({
-  className,
-  variant = 'rectangular',
-  width,
-  height,
-  animation = 'pulse',
-}: SkeletonProps) {
-  const variantClasses = {
-    text: 'h-4 w-full',
-    circular: 'rounded-full',
-    rectangular: 'rounded-none',
-    rounded: 'rounded-lg',
-  };
+// Map old names to new names for backward compatibility
+export const Skeleton = SkeletonLoader;
+export const StatsCardSkeleton = () => (
+  <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+    <SkeletonLoader variant="stat" className="h-24" />
+  </div>
+);
 
-  const animationClasses = {
-    pulse: 'animate-pulse',
-    wave: 'animate-wave',
-    none: '',
-  };
-
-  return (
-    <div
-      className={cn(
-        'bg-white/10',
-        variantClasses[variant],
-        animationClasses[animation],
-        className
-      )}
-      style={{
-        width: width || undefined,
-        height: height || undefined,
-      }}
-    />
-  );
-}
-
-// Pre-built skeleton patterns
-export function StatsCardSkeleton() {
+export function ActivityCardSkeleton() {
   return (
     <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
       <div className="flex items-center justify-between mb-4">

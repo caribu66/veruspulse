@@ -299,6 +299,33 @@ export const SPACING_UTILS = {
 } as const;
 
 /**
+ * Hover Patterns
+ * Consistent hover states for interactive elements
+ *
+ * @example
+ * ```tsx
+ * import { HOVER_PATTERNS } from '@/lib/constants/design-tokens';
+ * <button className={`base-classes ${HOVER_PATTERNS.card}`}>
+ * ```
+ */
+export const HOVER_PATTERNS = {
+  /** Standard card hover - subtle border and background change */
+  card: 'hover:border-slate-600/50 hover:bg-slate-700/30',
+  /** Card hover with brand accent - blue border highlight */
+  cardAccent: 'hover:border-verus-blue/60 hover:bg-slate-700/30',
+  /** Button hover - scale effect for interactivity */
+  button: 'hover:scale-[1.02] active:scale-[0.98]',
+  /** Background hover only - for clickable backgrounds */
+  background: 'hover:bg-slate-700/50',
+  /** Border hover only - for subtle interactions */
+  border: 'hover:border-slate-600/50',
+  /** Group hover - for revealing elements on parent hover */
+  groupReveal: 'group-hover:opacity-100 opacity-0 transition-opacity',
+  /** Interactive element - combination of background and border */
+  interactive: 'hover:bg-slate-700/30 hover:border-slate-600/40',
+} as const;
+
+/**
  * Color Utilities
  * Common color combinations (references CSS variables)
  */
@@ -322,3 +349,4 @@ export type ElevationLevel = keyof typeof ELEVATION;
 export type Breakpoint = keyof typeof BREAKPOINTS;
 export type AnimationDuration = keyof typeof ANIMATION_DURATION;
 export type AnimationEasing = keyof typeof ANIMATION_EASING;
+export type HoverPattern = keyof typeof HOVER_PATTERNS;

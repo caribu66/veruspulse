@@ -12,6 +12,12 @@ import {
 } from '@phosphor-icons/react';
 import { AnimatedCounter } from './animations/counter-animation';
 import { SparklineChart } from './animations/sparkline-chart';
+import {
+  ICON_SIZES,
+  ELEVATION,
+  TRANSITIONS,
+  HOVER_PATTERNS,
+} from '@/lib/constants/design-tokens';
 
 interface ActivitySnapshotProps {
   iaddr: string;
@@ -173,13 +179,15 @@ export function ActivitySnapshot({
   const sparklineData = getSparklineData();
 
   return (
-    <div className="bg-slate-800/80 backdrop-blur-sm rounded-3xl border border-slate-600/50 shadow-2xl overflow-hidden">
+    <div
+      className={`bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-slate-600/50 ${ELEVATION.modal} overflow-hidden`}
+    >
       {/* Header */}
       <div className="bg-slate-700/50 border-b border-slate-600/50 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-500/20 rounded-xl">
-              <Lightning className="h-6 w-6 text-blue-400" />
+              <Lightning className={`${ICON_SIZES.lg} text-blue-400`} />
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">
@@ -197,9 +205,11 @@ export function ActivitySnapshot({
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Last Stake */}
-          <div className="bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 hover:border-slate-600/50 transition-all">
+          <div
+            className={`bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 ${HOVER_PATTERNS.card} ${TRANSITIONS.all}`}
+          >
             <div className="flex items-center space-x-2 mb-2">
-              <Clock className="h-4 w-4 text-cyan-400" />
+              <Clock className={`${ICON_SIZES.sm} text-cyan-400`} />
               <span className="text-xs text-gray-400 uppercase tracking-wide">
                 Last Stake
               </span>
@@ -227,9 +237,11 @@ export function ActivitySnapshot({
           </div>
 
           {/* Streak */}
-          <div className="bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 hover:border-slate-600/50 transition-all">
+          <div
+            className={`bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 ${HOVER_PATTERNS.card} ${TRANSITIONS.all}`}
+          >
             <div className="flex items-center space-x-2 mb-2">
-              <Calendar className="h-4 w-4 text-amber-400" />
+              <Calendar className={`${ICON_SIZES.sm} text-amber-400`} />
               <span className="text-xs text-gray-400 uppercase tracking-wide">
                 Active Streak
               </span>
@@ -262,9 +274,11 @@ export function ActivitySnapshot({
           </div>
 
           {/* Momentum */}
-          <div className="bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 hover:border-slate-600/50 transition-all">
+          <div
+            className={`bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 ${HOVER_PATTERNS.card} ${TRANSITIONS.all}`}
+          >
             <div className="flex items-center space-x-2 mb-2">
-              <MomentumIcon className={`h-4 w-4 ${momentum.color}`} />
+              <MomentumIcon className={`${ICON_SIZES.sm} ${momentum.color}`} />
               <span className="text-xs text-gray-400 uppercase tracking-wide">
                 Momentum
               </span>
@@ -293,9 +307,11 @@ export function ActivitySnapshot({
           </div>
 
           {/* Next Expected */}
-          <div className="bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 hover:border-slate-600/50 transition-all">
+          <div
+            className={`bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 ${HOVER_PATTERNS.card} ${TRANSITIONS.all}`}
+          >
             <div className="flex items-center space-x-2 mb-2">
-              <Clock className="h-4 w-4 text-purple-400" />
+              <Clock className={`${ICON_SIZES.sm} text-purple-400`} />
               <span className="text-xs text-gray-400 uppercase tracking-wide">
                 Next Stake
               </span>
@@ -303,8 +319,11 @@ export function ActivitySnapshot({
             <div className="text-lg font-semibold text-white mb-1">
               {timeUntilNext}
             </div>
+            <div className="text-xs text-purple-400/70 font-medium">
+              Estimation
+            </div>
             {networkParticipation?.probability && (
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-gray-400 mt-0.5">
                 {networkParticipation.probability > 0
                   ? `${(networkParticipation.probability * 100).toFixed(1)}% chance`
                   : 'Based on network weight'}
@@ -322,9 +341,9 @@ export function ActivitySnapshot({
                 .getElementById('recent-stakes-timeline')
                 ?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="w-full px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 hover:border-blue-500/50 rounded-lg text-blue-300 hover:text-blue-200 transition-all flex items-center justify-center space-x-2"
+            className={`w-full px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 hover:border-blue-500/50 rounded-lg text-blue-300 hover:text-blue-200 ${HOVER_PATTERNS.button} ${TRANSITIONS.all} flex items-center justify-center space-x-2`}
           >
-            <Clock className="h-4 w-4" />
+            <Clock className={ICON_SIZES.sm} />
             <span className="text-sm font-medium">
               View Recent Stakes Timeline
             </span>

@@ -1,0 +1,56 @@
+name: Accessibility Audit (axe + Lighthouse)
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  a11y:
+    name: Run axe and Lighthouse on key pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Start Next.js (prod)
+        run: |
+          nohup npm run start:prod >/dev/null 2>&1 &
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000
+
+      - name: axe-core CLI (Light theme)
+        run: |
+          npx @axe-core/cli \
+            http://localhost:3000 \
+            "http://localhost:3000/?tab=explorer" \
+            "http://localhost:3000/?tab=verusids" \
+            --timeout 60000 --exit 1
+
+      - name: Lighthouse CI (Light theme)
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://localhost:3000
+            http://localhost:3000/?tab=explorer
+            http://localhost:3000/?tab=verusids
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Stop server
+        if: always()
+        run: |
+          kill $(lsof -t -i:3000) || true

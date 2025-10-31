@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   TrendUp,
   TrendDown,
@@ -36,6 +37,9 @@ export function MiniChart({
   formatValue = v => v.toString(),
   className = '',
 }: MiniChartProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tNetwork = useTranslations('network');
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
 
@@ -317,7 +321,7 @@ export function NetworkMetricsChart({
       formatValue: (v: number) => `${(v / 1000000).toFixed(1)} MH/s`,
     },
     difficulty: {
-      label: 'Difficulty',
+      label: tBlocks("difficulty"),
       icon: ChartBar,
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/20',
@@ -325,7 +329,7 @@ export function NetworkMetricsChart({
       formatValue: (v: number) => `${(v / 1000000).toFixed(1)}M`,
     },
     mempool: {
-      label: 'Mempool Size',
+      label: tNetwork("mempoolSize"),
       icon: Pulse,
       color: 'text-blue-400',
       bgColor: 'bg-blue-500/20',
@@ -333,7 +337,7 @@ export function NetworkMetricsChart({
       formatValue: (v: number) => `${v} txs`,
     },
     blocktime: {
-      label: 'Block Time',
+      label: tBlocks("blockTime"),
       icon: Clock,
       color: 'text-green-400',
       bgColor: 'bg-green-500/20',

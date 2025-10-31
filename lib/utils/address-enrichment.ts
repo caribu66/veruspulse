@@ -27,7 +27,7 @@ export interface KnownAddress {
 }
 
 // In-memory cache for known addresses (refreshed periodically)
-let addressCache: Map<string, KnownAddress> = new Map();
+const addressCache: Map<string, KnownAddress> = new Map();
 let cacheTimestamp = 0;
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
@@ -57,7 +57,7 @@ async function refreshCache(): Promise<void> {
     }
 
     cacheTimestamp = now;
-    console.log(
+    console.info(
       `[Address Enrichment] Cache refreshed with ${addressCache.size} known addresses`
     );
   } catch (error) {

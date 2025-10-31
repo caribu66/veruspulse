@@ -4,6 +4,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import unified spacing system */
+@import '../styles/spacing-system.css';
+
+/* Import readability improvements */
+@import '../styles/readability-improvements.css';
+
+/* Import icon best practices */
+@import '../styles/icon-best-practices.css';
+
+/* Import unified card system */
+@import '../styles/unified-cards.css';
+
+/* Import accessibility enhancements */
+@import '../styles/accessibility-enhancements.css';
+
 /* Theme transition support */
 * {
   transition:
@@ -114,41 +129,27 @@ div {
   --text-muted: #94a3b8; /* Muted text - 4.5:1 contrast */
   --text-on-dark: #f8fafc; /* Text on dark - WCAG AAA */
 
-  /* ============ Google Material Design Colors - Primary Palette ============ */
-  --google-blue: #4285F4; /* Google Blue - primary interactive */
-  --google-blue-light: #5A9BF5; /* Hover state */
-  --google-blue-dark: #3367D6; /* Active state */
-  --google-red: #EA4335; /* Google Red - errors, destructive */
-  --google-red-light: #EE6B5E; /* Hover state */
-  --google-red-dark: #D33426; /* Active state */
-  --google-yellow: #FBBC04; /* Google Yellow - warnings */
-  --google-yellow-light: #FCC934; /* Hover state */
-  --google-yellow-dark: #F9AB00; /* Active state */
-  --google-green: #34A853; /* Google Green - success */
-  --google-green-light: #5FBB72; /* Hover state */
-  --google-green-dark: #2D904A; /* Active state */
+  /* ============ Verus Official Brand Colors - Primary Palette ============ */
+  --verus-blue: #3165d4; /* Official Verus Blue - primary interactive */
+  --verus-blue-light: #4a7ce8; /* Hover state */
+  --verus-blue-dark: #2650b3; /* Active state */
+  --verus-green: #4AA658; /* Official Verus Green - success */
+  --verus-green-light: #5cb96a; /* Green hover state */
+  --verus-green-dark: #3d8a49; /* Green active state */
+  --verus-red: #D4313E; /* Official Verus Red - errors, destructive */
+  --verus-red-light: #e04b56; /* Red hover state */
+  --verus-red-dark: #b52732; /* Red active state */
 
-  /* ============ Verus Official Brand Colors (maintained for branding) ============ */
-  --verus-blue: #4285F4; /* Updated to Google Blue for consistency */
-  --verus-blue-light: #5A9BF5; /* Hover states */
-  --verus-blue-dark: #3367D6; /* Active states */
-  --verus-green: #34A853; /* Updated to Google Green */
-  --verus-green-light: #5FBB72; /* Green highlights */
-  --verus-green-dark: #2D904A; /* Green active */
-  --verus-red: #EA4335; /* Updated to Google Red */
-  --verus-red-light: #EE6B5E; /* Red highlights */
-  --verus-red-dark: #D33426; /* Red active */
-
-  /* ============ Semantic Colors - Google Material Design ============ */
-  --color-success: #34A853; /* Success states (Google green) */
-  --color-warning: #FBBC04; /* Warning states (Google yellow) */
-  --color-error: #EA4335; /* Error states (Google red) */
-  --color-info: #4285F4; /* Info states (Google blue) */
+  /* ============ Semantic Colors - Verus Official Palette ============ */
+  --color-success: #4AA658; /* Success states (Official Verus green) */
+  --color-warning: #f59e0b; /* Warning states (Amber - no official alternative) */
+  --color-error: #D4313E; /* Error states (Official Verus red) */
+  --color-info: #3165d4; /* Info states (Official Verus blue) */
 
   /* ============ Border Colors - Softer, more modern ============ */
   --border-primary: rgba(148, 163, 184, 0.2); /* Subtle gray borders */
   --border-secondary: rgba(255, 255, 255, 0.08); /* Ultra-subtle borders */
-  --border-elevated: rgba(66, 133, 244, 0.3); /* Google blue tint for emphasis */
+  --border-elevated: rgba(49, 101, 212, 0.3); /* Official Verus blue tint for emphasis */
 
   /* ============ Material Design Elevation Shadows ============ */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -157,81 +158,16 @@ div {
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
   /* ============ Legacy Variables (for compatibility) ============ */
-  --accent-primary: var(--google-blue);
-  --accent-secondary: var(--google-green);
-  --accent-success: var(--google-green);
+  --accent-primary: var(--verus-blue);
+  --accent-secondary: var(--verus-green);
+  --accent-success: var(--verus-green);
   --card-bg: var(--bg-elevated);
   --card-bg-hover: var(--bg-elevated-hover);
   --text-secondary-on-dark: var(--text-secondary);
   --text-muted-on-dark: var(--text-muted);
 }
 
-/* ============ Light Theme - Google Material Design - WCAG AA Compliant ============ */
-[data-theme='light'] {
-  /* Backgrounds - Clean Material Design aesthetic */
-  --bg-primary: #ffffff; /* Pure white for Material Design */
-  --bg-secondary: #f8f9fa; /* Light gray - subtle depth */
-  --bg-tertiary: #f1f3f4; /* Slightly darker - clear hierarchy */
-  --bg-elevated: #ffffff; /* White cards with shadows */
-  --bg-elevated-hover: #f8f9fa; /* Subtle hover state */
-
-  /* Text Colors - Material Design Typography */
-  --text-primary: #202124; /* Google's primary text color */
-  --text-secondary: #5f6368; /* Google's secondary text */
-  --text-muted: #80868b; /* Google's muted text */
-  --text-on-light: #202124;
-
-  /* Google Material Design Colors - Light Theme */
-  --google-blue: #1a73e8; /* Darker blue for light backgrounds */
-  --google-blue-light: #4285F4;
-  --google-blue-dark: #174ea6;
-  --google-red: #d93025; /* Darker red for better contrast */
-  --google-red-light: #EA4335;
-  --google-red-dark: #b31412;
-  --google-yellow: #ea8600; /* Darker yellow for readability */
-  --google-yellow-light: #FBBC04;
-  --google-yellow-dark: #d17d00;
-  --google-green: #1e8e3e; /* Darker green for contrast */
-  --google-green-light: #34A853;
-  --google-green-dark: #188038;
-
-  /* Brand Colors - Light Mode Optimized */
-  --verus-blue: #1a73e8;
-  --verus-blue-light: #4285F4;
-  --verus-blue-dark: #174ea6;
-  --verus-green: #1e8e3e;
-  --verus-green-light: #34A853;
-  --verus-green-dark: #188038;
-  --verus-red: #d93025;
-  --verus-red-light: #EA4335;
-  --verus-red-dark: #b31412;
-
-  /* Semantic Colors - Light Mode */
-  --color-success: #1e8e3e;
-  --color-warning: #ea8600;
-  --color-error: #d93025;
-  --color-info: #1a73e8;
-
-  /* Borders - Material Design */
-  --border-primary: #dadce0; /* Google's border color */
-  --border-secondary: #e8eaed; /* Lighter borders */
-  --border-elevated: rgba(26, 115, 232, 0.2); /* Blue tint */
-
-  /* Material Design Elevation Shadows - Light Mode */
-  --shadow-sm: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-  --shadow-md: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
-  --shadow-lg: 0 4px 8px 3px rgba(60, 64, 67, 0.15), 0 1px 3px rgba(60, 64, 67, 0.3);
-  --shadow-xl: 0 8px 12px 6px rgba(60, 64, 67, 0.15), 0 4px 4px rgba(60, 64, 67, 0.3);
-
-  /* Legacy */
-  --accent-primary: var(--google-blue);
-  --accent-secondary: var(--google-green);
-  --accent-success: var(--google-green);
-  --card-bg: var(--bg-elevated);
-  --card-bg-hover: var(--bg-elevated-hover);
-  --text-secondary-on-light: var(--text-secondary);
-  --text-muted-on-light: var(--text-muted);
-}
+/* Light theme is now handled by the separate light-theme.css file */
 
 /* High contrast theme */
 [data-high-contrast='true'] {
@@ -373,65 +309,65 @@ h6 {
   transform: translateY(0);
 }
 
-/* Material Design Button Variants */
+/* Official Verus Button Variants */
 .btn-primary {
-  background: var(--google-blue);
+  background: var(--verus-blue);
   color: white;
 }
 
 .btn-primary:hover {
-  background: var(--google-blue-light);
+  background: var(--verus-blue-light);
 }
 
 .btn-primary:active {
-  background: var(--google-blue-dark);
+  background: var(--verus-blue-dark);
 }
 
 .btn-success {
-  background: var(--google-green);
+  background: var(--verus-green);
   color: white;
 }
 
 .btn-success:hover {
-  background: var(--google-green-light);
+  background: var(--verus-green-light);
 }
 
 .btn-danger {
-  background: var(--google-red);
+  background: var(--verus-red);
   color: white;
 }
 
 .btn-danger:hover {
-  background: var(--google-red-light);
+  background: var(--verus-red-light);
 }
 
 .btn-warning {
-  background: var(--google-yellow);
+  background: var(--color-warning);
   color: #202124;
 }
 
 .btn-warning:hover {
-  background: var(--google-yellow-light);
+  background: #fcc934; /* Lighter amber for hover */
 }
 
 /* Outlined Buttons */
 .btn-outlined {
   background: transparent;
   border: 1px solid var(--border-primary);
-  color: var(--google-blue);
+  color: var(--verus-blue);
   box-shadow: none;
 }
 
 .btn-outlined:hover {
-  background: rgba(66, 133, 244, 0.04);
-  border-color: var(--google-blue);
+  background: rgba(49, 101, 212, 0.04);
+  border-color: var(--verus-blue);
 }
 
 /* Text Buttons */
 .btn-text {
   background: transparent;
   box-shadow: none;
-  color: var(--google-blue);
+  color: var(--verus-blue);
   padding: 8px 16px;
 }
 
@@ -528,21 +464,21 @@ button {
 
 /* ============ Material Design Chart Colors ============ */
 :root {
-  /* Primary Chart Colors - Google Palette */
-  --chart-primary: #4285F4; /* Google Blue */
-  --chart-success: #34A853; /* Google Green */
-  --chart-warning: #FBBC04; /* Google Yellow */
-  --chart-danger: #EA4335; /* Google Red */
+  /* Primary Chart Colors - Official Verus Palette */
+  --chart-primary: #3165d4; /* Official Verus Blue */
+  --chart-success: #4AA658; /* Official Verus Green */
+  --chart-warning: #f59e0b; /* Amber Yellow */
+  --chart-danger: #D4313E; /* Official Verus Red */
   
-  /* Extended Chart Palette */
-  --chart-blue-light: #5A9BF5;
-  --chart-blue-dark: #3367D6;
-  --chart-green-light: #5FBB72;
-  --chart-green-dark: #2D904A;
-  --chart-yellow-light: #FCC934;
-  --chart-yellow-dark: #F9AB00;
-  --chart-red-light: #EE6B5E;
-  --chart-red-dark: #D33426;
+  /* Extended Chart Palette - Official Verus Colors */
+  --chart-blue-light: #4a7ce8; /* Official Verus Blue Light */
+  --chart-blue-dark: #2650b3; /* Official Verus Blue Dark */
+  --chart-green-light: #5cb96a; /* Official Verus Green Light */
+  --chart-green-dark: #3d8a49; /* Official Verus Green Dark */
+  --chart-yellow-light: #fcc934; /* Amber Light */
+  --chart-yellow-dark: #f9ab00; /* Amber Dark */
+  --chart-red-light: #e04b56; /* Official Verus Red Light */
+  --chart-red-dark: #b52732; /* Official Verus Red Dark */
   
   /* Additional Chart Colors */
   --chart-purple: #9334E6;
@@ -559,13 +495,13 @@ button {
   --chart-gradient-red: linear-gradient(180deg, rgba(234, 67, 53, 0.8) 0%, rgba(234, 67, 53, 0.2) 100%);
 }
 
-/* ============ Material Design Stats Cards ============ */
+/* ============ Unified Stats Cards ============ */
 .stats-card {
-  background: var(--bg-elevated);
+  background: #0f172a; /* slate-900 - Unified dark background */
   border-radius: 12px;
   padding: 20px;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-secondary);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #334155; /* slate-700 - Unified border */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
@@ -573,9 +509,9 @@ button {
 }
 
 .stats-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-  border-color: var(--border-elevated);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(49, 101, 212, 0.1);
+  transform: translateY(-1px);
+  border-color: rgba(49, 101, 212, 0.4);
 }
 
 .stats-card-icon {
@@ -605,13 +541,17 @@ button {
 
 /* Ensure theme is applied */
 html {
-  background: #fafbfc; /* Soft off-white for light theme */
+  background: #ffffff; /* Pure white for light theme */
   min-height: 100vh;
   transition: background 0.3s ease;
 }
 
 html.dark {
   background: #020617; /* slate-950 - solid professional background for dark theme */
+}
+
+html[data-theme='light'] {
+  background: #ffffff !important; /* Pure white for light theme */
 }
 
 body {
@@ -626,6 +566,11 @@ body {
 html.dark body {
   background: #020617; /* slate-950 - solid professional background for dark theme */
   color: #fff;
+}
+
+html[data-theme='light'] body {
+  background: #ffffff !important; /* Pure white for light theme */
+  color: #1C1C1C !important; /* Dark text on light background */
 }
 
 /* Custom scrollbar - Verus Blue */
@@ -656,11 +601,11 @@ html.dark body {
   display: none; /* Chrome, Safari and Opera */
 }
 
-/* Enhanced mobile-friendly scrollbar for Cumulative Rewards Growth - Google Blue */
+/* Enhanced mobile-friendly scrollbar for Cumulative Rewards Growth - Official Verus Blue */
 .cumulative-rewards-scroll {
   /* Firefox - thicker scrollbar on mobile */
   scrollbar-width: auto;
-  scrollbar-color: rgb(66 133 244 / 80%) rgb(20 27 45 / 50%);
+  scrollbar-color: rgb(49 101 212 / 80%) rgb(20 27 45 / 50%);
   /* Add padding below for scrollbar space */
   padding-bottom: 8px;
 }
@@ -673,11 +618,11 @@ html.dark body {
   background: rgb(20 27 45 / 50%);
   border-radius: 10px;
   margin: 0 12px; /* Space on sides */
-  border: 1px solid rgb(66 133 244 / 20%);
+  border: 1px solid rgb(49 101 212 / 20%);
 }
 
 .cumulative-rewards-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgb(66 133 244 / 70%), rgb(66 133 244 / 85%));
+  background: linear-gradient(180deg, rgb(49 101 212 / 70%), rgb(49 101 212 / 85%));
   border-radius: 10px;
   border: 3px solid rgb(20 27 45 / 60%);
   background-clip: padding-box;
@@ -686,15 +631,15 @@ html.dark body {
 }
 
 .cumulative-rewards-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgb(66 133 244 / 90%), rgb(66 133 244 / 100%));
+  background: linear-gradient(180deg, rgb(49 101 212 / 90%), rgb(49 101 212 / 100%));
   border: 3px solid rgb(20 27 45 / 60%);
   background-clip: padding-box;
   box-shadow: 0 0 15px rgba(66, 133, 244, 0.5);
 }
 
 .cumulative-rewards-scroll::-webkit-scrollbar-thumb:active {
-  background: rgb(66 133 244 / 100%);
-  border: 2px solid rgb(66 133 244);
+  background: rgb(49 101 212 / 100%);
+  border: 2px solid rgb(49 101 212);
   background-clip: padding-box;
   box-shadow: 0 0 20px rgba(66, 133, 244, 0.7);
 }
@@ -713,19 +658,19 @@ html.dark body {
     background: rgb(20 27 45 / 60%);
     border-radius: 12px;
     margin: 0 16px;
-    border: 2px solid rgb(66 133 244 / 30%);
+    border: 2px solid rgb(49 101 212 / 30%);
   }
   
   .cumulative-rewards-scroll::-webkit-scrollbar-thumb {
     min-width: 80px; /* Extra large minimum thumb size on mobile */
     border: 4px solid rgb(20 27 45 / 70%);
-    box-shadow: 0 2px 15px rgba(66, 133, 244, 0.5);
-    background: linear-gradient(180deg, rgb(66 133 244 / 80%), rgb(66 133 244 / 95%));
+    box-shadow: 0 2px 15px rgba(49, 101, 212, 0.5);
+    background: linear-gradient(180deg, rgb(49 101 212 / 80%), rgb(49 101 212 / 95%));
   }
   
   .cumulative-rewards-scroll::-webkit-scrollbar-thumb:active {
-    border: 3px solid rgb(66 133 244);
-    box-shadow: 0 2px 20px rgba(66, 133, 244, 0.8);
+    border: 3px solid rgb(49 101 212);
+    box-shadow: 0 2px 20px rgba(49, 101, 212, 0.8);
   }
 }
 
@@ -907,667 +852,7 @@ html.dark body {
   border-color: var(--border-secondary);
 }
 
-/* ================================================================
-   LIGHT THEME COLOR OVERRIDES
-   Ensures professional appearance in light mode
-   ================================================================ */
-
-[data-theme='light'] .text-white {
-  color: var(--text-primary);
-}
-
-[data-theme='light'] .text-white\/80 {
-  color: var(--text-secondary);
-}
-
-[data-theme='light'] .text-white\/60 {
-  color: var(--text-muted);
-}
-
-[data-theme='light'] .bg-white\/5,
-[data-theme='light'] .bg-white\/10,
-[data-theme='light'] .bg-white\/20 {
-  background-color: var(--bg-elevated);
-}
-
-[data-theme='light'] .border-white\/10,
-[data-theme='light'] .border-white\/20 {
-  border-color: var(--border-secondary);
-}
-
-/* Light theme - Hover and Interactive States - Improved visibility */
-[data-theme='light'] .bg-white\/10:hover,
-[data-theme='light'] .hover\:bg-white\/20:hover,
-[data-theme='light'] .hover\:bg-gray-50:hover {
-  background-color: #e2e8f0 !important; /* slate-200 - more noticeable */
-}
-
-[data-theme='light'] .hover\:text-white:hover {
-  color: var(--verus-blue) !important;
-}
-
-[data-theme='light'] .hover\:text-blue-300:hover,
-[data-theme='light'] .hover\:text-blue-400:hover {
-  color: var(--verus-blue-dark) !important;
-}
-
-[data-theme='light'] button:hover,
-[data-theme='light'] a:hover {
-  color: var(--verus-blue) !important;
-}
-
-/* Consistent Card Sizing - Both Themes */
-.bg-white\/5,
-.bg-white\/10,
-.bg-white\/20 {
-  border-radius: 12px; /* Modern rounded corners */
-  margin: 0;
-  min-height: 60px;
-  padding: 0.75rem;
-}
-
-/* Light theme - Enhanced Card Styling */
-[data-theme='light'] .bg-white\/5,
-[data-theme='light'] .bg-white\/10,
-[data-theme='light'] .bg-white\/20 {
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-secondary);
-  box-shadow:
-    0 1px 3px 0 rgb(0 0 0 / 10%),
-    0 1px 2px -1px rgb(0 0 0 / 10%);
-}
-
-[data-theme='light'] .bg-white\/5:hover,
-[data-theme='light'] .bg-white\/10:hover,
-[data-theme='light'] .bg-white\/20:hover {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 10%),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transform: translateY(-1px);
-  transition: all 0.2s ease-in-out;
-}
-
-/* Light theme - Fix hard-coded dark colors */
-[data-theme='light'] .bg-slate-800,
-[data-theme='light'] .bg-slate-900 {
-  background-color: #fff !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow:
-    0 1px 3px 0 rgb(0 0 0 / 10%),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
-}
-
-[data-theme='light'] .bg-slate-800:hover,
-[data-theme='light'] .bg-slate-900:hover {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 10%),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-}
-
-[data-theme='light'] .bg-slate-700 {
-  background-color: #f1f5f9 !important;
-  border: 1px solid #cbd5e1 !important;
-}
-
-[data-theme='light'] .bg-slate-700:hover {
-  background-color: #e2e8f0 !important;
-  border-color: #94a3b8 !important;
-}
-
-/* Light theme - Fix text colors */
-[data-theme='light'] .text-white {
-  color: var(--text-primary) !important;
-}
-
-[data-theme='light'] .text-slate-300,
-[data-theme='light'] .text-slate-400 {
-  color: var(--text-secondary) !important;
-}
-
-[data-theme='light'] .text-slate-500 {
-  color: var(--text-muted) !important;
-}
-
-/* Light theme - Fix border colors */
-[data-theme='light'] .border-slate-700,
-[data-theme='light'] .border-slate-800 {
-  border-color: #e2e8f0 !important;
-}
-
-[data-theme='light'] .border-slate-600 {
-  border-color: #cbd5e1 !important;
-}
-
-/* Light theme - Better Button Styling */
-[data-theme='light'] button:not(.bg-verus-blue):not(.bg-verus-green) {
-  background-color: #fff;
-  border: 1px solid #d1d5db;
-  color: var(--text-primary);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-[data-theme='light'] button:not(.bg-verus-blue):not(.bg-verus-green):hover {
-  background-color: #f9fafb;
-  border-color: var(--verus-blue);
-  color: var(--verus-blue);
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 10%),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-[data-theme='light'] button:not(.bg-verus-blue):not(.bg-verus-green):active {
-  background-color: #f3f4f6;
-  transform: translateY(1px);
-}
-
-/* Light theme - Enhanced Gradients */
-[data-theme='light'] .bg-gradient-to-br,
-[data-theme='light'] .bg-gradient-to-r {
-  background: linear-gradient(
-    135deg,
-    #fff 0%,
-    #f8fafc 25%,
-    #f1f5f9 50%,
-    #e2e8f0 75%,
-    #fff 100%
-  ) !important;
-}
-
-[data-theme='light'] .from-slate-900 {
-  --tw-gradient-from: #fff !important;
-}
-[data-theme='light'] .via-blue-900 {
-  --tw-gradient-via: #f1f5f9 !important;
-}
-[data-theme='light'] .to-slate-900 {
-  --tw-gradient-to: #e2e8f0 !important;
-}
-
-/* Light theme - Verus Brand Gradients */
-[data-theme='light'] .from-verus-blue {
-  --tw-gradient-from: rgb(49 101 212 / 10%) !important;
-}
-[data-theme='light'] .to-verus-green {
-  --tw-gradient-to: rgb(74 166 88 / 10%) !important;
-}
-
-[data-theme='light'] .bg-gradient-to-r.from-verus-blue.to-verus-green {
-  background: linear-gradient(
-    90deg,
-    rgb(49 101 212 / 10%) 0%,
-    rgb(74 166 88 / 10%) 100%
-  ) !important;
-}
-
-/* Light theme - Additional comprehensive fixes */
-[data-theme='light'] .bg-gray-800,
-[data-theme='light'] .bg-gray-900 {
-  background-color: #fff !important;
-  border: 1px solid #e2e8f0 !important;
-}
-
-[data-theme='light'] .bg-gray-700 {
-  background-color: #f1f5f9 !important;
-  border: 1px solid #cbd5e1 !important;
-}
-
-[data-theme='light'] .text-gray-100,
-[data-theme='light'] .text-gray-200 {
-  color: var(--text-primary) !important;
-}
-
-[data-theme='light'] .text-gray-300 {
-  color: var(--text-secondary) !important;
-}
-
-[data-theme='light'] .text-gray-400,
-[data-theme='light'] .text-gray-500 {
-  color: var(--text-muted) !important;
-}
-
-/* Light theme - Fix specific component issues */
-[data-theme='light'] .group:hover .text-white {
-  color: var(--verus-blue) !important;
-}
-
-[data-theme='light'] .hover\:text-white:hover {
-  color: var(--verus-blue) !important;
-}
-
-[data-theme='light'] .hover\:text-slate-300:hover {
-  color: var(--text-primary) !important;
-}
-
-[data-theme='light'] .hover\:text-slate-400:hover {
-  color: var(--text-secondary) !important;
-}
-
-/* Light theme - Fix backdrop and overlay elements */
-[data-theme='light'] .backdrop-blur-md {
-  background-color: rgb(255 255 255 / 80%) !important;
-}
-
-[data-theme='light'] .backdrop-blur-lg {
-  background-color: rgb(255 255 255 / 90%) !important;
-}
-
-/* Light theme - Fix glass morphism effects */
-[data-theme='light'] .bg-white\/10 {
-  background-color: rgb(255 255 255 / 80%) !important;
-  border: 1px solid rgb(226 232 240 / 50%) !important;
-}
-
-[data-theme='light'] .bg-white\/20 {
-  background-color: rgb(255 255 255 / 90%) !important;
-  border: 1px solid rgb(226 232 240 / 70%) !important;
-}
-
-/* Light theme - Fix divider and separator elements */
-[data-theme='light'] .divide-slate-700,
-[data-theme='light'] .divide-slate-800 {
-  border-color: #e2e8f0 !important;
-}
-
-[data-theme='light'] .divide-gray-700,
-[data-theme='light'] .divide-gray-800 {
-  border-color: #e2e8f0 !important;
-}
-
-/* Light theme - Enhanced shadows and depth */
-[data-theme='light'] .shadow-lg {
-  box-shadow:
-    0 10px 15px -3px rgb(0 0 0 / 10%),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-}
-
-[data-theme='light'] .shadow-xl {
-  box-shadow:
-    0 20px 25px -5px rgb(0 0 0 / 10%),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-}
-
-[data-theme='light'] .shadow-2xl {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-}
-
-/* Light theme - Fix ring and focus states */
-[data-theme='light'] .ring-1 {
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 10%) !important;
-}
-
-[data-theme='light'] .ring-2 {
-  box-shadow: 0 0 0 2px rgb(0 0 0 / 10%) !important;
-}
-
-[data-theme='light'] .ring-verus-blue {
-  box-shadow: 0 0 0 3px rgb(49 101 212 / 10%) !important;
-}
-
-/* Light theme - Fix specific utility classes */
-[data-theme='light'] .bg-opacity-10 {
-  background-color: rgb(255 255 255 / 10%) !important;
-}
-
-[data-theme='light'] .bg-opacity-20 {
-  background-color: rgb(255 255 255 / 20%) !important;
-}
-
-[data-theme='light'] .bg-opacity-50 {
-  background-color: rgb(255 255 255 / 50%) !important;
-}
-
-/* Light theme - Fix table and list styling */
-[data-theme='light'] .divide-y > * + * {
-  border-top-color: #e2e8f0 !important;
-}
-
-[data-theme='light'] .divide-x > * + * {
-  border-left-color: #e2e8f0 !important;
-}
-
-/* Light theme - Fix scrollbar styling */
-[data-theme='light'] ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-[data-theme='light'] ::-webkit-scrollbar-track {
-  background: #f1f5f9 !important;
-  border-radius: 4px;
-}
-
-[data-theme='light'] ::-webkit-scrollbar-thumb {
-  background: #cbd5e1 !important;
-  border-radius: 4px;
-}
-
-[data-theme='light'] ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8 !important;
-}
-
-/* Light theme - Enhanced Form Elements */
-[data-theme='light'] input,
-[data-theme='light'] textarea,
-[data-theme='light'] select {
-  color: var(--text-primary) !important;
-  background-color: #fff !important;
-  border: 1px solid #d1d5db !important;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-  transition: all 0.2s ease-in-out !important;
-}
-
-[data-theme='light'] input:hover,
-[data-theme='light'] textarea:hover,
-[data-theme='light'] select:hover {
-  border-color: #9ca3af !important;
-  box-shadow:
-    0 1px 3px 0 rgb(0 0 0 / 10%),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
-}
-
-[data-theme='light'] input:focus,
-[data-theme='light'] textarea:focus,
-[data-theme='light'] select:focus {
-  border-color: var(--verus-blue) !important;
-  box-shadow:
-    0 0 0 3px rgb(49 101 212 / 10%),
-    0 1px 3px 0 rgb(0 0 0 / 10%) !important;
-  outline: none !important;
-}
-
-[data-theme='light'] .placeholder-blue-200::placeholder,
-[data-theme='light'] ::placeholder {
-  color: #9ca3af !important;
-}
-
-/* Light theme - Search Input Enhancement */
-[data-theme='light'] input[type='search'],
-[data-theme='light'] input[type='text'] {
-  background-color: #f9fafb !important;
-  border: 1px solid #e5e7eb !important;
-}
-
-[data-theme='light'] input[type='search']:focus,
-[data-theme='light'] input[type='text']:focus {
-  background-color: #fff !important;
-  border-color: var(--verus-blue) !important;
-}
-
-/* Light theme - Final interactive state improvements */
-[data-theme='light'] .hover\:bg-slate-700:hover {
-  background-color: #e2e8f0 !important;
-}
-
-[data-theme='light'] .hover\:bg-slate-800:hover {
-  background-color: #f1f5f9 !important;
-}
-
-[data-theme='light'] .hover\:bg-gray-700:hover {
-  background-color: #e2e8f0 !important;
-}
-
-[data-theme='light'] .hover\:bg-gray-800:hover {
-  background-color: #f1f5f9 !important;
-}
-
-/* Light theme - Fix active and selected states */
-[data-theme='light'] .active,
-[data-theme='light'] .selected {
-  background-color: rgb(49 101 212 / 10%) !important;
-  border-color: var(--verus-blue) !important;
-  color: var(--verus-blue) !important;
-}
-
-/* Light theme - Fix disabled states */
-[data-theme='light'] .disabled,
-[data-theme='light'] [disabled] {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-  background-color: #f8fafc !important;
-  color: #94a3b8 !important;
-}
-
-/* Light theme - Fix error states */
-[data-theme='light'] .error {
-  background-color: rgb(212 49 62 / 10%) !important;
-  border-color: var(--verus-red) !important;
-  color: var(--verus-red) !important;
-}
-
-/* Light theme - Fix success states */
-[data-theme='light'] .success {
-  background-color: rgb(74 166 88 / 10%) !important;
-  border-color: var(--verus-green) !important;
-  color: var(--verus-green) !important;
-}
-
-/* Light theme - Fix warning states */
-[data-theme='light'] .warning {
-  background-color: rgb(245 158 11 / 10%) !important;
-  border-color: #f59e0b !important;
-  color: #f59e0b !important;
-}
-
-/* Light theme - Refined background handling for better component control */
-
-/* Light theme - Removed overly aggressive background override for maintainability */
-
-/* Consistent Navigation Sizing - Both Themes */
-nav,
-.navbar,
-.navigation {
-  min-height: 40px;
-  padding: 0.5rem 2rem; /* Reduced vertical padding for breathing room */
-  border-radius: 0; /* Clean, professional edges for navigation */
-  margin: 0;
-}
-
-/* Light theme - Enhanced Navigation */
-[data-theme='light'] nav,
-[data-theme='light'] .navbar,
-[data-theme='light'] .navigation {
-  background-color: var(--bg-elevated) !important;
-  border-bottom: 1px solid var(--border-secondary) !important;
-  box-shadow:
-    0 1px 3px 0 rgb(0 0 0 / 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
-}
-
-/* Professional Header Branding */
-.header-brand {
-  transition: opacity 0.2s ease-in-out;
-}
-
-.header-brand:hover {
-  opacity: 0.85;
-}
-
-/* Navigation Link Styles */
-nav a,
-.navbar a,
-.navigation a {
-  position: relative;
-  text-decoration: none;
-  transition: color 0.2s ease-in-out;
-}
-
-nav a::after,
-.navbar a::after,
-.navigation a::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: var(--verus-blue);
-  transition: width 0.3s ease-in-out;
-}
-
-nav a:hover::after,
-.navbar a:hover::after,
-.navigation a:hover::after {
-  width: 100%;
-}
-
-[data-theme='light'] nav a,
-[data-theme='light'] .navbar a,
-[data-theme='light'] .navigation a {
-  color: var(--text-secondary) !important;
-  transition: color 0.2s ease-in-out !important;
-}
-
-[data-theme='light'] nav a:hover,
-[data-theme='light'] .navbar a:hover,
-[data-theme='light'] .navigation a:hover {
-  color: var(--verus-blue) !important;
-}
-
-[data-theme='light'] nav a.active,
-[data-theme='light'] .navbar a.active,
-[data-theme='light'] .navigation a.active {
-  color: var(--verus-blue) !important;
-  background-color: rgb(49 101 212 / 10%) !important;
-  border-radius: 0.375rem !important;
-}
-
-/* Consistent Backdrop Sizing - Both Themes */
-.backdrop-blur-sm,
-.backdrop-blur-md,
-.backdrop-blur-lg {
-  border-radius: 12px;
-  margin: 0;
-}
-
-.backdrop-blur-sm {
-  min-height: 40px;
-  padding: 0.5rem;
-}
-
-.backdrop-blur-md {
-  min-height: 50px;
-  padding: 0.75rem;
-}
-
-.backdrop-blur-lg {
-  min-height: 80px;
-  padding: 1.25rem;
-}
-
-/* =================================================================
-   MOBILE SAFE AREA INSETS
-   Handles iPhone notches, gesture bars, and system UI
-   ================================================================= */
-
-/* Safe area inset utilities */
-.safe-area-inset-top {
-  padding-top: env(safe-area-inset-top);
-}
-
-.safe-area-inset-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.safe-area-inset-left {
-  padding-left: env(safe-area-inset-left);
-}
-
-.safe-area-inset-right {
-  padding-right: env(safe-area-inset-right);
-}
-
-/* All safe area insets at once */
-.safe-area-insets {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-}
-
-/* Minimum safe area for buttons/interactive elements */
-.safe-touch-target {
-  min-height: 44px;
-  min-width: 44px;
-}
-
-/* Mobile viewport height fix */
-.min-h-screen-mobile {
-  min-height: 100vh;
-  min-height: calc(var(--vh, 1vh) * 100);
-}
-
-/* Mobile bottom navigation spacing */
-.pb-mobile-nav {
-  padding-bottom: calc(64px + env(safe-area-inset-bottom));
-}
-
-/* Smooth scrolling for mobile */
-@media (max-width: 768px) {
-  html {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-/* PWA Install Prompt Animation */
-@keyframes slide-up {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
-}
-
-/* PWA Fullscreen adjustments */
-@media (display-mode: standalone) {
-  /* Add any PWA-specific styles here */
-  body {
-    -webkit-user-select: none;
-    user-select: none;
-  }
-}
-
-/* Light theme - Backdrop & Effects */
-[data-theme='light'] .backdrop-blur-sm {
-  background-color: rgb(255 255 255 / 90%) !important;
-  border-color: var(--border-primary) !important;
-}
-
-/* Light theme - Scrollbar */
-[data-theme='light'] ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05) !important;
-}
-
-[data-theme='light'] ::-webkit-scrollbar-thumb {
-  background: var(--verus-blue) !important;
-  opacity: 0.5;
-}
-
-[data-theme='light'] ::-webkit-scrollbar-thumb:hover {
-  background: var(--verus-blue-dark) !important;
-}
-
-/* Light theme - Button and Interactive States */
-[data-theme='light'] button:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-}
-
-[data-theme='light'] .border-b-2,
-[data-theme='light'] .border-b-blue-500 {
-  border-bottom-color: var(--verus-blue) !important;
-}
+/* All light theme overrides removed - now handled by light-theme.css */
 
 /* ================================================================
    ELEVATION SYSTEM - Consistent Shadow Hierarchy
@@ -1664,8 +949,41 @@ nav a:hover::after,
   }
 }
 
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+}
+
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out;
+}
+
+/* CRITICAL: Force Verus Blue for "Internet of Value" in ALL themes */
+.internet-of-value-text {
+  color: #3165d4 !important;
+}
+
+[data-theme='light'] .internet-of-value-text,
+[data-theme='light'] span.internet-of-value-text,
+[data-theme='light'] h1 > span.internet-of-value-text {
+  color: #3165d4 !important;
+}
+
+[data-theme='dark'] .internet-of-value-text,
+span.internet-of-value-text,
+h1 > span.internet-of-value-text {
+  color: #3165d4 !important;
 }
 
 /* Removed gradient animations - using solid colors for professional look */
@@ -2000,44 +1318,41 @@ nav a:hover::after,
    Clean, solid styling for explorer data
    ================================================================ */
 
-/* Solid card utilities */
-.card-solid {
-  background-color: #0f172a; /* slate-900 */
-  border: 1px solid #334155; /* slate-700 */
+/* Unified card utilities - All cards use slate-900 in dark theme */
+.card-solid,
+.card-elevated {
+  background-color: #0f172a !important; /* slate-900 - Unified */
+  border: 1px solid #334155 !important; /* slate-700 - Unified */
+  border-radius: 12px;
+  margin: 0;
+  transition: all 0.2s ease;
 }
 
-/* Consistent Card Solid Sizing - Both Themes */
 .card-solid {
-  border-radius: 12px; /* Modern rounded corners */
-  margin: 0;
   min-height: 50px;
   padding: 0.5rem;
 }
 
-[data-theme='light'] .card-solid {
-  background-color: var(--bg-elevated) !important;
-  border: 1px solid var(--border-secondary) !important;
-  box-shadow: var(--neuro-shadow-sm) !important;
-}
-
 .card-elevated {
-  background-color: #1e293b; /* slate-800 */
-  border: 1px solid #334155; /* slate-700 */
-  box-shadow: var(--elevation-raised);
-}
-
-/* Consistent Card Elevated Sizing - Both Themes */
-.card-elevated {
-  border-radius: 12px; /* Modern rounded corners */
-  margin: 0;
   min-height: 60px;
   padding: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* Light theme - All cards use white background */
+[data-theme='light'] .card-solid,
 [data-theme='light'] .card-elevated {
-  background-color: var(--bg-elevated) !important;
-  border: 1px solid var(--border-primary) !important;
-  box-shadow: var(--neuro-shadow-md) !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(49, 101, 212, 0.02) !important;
+}
+
+/* Hover states */
+.card-solid:hover,
+.card-elevated:hover {
+  border-color: rgba(49, 101, 212, 0.4) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(49, 101, 212, 0.1) !important;
 }
 
 .accent-border {

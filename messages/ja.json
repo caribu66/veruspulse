@@ -1,0 +1,116 @@
+{
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "explorer": "エクスプローラー",
+    "verusids": "VerusID",
+    "blocks": "ブロック",
+    "transactions": "トランザクション",
+    "addresses": "アドレス"
+  },
+  "dashboard": {
+    "title": "VerusPulse - 価値のインターネット",
+    "description": "Verusプロトコルエコシステムを探索 - スマートトランザクションの追跡、PBaaSチェーンの分析、ステーキング報酬の監視、VerusID識別システムの探索、プロトコルレベルの通貨の発見。",
+    "welcome": "VerusPulseへようこそ",
+    "welcomeMessage": "Verusブロックチェーンへの包括的なゲートウェイ。すべての主要なネットワークメトリクスは、上部の統計ティッカーに表示されます。",
+    "blockchainExplorer": "ブロックチェーンエクスプローラー",
+    "browseBlocksTransactions": "ブロックとトランザクションを閲覧",
+    "networkStats": "ネットワーク統計",
+    "stakingMetrics": "リアルタイムステーキングとマイニングメトリクス",
+    "verusidSystem": "VerusIDシステム",
+    "identityManagement": "アイデンティティ管理と解決"
+  },
+  "blocks": {
+    "title": "ブロックエクスプローラー",
+    "description": "Verusブロックチェーンのブロックとトランザクションを探索",
+    "totalBlocks": "総ブロック数",
+    "blockHeight": "ブロック高",
+    "transactions": "トランザクション",
+    "blockTime": "ブロック時間",
+    "difficulty": "難易度",
+    "miner": "マイナー",
+    "reward": "報酬",
+    "size": "サイズ"
+  },
+  "transactions": {
+    "title": "トランザクションエクスプローラー",
+    "description": "Verusブロックチェーンのトランザクションとutxoの動きを探索",
+    "totalTransactions": "総トランザクション数",
+    "transactionId": "トランザクションID",
+    "amount": "金額",
+    "fee": "手数料",
+    "confirmations": "確認数",
+    "timestamp": "タイムスタンプ"
+  },
+  "verusid": {
+    "title": "VerusIDエクスプローラー",
+    "description": "VerusIDアイデンティティと関連アドレスを探索",
+    "search": "検索",
+    "browse": "閲覧",
+    "statistics": "統計",
+    "identity": "アイデンティティ",
+    "address": "アドレス",
+    "primaryAddresses": "プライマリアドレス",
+    "revocationAuthority": "取り消し権限",
+    "recoveryAuthority": "回復権限",
+    "privateAddresses": "プライベートアドレス"
+  },
+  "staking": {
+    "title": "ステーキング",
+    "stakingRewards": "ステーキング報酬",
+    "averageStakeAge": "平均ステーク期間",
+    "totalStaked": "総ステーク量",
+    "stakingParticipation": "ステーキング参加率",
+    "recentStakes": "最近のステーク",
+    "stakingStats": "ステーキング統計",
+    "networkParticipation": "ネットワーク参加",
+    "achievements": "実績"
+  },
+  "network": {
+    "height": "高さ",
+    "difficulty": "難易度",
+    "hashrate": "ハッシュレート",
+    "supply": "供給量",
+    "connections": "接続数",
+    "version": "バージョン",
+    "protocol": "プロトコル",
+    "networkInfo": "ネットワーク情報"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "retry": "再試行",
+    "refresh": "更新",
+    "search": "検索",
+    "filter": "フィルター",
+    "sort": "並び替え",
+    "view": "表示",
+    "details": "詳細",
+    "back": "戻る",
+    "next": "次へ",
+    "previous": "前へ",
+    "home": "ホーム",
+    "donate": "寄付",
+    "language": "言語",
+    "theme": "テーマ",
+    "dark": "ダーク",
+    "light": "ライト",
+    "auto": "自動"
+  },
+  "search": {
+    "placeholder": "ブロック、トランザクション、アドレス、またはVerusIDを検索...",
+    "results": "検索結果",
+    "noResults": "結果が見つかりません",
+    "searchType": "検索タイプ"
+  },
+  "time": {
+    "ago": "前",
+    "seconds": "秒",
+    "minutes": "分",
+    "hours": "時間",
+    "days": "日",
+    "weeks": "週",
+    "months": "月",
+    "years": "年"
+  }
+}
+

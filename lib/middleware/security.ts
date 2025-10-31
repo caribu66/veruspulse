@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { nonceProvider } from '@/lib/utils/nonce-provider';
 import { VerusValidator } from '@/lib/utils/verus-validator';
 import {

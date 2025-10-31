@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Shield,
   Key,
@@ -67,6 +68,8 @@ export function VerusIDIdentityDetails({
   balance,
   resolvedAuthorities,
 }: IdentityDetailsProps) {
+  const tCommon = useTranslations('common');
+  const tVerusId = useTranslations('verusid');
   const [copied, setCopied] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['authorities', 'properties'])

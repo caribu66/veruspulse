@@ -1,11 +1,10 @@
 // UTXO Database Service for Verus Staking Analytics
-import { Pool, PoolClient } from 'pg';
+import { Pool } from 'pg';
 import {
-  UTXO,
-  StakeEvent,
-  UTXOAnalytics,
-  StakingPerformance,
-  UTXOStakeData,
+  type UTXO,
+  type StakeEvent,
+  type UTXOAnalytics,
+  type StakingPerformance,
 } from '@/lib/models/utxo';
 
 export class UTXODatabaseService {
@@ -31,7 +30,7 @@ export class UTXODatabaseService {
       ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, NOW()
       )
-      ON CONFLICT (txid, vout) 
+      ON CONFLICT (txid, vout)
       DO UPDATE SET
         address = EXCLUDED.address,
         value = EXCLUDED.value,
@@ -78,8 +77,8 @@ export class UTXODatabaseService {
 
   async getUTXOs(address: string): Promise<UTXO[]> {
     const query = `
-      SELECT * FROM utxos 
-      WHERE address = $1 
+      SELECT * FROM utxos
+      WHERE address = $1
       ORDER BY creation_height DESC
     `;
 
@@ -92,9 +91,9 @@ export class UTXODatabaseService {
     currentHeight: number
   ): Promise<UTXO[]> {
     const query = `
-      SELECT * FROM utxos 
-      WHERE address = $1 
-        AND is_spent = false 
+      SELECT * FROM utxos
+      WHERE address = $1
+        AND is_spent = false
         AND is_eligible = true
         AND (cooldown_until IS NULL OR cooldown_until <= $2)
       ORDER BY value DESC
@@ -111,7 +110,7 @@ export class UTXODatabaseService {
     spentHeight: number
   ): Promise<void> {
     const query = `
-      UPDATE utxos 
+      UPDATE utxos
       SET is_spent = true, spent_txid = $3, spent_height = $4, spent_time = NOW(), updated_at = NOW()
       WHERE txid = $1 AND vout = $2
     `;
@@ -121,7 +120,7 @@ export class UTXODatabaseService {
 
   async markAllUTXOsAsSpent(address: string): Promise<void> {
     const query = `
-      UPDATE utxos 
+      UPDATE utxos
       SET is_spent = true, updated_at = NOW()
       WHERE address = $1 AND is_spent = false
     `;
@@ -161,17 +160,17 @@ export class UTXODatabaseService {
 
     if (typeof limit === 'number' && limit > 0) {
       query = `
-      SELECT * FROM stake_events 
-      WHERE address = $1 
-      ORDER BY block_height DESC 
+      SELECT * FROM stake_events
+      WHERE address = $1
+      ORDER BY block_height DESC
       LIMIT $2
     `;
       params = [address, limit];
     } else {
       // No limit - return all matching rows (use with caution)
       query = `
-      SELECT * FROM stake_events 
-      WHERE address = $1 
+      SELECT * FROM stake_events
+      WHERE address = $1
       ORDER BY block_height DESC
     `;
       params = [address];
@@ -192,7 +191,7 @@ export class UTXODatabaseService {
         average_stake_age, staking_efficiency, largest_utxo, smallest_eligible,
         total_staking_probability, last_updated
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
-      ON CONFLICT (address) 
+      ON CONFLICT (address)
       DO UPDATE SET
         total_utxos = EXCLUDED.total_utxos,
         total_value = EXCLUDED.total_value,
@@ -224,7 +223,7 @@ export class UTXODatabaseService {
 
   async getUTXOAnalytics(address: string): Promise<UTXOAnalytics | null> {
     const query = `
-      SELECT * FROM utxo_analytics 
+      SELECT * FROM utxo_analytics
       WHERE address = $1
     `;
 
@@ -327,7 +326,7 @@ export class UTXODatabaseService {
     // Clean up old spent UTXOs
     await this.db.query(
       `
-      DELETE FROM utxos 
+      DELETE FROM utxos
       WHERE is_spent = true AND spent_time < $1
     `,
       [cutoffDate]
@@ -336,7 +335,7 @@ export class UTXODatabaseService {
     // Clean up old stake events
     await this.db.query(
       `
-      DELETE FROM stake_events 
+      DELETE FROM stake_events
       WHERE block_time < $1
     `,
       [cutoffDate]

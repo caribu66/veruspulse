@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { VerusIDScanner } from '@/lib/services/verusid-scanner';
 import { logger } from '@/lib/utils/logger';
 
 let scanner: VerusIDScanner | null = null;
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const {
       batchSize = 10,
       includeExisting = false,
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     scanner = new VerusIDScanner();
 
     // Start scan in background
-    const scanPromise = scanner.startScan({
+    scanner.startScan({
       batchSize,
       includeExisting,
       generateMockData,

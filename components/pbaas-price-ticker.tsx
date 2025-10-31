@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   TrendUp,
   TrendDown,
@@ -54,6 +55,7 @@ export function PBaaSPriceTicker({
   refreshInterval = 30000, // 30 seconds
   maxAssets = 5,
 }: PBaaSPriceTickerProps) {
+  const tCommon = useTranslations('common');
   const [prices, setPrices] = useState<LivePriceData[]>([]);
   const [vrscPriceSources, setVrscPriceSources] = useState<VRSCPriceSource[]>(
     []
@@ -73,24 +75,29 @@ export function PBaaSPriceTicker({
       if (data.success && data.data.prices) {
         const newPrices = data.data.prices;
 
+        // Deduplicate by symbol to avoid duplicate keys
+        const uniquePrices = Array.from(
+          new Map(newPrices.map((price: LivePriceData) => [price.symbol, price])).values()
+        );
+
         // Track price changes for animations
         setPrices(prevPrices => {
           const changes: Record<string, number> = {};
-          newPrices.forEach((price: LivePriceData) => {
+          uniquePrices.forEach((price: LivePriceData) => {
             const oldPrice = prevPrices.find(p => p.symbol === price.symbol);
             if (oldPrice) {
               changes[price.symbol] = price.priceUSD - oldPrice.priceUSD;
             }
           });
           setPriceChanges(changes);
-          return newPrices;
+          return uniquePrices;
         });
 
         setVrscPriceSources(data.data.vrscPriceSources || []);
         setIsLive(true);
 
         logger.info('📊 PBaaS prices updated:', {
-          count: newPrices.length,
+          count: uniquePrices.length,
           vrscPrice: data.data.vrscPriceUSD,
           sources: data.data.vrscPriceSources?.length,
         });
@@ -243,7 +250,7 @@ export function PBaaSPriceTicker({
 
             return (
               <div
-                key={asset.symbol}
+                key={`${asset.symbol}-${index}`}
                 className={`relative flex flex-col gap-2 px-4 py-3 rounded-xl border transition-all duration-300 cursor-pointer
                   ${isHovered ? 'scale-105 shadow-lg border-verus-blue/60 bg-slate-800' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/50'}
                   ${priceChange !== 0 ? 'animate-price-glow' : ''}`}
@@ -352,7 +359,7 @@ export function PBaaSPriceTicker({
 
               return (
                 <div
-                  key={asset.symbol}
+                  key={`${asset.symbol}-mobile-${index}`}
                   className={`flex flex-col gap-2 px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/50 w-[140px] flex-shrink-0
                     ${priceChange !== 0 ? 'animate-price-glow' : ''}`}
                   style={{

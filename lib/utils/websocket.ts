@@ -1,5 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
 import { logger } from './logger';
-import { useState, useEffect } from 'react';
 
 // WebSocket utility for real-time data streaming
 export class WebSocketManager {
@@ -107,19 +107,32 @@ export function useWebSocket(
 ) {
   const [wsManager, setWsManager] = useState<WebSocketManager | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  // React 18.2: Stable callbacks with useRef to prevent unnecessary re-renders
+  const onMessageRef = useRef(onMessage);
+  const onErrorRef = useRef(onError);
+  const onConnectRef = useRef(onConnect);
+  const onDisconnectRef = useRef(onDisconnect);
+
+  // Update refs when callbacks change
+  useEffect(() => {
+    onMessageRef.current = onMessage;
+    onErrorRef.current = onError;
+    onConnectRef.current = onConnect;
+    onDisconnectRef.current = onDisconnect;
+  }, [onMessage, onError, onConnect, onDisconnect]);
 
   useEffect(() => {
     const manager = new WebSocketManager(
       url,
-      onMessage,
-      onError,
+      (data: any) => onMessageRef.current(data),
+      (error: Event) => onErrorRef.current(error),
       () => {
         setIsConnected(true);
-        onConnect();
+        onConnectRef.current();
       },
       () => {
         setIsConnected(false);
-        onDisconnect();
+        onDisconnectRef.current();
       }
     );
 
@@ -129,7 +142,7 @@ export function useWebSocket(
     return () => {
       manager.disconnect();
     };
-  }, [url, onMessage, onError, onConnect, onDisconnect]);
+  }, [url]); // Only re-run when URL changes
 
   return {
     wsManager,

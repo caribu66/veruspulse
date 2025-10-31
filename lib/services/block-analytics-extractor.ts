@@ -2,7 +2,7 @@
 // Extracts comprehensive analytical data from Verus blockchain blocks
 
 import { verusAPI } from '@/lib/rpc-client-robust';
-import { Pool } from 'pg';
+import { type Pool } from 'pg';
 
 export interface BlockAnalytics {
   // Basic
@@ -286,7 +286,7 @@ export class BlockAnalyticsExtractor {
    * Calculate network-wide metrics at a given height
    */
   private async calculateNetworkMetrics(
-    height: number
+    _height: number
   ): Promise<Partial<BlockAnalytics>> {
     const metrics: Partial<BlockAnalytics> = {};
 
@@ -388,7 +388,7 @@ export class BlockAnalyticsExtractor {
     endHeight: number
   ): Promise<number> {
     let processed = 0;
-    console.log(
+    console.info(
       `Extracting block analytics from ${startHeight} to ${endHeight}...`
     );
 
@@ -400,7 +400,7 @@ export class BlockAnalyticsExtractor {
           processed++;
 
           if (processed % 100 === 0) {
-            console.log(
+            console.info(
               `Processed ${processed} blocks (current: ${height})...`
             );
           }
@@ -416,7 +416,7 @@ export class BlockAnalyticsExtractor {
       }
     }
 
-    console.log(`Completed: Extracted ${processed} blocks`);
+    console.info(`Completed: Extracted ${processed} blocks`);
     return processed;
   }
 }

@@ -1,0 +1,245 @@
+/* ================================================================
+   UNIFIED SPACING SYSTEM
+   Consistent spacing across the entire application
+   Based on 8px base unit for visual harmony
+   ================================================================ */
+
+/* Container Spacing - Consistent page margins */
+.container-spacing {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+.container-spacing-tight {
+  @apply px-3 sm:px-4 lg:px-6;
+}
+
+/* Section Spacing - Vertical rhythm */
+.section-spacing {
+  @apply py-8 sm:py-12 lg:py-16;
+}
+
+.section-spacing-sm {
+  @apply py-4 sm:py-6 lg:py-8;
+}
+
+.section-spacing-lg {
+  @apply py-12 sm:py-16 lg:py-24;
+}
+
+/* Card Spacing - Consistent internal padding */
+.card-padding {
+  @apply p-4 sm:p-6 lg:p-8;
+}
+
+.card-padding-sm {
+  @apply p-3 sm:p-4 lg:p-6;
+}
+
+.card-padding-lg {
+  @apply p-6 sm:p-8 lg:p-10;
+}
+
+/* Content Spacing - Between elements */
+.content-spacing {
+  @apply space-y-4 sm:space-y-6;
+}
+
+.content-spacing-sm {
+  @apply space-y-2 sm:space-y-3;
+}
+
+.content-spacing-lg {
+  @apply space-y-6 sm:space-y-8;
+}
+
+/* Grid Spacing - For grid layouts */
+.grid-spacing {
+  @apply gap-4 sm:gap-6 lg:gap-8;
+}
+
+.grid-spacing-sm {
+  @apply gap-2 sm:gap-3 lg:gap-4;
+}
+
+.grid-spacing-lg {
+  @apply gap-6 sm:gap-8 lg:gap-10;
+}
+
+/* Stack Spacing - Vertical stacking */
+.stack-spacing {
+  @apply space-y-4;
+}
+
+.stack-spacing-sm {
+  @apply space-y-2;
+}
+
+.stack-spacing-lg {
+  @apply space-y-6;
+}
+
+/* Inline Spacing - Horizontal spacing */
+.inline-spacing {
+  @apply space-x-4;
+}
+
+.inline-spacing-sm {
+  @apply space-x-2;
+}
+
+.inline-spacing-lg {
+  @apply space-x-6;
+}
+
+/* Form Spacing - Form elements */
+.form-spacing {
+  @apply space-y-4 sm:space-y-6;
+}
+
+.form-field-spacing {
+  @apply mb-4 sm:mb-6;
+}
+
+/* Button Spacing - Button groups */
+.button-group-spacing {
+  @apply gap-2 sm:gap-3;
+}
+
+/* List Spacing - Lists and menu items */
+.list-spacing {
+  @apply space-y-2;
+}
+
+.list-spacing-sm {
+  @apply space-y-1;
+}
+
+/* Component-Specific Spacing */
+
+/* Navigation Bar */
+.nav-spacing {
+  @apply px-4 py-3 sm:px-6 sm:py-4 lg:px-8;
+}
+
+/* Hero Section */
+.hero-spacing {
+  @apply py-12 sm:py-16 lg:py-24;
+}
+
+/* Footer */
+.footer-spacing {
+  @apply py-8 sm:py-12 lg:py-16;
+}
+
+/* Modal/Dialog */
+.modal-spacing {
+  @apply p-4 sm:p-6;
+}
+
+.modal-header-spacing {
+  @apply px-4 py-3 sm:px-6 sm:py-4;
+}
+
+.modal-body-spacing {
+  @apply px-4 py-4 sm:px-6 sm:py-6;
+}
+
+.modal-footer-spacing {
+  @apply px-4 py-3 sm:px-6 sm:py-4;
+}
+
+/* Table Spacing */
+.table-cell-spacing {
+  @apply px-3 py-3 sm:px-4 sm:py-4;
+}
+
+.table-header-spacing {
+  @apply px-3 py-3 sm:px-4 sm:py-4;
+}
+
+/* Stats Card Spacing */
+.stat-card-spacing {
+  @apply p-4 sm:p-5 lg:p-6;
+}
+
+/* ================================================================
+   RESPONSIVE MARGIN UTILITIES
+   ================================================================ */
+
+/* Margin Bottom - Consistent element separation */
+.mb-content {
+  @apply mb-4 sm:mb-6;
+}
+
+.mb-section {
+  @apply mb-8 sm:mb-12;
+}
+
+/* Margin Top - Consistent element separation */
+.mt-content {
+  @apply mt-4 sm:mt-6;
+}
+
+.mt-section {
+  @apply mt-8 sm:mt-12;
+}
+
+/* ================================================================
+   GAP UTILITIES FOR FLEXBOX/GRID
+   ================================================================ */
+
+.gap-content {
+  @apply gap-4 sm:gap-6;
+}
+
+.gap-section {
+  @apply gap-8 sm:gap-12;
+}
+
+/* ================================================================
+   COMPONENT MARGIN UTILITIES
+   ================================================================ */
+
+/* Card Margins - Space between cards */
+.card-margin {
+  @apply mb-4 sm:mb-6 lg:mb-8;
+}
+
+/* Section Margins - Space between major sections */
+.section-margin {
+  @apply mb-8 sm:mb-12 lg:mb-16;
+}
+
+/* ================================================================
+   MOBILE-SPECIFIC OPTIMIZATIONS
+   ================================================================ */
+
+@media (max-width: 640px) {
+  /* Reduce padding on mobile for more content space */
+  .mobile-compact {
+    @apply p-3;
+  }
+  
+  /* Tighter spacing on mobile */
+  .mobile-tight-spacing {
+    @apply space-y-3;
+  }
+}
+
+/* ================================================================
+   PRINT OPTIMIZATIONS
+   ================================================================ */
+
+@media print {
+  /* Remove excessive spacing for print */
+  .section-spacing,
+  .section-spacing-lg {
+    @apply py-4;
+  }
+  
+  .card-padding,
+  .card-padding-lg {
+    @apply p-4;
+  }
+}
+

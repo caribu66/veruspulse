@@ -8,9 +8,15 @@
 
 const { Pool } = require('pg');
 
-const DB_CONN =
-  process.env.DATABASE_URL ||
-  'postgresql://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db';
+// Load environment variables
+require('dotenv').config();
+
+const DB_CONN = process.env.DATABASE_URL;
+
+if (!DB_CONN) {
+  console.error('❌ DATABASE_URL not set');
+  process.exit(1);
+}
 
 async function cleanupHistory() {
   const pool = new Pool({

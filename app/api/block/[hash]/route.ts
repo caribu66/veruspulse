@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 import { verusClientWithFallback } from '@/lib/rpc-client-with-fallback';
 import { computeBlockFees } from '@/lib/utils/fees';
@@ -7,12 +7,12 @@ import { isOrphan } from '@/lib/utils/orphan';
 import { getMempoolTracker } from '@/lib/monitoring/mempool-tracker';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ hash: string }> }
 ) {
   try {
     const { hash } = await params;
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     const metrics = searchParams.get('metrics') === '1';
 
     if (!hash) {

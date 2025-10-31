@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 const pool = new Pool({
@@ -8,7 +8,7 @@ const pool = new Pool({
 export const dynamic = 'force-dynamic';
 
 // GET: Fetch known addresses
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get('address');
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST: Add or update known address
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const body = await request.json();
     const { address, name, type, description, website, verified } = body;
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     const query = `
       INSERT INTO known_addresses (address, name, type, description, website, verified)
       VALUES ($1, $2, $3, $4, $5, $6)
-      ON CONFLICT (address) 
+      ON CONFLICT (address)
       DO UPDATE SET
         name = EXCLUDED.name,
         type = EXCLUDED.type,
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
 }
 
 // DELETE: Remove known address
-export async function DELETE(request: NextRequest) {
+export async function DELETE(_request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get('address');

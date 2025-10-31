@@ -73,9 +73,9 @@ export async function GET() {
  * Test fallback functionality
  * Force using fallback mode to test it works
  */
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { action, method } = body;
 
     if (action === 'test_fallback') {

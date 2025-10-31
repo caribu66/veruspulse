@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Heart,
   X,
@@ -8,7 +9,6 @@ import {
   Check,
   CurrencyBtc,
   QrCode,
-  Sparkle,
 } from '@phosphor-icons/react';
 import Image from 'next/image';
 import QRCode from 'qrcode';
@@ -24,6 +24,8 @@ const SUGGESTED_AMOUNTS = {
 } as const;
 
 export function DonationBanner() {
+  const tCommon = useTranslations('common');
+
   const [isVisible, setIsVisible] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showQR, setShowQR] = useState(false);
@@ -114,12 +116,9 @@ export function DonationBanner() {
               <Heart className="h-4 w-4 text-verus-blue fill-current animate-pulse" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h3 className="text-white font-semibold text-sm">
-                  Help Keep VerusPulse Running!
-                </h3>
-                <Sparkle className="h-3 w-3 text-verus-teal animate-bounce" />
-              </div>
+              <h3 className="text-white font-semibold text-sm">
+                Help Keep VerusPulse Running!
+              </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
                 Your donations help cover server costs and keep the network
                 healthy.
@@ -186,22 +185,22 @@ export function DonationBanner() {
             <div className="flex gap-1">
               <button
                 onClick={toggleQR}
-                className="flex-shrink-0 p-1 hover:bg-white/10 rounded transition-colors"
+                className="flex-shrink-0 p-1.5 hover:bg-white/10 rounded transition-colors"
                 title="Toggle QR code"
                 aria-label="Toggle QR code"
               >
-                <QrCode className="h-3 w-3 text-gray-400 hover:text-white" />
+                <QrCode className="h-4 w-4 text-gray-300 hover:text-white" />
               </button>
               <button
                 onClick={handleCopy}
-                className="flex-shrink-0 p-1 hover:bg-white/10 rounded transition-colors"
+                className="flex-shrink-0 p-1.5 bg-white/5 hover:bg-white/15 rounded transition-colors border border-gray-600/30 hover:border-gray-500/50"
                 title="Copy address"
                 aria-label="Copy donation address"
               >
                 {copied ? (
-                  <Check className="h-3 w-3 text-green-400" />
+                  <Check className="h-4 w-4 text-green-400" />
                 ) : (
-                  <Copy className="h-3 w-3 text-gray-400 hover:text-white" />
+                  <Copy className="h-4 w-4 text-white" />
                 )}
               </button>
             </div>

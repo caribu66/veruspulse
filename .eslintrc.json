@@ -1,9 +1,63 @@
 {
-  "extends": ["next/core-web-vitals"],
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["@typescript-eslint"],
   "rules": {
-    "no-console": "off",
+    // Console - Allow in development
+    "no-console": ["warn", { "allow": ["warn", "error", "info"] }],
+
+    // React Best Practices
     "react/no-unescaped-entities": "warn",
+    "react/jsx-no-target-blank": "error",
+    "react/jsx-key": "error",
+    "react/no-array-index-key": "off", // Allow index as key - not always problematic
+    "react/self-closing-comp": "warn",
+    "react/jsx-curly-brace-presence": ["warn", { "props": "never", "children": "never" }],
+
+    // React Hooks
+    "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "@next/next/no-img-element": "warn"
+
+    // Next.js Specific
+    "@next/next/no-img-element": "warn",
+    "@next/next/no-html-link-for-pages": "error",
+    "@next/next/no-sync-scripts": "error",
+    "@next/next/no-document-import-in-page": "error",
+
+    // TypeScript
+    "@typescript-eslint/no-unused-vars": ["warn", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_",
+      "caughtErrorsIgnorePattern": "^_|error|err|e",
+      "destructuredArrayIgnorePattern": "^_"
+    }],
+    "@typescript-eslint/no-explicit-any": "off", // Allow 'any' - too many legacy instances
+    "@typescript-eslint/consistent-type-imports": "off", // Optional optimization
+    "@typescript-eslint/no-require-imports": "error", // Keep this strict
+
+    // General Code Quality
+    "no-debugger": "error",
+    "no-duplicate-imports": "error",
+    "prefer-const": "warn",
+    "no-var": "error",
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-console": ["warn", { "allow": ["warn", "error", "info"] }], // Override default
+
+    // Accessibility
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/aria-props": "error",
+    "jsx-a11y/aria-proptypes": "error",
+    "jsx-a11y/aria-unsupported-elements": "error",
+    "jsx-a11y/role-has-required-aria-props": "error"
   }
 }

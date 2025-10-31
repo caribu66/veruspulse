@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { CacheManager } from '@/lib/cache/cache-utils';
 import { CachedRPCClient } from '@/lib/cache/cached-rpc-client';
-import { addSecurityHeaders } from '@/lib/middleware/security';
+// import { addSecurityHeaders } from '@/lib/middleware/security'; // Unused
 import { logger } from '@/lib/utils/logger';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     const action = searchParams.get('action');
 
     switch (action) {
@@ -56,9 +56,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(_request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     const type = searchParams.get('type');
     const identifier = searchParams.get('identifier');
 

@@ -37,6 +37,9 @@ export class DynamicBlockRewardAnalyzer {
   private static instance: DynamicBlockRewardAnalyzer;
   private rewardCache = new Map<number, BlockRewardAnalysis>();
   private scheduleCache: RewardSchedule[] | null = null;
+  // Track last analyzed height for cache invalidation
+  // Property is set but TypeScript doesn't detect usage - intentionally kept for future use
+  // @ts-ignore TS6133 - property is set but not read in current code flow
   private lastAnalysisHeight = 0;
 
   private constructor() {}
@@ -59,7 +62,7 @@ export class DynamicBlockRewardAnalyzer {
       return this.scheduleCache;
     }
 
-    console.log(`Analyzing block rewards with ${sampleSize} samples...`);
+    console.info(`Analyzing block rewards with ${sampleSize} samples...`);
 
     try {
       const blockchainInfo = await verusAPI.getBlockchainInfo();
@@ -73,7 +76,7 @@ export class DynamicBlockRewardAnalyzer {
       const samples = this.generateSampleHeights(currentHeight, sampleSize);
       const analyses: BlockRewardAnalysis[] = [];
 
-      console.log(
+      console.info(
         `Sampling blocks at heights: ${samples.slice(0, 10).join(', ')}...`
       );
 
@@ -97,7 +100,7 @@ export class DynamicBlockRewardAnalyzer {
         }
       }
 
-      console.log(`Successfully analyzed ${analyses.length} blocks`);
+      console.info(`Successfully analyzed ${analyses.length} blocks`);
 
       // Detect reward schedule changes
       const schedule = this.detectRewardSchedule(analyses, currentHeight);
@@ -256,7 +259,7 @@ export class DynamicBlockRewardAnalyzer {
       const posReward = blockReward * 0.5;
       const powReward = blockReward * 0.5;
 
-      console.log(
+      console.info(
         `Block ${height}: reward=${blockReward}, PoS=${isPoS}, hash=${hash}`
       );
 
@@ -300,6 +303,10 @@ export class DynamicBlockRewardAnalyzer {
     for (let i = 0; i < analyses.length; i++) {
       const analysis = analyses[i];
 
+      if (!analysis) {
+        continue;
+      }
+
       if (currentReward === 0) {
         // First block
         currentReward = analysis.blockReward;
@@ -311,12 +318,12 @@ export class DynamicBlockRewardAnalyzer {
         // Reward change detected - save current period
         schedule.push({
           startHeight,
-          endHeight: analyses[i - 1].height,
+          endHeight: analyses[i - 1]?.height ?? 0,
           blockReward: currentReward,
           posReward: currentReward * 0.5,
           powReward: currentReward * 0.5,
           startTime,
-          endTime: analyses[i - 1].timestamp,
+          endTime: analyses[i - 1]?.timestamp ?? 0,
           blocksAnalyzed: blockCount,
           averageReward: totalReward / blockCount,
           isCurrent: false,

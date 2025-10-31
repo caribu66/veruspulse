@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface HealthScoreGaugeProps {
   score: number; // 0-100
@@ -17,6 +18,7 @@ export function HealthScoreGauge({
   showLabel = true,
   className = '',
 }: HealthScoreGaugeProps) {
+  const tCommon = useTranslations('common');
   const [animatedScore, setAnimatedScore] = useState(0);
 
   useEffect(() => {

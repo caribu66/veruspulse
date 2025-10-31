@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Copy,
   Check,
@@ -48,7 +49,11 @@ interface TransactionDetailProps {
   index: number;
 }
 
-export function TransactionDetail({ tx, index }: TransactionDetailProps) {
+export function TransactionDetail({
+  tx,
+  index,
+}: TransactionDetailProps) {
+  const tCommon = useTranslations('common');
   const [copied, setCopied] = useState(false);
 
   const totalOutput = tx.vout?.reduce((sum, out) => sum + out.value, 0) || 0;
@@ -130,6 +135,8 @@ export function TransactionDetail({ tx, index }: TransactionDetailProps) {
                       {vin.txid ? (
                         <Link
                           href={`/transaction/${vin.txid}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-blue-400 hover:underline"
                         >
                           {formatAddress(vin.txid)}
@@ -163,6 +170,8 @@ export function TransactionDetail({ tx, index }: TransactionDetailProps) {
                     {vout.scriptPubKey?.addresses?.[0] ? (
                       <Link
                         href={`/address/${vout.scriptPubKey.addresses[0]}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-blue-400 hover:underline"
                       >
                         {formatAddress(vout.scriptPubKey.addresses[0])}

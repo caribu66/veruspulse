@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { ArrowsClockwise } from '@phosphor-icons/react';
 import { haptics } from '@/lib/utils/haptics';
+import { useTranslations } from 'next-intl';
 
 /**
  * Pull-to-Refresh Component
@@ -24,6 +25,7 @@ export function PullToRefresh({
   disabled = false,
   threshold = 80,
 }: PullToRefreshProps) {
+  const tCommon = useTranslations('common');
   const [isPulling, setIsPulling] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);

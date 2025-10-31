@@ -93,7 +93,7 @@ export function formatFriendlyNumber(
 export function formatCryptoValue(
   value: number | string | null | undefined,
   currency: string = 'VRSC',
-  options: Omit<NumberFormatOptions, 'unit'> = {}
+  _options: Omit<NumberFormatOptions, 'unit'> = {}
 ): string {
   if (value === null || value === undefined || isNaN(Number(value))) {
     return 'N/A';
@@ -169,7 +169,7 @@ export function formatFileSize(
  */
 export function formatHashRate(
   hashRate: number | string | null | undefined,
-  options: Omit<NumberFormatOptions, 'unit'> = {}
+  _options: Omit<NumberFormatOptions, 'unit'> = {}
 ): string {
   if (hashRate === null || hashRate === undefined || isNaN(Number(hashRate))) {
     return 'N/A';
@@ -200,7 +200,7 @@ export function formatHashRate(
  */
 export function formatPercentage(
   value: number | string | null | undefined,
-  options: Omit<NumberFormatOptions, 'unit'> = {}
+  _options: Omit<NumberFormatOptions, 'unit'> = {}
 ): string {
   if (value === null || value === undefined || isNaN(Number(value))) {
     return 'N/A';
@@ -217,7 +217,7 @@ export function formatPercentage(
  */
 export function formatDifficulty(
   difficulty: number | string | null | undefined,
-  options: Omit<NumberFormatOptions, 'unit'> = {}
+  _options: Omit<NumberFormatOptions, 'unit'> = {}
 ): string {
   if (
     difficulty === null ||
@@ -243,7 +243,7 @@ export function formatDifficulty(
  */
 export function formatDuration(
   seconds: number | string | null | undefined,
-  options: Omit<NumberFormatOptions, 'unit'> = {}
+  _options: Omit<NumberFormatOptions, 'unit'> = {}
 ): string {
   if (seconds === null || seconds === undefined || isNaN(Number(seconds))) {
     return 'N/A';
@@ -286,7 +286,7 @@ export function formatDuration(
  */
 export function formatBlockHeight(
   height: number | string | null | undefined,
-  options: Omit<NumberFormatOptions, 'unit'> = {}
+  _options: Omit<NumberFormatOptions, 'unit'> = {}
 ): string {
   if (height === null || height === undefined || isNaN(Number(height))) {
     return 'N/A';
@@ -375,7 +375,7 @@ export function formatConnectionCount(
  */
 export function formatStake(
   stake: number | string | null | undefined,
-  options: Omit<NumberFormatOptions, 'unit'> = {}
+  _options: Omit<NumberFormatOptions, 'unit'> = {}
 ): string {
   if (stake === null || stake === undefined || isNaN(Number(stake))) {
     return 'N/A';
@@ -405,7 +405,10 @@ export function calculateAverageBlockTime(
   // Calculate time differences between consecutive blocks
   const timeDifferences: number[] = [];
   for (let i = 1; i < sortedBlocks.length; i++) {
-    const timeDiff = sortedBlocks[i].time - sortedBlocks[i - 1].time;
+    const currentBlock = sortedBlocks[i];
+    const previousBlock = sortedBlocks[i - 1];
+    if (!currentBlock || !previousBlock) continue;
+    const timeDiff = currentBlock.time - previousBlock.time;
     // Filter out unrealistic values (blocks should be between 1 second and 1 hour apart)
     if (timeDiff > 0 && timeDiff < 3600) {
       timeDifferences.push(timeDiff);

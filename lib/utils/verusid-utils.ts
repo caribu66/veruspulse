@@ -1,7 +1,7 @@
 import {
-  VerusIDBrowseData,
-  FilterState,
-  SortOptions,
+  type VerusIDBrowseData,
+  type FilterState,
+  type SortOptions,
 } from '@/lib/types/verusid-browse-types';
 
 /**

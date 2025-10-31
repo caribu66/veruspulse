@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useState, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   TrendUp,
   UsersThree,
@@ -48,6 +49,9 @@ export function QuickStatsTicker({
   mempoolStats,
   stakingStats,
 }: QuickStatsTickerProps) {
+  const t = useTranslations('hero');
+  const tMempool = useTranslations('mempool');
+  const tNetwork = useTranslations('network');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Get real-time chart data
@@ -74,7 +78,7 @@ export function QuickStatsTicker({
         24,
         0.05
       ),
-      'staking-weight': generateMockChartData(
+      'staking-supply': generateMockChartData(
         stakingStats?.netstakeweight || 7889102,
         24,
         0.1
@@ -107,7 +111,7 @@ export function QuickStatsTicker({
   const stats: QuickStat[] = [
     {
       id: 'block-height',
-      label: 'Block Height',
+      label: t('blockHeight'),
       value: networkStats?.blocks?.toLocaleString() || '...',
       icon: Database,
       color:
@@ -116,7 +120,7 @@ export function QuickStatsTicker({
     },
     {
       id: 'mempool',
-      label: 'Mempool Txs',
+      label: tMempool('mempoolTxs'),
       value:
         mempoolStats?.size !== undefined
           ? mempoolStats.size
@@ -130,7 +134,7 @@ export function QuickStatsTicker({
     },
     {
       id: 'supply',
-      label: 'Circulating Supply',
+      label: t('circulatingSupply'),
       value: networkStats?.circulatingSupply
         ? `${(networkStats.circulatingSupply / 1000000).toFixed(2)}M`
         : '...',
@@ -140,20 +144,20 @@ export function QuickStatsTicker({
       suffix: 'VRSC',
     },
     {
-      id: 'staking-weight',
-      label: 'Network Stake',
+      id: 'staking-supply',
+      label: t('totalStakingSupply'),
       value:
         stakingStats?.netstakeweight && stakingStats.netstakeweight > 0
-          ? formatStake(stakingStats.netstakeweight)
+          ? `${formatStake(stakingStats.netstakeweight)} VRSC`
           : '...',
       icon: TrendUp,
       color:
-        'text-blue-600 dark:text-blue-400 bg-white dark:bg-blue-500/10 border-slate-300 dark:border-blue-500/20',
+        'text-verus-green dark:text-verus-green bg-white dark:bg-verus-green/10 border-slate-300 dark:border-verus-green/20',
       trend: 'up',
     },
     {
       id: 'connections',
-      label: 'Connections',
+      label: tNetwork('connections'),
       value: networkStats?.connections || '...',
       icon: Network,
       color:
@@ -178,8 +182,8 @@ export function QuickStatsTicker({
             return (
               <div
                 key={stat.id}
-                className={`quick-stats-card flex flex-col items-center gap-1.5 sm:gap-2 md:gap-3 px-2 sm:px-3 md:px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl border ${stat.color} 
-                transition-all duration-300 active:scale-95 hover:brightness-110 group cursor-pointer 
+                className={`quick-stats-card flex flex-col items-center gap-1.5 sm:gap-2 md:gap-3 px-2 sm:px-3 md:px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl border ${stat.color}
+                transition-all duration-300 active:scale-95 hover:brightness-110 group cursor-pointer
                 w-full min-h-[80px] max-w-full
                 bg-white dark:bg-slate-900 shadow-md hover:shadow-lg touch-manipulation`}
                 style={{
@@ -230,7 +234,7 @@ export function QuickStatsTicker({
                 {/* Pulse Animation for Active Stats */}
                 {stat.value !== '...' && (
                   <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="absolute inset-0 rounded-xl animate-ping opacity-20 bg-current"></div>
+                    <div className="absolute inset-0 rounded-xl animate-ping opacity-20 bg-current" />
                   </div>
                 )}
               </div>
@@ -248,8 +252,8 @@ export function QuickStatsTicker({
               return (
                 <div
                   key={stat.id}
-                  className={`quick-stats-card flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg border ${stat.color} 
-                    transition-all duration-300 active:scale-95 hover:brightness-110 group cursor-pointer 
+                  className={`quick-stats-card flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg border ${stat.color}
+                    transition-all duration-300 active:scale-95 hover:brightness-110 group cursor-pointer
                     w-[120px] min-h-[80px] flex-shrink-0
                     bg-slate-900 shadow-md hover:shadow-lg touch-manipulation`}
                   style={{
@@ -302,7 +306,7 @@ export function QuickStatsTicker({
                   {/* Hover effect */}
                   {stat.trend === 'up' && (
                     <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute inset-0 rounded-lg animate-ping opacity-20 bg-current"></div>
+                      <div className="absolute inset-0 rounded-lg animate-ping opacity-20 bg-current" />
                     </div>
                   )}
                 </div>

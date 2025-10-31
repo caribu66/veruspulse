@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   List,
   X,
@@ -10,7 +11,6 @@ import {
   WifiSlash,
 } from '@phosphor-icons/react';
 import { MinimalPriceIndicator } from './minimal-price-indicator';
-import { ThemeToggleCompact } from './theme-toggle';
 import { ICON_SIZES, SPACING_UTILS } from '@/lib/constants/design-tokens';
 import { useTheme } from '@/contexts/theme-context';
 
@@ -29,6 +29,10 @@ export function CompactNavigationBar({
   activeTab,
   onTabChange,
 }: CompactNavigationBarProps) {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
 
@@ -140,9 +144,6 @@ export function CompactNavigationBar({
             <div className="hidden md:flex lg:hidden">
               <MinimalPriceIndicator refreshInterval={10000} maxAssets={5} />
             </div>
-
-            {/* Theme Toggle */}
-            <ThemeToggleCompact />
 
             {/* Mobile List Toggle */}
             <button

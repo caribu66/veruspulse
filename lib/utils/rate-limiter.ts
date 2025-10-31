@@ -1,7 +1,7 @@
 // Rate Limiter for Verus RPC Calls
 // Prevents hammering the Verus daemon with too many requests
 
-import { RateLimitConfig, RateLimitStatus } from '../types/verus-rpc-types';
+import { type RateLimitConfig, type RateLimitStatus } from '../types/verus-rpc-types';
 
 export class RateLimiter {
   private config: RateLimitConfig;

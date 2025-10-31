@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface UTXO {
   value: number;
@@ -20,6 +21,7 @@ export function UTXOVisualizerValidator({
   width = 600,
   height = 400,
 }: UTXOVisualizerValidatorProps) {
+  const tCommon = useTranslations('common');
   const [validationResults, setValidationResults] = useState<any>(null);
 
   useEffect(() => {

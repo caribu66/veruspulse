@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 import {
@@ -41,6 +42,10 @@ type SortField = 'time' | 'size' | 'fee' | 'priority';
 type SortDirection = 'asc' | 'desc';
 
 export function MempoolExplorer() {
+  const t = useTranslations('mempool');
+  const tCommon = useTranslations('common');
+  const tTime = useTranslations('time');
+  const tErrors = useTranslations('errors');
   const router = useRouter();
   const { addToHistory } = useNavigationHistory();
   const [transactions, setTransactions] = useState<MempoolTransaction[]>([]);
@@ -102,9 +107,9 @@ export function MempoolExplorer() {
     const now = Date.now() / 1000;
     const diff = now - timestamp;
 
-    if (diff < 60) return 'Just now';
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 60) return tTime('justNow');
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ${tTime('ago')}`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ${tTime('ago')}`;
     return new Date(timestamp * 1000).toLocaleString();
   };
 
@@ -163,8 +168,8 @@ export function MempoolExplorer() {
   if (loading && transactions.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <span className="ml-3 text-slate-300">Loading mempool...</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+        <span className="ml-3 text-slate-300">{tCommon('loading')}</span>
       </div>
     );
   }
@@ -175,7 +180,7 @@ export function MempoolExplorer() {
         <div className="flex items-center space-x-3">
           <WarningCircle className="h-5 w-5 text-slate-300" />
           <div>
-            <div className="text-slate-300 font-semibold">Error</div>
+            <div className="text-slate-300 font-semibold">{tCommon('error')}</div>
             <div className="text-slate-400 text-sm">{error}</div>
           </div>
         </div>
@@ -200,9 +205,9 @@ export function MempoolExplorer() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Mempool Explorer</h2>
+          <h2 className="text-3xl font-bold">{t('title')}</h2>
           <p className="text-slate-300 text-sm mt-1">
-            View pending transactions waiting to be confirmed
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center space-x-4">
@@ -229,7 +234,7 @@ export function MempoolExplorer() {
             <ArrowsClockwise
               className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
             />
-            <span>Refresh</span>
+            <span>{tCommon('refresh')}</span>
           </button>
         </div>
       </div>

@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 import {
   MagnifyingGlass,
   ArrowsClockwise,
@@ -48,6 +50,7 @@ export function QuickActions({
   compact = false,
   showLabels = true,
 }: QuickActionsProps) {
+  const tCommon = useTranslations('common');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
 
@@ -66,13 +69,13 @@ export function QuickActions({
     {
       id: 'search',
       icon: MagnifyingGlass,
-      label: 'Search',
+      label: tCommon("search"),
       action: onSearch || (() => {}),
     },
     {
       id: 'refresh',
       icon: ArrowsClockwise,
-      label: 'Refresh',
+      label: tCommon("refresh"),
       action: handleRefresh,
       disabled: isRefreshing,
     },
@@ -86,7 +89,7 @@ export function QuickActions({
     {
       id: 'filter',
       icon: Funnel,
-      label: 'Filter',
+      label: tCommon("filter"),
       action: onFilter || (() => {}),
     },
     {
@@ -98,7 +101,7 @@ export function QuickActions({
     {
       id: 'export',
       icon: DownloadSimple,
-      label: 'Export',
+      label: tCommon("export"),
       action: onExport || (() => {}),
     },
     {
@@ -118,7 +121,7 @@ export function QuickActions({
   const visibleActions = compact ? actions.slice(0, 4) : actions;
 
   return (
-    <div className={`flex items-center space-x-1 ${className}`}>
+    <div className={cn('flex items-center space-x-1', className)}>
       {visibleActions.map(action => {
         const Icon = action.icon;
         return (
@@ -126,21 +129,19 @@ export function QuickActions({
             key={action.id}
             onClick={action.action}
             disabled={action.disabled}
-            className={`
-              relative flex items-center space-x-1 px-2 py-1.5 rounded-lg transition-all duration-200
-              focus:outline-none focus:ring-2 focus:ring-blue-500/50
-              ${
-                action.disabled
-                  ? 'text-white/40 cursor-not-allowed'
-                  : 'text-white/80 hover:text-white hover:bg-white/10 hover:shadow-md'
-              }
-              ${compact ? 'px-2 py-1' : 'px-3 py-2'}
-            `}
+            className={cn(
+              'relative flex items-center space-x-1 rounded-lg transition-all duration-200',
+              'focus:outline-none focus:ring-2 focus:ring-blue-500/50',
+              action.disabled
+                ? 'text-white/40 cursor-not-allowed'
+                : 'text-white/80 hover:text-white hover:bg-white/10 hover:shadow-md',
+              compact ? 'px-2 py-1' : 'px-3 py-2'
+            )}
             title={action.label}
             aria-label={action.label}
           >
             <Icon
-              className={`h-4 w-4 ${action.disabled ? 'animate-spin' : ''}`}
+              className={cn('h-4 w-4', action.disabled && 'animate-spin')}
             />
             {showLabels && !compact && (
               <span className="text-sm font-medium">{action.label}</span>

@@ -1,7 +1,7 @@
 // Statistics Calculator Service
 // Calculates comprehensive staking statistics for VerusIDs
 
-import { Pool } from 'pg';
+import { type Pool } from 'pg';
 
 export interface ComprehensiveStats {
   address: string;
@@ -142,7 +142,7 @@ export class StatisticsCalculator {
     address: string
   ): Promise<Partial<ComprehensiveStats>> {
     const query = `
-      SELECT 
+      SELECT
         COUNT(*) as total_stakes,
         SUM(reward_amount) as total_rewards,
         MIN(block_time) as first_stake,
@@ -173,7 +173,7 @@ export class StatisticsCalculator {
     address: string
   ): Promise<Partial<ComprehensiveStats>> {
     const query = `
-      SELECT 
+      SELECT
         COUNT(*) as total_utxos,
         SUM(value) as total_value,
         COUNT(CASE WHEN is_eligible = true THEN 1 END) as eligible_utxos,
@@ -253,14 +253,14 @@ export class StatisticsCalculator {
   ): Promise<number | null> {
     const query = days
       ? `
-        SELECT 
+        SELECT
           SUM(reward_amount) as total_rewards,
           AVG(stake_amount) as avg_stake
         FROM stake_events
         WHERE address = $1 AND block_time >= NOW() - INTERVAL '${days} days'
       `
       : `
-        SELECT 
+        SELECT
           SUM(reward_amount) as total_rewards,
           AVG(stake_amount) as avg_stake,
           EXTRACT(EPOCH FROM (MAX(block_time) - MIN(block_time))) / 86400 as period_days
@@ -318,7 +318,7 @@ export class StatisticsCalculator {
   ): Promise<Partial<ComprehensiveStats>> {
     // Highest and lowest rewards
     const rewardsQuery = `
-      SELECT 
+      SELECT
         MAX(reward_amount) as highest_reward,
         (SELECT block_time FROM stake_events WHERE address = $1 ORDER BY reward_amount DESC LIMIT 1) as highest_reward_date,
         MIN(reward_amount) as lowest_reward
@@ -331,7 +331,7 @@ export class StatisticsCalculator {
 
     // Best and worst months
     const monthlyQuery = `
-      SELECT 
+      SELECT
         TO_CHAR(block_time, 'YYYY-MM') as month,
         SUM(reward_amount) as total_rewards
       FROM stake_events
@@ -406,20 +406,20 @@ export class StatisticsCalculator {
     let query = '';
     if (metric === 'reward') {
       query = `
-        SELECT 
+        SELECT
           (SELECT SUM(reward_amount) FROM stake_events WHERE address = $1 AND block_time >= NOW() - INTERVAL '${halfDays} days') as recent,
           (SELECT SUM(reward_amount) FROM stake_events WHERE address = $1 AND block_time >= NOW() - INTERVAL '${days} days' AND block_time < NOW() - INTERVAL '${halfDays} days') as previous
       `;
     } else if (metric === 'efficiency') {
       // For efficiency, use staking_timeline if available
       query = `
-        SELECT 
+        SELECT
           (SELECT AVG(staking_efficiency) FROM staking_timeline WHERE address = $1 AND period_start >= NOW() - INTERVAL '${halfDays} days') as recent,
           (SELECT AVG(staking_efficiency) FROM staking_timeline WHERE address = $1 AND period_start >= NOW() - INTERVAL '${days} days' AND period_start < NOW() - INTERVAL '${halfDays} days') as previous
       `;
     } else if (metric === 'apy') {
       query = `
-        SELECT 
+        SELECT
           (SELECT AVG(apy) FROM staking_timeline WHERE address = $1 AND period_start >= NOW() - INTERVAL '${halfDays} days') as recent,
           (SELECT AVG(apy) FROM staking_timeline WHERE address = $1 AND period_start >= NOW() - INTERVAL '${days} days' AND period_start < NOW() - INTERVAL '${halfDays} days') as previous
       `;
@@ -448,7 +448,7 @@ export class StatisticsCalculator {
    * Calculate network rankings
    */
   private async calculateRankings(
-    address: string,
+    _address: string,
     totalRewards: number
   ): Promise<Partial<ComprehensiveStats>> {
     // Get rank based on total rewards

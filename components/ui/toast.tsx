@@ -6,8 +6,9 @@ import React, {
   useState,
   useCallback,
   useMemo,
-  ReactNode,
+  type ReactNode,
 } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   X,
   CheckCircle,
@@ -27,7 +28,7 @@ import { cn } from '@/lib/utils';
  * const { toast } = useToast();
  *
  * toast.success('VerusID found!');
- * toast.error('Failed to load data', { action: { label: 'Retry', onClick: retry } });
+ * toast.error('Failed to load data', { action: { label: {tCommon("retry")}, onClick: retry } });
  * toast.loading('Searching...', searchPromise);
  * ```
  */
@@ -85,6 +86,9 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
 export function useToast() {
+  const tCommon = useTranslations('common');
+  const tVerusId = useTranslations('verusid');
+
   const context = useContext(ToastContext);
   if (!context) {
     throw new Error('useToast must be used within ToastProvider');

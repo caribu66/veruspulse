@@ -185,7 +185,7 @@ class EnhancedLogger {
       mainMessage += colors.magenta(` [${entry.address.substring(0, 8)}...]`);
     }
 
-    console.log(`${timestamp} ${mainMessage}`);
+    console.info(`${timestamp} ${mainMessage}`);
 
     // Only show details for errors and warnings, or in debug mode
     if (
@@ -194,16 +194,16 @@ class EnhancedLogger {
         entry.level === 'WARN' ||
         this.logLevel === 'debug')
     ) {
-      console.log(
+      console.info(
         colors.gray(`    Details: ${JSON.stringify(entry.details, null, 2)}`)
       );
     }
 
     // Log error stack if present
     if (entry.error) {
-      console.log(colors.red(`    Error: ${entry.error.message}`));
+      console.info(colors.red(`    Error: ${entry.error.message}`));
       if (this.logLevel === 'debug') {
-        console.log(colors.gray(entry.error.stack || ''));
+        console.info(colors.gray(entry.error.stack || ''));
       }
     }
 
@@ -412,12 +412,12 @@ class EnhancedLogger {
   }
 
   public showStats(): void {
-    console.log(colors.blue('\n📊 === SYSTEM STATS ==='));
-    console.log(colors.green(`✅ Successful requests: ${this.successCount}`));
-    console.log(colors.red(`❌ Errors: ${this.errorCount}`));
-    console.log(colors.cyan(`📡 Total requests: ${this.requestCount}`));
-    console.log(colors.gray(`⏱️  Active timers: ${this.startTimes.size}`));
-    console.log(colors.blue('========================\n'));
+    console.info(colors.blue('\n📊 === SYSTEM STATS ==='));
+    console.info(colors.green(`✅ Successful requests: ${this.successCount}`));
+    console.info(colors.red(`❌ Errors: ${this.errorCount}`));
+    console.info(colors.cyan(`📡 Total requests: ${this.requestCount}`));
+    console.info(colors.gray(`⏱️  Active timers: ${this.startTimes.size}`));
+    console.info(colors.blue('========================\n'));
   }
 
   public clearStats(): void {
@@ -429,10 +429,10 @@ class EnhancedLogger {
   private showStartupBanner(): void {
     if (this.bannerShown || process.env.NODE_ENV !== 'development') return;
 
-    console.log('\n');
-    console.log(colors.blue('🚀 VERUS EXPLORER'));
-    console.log(colors.gray(`   Log Level: ${this.logLevel.toUpperCase()}`));
-    console.log(
+    console.info('\n');
+    console.info(colors.blue('🚀 VERUS EXPLORER'));
+    console.info(colors.gray(`   Log Level: ${this.logLevel.toUpperCase()}`));
+    console.info(
       colors.gray('   Set NEXT_PUBLIC_LOG_LEVEL=debug for verbose logs\n')
     );
 

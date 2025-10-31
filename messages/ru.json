@@ -1,0 +1,116 @@
+{
+  "nav": {
+    "dashboard": "Панель",
+    "explorer": "Проводник",
+    "verusids": "VerusID",
+    "blocks": "Блоки",
+    "transactions": "Транзакции",
+    "addresses": "Адреса"
+  },
+  "dashboard": {
+    "title": "VerusPulse - Интернет Ценности",
+    "description": "Исследуйте экосистему протокола Verus - отслеживайте умные транзакции, анализируйте цепочки PBaaS, отслеживайте награды за стейкинг, изучайте систему идентификации VerusID и открывайте валюты на уровне протокола.",
+    "welcome": "Добро пожаловать в VerusPulse",
+    "welcomeMessage": "Ваш комплексный шлюз к блокчейну Verus. Все ключевые метрики сети отображаются выше в тикере статистики.",
+    "blockchainExplorer": "Обозреватель блокчейна",
+    "browseBlocksTransactions": "Просмотр блоков и транзакций",
+    "networkStats": "Статистика сети",
+    "stakingMetrics": "Метрики стейкинга и майнинга в реальном времени",
+    "verusidSystem": "Система VerusID",
+    "identityManagement": "Управление идентификацией и разрешение"
+  },
+  "blocks": {
+    "title": "Обозреватель блоков",
+    "description": "Исследуйте блоки и транзакции блокчейна Verus",
+    "totalBlocks": "Всего блоков",
+    "blockHeight": "Высота блока",
+    "transactions": "Транзакции",
+    "blockTime": "Время блока",
+    "difficulty": "Сложность",
+    "miner": "Майнер",
+    "reward": "Награда",
+    "size": "Размер"
+  },
+  "transactions": {
+    "title": "Обозреватель транзакций",
+    "description": "Исследуйте транзакции блокчейна Verus и движения UTXO",
+    "totalTransactions": "Всего транзакций",
+    "transactionId": "ID транзакции",
+    "amount": "Сумма",
+    "fee": "Комиссия",
+    "confirmations": "Подтверждения",
+    "timestamp": "Временная метка"
+  },
+  "verusid": {
+    "title": "Обозреватель VerusID",
+    "description": "Исследуйте идентификаторы VerusID и связанные с ними адреса",
+    "search": "Поиск",
+    "browse": "Обзор",
+    "statistics": "Статистика",
+    "identity": "Идентификатор",
+    "address": "Адрес",
+    "primaryAddresses": "Основные адреса",
+    "revocationAuthority": "Орган отзыва",
+    "recoveryAuthority": "Орган восстановления",
+    "privateAddresses": "Приватные адреса"
+  },
+  "staking": {
+    "title": "Стейкинг",
+    "stakingRewards": "Награды за стейкинг",
+    "averageStakeAge": "Средний возраст стейка",
+    "totalStaked": "Всего в стейкинге",
+    "stakingParticipation": "Участие в стейкинге",
+    "recentStakes": "Недавние стейки",
+    "stakingStats": "Статистика стейкинга",
+    "networkParticipation": "Участие в сети",
+    "achievements": "Достижения"
+  },
+  "network": {
+    "height": "Высота",
+    "difficulty": "Сложность",
+    "hashrate": "Хешрейт",
+    "supply": "Предложение",
+    "connections": "Соединения",
+    "version": "Версия",
+    "protocol": "Протокол",
+    "networkInfo": "Информация о сети"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "retry": "Повторить",
+    "refresh": "Обновить",
+    "search": "Поиск",
+    "filter": "Фильтр",
+    "sort": "Сортировать",
+    "view": "Просмотр",
+    "details": "Детали",
+    "back": "Назад",
+    "next": "Далее",
+    "previous": "Предыдущий",
+    "home": "Главная",
+    "donate": "Пожертвовать",
+    "language": "Язык",
+    "theme": "Тема",
+    "dark": "Темная",
+    "light": "Светлая",
+    "auto": "Авто"
+  },
+  "search": {
+    "placeholder": "Поиск блоков, транзакций, адресов или VerusID...",
+    "results": "Результаты поиска",
+    "noResults": "Результаты не найдены",
+    "searchType": "Тип поиска"
+  },
+  "time": {
+    "ago": "назад",
+    "seconds": "секунд",
+    "minutes": "минут",
+    "hours": "часов",
+    "days": "дней",
+    "weeks": "недель",
+    "months": "месяцев",
+    "years": "лет"
+  }
+}
+

@@ -78,9 +78,9 @@ export async function GET() {
 /**
  * Start/Stop ZMQ Indexer
  */
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { action } = body;
 
     if (action === 'start') {

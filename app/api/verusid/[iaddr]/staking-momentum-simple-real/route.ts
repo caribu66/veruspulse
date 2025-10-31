@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
+import { Pool } from 'pg';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -47,7 +48,7 @@ export async function GET(
         ? networkParticipationResponse.value
         : null;
 
-    const liveUTXOs =
+    const _liveUTXOs =
       liveUTXOsResponse.status === 'fulfilled' &&
       liveUTXOsResponse.value.success
         ? liveUTXOsResponse.value.data
@@ -70,7 +71,7 @@ export async function GET(
     const yourWeight = networkParticipation.data.yourWeight || 0;
     const networkWeight = networkParticipation.data.networkWeight || 0;
     const totalStakes = stakingStats.summary?.totalStakes || 0;
-    const totalRewards = stakingStats.summary?.totalRewardsVRSC || 0;
+    const _totalRewards = stakingStats.summary?.totalRewardsVRSC || 0;
     const firstStake = stakingStats.summary?.firstStake
       ? new Date(stakingStats.summary.firstStake)
       : null;
@@ -111,16 +112,15 @@ export async function GET(
     } else {
       // Fallback to database if daemon query fails
       try {
-        const { Pool } = require('pg');
         const pool = new Pool({
           connectionString: process.env.DATABASE_URL,
         });
 
         const last7dResult = await pool.query(
           `
-          SELECT COUNT(*) as count 
-          FROM staking_rewards 
-          WHERE identity_address = $1 
+          SELECT COUNT(*) as count
+          FROM staking_rewards
+          WHERE identity_address = $1
           AND block_time > NOW() - INTERVAL '7 days'
         `,
           [iaddr]
@@ -129,9 +129,9 @@ export async function GET(
 
         const last30dResult = await pool.query(
           `
-          SELECT COUNT(*) as count 
-          FROM staking_rewards 
-          WHERE identity_address = $1 
+          SELECT COUNT(*) as count
+          FROM staking_rewards
+          WHERE identity_address = $1
           AND block_time > NOW() - INTERVAL '30 days'
         `,
           [iaddr]

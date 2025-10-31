@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { haptics } from '@/lib/utils/haptics';
+import { useTranslations } from 'next-intl';
 // import { UnifiedStakingAnalytics } from './unified-staking-analytics'; // Removed
 import {
   UsersThree,
@@ -87,6 +88,12 @@ interface VerusIDBalance {
 }
 
 export function VerusIDExplorer() {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
+
   const [identity, setIdentity] = useState('');
   const [verusID, setVerusID] = useState<VerusID | null>(null);
   const [resolvedAuthorities, setResolvedAuthorities] = useState<{
@@ -312,7 +319,7 @@ export function VerusIDExplorer() {
             );
             if (!statsResponse.ok) {
               // No staking data found, trigger on-demand scan
-              console.log(
+              console.info(
                 `🔍 No staking data found for ${searchInput}, triggering on-demand scan...`
               );
               setShowScanProgress(true);
@@ -321,7 +328,7 @@ export function VerusIDExplorer() {
             }
           } catch (error) {
             // If stats fetch fails, assume we need to scan
-            console.log(
+            console.info(
               `🔍 Could not fetch stats for ${searchInput}, triggering on-demand scan...`
             );
             setShowScanProgress(true);
@@ -570,20 +577,11 @@ export function VerusIDExplorer() {
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 lg:p-8 border border-slate-300 dark:border-slate-700">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-8 mb-6 lg:mb-8">
             <div>
-              {/* Breadcrumb added for accessibility and tests */}
-              <nav
-                aria-label="Breadcrumb"
-                className="mb-2 text-sm text-slate-300"
-              >
-                <span className="mr-2">VerusPulse</span>
-                <span className="text-gray-400">/</span>
-                <span className="ml-2">VerusIDs</span>
-              </nav>
               <h2 className="text-3xl font-bold flex items-center">
                 <UsersThree className="h-8 w-8 mr-3 text-verus-blue" />
                 VerusID Explorer
               </h2>
-              <p className="text-slate-300 text-sm mt-1">
+              <p className="text-slate-600 dark:text-slate-300 text-sm mt-1">
                 Explore VerusID identities and their associated addresses
               </p>
             </div>
@@ -598,7 +596,7 @@ export function VerusIDExplorer() {
                   }`}
                 >
                   <MagnifyingGlass className="h-4 w-4" />
-                  <span className="hidden sm:inline">Search</span>
+                  <span className="hidden sm:inline">{tCommon("search")}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('browse')}
@@ -622,16 +620,34 @@ export function VerusIDExplorer() {
         {/* Search Interface */}
         {activeTab === 'search' && (
           <div className="space-y-4">
-            {/* Sticky search bar on mobile */}
+            {/* Sticky search bar on mobile - Modern Design */}
             <div className="sticky top-0 z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 sm:py-0 bg-slate-900/95 sm:bg-transparent backdrop-blur-lg sm:backdrop-blur-none border-b border-slate-700 sm:border-0 safe-area-inset-top">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 relative group">
+                  {/* Animated Search Icon */}
+                  <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-verus-blue transition-all duration-300 group-focus-within:scale-110">
+                    <MagnifyingGlass className="h-5 w-5" weight="bold" />
+                  </div>
+
                   <input
                     type="text"
                     value={identity}
                     onChange={e => setIdentity(e.target.value)}
-                    placeholder="Enter VerusID (e.g., veruspulse@ or username@)"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base safe-touch-target"
+                    placeholder="Enter VerusID (e.g., VerusPulse@)"
+                    className="w-full pl-11 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4
+                      bg-gradient-to-br from-slate-800/80 to-slate-900/80
+                      backdrop-blur-xl
+                      border-2 border-slate-700/50
+                      rounded-2xl
+                      text-white text-sm sm:text-base
+                      placeholder-slate-400
+                      shadow-lg shadow-black/10
+                      transition-all duration-300
+                      focus:outline-none
+                      focus:border-verus-blue/60
+                      focus:shadow-xl focus:shadow-verus-blue/20
+                      hover:border-slate-600/60
+                      safe-touch-target"
                     onKeyPress={e => {
                       if (e.key === 'Enter') {
                         const val = (e.currentTarget as HTMLInputElement).value;
@@ -639,17 +655,41 @@ export function VerusIDExplorer() {
                       }
                     }}
                   />
+
+                  {/* Glow Effect on Focus */}
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-verus-blue/10 via-purple-500/10 to-verus-blue/10 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
                 </div>
+
                 <button
                   onClick={() => {
                     haptics.light();
                     void searchIdentity();
                   }}
                   disabled={loading || !identity.trim()}
-                  className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-slate-600 hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base whitespace-nowrap safe-touch-target"
+                  className="flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4
+                    bg-gradient-to-r from-verus-blue to-verus-blue-dark
+                    hover:from-verus-blue-light hover:to-verus-blue
+                    rounded-2xl
+                    text-white font-semibold text-sm sm:text-base
+                    shadow-lg shadow-verus-blue/30
+                    hover:shadow-xl hover:shadow-verus-blue/40
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                    disabled:from-slate-700 disabled:to-slate-800
+                    transition-all duration-300
+                    hover:scale-105 active:scale-95
+                    whitespace-nowrap safe-touch-target"
                 >
-                  <MagnifyingGlass className="h-4 w-4" />
-                  <span>{loading ? 'Searching...' : 'Search'}</span>
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                      <span>Searching...</span>
+                    </>
+                  ) : (
+                    <>
+                      <MagnifyingGlass className="h-5 w-5" weight="bold" />
+                      <span>{tCommon("search")}</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -907,7 +947,7 @@ export function VerusIDExplorer() {
               tabs={[
                 {
                   id: 'overview',
-                  label: 'Overview',
+                  label: t("overview"),
                   icon: <Eye className="h-4 w-4" />,
                 },
                 {
@@ -990,7 +1030,7 @@ export function VerusIDExplorer() {
                             VRSC Balance
                           </h4>
                           {balanceLoading && (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
                           )}
                         </div>
                         <div className="space-y-3">
@@ -1231,7 +1271,7 @@ export function VerusIDExplorer() {
                       VRSC Balance
                     </h4>
                     {balanceLoading && (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
                     )}
                   </div>
                   {isSectionExpanded('balance') ? (
@@ -1292,11 +1332,11 @@ export function VerusIDExplorer() {
                                 I-Address (Identity) • Primary Addresses
                                 (Associated)
                               </div>
-                              {/* 
+                              {/*
                               Verus Address Hierarchy:
                               1. I-Address: The VerusID's own identity address (iCDYc7VjE...)
                               2. Primary Addresses: Associated addresses linked to the VerusID (RFd31DGN7...)
-                              
+
                               For GitHub documentation, use:
                               - "I-Address" for identity addresses
                               - "Primary Address" for associated addresses
@@ -1545,7 +1585,7 @@ export function VerusIDExplorer() {
               <div className="text-red-400 font-semibold text-lg">
                 {error.toLowerCase().includes('not found')
                   ? 'Identity Not Found'
-                  : 'Error'}
+                  : tCommon("error")}
               </div>
               <div className="text-red-300 text-sm mt-1">{error}</div>
 

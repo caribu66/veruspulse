@@ -15,7 +15,7 @@ Sentry.init({
   ],
 
   // Performance monitoring for edge functions
-  beforeSend(event, hint) {
+  beforeSend(event, _hint) {
     // Add edge context
     event.tags = {
       ...event.tags,

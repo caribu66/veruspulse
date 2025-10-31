@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
 import { addListener, removeListener } from '@/lib/websocket/broadcaster';
 import { randomBytes } from 'crypto';
 
@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
  *   const data = JSON.parse(e.data);
  * });
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const clientId = randomBytes(16).toString('hex');
 
   const encoder = new TextEncoder();
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       }, 30000);
 
       // Cleanup on close
-      request.signal.addEventListener('abort', () => {
+      _request.signal.addEventListener('abort', () => {
         clearInterval(heartbeatInterval);
         removeListener(clientId);
         try {

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
 import { BarChart, LineChart, PieChart } from 'echarts/charts';
+import { useTranslations } from 'next-intl';
 import {
   GridComponent,
   TooltipComponent,
@@ -34,7 +35,7 @@ import {
   formatCryptoValue,
   formatFriendlyNumber,
 } from '@/lib/utils/number-formatting';
-import { NetworkParticipationData, StakingMomentumData } from './types';
+import { type NetworkParticipationData, type StakingMomentumData } from './types';
 import { ProfessionalAchievementProgress } from './professional-achievement-progress';
 import { Badge } from '@/components/ui/badge';
 import { useRealtimeEvents } from '@/lib/hooks/use-realtime-events';
@@ -88,6 +89,12 @@ export function VerusIDStakingDashboard({
   showBackButton = false,
   returnTo = '/?tab=verusids',
 }: DashboardProps) {
+  const tCommon = useTranslations('common');
+  const tTime = useTranslations('time');
+  const t = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -232,21 +239,34 @@ export function VerusIDStakingDashboard({
             )
             .slice(0, 50)
         );
+      } else {
+        // Database not available or no data - use fallback from stats
+        throw new Error(data.error || 'Database not available');
       }
     } catch (err: any) {
-      console.warn('Failed to fetch individual stake events:', err);
-      // Fallback: use aggregated data if individual events fail
+      console.warn('Failed to fetch individual stake events, using aggregated fallback:', err.message);
+      // Fallback: use aggregated data from the calendar (same data source!)
       if (stats?.timeSeries?.daily) {
         const fallbackStakes = stats.timeSeries.daily
           .filter((day: any) => day.stakeCount > 0)
           .flatMap((day: any) => {
-            return Array(day.stakeCount).fill({
+            // Create individual stake entries from daily aggregates
+            return Array(day.stakeCount).fill(null).map((_: any, index: number) => ({
               blockHeight: null,
               blockTime: day.date,
               amountVRSC: day.totalRewardsVRSC / day.stakeCount,
-            });
-          });
+              txid: null,
+              index, // Add index to make them unique
+            }));
+          })
+          .sort((a: any, b: any) =>
+            new Date(b.blockTime).getTime() - new Date(a.blockTime).getTime()
+          )
+          .slice(0, 50); // Limit to 50 most recent
         setRecentStakes(fallbackStakes);
+        console.info(`✅ Using ${fallbackStakes.length} stakes from calendar data as fallback`);
+      } else {
+        setRecentStakes([]);
       }
     }
   }, [iaddr, stats]);
@@ -682,9 +702,9 @@ export function VerusIDStakingDashboard({
               <div className="relative">
                 <div
                   className={`w-3 h-3 rounded-full ${realtimeConnected ? 'bg-green-500 animate-pulse' : 'bg-slate-500'}`}
-                ></div>
+                 />
                 {realtimeConnected && (
-                  <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 animate-ping opacity-75"></div>
+                  <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 animate-ping opacity-75" />
                 )}
               </div>
               <span className="text-xs sm:text-sm font-medium text-gray-200">
@@ -739,7 +759,7 @@ export function VerusIDStakingDashboard({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {/* Total Rewards */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-slate-500/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="absolute inset-0 bg-slate-500/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100" />
             <div className="relative bg-slate-700/30 border border-slate-500/30 rounded-xl p-3 sm:p-4 lg:p-5 hover:border-slate-500/50 transition-all">
               <div className="flex items-center justify-between mb-2 sm:mb-3">
                 <div className="p-1.5 sm:p-2 bg-slate-600/20 rounded-lg">
@@ -784,7 +804,7 @@ export function VerusIDStakingDashboard({
 
           {/* APY */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-slate-600/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="absolute inset-0 bg-slate-600/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100" />
             <div className="relative bg-slate-700/30 border border-slate-600/30 rounded-xl p-5 hover:border-slate-600/50 transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-slate-600/20 rounded-lg">
@@ -860,7 +880,7 @@ export function VerusIDStakingDashboard({
 
           {/* Total Stakes */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-slate-700/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="absolute inset-0 bg-slate-700/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100" />
             <div className="relative bg-slate-700/30 border border-slate-700/30 rounded-xl p-5 hover:border-slate-700/50 transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-slate-700/20 rounded-lg">
@@ -899,7 +919,7 @@ export function VerusIDStakingDashboard({
 
           {/* Network Rank */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-slate-800/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+            <div className="absolute inset-0 bg-slate-800/10 rounded-xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100" />
             <div className="relative bg-slate-700/30 border border-slate-800/30 rounded-xl p-5 hover:border-slate-800/50 transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-slate-800/20 rounded-lg">
@@ -950,9 +970,9 @@ export function VerusIDStakingDashboard({
                 <div className="flex items-center space-x-2">
                   <div className="relative">
                     {/* Outer pulsing ring */}
-                    <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 animate-ping opacity-75"></div>
+                    <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 animate-ping opacity-75" />
                     {/* Inner solid dot */}
-                    <div className="relative w-3 h-3 rounded-full bg-green-400"></div>
+                    <div className="relative w-3 h-3 rounded-full bg-green-400" />
                   </div>
                   <span className="text-xs sm:text-sm font-medium text-slate-300">
                     Live Data
@@ -963,9 +983,9 @@ export function VerusIDStakingDashboard({
                 <div className="flex items-center space-x-2">
                   <div className="relative">
                     {/* Outer pulsing ring */}
-                    <div className="absolute inset-0 w-3 h-3 rounded-full bg-yellow-400 animate-pulse opacity-75"></div>
+                    <div className="absolute inset-0 w-3 h-3 rounded-full bg-yellow-400 animate-pulse opacity-75" />
                     {/* Inner solid dot */}
-                    <div className="relative w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div className="relative w-3 h-3 rounded-full bg-yellow-400" />
                   </div>
                   <span className="text-xs sm:text-sm font-medium text-slate-300">
                     Connected
@@ -974,7 +994,7 @@ export function VerusIDStakingDashboard({
               ) : (
                 // Disconnected state - Gray static (no background)
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-slate-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-slate-400" />
                   <span className="text-xs sm:text-sm font-medium text-slate-400">
                     Offline
                   </span>
@@ -988,7 +1008,7 @@ export function VerusIDStakingDashboard({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {/* Staking Efficiency */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100" />
               <div className="relative flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all">
                 <HealthScoreGauge
                   score={
@@ -1022,7 +1042,7 @@ export function VerusIDStakingDashboard({
 
             {/* Network Participation Rate */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100" />
               <div className="relative bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
@@ -1039,7 +1059,7 @@ export function VerusIDStakingDashboard({
                       {networkParticipation ? (
                         networkParticipation.participationFormatted
                       ) : (
-                        <div className="animate-pulse bg-slate-400/20 rounded h-8 w-20"></div>
+                        <div className="animate-pulse bg-slate-400/20 rounded h-8 w-20" />
                       )}
                     </div>
                     <div className="text-sm text-gray-400">
@@ -1054,7 +1074,7 @@ export function VerusIDStakingDashboard({
                       {networkParticipation ? (
                         networkParticipation.expectedStakeTimeFormatted
                       ) : (
-                        <div className="animate-pulse bg-cyan-400/20 rounded h-6 w-20"></div>
+                        <div className="animate-pulse bg-cyan-400/20 rounded h-6 w-20" />
                       )}
                     </div>
                   </div>
@@ -1068,7 +1088,7 @@ export function VerusIDStakingDashboard({
                           {networkParticipation ? (
                             `${networkParticipation.yourWeightFormatted || networkParticipation.yourWeight?.toFixed(2) || '0'} VRSC`
                           ) : (
-                            <div className="animate-pulse bg-slate-300/20 rounded h-4 w-12"></div>
+                            <div className="animate-pulse bg-slate-300/20 rounded h-4 w-12" />
                           )}
                         </div>
                       </div>
@@ -1078,7 +1098,7 @@ export function VerusIDStakingDashboard({
                           {networkParticipation ? (
                             `${networkParticipation.networkWeightFormatted || networkParticipation.networkWeight?.toLocaleString() || '0'} VRSC`
                           ) : (
-                            <div className="animate-pulse bg-gray-300/20 rounded h-4 w-12"></div>
+                            <div className="animate-pulse bg-gray-300/20 rounded h-4 w-12" />
                           )}
                         </div>
                       </div>
@@ -1099,7 +1119,7 @@ export function VerusIDStakingDashboard({
                                 ? 'bg-slate-400'
                                 : 'bg-slate-600'
                         }`}
-                      ></div>
+                       />
                       <span className="text-xs text-gray-400">
                         {networkParticipation.status === 'active'
                           ? 'Active Staking'
@@ -1117,7 +1137,7 @@ export function VerusIDStakingDashboard({
 
             {/* Recent Activity (Simple Real Data) */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100" />
               <div className="relative bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
@@ -1189,8 +1209,8 @@ export function VerusIDStakingDashboard({
                   ) : (
                     // Loading or no data
                     <div className="space-y-2">
-                      <div className="animate-pulse bg-slate-400/20 rounded h-6 w-20"></div>
-                      <div className="animate-pulse bg-slate-400/20 rounded h-4 w-16"></div>
+                      <div className="animate-pulse bg-slate-400/20 rounded h-6 w-20" />
+                      <div className="animate-pulse bg-slate-400/20 rounded h-4 w-16" />
                     </div>
                   )}
                 </div>
@@ -1199,7 +1219,7 @@ export function VerusIDStakingDashboard({
 
             {/* Value at Stake */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100"></div>
+              <div className="absolute inset-0 bg-gray-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100" />
               <div className="relative bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
@@ -1736,7 +1756,7 @@ export function VerusIDStakingDashboard({
             className="flex items-center space-x-1 text-yellow-300 hover:text-verus-teal transition-colors"
           >
             <ArrowsClockwise className="h-4 w-4" />
-            <span>Refresh</span>
+            <span>{tCommon("refresh")}</span>
           </button>
         </div>
       </div>

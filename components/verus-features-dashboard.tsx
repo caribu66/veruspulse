@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   User,
   Coins,
@@ -100,6 +101,11 @@ interface VerusPBaaS {
 }
 
 export function VerusFeaturesDashboard() {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+  const tNetwork = useTranslations('network');
+  const tVerusId = useTranslations('verusid');
+
   const [identities, setIdentities] = useState<VerusIdentity[]>([]);
   const [currency, setCurrency] = useState<VerusCurrency | null>(null);
   const [notarizationData, setNotarizationData] = useState<any>(null);
@@ -196,7 +202,7 @@ export function VerusFeaturesDashboard() {
           <ArrowsClockwise
             className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
           />
-          <span>Refresh</span>
+          <span>{tCommon("refresh")}</span>
         </button>
       </div>
 
@@ -256,7 +262,7 @@ export function VerusFeaturesDashboard() {
           <div className="flex items-center space-x-3">
             <WarningCircle className="h-6 w-6 text-red-400" />
             <div>
-              <h3 className="text-lg font-bold text-red-400">Error</h3>
+              <h3 className="text-lg font-bold text-red-400">{tCommon("error")}</h3>
               <p className="text-red-200 text-sm mt-1">{error}</p>
             </div>
           </div>
@@ -278,7 +284,7 @@ export function VerusFeaturesDashboard() {
 
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
                 <span className="ml-3 text-blue-200">
                   Loading identities...
                 </span>
@@ -348,7 +354,7 @@ export function VerusFeaturesDashboard() {
 
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
                 <span className="ml-3 text-blue-200">
                   Loading currencies...
                 </span>
@@ -426,7 +432,7 @@ export function VerusFeaturesDashboard() {
 
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
                 <span className="ml-3 text-blue-200">
                   Loading notarization data...
                 </span>

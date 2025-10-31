@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   TrendUp,
   TrendDown,
@@ -42,6 +43,7 @@ export function MovingPriceTicker({
   refreshInterval = 5000, // 5 seconds for more frequent updates
   showMultipleAssets = true,
 }: MovingPriceTickerProps) {
+  const tCommon = useTranslations('common');
   const [prices, setPrices] = useState<LivePriceData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -140,7 +142,7 @@ export function MovingPriceTicker({
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
         <ArrowsClockwise className="h-4 w-4 animate-spin text-white/60" />
-        <span className="text-sm text-white/60">Loading...</span>
+        <span className="text-sm text-white/60">{tCommon("loading")}</span>
       </div>
     );
   }

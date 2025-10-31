@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Clock,
   Calendar,
@@ -25,6 +26,9 @@ export function RecentStakesTimeline({
   iaddr,
   recentStakes,
 }: RecentStakesTimelineProps) {
+  const tCommon = useTranslations('common');
+  const tTime = useTranslations('time');
+  const tStaking = useTranslations('staking');
   const [timeFilter, setTimeFilter] = useState<'all' | '24h' | '7d' | '30d'>(
     '30d'
   );

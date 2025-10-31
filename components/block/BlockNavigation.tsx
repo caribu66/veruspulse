@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import {
   CaretLeft,
   CaretRight,
@@ -17,7 +18,11 @@ interface BlockNavigationProps {
   };
 }
 
-export function BlockNavigation({ block }: BlockNavigationProps) {
+export function BlockNavigation({
+  block,
+}: BlockNavigationProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
   const { goBack } = useNavigationHistory();
 
   return (
@@ -28,11 +33,13 @@ export function BlockNavigation({ block }: BlockNavigationProps) {
           {block.previousblockhash ? (
             <Link
               href={`/block/${block.previousblockhash}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors group"
             >
               <CaretLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
               <div className="text-left">
-                <div className="text-xs text-gray-400">Previous Block</div>
+                <div className="text-xs text-gray-400">{tBlocks('previousBlockNav')}</div>
                 <div className="font-semibold">#{block.height - 1}</div>
               </div>
             </Link>
@@ -40,8 +47,8 @@ export function BlockNavigation({ block }: BlockNavigationProps) {
             <div className="flex items-center space-x-2 text-gray-500">
               <CaretLeft className="h-4 w-4" />
               <div className="text-left">
-                <div className="text-xs text-gray-400">Previous Block</div>
-                <div className="font-semibold">Genesis</div>
+                <div className="text-xs text-gray-400">{tBlocks('previousBlockNav')}</div>
+                <div className="font-semibold">{tBlocks('genesis')}</div>
               </div>
             </div>
           )}
@@ -49,7 +56,7 @@ export function BlockNavigation({ block }: BlockNavigationProps) {
 
         {/* Current Block */}
         <div className="flex-1 text-center">
-          <div className="text-xs text-gray-400">Current Block</div>
+          <div className="text-xs text-gray-400">{tBlocks('currentBlock')}</div>
           <div className="font-bold text-white">#{block.height}</div>
         </div>
 
@@ -58,10 +65,12 @@ export function BlockNavigation({ block }: BlockNavigationProps) {
           {block.nextblockhash ? (
             <Link
               href={`/block/${block.nextblockhash}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors group ml-auto justify-end"
             >
               <div className="text-right">
-                <div className="text-xs text-gray-400">Next Block</div>
+                <div className="text-xs text-gray-400">{tBlocks('nextBlockNav')}</div>
                 <div className="font-semibold">#{block.height + 1}</div>
               </div>
               <CaretRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -69,8 +78,8 @@ export function BlockNavigation({ block }: BlockNavigationProps) {
           ) : (
             <div className="flex items-center space-x-2 text-gray-500 ml-auto justify-end">
               <div className="text-right">
-                <div className="text-xs text-gray-400">Next Block</div>
-                <div className="font-semibold">Latest</div>
+                <div className="text-xs text-gray-400">{tBlocks('nextBlockNav')}</div>
+                <div className="font-semibold">{tBlocks('latest')}</div>
               </div>
               <CaretRight className="h-4 w-4" />
             </div>
@@ -86,25 +95,29 @@ export function BlockNavigation({ block }: BlockNavigationProps) {
             className="flex items-center space-x-1 text-gray-400 hover:text-white transition-colors text-sm"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Go Back</span>
+            <span>{tCommon('back')}</span>
           </button>
 
           <span className="text-gray-600">•</span>
 
           <Link
             href={`/block/${block.height - 10}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors text-sm"
           >
-            -10 blocks
+            {tBlocks('blocks10')}
           </Link>
 
           <span className="text-gray-600">•</span>
 
           <Link
             href={`/block/${block.height + 10}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors text-sm"
           >
-            +10 blocks
+            {tBlocks('blocks10Plus')}
           </Link>
         </div>
       </div>

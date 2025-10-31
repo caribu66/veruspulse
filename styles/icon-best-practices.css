@@ -1,0 +1,361 @@
+/* ================================================================
+   ICON BEST PRACTICES & SPACING SYSTEM
+   Consistent icon sizing and spacing throughout the application
+   ================================================================ */
+
+/* ============================================================
+   ICON SIZE STANDARDS
+   Icons should match the text size they accompany
+   ============================================================ */
+
+/* Icon sizes that match text sizes */
+.icon-xs {
+  @apply h-3 w-3; /* 12px - For text-xs (12px) */
+}
+
+.icon-sm {
+  @apply h-4 w-4; /* 16px - For text-sm (14px) and text-base (16px) */
+}
+
+.icon-md {
+  @apply h-5 w-5; /* 20px - For text-lg (18px) and text-xl (20px) */
+}
+
+.icon-lg {
+  @apply h-6 w-6; /* 24px - For text-2xl (24px) headings */
+}
+
+.icon-xl {
+  @apply h-8 w-8; /* 32px - For large headings */
+}
+
+.icon-2xl {
+  @apply h-12 w-12; /* 48px - For hero sections */
+}
+
+.icon-3xl {
+  @apply h-16 w-16; /* 64px - For major features */
+}
+
+/* ============================================================
+   ICON SPACING IN BUTTONS
+   Proper breathing room between icon and text
+   ============================================================ */
+
+/* Button with icon - automatic spacing */
+button .icon,
+.btn .icon,
+a.btn .icon {
+  @apply mr-2; /* 8px gap after icon */
+}
+
+/* Icon after text */
+button .icon-after,
+.btn .icon-after {
+  @apply ml-2; /* 8px gap before icon */
+}
+
+/* Icon-only buttons - centered with padding */
+.btn-icon {
+  @apply p-3 min-w-[48px] min-h-[48px] flex items-center justify-center;
+}
+
+.btn-icon-sm {
+  @apply p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center;
+}
+
+.btn-icon-lg {
+  @apply p-4 min-w-[52px] min-h-[52px] flex items-center justify-center;
+}
+
+/* ============================================================
+   ICON ALIGNMENT
+   Ensure icons are properly aligned with text
+   ============================================================ */
+
+/* Vertically center icons with text */
+.icon-text-align {
+  @apply inline-flex items-center gap-2;
+}
+
+/* Icon containers should not shrink */
+.icon-container {
+  @apply flex-shrink-0 flex items-center justify-center;
+}
+
+/* ============================================================
+   ICON SPACING IN LISTS AND CARDS
+   ============================================================ */
+
+/* List items with icons */
+.list-item-icon {
+  @apply flex items-start gap-3; /* 12px gap */
+}
+
+.list-item-icon .icon {
+  @apply mt-0.5 flex-shrink-0; /* Slight vertical offset to align with text */
+}
+
+/* Card headers with icons */
+.card-header-icon {
+  @apply flex items-center gap-3; /* 12px gap */
+}
+
+/* Stat cards with icons */
+.stat-card-icon {
+  @apply flex items-center gap-4; /* 16px gap for prominence */
+}
+
+/* ============================================================
+   ICON COLORS & STATES
+   ============================================================ */
+
+/* Icon inherits text color by default */
+.icon {
+  @apply text-current;
+}
+
+/* Interactive icons */
+.icon-interactive {
+  @apply text-gray-600 dark:text-gray-400 hover:text-verus-blue dark:hover:text-verus-blue-light transition-colors duration-200;
+}
+
+/* Disabled icons */
+.icon-disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Status indicator icons */
+.icon-success {
+  @apply text-verus-green;
+}
+
+.icon-warning {
+  @apply text-yellow-500;
+}
+
+.icon-error {
+  @apply text-verus-red;
+}
+
+.icon-info {
+  @apply text-verus-blue;
+}
+
+/* ============================================================
+   ICON HOVER & FOCUS EFFECTS
+   ============================================================ */
+
+/* Clickable icons with hover effect */
+button > .icon,
+a > .icon {
+  @apply transition-transform duration-200;
+}
+
+button:hover > .icon,
+a:hover > .icon {
+  @apply scale-110;
+}
+
+button:active > .icon,
+a:active > .icon {
+  @apply scale-95;
+}
+
+/* Icon buttons with circular background */
+.icon-button-bg {
+  @apply p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors;
+}
+
+/* ============================================================
+   ICON BADGES & INDICATORS
+   ============================================================ */
+
+/* Icon with badge (notification dot) */
+.icon-with-badge {
+  @apply relative;
+}
+
+.icon-badge {
+  @apply absolute -top-1 -right-1 h-2 w-2 rounded-full bg-verus-red border-2 border-white dark:border-slate-900;
+}
+
+.icon-badge-count {
+  @apply absolute -top-2 -right-2 min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-verus-red text-white text-xs font-semibold;
+}
+
+/* ============================================================
+   NAVIGATION ICONS
+   ============================================================ */
+
+/* Navigation items with icons */
+.nav-item {
+  @apply flex items-center gap-2.5 px-3 py-2; /* 10px gap, proper padding */
+}
+
+.nav-item .icon {
+  @apply h-5 w-5 flex-shrink-0; /* 20px icons */
+}
+
+/* Mobile navigation icons */
+@media (max-width: 640px) {
+  .mobile-nav-item .icon {
+    @apply h-6 w-6; /* Larger icons on mobile for easier tapping */
+  }
+}
+
+/* ============================================================
+   ICON LOADING STATES
+   ============================================================ */
+
+/* Spinning/loading icons */
+.icon-loading {
+  @apply animate-spin;
+}
+
+/* Pulsing icons for live updates */
+.icon-pulse {
+  @apply animate-pulse;
+}
+
+/* ============================================================
+   ICON GROUPS
+   ============================================================ */
+
+/* Horizontal icon group */
+.icon-group-horizontal {
+  @apply flex items-center gap-2;
+}
+
+/* Vertical icon group */
+.icon-group-vertical {
+  @apply flex flex-col items-center gap-2;
+}
+
+/* ============================================================
+   ICON ACCESSIBILITY
+   ============================================================ */
+
+/* Hide decorative icons from screen readers */
+.icon[aria-hidden="true"] {
+  @apply select-none pointer-events-none;
+}
+
+/* Ensure interactive icons are accessible */
+button .icon,
+a .icon {
+  @apply pointer-events-none; /* Icon doesn't intercept clicks */
+}
+
+/* ============================================================
+   RESPONSIVE ICON SIZING
+   ============================================================ */
+
+/* Responsive icon sizes for different breakpoints */
+.icon-responsive-sm {
+  @apply h-4 w-4 sm:h-5 sm:w-5; /* 16px → 20px */
+}
+
+.icon-responsive-md {
+  @apply h-5 w-5 sm:h-6 sm:w-6; /* 20px → 24px */
+}
+
+.icon-responsive-lg {
+  @apply h-6 w-6 sm:h-8 sm:w-8; /* 24px → 32px */
+}
+
+/* ============================================================
+   ICON SPACING IN SPECIFIC CONTEXTS
+   ============================================================ */
+
+/* Table cells with icons */
+td .icon,
+th .icon {
+  @apply inline-flex mr-2; /* 8px gap after icon */
+}
+
+/* Form labels with icons */
+label .icon {
+  @apply inline-flex mr-1.5; /* 6px gap - tighter for labels */
+}
+
+/* Alert/notification icons */
+.alert .icon {
+  @apply flex-shrink-0 h-5 w-5 mr-3; /* 20px icon, 12px gap */
+}
+
+/* Toast icons */
+.toast .icon {
+  @apply flex-shrink-0 h-5 w-5 mr-3; /* 20px icon, 12px gap */
+}
+
+/* ============================================================
+   BUTTON MARGIN UTILITIES
+   ============================================================ */
+
+/* Space between buttons */
+.button-spacing {
+  @apply mb-3 sm:mb-4; /* 12px → 16px bottom margin */
+}
+
+/* Button groups with proper spacing */
+.button-group {
+  @apply flex flex-wrap gap-3; /* 12px gap between buttons */
+}
+
+.button-group-tight {
+  @apply flex flex-wrap gap-2; /* 8px gap for compact groups */
+}
+
+/* ============================================================
+   ICON BEST PRACTICES UTILITY CLASSES
+   ============================================================ */
+
+/* Standard icon in inline content */
+.inline-icon {
+  @apply inline-flex items-center justify-center h-[1em] w-[1em] align-middle;
+}
+
+/* Icon with optimal spacing */
+.spaced-icon {
+  @apply mx-1.5; /* 6px horizontal margin */
+}
+
+/* Leading icon (before text) */
+.leading-icon {
+  @apply mr-2; /* 8px right margin */
+}
+
+/* Trailing icon (after text) */
+.trailing-icon {
+  @apply ml-2; /* 8px left margin */
+}
+
+/* ============================================================
+   MOBILE TOUCH OPTIMIZATION
+   ============================================================ */
+
+@media (max-width: 640px) {
+  /* Larger touch targets for icon buttons on mobile */
+  .btn-icon,
+  .icon-button {
+    @apply min-w-[48px] min-h-[48px] p-3;
+  }
+  
+  /* Larger gaps in button groups on mobile */
+  .button-group {
+    @apply gap-4; /* 16px gap on mobile */
+  }
+}
+
+/* ============================================================
+   PRINT OPTIMIZATION
+   ============================================================ */
+
+@media print {
+  /* Hide decorative icons in print */
+  .icon[aria-hidden="true"] {
+    @apply hidden;
+  }
+}
+

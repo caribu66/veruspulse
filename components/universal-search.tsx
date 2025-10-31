@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   MagnifyingGlass,
   Database,
@@ -19,10 +20,14 @@ import {
 
 interface SearchResult {
   type: 'block' | 'transaction' | 'address' | 'verusid';
-  data: any;
+  data: unknown;
 }
 
 export function UniversalSearch() {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +45,8 @@ export function UniversalSearch() {
       const trimmedQuery = query.trim();
 
       // Determine search type based on query format
-      let searchType = 'auto';
+      type SearchType = 'auto' | 'verusid' | 'transaction' | 'block' | 'address';
+      let searchType: SearchType = 'auto';
 
       if (trimmedQuery.startsWith('@')) {
         searchType = 'verusid';
@@ -48,12 +54,8 @@ export function UniversalSearch() {
         trimmedQuery.length === 64 &&
         /^[a-fA-F0-9]+$/.test(trimmedQuery)
       ) {
+        // 64-char hex could be transaction or block - try transaction first
         searchType = 'transaction';
-      } else if (
-        trimmedQuery.length === 64 &&
-        /^[a-fA-F0-9]+$/.test(trimmedQuery)
-      ) {
-        searchType = 'block';
       } else if (/^[0-9]+$/.test(trimmedQuery)) {
         searchType = 'block';
       } else if (trimmedQuery.startsWith('R') && trimmedQuery.length > 20) {
@@ -65,6 +67,17 @@ export function UniversalSearch() {
       // Perform search based on type
       const searchResults: SearchResult[] = [];
 
+      // Type guard for API response
+      const isValidResponse = (response: unknown): response is { success: boolean; data: unknown } => {
+        return (
+          typeof response === 'object' &&
+          response !== null &&
+          'success' in response &&
+          'data' in response &&
+          typeof (response as { success: unknown }).success === 'boolean'
+        );
+      };
+
       if (searchType === 'verusid' || searchType === 'auto') {
         try {
           const response = await fetch('/api/verusid-lookup', {
@@ -73,7 +86,7 @@ export function UniversalSearch() {
             body: JSON.stringify({ identity: trimmedQuery }),
           });
           const result = await response.json();
-          if (result.success && result.data) {
+          if (isValidResponse(result) && result.success && result.data) {
             searchResults.push({ type: 'verusid', data: result.data });
           }
         } catch (err) {
@@ -85,7 +98,7 @@ export function UniversalSearch() {
         try {
           const response = await fetch(`/api/transaction/${trimmedQuery}`);
           const result = await response.json();
-          if (result.success && result.data) {
+          if (isValidResponse(result) && result.success && result.data) {
             searchResults.push({ type: 'transaction', data: result.data });
           }
         } catch (err) {
@@ -97,7 +110,7 @@ export function UniversalSearch() {
         try {
           const response = await fetch(`/api/block/${trimmedQuery}`);
           const result = await response.json();
-          if (result.success && result.data) {
+          if (isValidResponse(result) && result.success && result.data) {
             searchResults.push({ type: 'block', data: result.data });
           }
         } catch (err) {
@@ -109,7 +122,7 @@ export function UniversalSearch() {
         try {
           const response = await fetch(`/api/address/${trimmedQuery}`);
           const result = await response.json();
-          if (result.success && result.data) {
+          if (isValidResponse(result) && result.success && result.data) {
             searchResults.push({ type: 'address', data: result.data });
           }
         } catch (err) {
@@ -220,7 +233,7 @@ export function UniversalSearch() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-white font-semibold mb-1">Block Height</div>
+              <div className="text-white font-semibold mb-1">{tBlocks("blockHeight")}</div>
               <div className="text-blue-300">751165</div>
             </div>
             <div className="bg-white/5 rounded-lg p-3">
@@ -261,7 +274,7 @@ export function UniversalSearch() {
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-lg bg-white/10`}>
+                    <div className="p-2 rounded-lg bg-white/10">
                       <Icon className={`h-5 w-5 ${color}`} />
                     </div>
                     <div>
@@ -280,14 +293,14 @@ export function UniversalSearch() {
                         `result-${index}`
                       )
                     }
-                    className="flex items-center space-x-2 px-3 py-1 bg-white/10 hover:bg-white/20 rounded transition-colors"
+                    className="flex items-center space-x-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded transition-colors border border-white/10 hover:border-white/20"
                   >
                     {copied === `result-${index}` ? (
-                      <Check className="h-4 w-4" />
+                      <Check className="h-4 w-4 text-green-400" />
                     ) : (
                       <Copy className="h-4 w-4" />
                     )}
-                    <span className="text-sm">Copy Data</span>
+                    <span className="text-sm font-medium">Copy Data</span>
                   </button>
                 </div>
 
@@ -321,7 +334,7 @@ export function UniversalSearch() {
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
           <span className="ml-3 text-blue-200">Searching blockchain...</span>
         </div>
       )}

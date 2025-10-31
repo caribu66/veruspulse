@@ -1,0 +1,116 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "explorer": "Explorer",
+    "verusids": "VerusIDs",
+    "blocks": "Blöcke",
+    "transactions": "Transaktionen",
+    "addresses": "Adressen"
+  },
+  "dashboard": {
+    "title": "VerusPulse - Das Internet des Wertes",
+    "description": "Erkunden Sie das Verus-Protokoll-Ökosystem - Verfolgen Sie intelligente Transaktionen, analysieren Sie PBaaS-Ketten, überwachen Sie Staking-Belohnungen, erkunden Sie das VerusID-Identitätssystem und entdecken Sie Währungen auf Protokollebene.",
+    "welcome": "Willkommen bei VerusPulse",
+    "welcomeMessage": "Ihr umfassendes Gateway zur Verus-Blockchain. Alle wichtigen Netzwerkmetriken werden oben im Statistik-Ticker angezeigt.",
+    "blockchainExplorer": "Blockchain-Explorer",
+    "browseBlocksTransactions": "Blöcke und Transaktionen durchsuchen",
+    "networkStats": "Netzwerkstatistiken",
+    "stakingMetrics": "Echtzeit-Staking- und Mining-Metriken",
+    "verusidSystem": "VerusID-System",
+    "identityManagement": "Identitätsverwaltung und -auflösung"
+  },
+  "blocks": {
+    "title": "Block-Explorer",
+    "description": "Erkunden Sie die Verus-Blockchain-Blöcke und Transaktionen",
+    "totalBlocks": "Gesamtblöcke",
+    "blockHeight": "Blockhöhe",
+    "transactions": "Transaktionen",
+    "blockTime": "Blockzeit",
+    "difficulty": "Schwierigkeit",
+    "miner": "Miner",
+    "reward": "Belohnung",
+    "size": "Größe"
+  },
+  "transactions": {
+    "title": "Transaktions-Explorer",
+    "description": "Erkunden Sie Verus-Blockchain-Transaktionen und UTXO-Bewegungen",
+    "totalTransactions": "Gesamttransaktionen",
+    "transactionId": "Transaktions-ID",
+    "amount": "Betrag",
+    "fee": "Gebühr",
+    "confirmations": "Bestätigungen",
+    "timestamp": "Zeitstempel"
+  },
+  "verusid": {
+    "title": "VerusID-Explorer",
+    "description": "Erkunden Sie VerusID-Identitäten und ihre zugehörigen Adressen",
+    "search": "Suchen",
+    "browse": "Durchsuchen",
+    "statistics": "Statistiken",
+    "identity": "Identität",
+    "address": "Adresse",
+    "primaryAddresses": "Primäre Adressen",
+    "revocationAuthority": "Widerrufsbehörde",
+    "recoveryAuthority": "Wiederherstellungsbehörde",
+    "privateAddresses": "Private Adressen"
+  },
+  "staking": {
+    "title": "Staking",
+    "stakingRewards": "Staking-Belohnungen",
+    "averageStakeAge": "Durchschnittliches Stake-Alter",
+    "totalStaked": "Gesamt gestakt",
+    "stakingParticipation": "Staking-Beteiligung",
+    "recentStakes": "Aktuelle Stakes",
+    "stakingStats": "Staking-Statistiken",
+    "networkParticipation": "Netzwerkbeteiligung",
+    "achievements": "Erfolge"
+  },
+  "network": {
+    "height": "Höhe",
+    "difficulty": "Schwierigkeit",
+    "hashrate": "Hashrate",
+    "supply": "Versorgung",
+    "connections": "Verbindungen",
+    "version": "Version",
+    "protocol": "Protokoll",
+    "networkInfo": "Netzwerkinformationen"
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "retry": "Wiederholen",
+    "refresh": "Aktualisieren",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "view": "Ansicht",
+    "details": "Details",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Vorherige",
+    "home": "Startseite",
+    "donate": "Spenden",
+    "language": "Sprache",
+    "theme": "Design",
+    "dark": "Dunkel",
+    "light": "Hell",
+    "auto": "Auto"
+  },
+  "search": {
+    "placeholder": "Suchen Sie nach Blöcken, Transaktionen, Adressen oder VerusIDs...",
+    "results": "Suchergebnisse",
+    "noResults": "Keine Ergebnisse gefunden",
+    "searchType": "Suchtyp"
+  },
+  "time": {
+    "ago": "vor",
+    "seconds": "Sekunden",
+    "minutes": "Minuten",
+    "hours": "Stunden",
+    "days": "Tagen",
+    "weeks": "Wochen",
+    "months": "Monaten",
+    "years": "Jahren"
+  }
+}
+

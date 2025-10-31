@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { WifiHigh, WifiSlash, HardDrives, Clock } from '@phosphor-icons/react';
+import { useTranslations } from 'next-intl';
 
 interface ConnectionStatusProps {
   className?: string;
@@ -16,7 +17,11 @@ interface DaemonStatus {
   latency: number;
 }
 
-export function ConnectionStatus({ className = '' }: ConnectionStatusProps) {
+export function ConnectionStatus({
+  className = '',
+}: ConnectionStatusProps) {
+  const tCommon = useTranslations('common');
+  const tNetwork = useTranslations('network');
   const [status, setStatus] = useState<DaemonStatus>({
     connected: false,
     host: '',

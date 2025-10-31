@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { circuitBreakerManager } from '@/lib/utils/circuit-breaker';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
@@ -8,7 +8,7 @@ import { AuthService } from '@/lib/auth/auth-service';
  * Circuit Breaker Status API
  * Provides real-time monitoring of circuit breaker states
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   // Require authentication for monitoring access
   const user = await AuthService.getUserFromRequest(request);
 
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
  * Reset Circuit Breaker API
  * Allows manual reset of circuit breakers (admin only)
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   // Require admin role for reset operations
   const user = await AuthService.getUserFromRequest(request);
 

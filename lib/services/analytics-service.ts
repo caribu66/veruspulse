@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { type Pool } from 'pg';
 
 export interface ViewAnalytics {
   entityType: string;

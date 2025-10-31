@@ -20,7 +20,7 @@ export function usePerformanceMonitor(componentName: string) {
 
     // Log mount performance
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[Performance] ${componentName} mounted in ${mountTime}ms`);
+      console.info(`[Performance] ${componentName} mounted in ${mountTime}ms`);
     }
 
     // Set up performance observer for this component
@@ -30,7 +30,7 @@ export function usePerformanceMonitor(componentName: string) {
           entry.entryType === 'measure' &&
           entry.name.includes(componentName)
         ) {
-          console.log(`[Performance] ${entry.name}: ${entry.duration}ms`);
+          console.info(`[Performance] ${entry.name}: ${entry.duration}ms`);
         }
       });
     });
@@ -52,7 +52,7 @@ export function usePerformanceMonitor(componentName: string) {
       updateCountRef.current += 1;
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(
+        console.info(
           `[Performance] ${componentName} render #${updateCountRef.current}: ${renderTime.toFixed(2)}ms`
         );
       }
@@ -77,7 +77,7 @@ export function usePerformanceMonitor(componentName: string) {
       const duration = performance.now() - start;
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(
+        console.info(
           `[Performance] ${componentName} ${operationName}: ${duration.toFixed(2)}ms`
         );
       }
@@ -109,7 +109,7 @@ export function useGlobalPerformanceMonitor() {
     const observer = new PerformanceObserver(list => {
       list.getEntries().forEach(entry => {
         if (entry.entryType === 'navigation') {
-          console.log(`[Performance] Page load: ${entry.duration}ms`);
+          console.info(`[Performance] Page load: ${entry.duration}ms`);
         } else if (entry.entryType === 'resource') {
           const resource = entry as PerformanceResourceTiming;
           if (resource.duration > 1000) {

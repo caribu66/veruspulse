@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useDashboardTranslations } from '@/lib/i18n/hooks';
+import { useTranslations } from 'next-intl';
 import {
   Database,
   Pulse,
@@ -35,7 +37,7 @@ import { PBaaSPriceTicker } from './pbaas-price-ticker';
 import { QuickStatsTicker } from './quick-stats-ticker';
 // import { FeaturedVerusIDsCarousel } from './featured-verusids-carousel';
 import { BrowseAllVerusIDs } from './browse-all-verusids';
-import { DashboardTabs, DashboardTab } from './dashboard-tabs';
+import { DashboardTabs, type DashboardTab } from './dashboard-tabs';
 import { RealtimeStatus } from './realtime-status';
 
 interface NetworkStats {
@@ -69,6 +71,7 @@ interface PBaaSChain {
     maxsupply: number;
   };
   bestheight: number;
+  supply?: number;
 }
 
 interface MiningStats {
@@ -124,6 +127,13 @@ export function NetworkDashboard({
   isRefreshing = false,
   onMainTabChange,
 }: DashboardProps) {
+  const tCommon = useTranslations('common');
+  const tDashboard = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tNetwork = useTranslations('network');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
+  const t = useDashboardTranslations(); // Using typed hook
   // Tab state management
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
 
@@ -167,40 +177,20 @@ export function NetworkDashboard({
 
   // Using imported formatting functions from utils
 
-  // Show loading state while data is being fetched
-  if (loading) {
+  // Only show loading state if we're explicitly loading AND have no data at all
+  // This prevents the loading screen from showing when data is being refreshed
+  if (loading && !networkStats && !miningStats && !stakingStats) {
     return (
       <div className="space-y-8 text-gray-900 dark:text-gray-900 dark:text-white">
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="animate-spin h-6 w-6 border-2 border-verus-blue border-t-transparent rounded-full"></div>
+            <div className="animate-spin h-6 w-6 border-2 border-verus-blue border-t-transparent rounded-full" />
             <div>
               <h3 className="text-lg font-bold text-verus-blue">
                 Loading Network Data
               </h3>
               <p className="text-gray-600 dark:text-slate-300 text-sm mt-1">
                 Fetching latest blockchain information...
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show loading state only if we're explicitly loading AND have no data
-  if (loading && !networkStats && !miningStats && !stakingStats) {
-    return (
-      <div className="space-y-8 text-gray-900 dark:text-gray-900 dark:text-white">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
-          <div className="flex items-center space-x-3">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-verus-blue"></div>
-            <div>
-              <h3 className="text-lg font-bold text-verus-blue">
-                Loading Network Data...
-              </h3>
-              <p className="text-gray-600 dark:text-slate-300 text-sm mt-1">
-                Fetching blockchain information from the Verus network...
               </p>
             </div>
           </div>
@@ -295,7 +285,7 @@ export function NetworkDashboard({
                 <ArrowsClockwise
                   className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
                 />
-                <span className="hidden sm:inline">Refresh</span>
+                <span className="hidden sm:inline">{tCommon("refresh")}</span>
               </button>
             </div>
           </div>
@@ -307,11 +297,10 @@ export function NetworkDashboard({
               <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-700">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4 flex items-center">
                   <Globe className="h-5 w-5 mr-2 text-verus-blue" />
-                  Welcome to VerusPulse
+                  {t('welcome')}
                 </h3>
                 <p className="text-gray-600 dark:text-slate-300 mb-4">
-                  Your comprehensive gateway to the Verus blockchain. All key
-                  network metrics are displayed above in the stats ticker.
+                  {t('welcomeMessage')}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
                   <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-300 dark:border-slate-700 w-full">
@@ -320,10 +309,10 @@ export function NetworkDashboard({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        Blockchain Explorer
+                        {t('blockchainExplorer')}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-slate-400">
-                        Browse blocks and transactions
+                        {t('browseBlocksTransactions')}
                       </div>
                     </div>
                   </div>
@@ -333,10 +322,10 @@ export function NetworkDashboard({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        VerusID Registry
+                        {t('verusidSystem')}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-slate-400">
-                        Discover identities and addresses
+                        {t('identityManagement')}
                       </div>
                     </div>
                   </div>
@@ -346,10 +335,10 @@ export function NetworkDashboard({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        Live Activity
+                        {t('networkStats')}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-slate-400">
-                        Real-time network activity
+                        {t('stakingMetrics')}
                       </div>
                     </div>
                   </div>
@@ -597,7 +586,7 @@ export function NetworkDashboard({
                         <div className="text-right">
                           <div className="text-2xl font-bold text-gray-900 dark:text-white">
                             {blockReward.loading ? (
-                              <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 rounded"></div>
+                              <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 rounded" />
                             ) : (
                               `${blockReward.currentBlockReward.toFixed(8)} VRSC`
                             )}
@@ -670,11 +659,11 @@ export function NetworkDashboard({
                             {chain.currencydefinition.name}
                           </div>
                           <div className="text-blue-600 dark:text-blue-200 text-sm">
-                            Height: {chain.bestheight}
+                            Height: {formatBlockHeight(chain.bestheight)}
                           </div>
                         </div>
-                        <div className="text-blue-300 text-xs">
-                          Supply: {chain.currencydefinition.initialsupply}
+                        <div className="text-blue-400 dark:text-blue-300 text-sm">
+                          Supply: {chain.supply ? formatFriendlyNumber(chain.supply) : 'N/A'}
                         </div>
                       </div>
                     ))}

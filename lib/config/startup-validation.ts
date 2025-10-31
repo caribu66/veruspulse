@@ -27,22 +27,22 @@ export function validateStartup(): void {
 
   // Log startup configuration (development only)
   if (process.env.NODE_ENV === 'development') {
-    console.log('╔════════════════════════════════════════════╗');
-    console.log('║  ✅ Environment Validation Successful     ║');
-    console.log('╚════════════════════════════════════════════╝\n');
+    console.info('╔════════════════════════════════════════════╗');
+    console.info('║  ✅ Environment Validation Successful     ║');
+    console.info('╚════════════════════════════════════════════╝\n');
 
     const summary = getEnvSummary();
-    console.log('📋 Configuration Summary:');
-    console.log(`   Environment: ${summary.NODE_ENV}`);
-    console.log(`   RPC Host: ${summary.VERUS_RPC_HOST}`);
-    console.log(`   RPC User: ${summary.VERUS_RPC_USER}`);
-    console.log(`   Redis: ${summary.REDIS_HOST}:${summary.REDIS_PORT}`);
-    console.log(`   ZMQ Enabled: ${summary.ENABLE_ZMQ}`);
-    console.log(
+    console.info('📋 Configuration Summary:');
+    console.info(`   Environment: ${summary.NODE_ENV}`);
+    console.info(`   RPC Host: ${summary.VERUS_RPC_HOST}`);
+    console.info(`   RPC User: ${summary.VERUS_RPC_USER}`);
+    console.info(`   Redis: ${summary.REDIS_HOST}:${summary.REDIS_PORT}`);
+    console.info(`   ZMQ Enabled: ${summary.ENABLE_ZMQ}`);
+    console.info(
       `   Database: ${summary.DATABASE_URL ? 'Configured' : 'Not configured'}`
     );
-    console.log(`   Cache Enabled: ${summary.ENABLE_CACHE}`);
-    console.log(`   Rate Limiting: ${summary.ENABLE_RATE_LIMITING}\n`);
+    console.info(`   Cache Enabled: ${summary.ENABLE_CACHE}`);
+    console.info(`   Rate Limiting: ${summary.ENABLE_RATE_LIMITING}\n`);
   }
 }
 

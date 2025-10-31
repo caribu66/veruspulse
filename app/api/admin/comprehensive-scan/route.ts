@@ -3,7 +3,7 @@
  * This populates the database with real historical data
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { ComprehensiveBlockScanner } from '@/lib/services/comprehensive-block-scanner';
 import { ComprehensiveStatisticsCalculator } from '@/lib/services/comprehensive-statistics-calculator';
@@ -17,9 +17,9 @@ const db = new Pool({
 let scanner: ComprehensiveBlockScanner | null = null;
 let calculator: ComprehensiveStatisticsCalculator | null = null;
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { action, startHeight, endHeight, addresses } = body;
 
     if (action === 'start') {
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
             addresses,
           })
           .then(async () => {
-            console.log(
+            console.info(
               '[Comprehensive Scan] Block scanning complete, calculating statistics...'
             );
 
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
             );
 
             const allAddresses = result.rows.map(row => row.address);
-            console.log(
+            console.info(
               `[Comprehensive Scan] Found ${allAddresses.length} unique stakers`
             );
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
             // Calculate network rankings
             await calculator!.calculateNetworkRankings();
 
-            console.log(
+            console.info(
               '[Comprehensive Scan] All statistics calculated successfully!'
             );
           })
@@ -211,7 +211,7 @@ export async function POST(request: NextRequest) {
             addresses,
           })
           .then(async () => {
-            console.log(
+            console.info(
               '[Recent Scan] Block scanning complete, calculating statistics...'
             );
 
@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
 
             await calculator!.calculateNetworkRankings();
 
-            console.log(
+            console.info(
               '[Recent Scan] Recent statistics calculated successfully!'
             );
           })
@@ -267,7 +267,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     if (scanner) {
       const progress = scanner.getProgress();

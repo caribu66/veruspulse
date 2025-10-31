@@ -223,8 +223,8 @@ setup_production_cron() {
     # Create production cron jobs
     cat > "/etc/cron.d/veruspulse-production" << EOF
 # VerusPulse Production Cron Jobs - Oink's Methods
-# Update new stakes every hour
-0 * * * * www-data cd $PRODUCTION_DIR && /usr/bin/node scripts/update-new-stakes.js >> $PRODUCTION_DIR/logs/stake-update.log 2>&1
+# Active I-Address Scanner - runs every hour
+0 * * * * www-data cd $PRODUCTION_DIR && /usr/bin/node scripts/active-iaddress-scanner.js >> $PRODUCTION_DIR/logs/stake-update.log 2>&1
 
 # Calculate trending scores every hour
 0 * * * * www-data cd $PRODUCTION_DIR && node scripts/calculate-trending-scores.js >> $PRODUCTION_DIR/logs/trending-scores.log 2>&1

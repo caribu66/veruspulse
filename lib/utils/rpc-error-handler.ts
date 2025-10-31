@@ -2,16 +2,6 @@ import { logger } from './logger';
 
 // RPC Error Handler following Mike Toutonghi's best practices
 export class RPCErrorHandler {
-  // Common RPC error codes and their meanings
-  private static readonly ERROR_CODES: Record<number, string> = {
-    [-1]: 'Parse error',
-    [-32600]: 'Invalid Request',
-    [-32601]: 'Method not found',
-    [-32602]: 'Invalid params',
-    [-32603]: 'Internal error',
-    [-32700]: 'Parse error',
-  };
-
   // Handle RPC errors with proper logging and fallback strategies
   static handleRPCError(method: string, error: any, fallbackValue?: any): any {
     const errorMessage = error?.message || error?.toString() || 'Unknown error';

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Clock,
   Lightning,
@@ -32,6 +33,11 @@ export function ActivitySnapshot({
   networkParticipation,
   stakingMomentum,
 }: ActivitySnapshotProps) {
+  const tCommon = useTranslations('common');
+  const tTime = useTranslations('time');
+  const t = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tStaking = useTranslations('staking');
   const [timeUntilNext, setTimeUntilNext] = useState<string>('Calculating...');
 
   // Calculate time until next expected stake
@@ -87,7 +93,7 @@ export function ActivitySnapshot({
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffMinutes < 1) return 'Just now';
+    if (diffMinutes < 1) return tTime("justNow");
     if (diffMinutes < 60) return `${diffMinutes} min ago`;
     if (diffHours < 24)
       return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;

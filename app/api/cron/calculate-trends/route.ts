@@ -15,7 +15,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Sparkle,
   Globe,
@@ -40,6 +41,7 @@ export function HeroSection({
   miningStats,
   stakingStats,
 }: HeroSectionProps) {
+  const t = useTranslations('hero');
   const [isVisible, setIsVisible] = useState(false);
   const [currentFeature, setCurrentFeature] = useState(0);
   const { theme } = useTheme();
@@ -53,11 +55,11 @@ export function HeroSection({
   const features = [
     {
       icon: Globe,
-      text: 'Explore the Public Blockchains as a Service Protocol',
+      text: t('featurePBaaS'),
     },
-    { icon: Shield, text: 'Self-Sovereign Identity with VerusID' },
-    { icon: Lightning, text: 'Decentralized Finance on a Multi-Chain Network' },
-    { icon: TrendUp, text: 'Proof of Stake & Proof of Work Consensus' },
+    { icon: Shield, text: t('featureIdentity') },
+    { icon: Lightning, text: t('featureDeFi') },
+    { icon: TrendUp, text: t('featureConsensus') },
   ];
 
   useEffect(() => {
@@ -69,42 +71,44 @@ export function HeroSection({
 
   const stats = [
     {
-      label: 'Block Height',
+      label: t('blockHeight'),
       value: networkStats?.blocks?.toLocaleString() || '...',
       icon: ChartBar,
-      color: 'text-slate-300',
+      color: 'text-verus-blue',
     },
     {
-      label: 'Network Hash',
+      label: t('networkHash'),
       value: miningStats?.networkhashps
         ? formatHashRate(miningStats.networkhashps)
         : '...',
       icon: Cpu,
-      color: 'text-slate-200',
+      color: 'text-verus-blue',
     },
     {
-      label: 'Circulating Supply',
+      label: t('circulatingSupply'),
       value: networkStats?.circulatingSupply
-        ? `${(networkStats.circulatingSupply / 1000000).toFixed(2)}M VRSC`
+        ? `${(networkStats.circulatingSupply / 1000000).toFixed(2)}M`
         : '...',
       icon: UsersThree,
-      color: 'text-slate-300',
+      color: 'text-verus-blue',
+      suffix: 'VRSC',
     },
     {
-      label: 'Network Stake',
+      label: t('totalStakingSupply'),
       value:
         stakingStats?.netstakeweight && stakingStats.netstakeweight > 0
           ? formatStake(stakingStats.netstakeweight)
           : '...',
       icon: TrendUp,
-      color: 'text-slate-200',
+      color: 'text-verus-blue',
+      suffix: 'VRSC',
     },
   ];
 
   return (
     <div className="relative overflow-hidden bg-white dark:bg-slate-950">
       {/* Subtle Pattern Overlay - Optional */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5 dark:opacity-5 opacity-10"></div>
+      {/* <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5 dark:opacity-5 opacity-10"></div> */}
 
       {/* Content */}
       <div
@@ -117,13 +121,13 @@ export function HeroSection({
         >
           {/* Main Heading */}
           <div className="text-center mb-16 lg:mb-20">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-gray-900 dark:text-white mb-8 leading-tight">
-              The <span className="text-verus-blue">Internet of Value</span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-tight">
+              <span className="text-gray-900 dark:text-white"></span>
+              <span style={{ color: '#3165d4' }}>{t('theInternetOfValue')}</span>
             </h1>
 
             <p className="text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed">
-              Explore the Verus Protocol ecosystem - where blockchain innovation
-              meets real-world utility
+              {t('subtitle')}
             </p>
 
             {/* Rotating Feature */}
@@ -156,7 +160,7 @@ export function HeroSection({
               return (
                 <div
                   key={index}
-                  className={`bg-gray-50 dark:bg-slate-900 rounded-xl p-4 md:p-6 border border-slate-300 dark:border-slate-700 
+                  className={`bg-gray-50 dark:bg-slate-900 rounded-xl p-4 md:p-6 border border-slate-300 dark:border-slate-700
                     transform transition-all duration-300 hover:border-verus-blue/60 hover:shadow-lg
                     ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
                   style={{ transitionDelay: `${index * 100}ms` }}
@@ -166,8 +170,15 @@ export function HeroSection({
                     <div className="flex items-center justify-between w-full">
                       <Icon className={`h-5 w-5 ${stat.color}`} />
                     </div>
-                    <div className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white tabular-nums data-value">
-                      {stat.value}
+                    <div className="flex items-baseline gap-1.5">
+                      <div className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white tabular-nums data-value">
+                        {stat.value}
+                      </div>
+                      {(stat as any).suffix && (
+                        <span className="text-sm md:text-base font-medium text-gray-600 dark:text-slate-400">
+                          {(stat as any).suffix}
+                        </span>
+                      )}
                     </div>
                     <div className="text-xs md:text-sm text-gray-600 dark:text-slate-400">
                       {stat.label}
@@ -187,7 +198,7 @@ export function HeroSection({
               className="group px-10 py-5 bg-verus-blue hover:bg-verus-blue-dark text-white font-bold text-lg rounded-xl transition-all flex items-center gap-3 shadow-xl border border-verus-blue-light hover:shadow-2xl hover:scale-105"
             >
               <MagnifyingGlass className="h-6 w-6" />
-              Start Exploring
+              {t('startExploring')}
               <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -197,26 +208,24 @@ export function HeroSection({
             {[
               {
                 icon: Globe,
-                title: 'Public Blockchains as a Service',
-                description:
-                  'Launch your own blockchain with Verus PBaaS technology',
+                title: t('pbaasTitle'),
+                description: t('pbaasDescription'),
                 iconColor: 'text-verus-blue',
                 bgColor: 'bg-verus-blue/10',
                 borderColor: 'border-verus-blue/40',
               },
               {
                 icon: Shield,
-                title: 'Self-Sovereign Identity',
-                description: 'Control your digital identity with VerusID',
+                title: t('identityTitle'),
+                description: t('identityDescription'),
                 iconColor: 'text-verus-green',
                 bgColor: 'bg-verus-green/10',
                 borderColor: 'border-verus-green/40',
               },
               {
                 icon: Lightning,
-                title: 'DeFi on Multi-Chain',
-                description:
-                  'Decentralized finance across interconnected blockchains',
+                title: t('defiTitle'),
+                description: t('defiDescription'),
                 iconColor: 'text-verus-blue',
                 bgColor: 'bg-verus-blue/10',
                 borderColor: 'border-verus-blue/40',

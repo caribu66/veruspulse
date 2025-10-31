@@ -265,7 +265,7 @@ export function calculateVisibleRange(
  *     '/images/hero.jpg',
  *     '/images/logo.png'
  *   ]);
- *   console.log('All images preloaded successfully');
+ *   console.info('All images preloaded successfully');
  * } catch (error) {
  *   console.error('Failed to preload images:', error);
  * }
@@ -514,7 +514,7 @@ export function measureRenderTime(
         );
       }
     } else if (defaultConfig.enableLogging) {
-      console.log(
+      console.info(
         `[Performance] ${componentName} rendered in ${duration.toFixed(2)}ms`
       );
     }
@@ -707,7 +707,7 @@ export function clearMemoCache(olderThan: number = 60000): number {
   keysToDelete.forEach(key => memoCache.delete(key));
 
   if (defaultConfig.enableLogging && keysToDelete.length > 0) {
-    console.log(
+    console.info(
       `[Performance] Cleared ${keysToDelete.length} memoized entries`
     );
   }
@@ -736,7 +736,7 @@ export function clearAllMemoCache(): void {
   memoCache.clear();
 
   if (defaultConfig.enableLogging) {
-    console.log(`[Performance] Cleared all ${size} memoized entries`);
+    console.info(`[Performance] Cleared all ${size} memoized entries`);
   }
 }
 
@@ -747,7 +747,7 @@ export function updatePerformanceConfig(
   Object.assign(defaultConfig, newConfig);
 
   if (defaultConfig.enableLogging) {
-    console.log('[Performance] Configuration updated:', defaultConfig);
+    console.info('[Performance] Configuration updated:', defaultConfig);
   }
 }
 

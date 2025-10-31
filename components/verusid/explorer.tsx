@@ -7,6 +7,7 @@ import { SlidePanel } from '@/components/ui/slide-panel';
 import { useApiFetch } from '@/lib/hooks/use-retryable-fetch';
 import { useToast } from '@/components/ui/toast';
 import { SmartError } from '@/lib/utils/error-handler';
+import { useTranslations } from 'next-intl';
 
 /**
  * Refactored VerusID Explorer
@@ -38,6 +39,9 @@ interface VerusIDBalance {
 }
 
 export function VerusIDExplorerRefactored() {
+  const tCommon = useTranslations('common');
+  const tVerusId = useTranslations('verusid');
+
   const [selectedIdentity, setSelectedIdentity] = useState<string | null>(null);
   const [verusID, setVerusID] = useState<VerusID | null>(null);
   const [balance, setBalance] = useState<VerusIDBalance | null>(null);
@@ -114,7 +118,7 @@ export function VerusIDExplorerRefactored() {
       >
         {loading && (
           <div className="flex items-center justify-center p-12">
-            <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+            <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full" />
           </div>
         )}
 

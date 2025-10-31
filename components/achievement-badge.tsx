@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   AchievementIconComponent,
   getTierStyling,
@@ -63,6 +64,10 @@ export function AchievementBadge({
   onClick,
   className = '',
 }: AchievementBadgeProps) {
+  const tCommon = useTranslations('common');
+  const tTime = useTranslations('time');
+  const tBlocks = useTranslations('blocks');
+  const tStaking = useTranslations('staking');
   const tierStyling = getTierStyling(tier);
   const rarityStyling = getRarityStyling(rarity);
 
@@ -120,7 +125,7 @@ export function AchievementBadge({
         ${
           earned
             ? `
-            bg-gradient-to-br ${tierStyling.bg.replace('/20', '/30')} ${tierStyling.border} 
+            bg-gradient-to-br ${tierStyling.bg.replace('/20', '/30')} ${tierStyling.border}
             shadow-lg hover:shadow-2xl backdrop-blur-sm
             hover:scale-105 hover:rotate-1
             ${tier === 'legendary' ? 'shadow-slate-200/10' : ''}
@@ -128,7 +133,7 @@ export function AchievementBadge({
             ${tier === 'gold' ? 'shadow-slate-400/10' : ''}
           `
             : `
-            bg-gray-800/30 border-gray-600/30 hover:border-gray-500/50 
+            bg-gray-800/30 border-gray-600/30 hover:border-gray-500/50
             backdrop-blur-sm hover:bg-gray-700/40
             hover:scale-102
           `
@@ -177,7 +182,7 @@ export function AchievementBadge({
             ${
               earned
                 ? `
-                ${tierStyling.bg} ${tierStyling.icon} 
+                ${tierStyling.bg} ${tierStyling.icon}
                 shadow-lg group-hover:shadow-xl
                 ${tier === 'legendary' ? 'animate-spin-slow' : ''}
                 ${tier === 'platinum' ? 'shadow-slate-300/20' : ''}
@@ -366,7 +371,7 @@ export function AchievementBadge({
                             (1000 * 60 * 60 * 24)
                         );
                         if (daysAgo === 0) return 'Today! 🎉';
-                        if (daysAgo === 1) return 'Yesterday';
+                        if (daysAgo === 1) return tTime("yesterday");
                         if (daysAgo < 7) return `${daysAgo} days ago`;
                         if (daysAgo < 30)
                           return `${Math.floor(daysAgo / 7)} weeks ago`;

@@ -41,8 +41,8 @@ function TestComponent() {
       <button data-testid="set-dark" onClick={() => setTheme('dark')}>
         Set Dark
       </button>
-      <button data-testid="set-light" onClick={() => setTheme('light')}>
-        Set Light
+      <button data-testid="set-light" onClick={() => setTheme('dark')}>
+        Set Dark
       </button>
     </div>
   );

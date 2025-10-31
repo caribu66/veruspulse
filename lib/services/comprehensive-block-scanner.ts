@@ -4,7 +4,7 @@
  */
 
 import { verusAPI } from '@/lib/rpc-client-robust';
-import { Pool } from 'pg';
+import { type Pool } from 'pg';
 
 interface BlockData {
   height: number;
@@ -125,7 +125,7 @@ export class ComprehensiveBlockScanner {
         startTime: Date.now(),
       };
 
-      console.log(
+      console.info(
         `[Block Scanner] Starting scan from ${startHeight} to ${currentHeight}`
       );
 
@@ -151,13 +151,13 @@ export class ComprehensiveBlockScanner {
           Date.now() + blocksRemaining * avgTimePerBlock;
 
         if (this.scanProgress.blocksProcessed % 1000 === 0) {
-          console.log(
+          console.info(
             `[Block Scanner] Progress: ${this.scanProgress.blocksProcessed}/${currentHeight - startHeight} blocks processed, ${this.scanProgress.stakeEventsFound} stake events found`
           );
         }
       }
 
-      console.log(
+      console.info(
         `[Block Scanner] Scan complete! Processed ${this.scanProgress.blocksProcessed} blocks, found ${this.scanProgress.stakeEventsFound} stake events`
       );
     } catch (error) {

@@ -5,7 +5,7 @@
  */
 
 import { verusAPI } from '@/lib/rpc-client-robust';
-import { Pool } from 'pg';
+import { type Pool } from 'pg';
 
 interface ScanConfig {
   maxConcurrentRequests: number;
@@ -37,7 +37,6 @@ export class IntelligentMassScanner {
   private progress: ScanProgress;
   private isRunning: boolean = false;
   private blockCache: Map<number, any>;
-  private requestQueue: Array<() => Promise<any>> = [];
   private activeRequests: number = 0;
   private lastRequestTime: number = 0;
 
@@ -89,7 +88,7 @@ export class IntelligentMassScanner {
     this.progress.startTime = Date.now();
 
     try {
-      console.log('[Intelligent Scanner] Starting comprehensive scan...');
+      console.info('[Intelligent Scanner] Starting comprehensive scan...');
 
       // Phase 1: Get all active VerusIDs from the blockchain
       this.progress.currentPhase = 'discovering_identities';
@@ -98,7 +97,7 @@ export class IntelligentMassScanner {
       );
       this.progress.totalAddresses = addresses.length;
 
-      console.log(
+      console.info(
         `[Intelligent Scanner] Found ${addresses.length} active VerusIDs`
       );
 
@@ -114,20 +113,20 @@ export class IntelligentMassScanner {
       let startHeight: number;
       if (options.startFromHeight !== undefined) {
         startHeight = options.startFromHeight;
-        console.log(
+        console.info(
           `[Scan] Using specified start height: ${startHeight.toLocaleString()}`
         );
       } else {
         const lastScanned = await this.getLastScannedBlock();
         startHeight = lastScanned > 0 ? lastScanned + 1 : 1;
-        console.log(
+        console.info(
           `[Scan] Resuming from last scanned block: ${startHeight.toLocaleString()}`
         );
       }
 
       this.progress.totalBlocks = endHeight - startHeight + 1;
 
-      console.log(
+      console.info(
         `[Intelligent Scanner] Scanning blocks ${startHeight} to ${endHeight} (${this.progress.totalBlocks} blocks)`
       );
 
@@ -139,12 +138,12 @@ export class IntelligentMassScanner {
       this.progress.currentPhase = 'calculating_statistics';
       await this.calculateAllStatistics(addresses);
 
-      console.log('[Intelligent Scanner] Scan complete!');
-      console.log(`  Total Addresses: ${this.progress.addressesProcessed}`);
-      console.log(`  Total Blocks: ${this.progress.blocksProcessed}`);
-      console.log(`  Stake Events: ${this.progress.stakeEventsFound}`);
-      console.log(`  Cache Efficiency: ${this.getCacheEfficiency()}%`);
-      console.log(`  Errors: ${this.progress.errors}`);
+      console.info('[Intelligent Scanner] Scan complete!');
+      console.info(`  Total Addresses: ${this.progress.addressesProcessed}`);
+      console.info(`  Total Blocks: ${this.progress.blocksProcessed}`);
+      console.info(`  Stake Events: ${this.progress.stakeEventsFound}`);
+      console.info(`  Cache Efficiency: ${this.getCacheEfficiency()}%`);
+      console.info(`  Errors: ${this.progress.errors}`);
     } catch (error) {
       console.error('[Intelligent Scanner] Fatal error:', error);
       throw error;
@@ -163,12 +162,12 @@ export class IntelligentMassScanner {
         'SELECT MAX(block_height) as last_height FROM staking_rewards'
       );
       const lastHeight = result.rows[0]?.last_height || 0;
-      console.log(
+      console.info(
         `[Resume] Last scanned block from database: ${lastHeight.toLocaleString()}`
       );
       return lastHeight;
     } catch (error) {
-      console.log('[Resume] No existing data found, starting from beginning');
+      console.info('[Resume] No existing data found, starting from beginning');
       return 0;
     }
   }
@@ -180,38 +179,38 @@ export class IntelligentMassScanner {
     const addresses: Set<string> = new Set();
 
     // Strategy 1: Get from existing staking_rewards table
-    console.log('[Discovery] Checking existing stake events...');
+    console.info('[Discovery] Checking existing stake events...');
     const existingResult = await this.db.query(
       "SELECT DISTINCT identity_address FROM staking_rewards WHERE identity_address LIKE 'i%' LIMIT $1",
       [limit || 100000]
     );
     existingResult.rows.forEach(row => addresses.add(row.identity_address));
-    console.log(
+    console.info(
       `[Discovery] Found ${addresses.size} addresses from existing data`
     );
 
     // Strategy 2: Get from identities table if available
-    console.log('[Discovery] Checking identities table...');
+    console.info('[Discovery] Checking identities table...');
     try {
       const identitiesResult = await this.db.query(
         "SELECT DISTINCT identity_address FROM identities WHERE identity_address LIKE 'i%' LIMIT $1",
         [limit || 100000]
       );
       identitiesResult.rows.forEach(row => addresses.add(row.identity_address));
-      console.log(`[Discovery] Total unique addresses: ${addresses.size}`);
+      console.info(`[Discovery] Total unique addresses: ${addresses.size}`);
     } catch (error) {
-      console.log('[Discovery] No identities table available:', error);
+      console.info('[Discovery] No identities table available:', error);
     }
 
     // Strategy 3: If still need more, use listidentities RPC to get all VerusIDs
     if (addresses.size < 100 || (limit && addresses.size < limit)) {
-      console.log('[Discovery] Fetching VerusIDs from blockchain via RPC...');
+      console.info('[Discovery] Fetching VerusIDs from blockchain via RPC...');
       await this.discoverFromRPC(addresses, limit);
     }
 
     // Strategy 4: If still need more, scan recent blocks for I-addresses (fallback)
     if (addresses.size < 100 || (limit && addresses.size < limit)) {
-      console.log('[Discovery] Scanning recent blocks for more addresses...');
+      console.info('[Discovery] Scanning recent blocks for more addresses...');
       await this.discoverFromRecentBlocks(addresses, limit);
     }
 
@@ -231,7 +230,7 @@ export class IntelligentMassScanner {
       const maxToFetch = limit || 100000;
       let fetched = 0;
 
-      console.log(
+      console.info(
         `[Discovery RPC] Fetching up to ${maxToFetch} VerusIDs from blockchain...`
       );
 
@@ -251,7 +250,7 @@ export class IntelligentMassScanner {
           !Array.isArray(identities) ||
           identities.length === 0
         ) {
-          console.log(
+          console.info(
             `[Discovery RPC] listIdentities returned no data (only shows wallet identities). Skipping RPC discovery.`
           );
           break;
@@ -268,18 +267,18 @@ export class IntelligentMassScanner {
         });
 
         fetched += identities.length;
-        console.log(
+        console.info(
           `[Discovery RPC] Progress: ${fetched} fetched, ${addresses.size} unique I-addresses found`
         );
 
         // If we got fewer than requested, we've reached the end
         if (identities.length < batchSize) {
-          console.log(`[Discovery RPC] Reached end of identities list`);
+          console.info(`[Discovery RPC] Reached end of identities list`);
           break;
         }
       }
 
-      console.log(
+      console.info(
         `[Discovery RPC] Complete! Found ${addresses.size} unique I-addresses`
       );
     } catch (error: any) {
@@ -305,7 +304,7 @@ export class IntelligentMassScanner {
     const scanDepth = 10000; // Scan last 10k blocks for addresses
     const startHeight = Math.max(1, currentHeight - scanDepth);
 
-    console.log(
+    console.info(
       `[Discovery] Scanning blocks ${startHeight} to ${currentHeight}...`
     );
 
@@ -350,7 +349,7 @@ export class IntelligentMassScanner {
       });
 
       if (height % 1000 === 0) {
-        console.log(
+        console.info(
           `[Discovery] Scanned to block ${height}, found ${addresses.size} addresses`
         );
       }
@@ -367,8 +366,8 @@ export class IntelligentMassScanner {
   ): Promise<void> {
     const addressSet = new Set(targetAddresses);
 
-    console.log('[Intelligent Scan] Starting optimized block scanning...');
-    console.log(
+    console.info('[Intelligent Scan] Starting optimized block scanning...');
+    console.info(
       `[Intelligent Scan] Config: ${this.config.maxConcurrentRequests} concurrent, ${this.config.delayBetweenBatches}ms delay`
     );
 
@@ -413,10 +412,10 @@ export class IntelligentMassScanner {
         const eta = new Date(
           this.progress.estimatedCompletion
         ).toLocaleTimeString();
-        console.log(
+        console.info(
           `[Progress] ${this.progress.blocksProcessed}/${this.progress.totalBlocks} blocks (${percentage}%), ${this.progress.stakeEventsFound} stakes found, ETA: ${eta}`
         );
-        console.log(
+        console.info(
           `[Cache] Efficiency: ${this.getCacheEfficiency()}%, Hits: ${this.progress.cacheHits}, Misses: ${this.progress.cacheMisses}`
         );
       }
@@ -558,7 +557,7 @@ export class IntelligentMassScanner {
       if (retries < this.config.maxRetries) {
         const backoffDelay =
           Math.pow(this.config.backoffMultiplier, retries) * 100;
-        console.log(
+        console.info(
           `[Retry] Attempt ${retries + 1}/${this.config.maxRetries}, waiting ${backoffDelay}ms`
         );
         await this.sleep(backoffDelay);
@@ -655,7 +654,7 @@ export class IntelligentMassScanner {
    * Calculate statistics for all addresses
    */
   private async calculateAllStatistics(addresses: string[]): Promise<void> {
-    console.log(
+    console.info(
       `[Statistics] Calculating stats for ${addresses.length} addresses...`
     );
 
@@ -671,7 +670,7 @@ export class IntelligentMassScanner {
         processed++;
 
         if (processed % 100 === 0) {
-          console.log(
+          console.info(
             `[Statistics] Calculated stats for ${processed}/${addresses.length} addresses`
           );
         }
@@ -683,7 +682,7 @@ export class IntelligentMassScanner {
     // Calculate network rankings
     await calculator.calculateNetworkRankings();
 
-    console.log(`[Statistics] Complete! Processed ${processed} addresses`);
+    console.info(`[Statistics] Complete! Processed ${processed} addresses`);
   }
 
   /**

@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 import { Pool } from 'pg';
 
-const pool = new Pool({
+const _pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
@@ -47,7 +47,7 @@ interface BlockStats {
  * Get block statistics for a time range
  * Inspired by Oink70's block-stats.sh
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
@@ -98,15 +98,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(
+    console.info(
       `[Block Stats] Analyzing blocks ${startHeight} to ${endHeight} (${blockRange} blocks)`
     );
 
     // Initialize accumulators
     let totalPow = 0;
     let totalPos = 0;
-    let difficulties: number[] = [];
-    let hashrates: number[] = [];
+    const difficulties: number[] = [];
+    const hashrates: number[] = [];
     let powRewards = 0;
     let posRewards = 0;
     let powFees = 0;
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     const sampleRate = blockRange > 1000 ? Math.floor(blockRange / 1000) : 1;
     const samplesToProcess = Math.ceil(blockRange / sampleRate);
 
-    console.log(
+    console.info(
       `[Block Stats] Sampling every ${sampleRate} block(s), processing ~${samplesToProcess} samples`
     );
 

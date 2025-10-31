@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Warning,
   ArrowsClockwise,
@@ -11,6 +12,8 @@ import {
 import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 
 export function GlobalErrorFallback() {
+  const tCommon = useTranslations('common');
+
   const { goBack } = useNavigationHistory();
 
   const handleReload = () => {

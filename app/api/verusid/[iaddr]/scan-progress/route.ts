@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 let dbPool: Pool | null = null;
@@ -8,14 +8,14 @@ function getDbPool() {
     dbPool = new Pool({
       connectionString:
         process.env.DATABASE_URL ||
-        'postgres://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db',
+        'postgres://verus_user:verus_secure_2024@localhost:5432/pos_db',
     });
   }
   return dbPool;
 }
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {

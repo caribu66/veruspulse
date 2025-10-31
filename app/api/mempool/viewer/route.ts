@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
-import { CachedRPCClient } from '@/lib/cache/cached-rpc-client';
+// import { CachedRPCClient } from '@/lib/cache/cached-rpc-client'; // Unused
 import { logger } from '@/lib/utils/logger';
 
 /**
@@ -8,7 +8,7 @@ import { logger } from '@/lib/utils/logger';
  * Provides detailed view of pending transactions with statistics
  * Based on verus-explorer pattern from official Verus GitHub
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     logger.info('📊 Fetching comprehensive mempool data...');
 
@@ -24,17 +24,21 @@ export async function GET(request: NextRequest) {
 
     const [mempoolInfoResult, blockchainInfoResult] = results;
 
-    if (mempoolInfoResult.error) {
+    if (mempoolInfoResult?.error) {
       throw new Error(
         mempoolInfoResult.error.message || 'Failed to fetch mempool info'
       );
     }
 
-    const mempoolInfo = mempoolInfoResult.result;
-    const blockchainInfo = blockchainInfoResult.result;
+    const mempoolInfo = mempoolInfoResult?.result;
+    const blockchainInfo = blockchainInfoResult?.result;
+
+    if (!mempoolInfo || !blockchainInfo) {
+      throw new Error('Failed to fetch mempool or blockchain info');
+    }
 
     // Get transaction list if requested
-    let transactions = [];
+    const transactions = [];
     let totalFees = 0;
     let avgFee = 0;
     let avgSize = 0;

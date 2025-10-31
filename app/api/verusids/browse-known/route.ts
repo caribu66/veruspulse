@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verusAPI } from '@/lib/rpc-client-robust';
+import { type NextRequest, NextResponse } from 'next/server';
+// import { verusAPI } from '@/lib/rpc-client-robust'; // Unused
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
 import { getCachedIdentity } from '@/lib/verusid-cache';
@@ -44,7 +44,7 @@ const KNOWN_VERUSIDS = [
   'caribu66.VRSC@',
 ];
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     logger.info('🔍 Fetching known VerusIDs using lookup system...');
 
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
           const identity = identityResult.data.identity;
 
           // Get cached data
-          const cachedData = await getCachedIdentity(verusid);
+          const _cachedData = await getCachedIdentity(verusid);
 
           // Get balance data
           let balanceData = null;

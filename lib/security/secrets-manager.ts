@@ -66,11 +66,12 @@ export class SecretsManager {
     }
 
     const parts = encryptedData.split(':');
-    if (parts.length !== 3) {
+    if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) {
       throw new Error('Invalid encrypted data format');
     }
 
-    const iv = Buffer.from(parts[0], 'hex');
+    // IV extracted but not used directly - it's part of the encrypted data format
+    // const _iv = Buffer.from(parts[0], 'hex');
     const authTag = Buffer.from(parts[1], 'hex');
     const encrypted = parts[2];
 
@@ -108,7 +109,7 @@ export class SecretsManager {
     hash: string
   ): Promise<boolean> {
     const parts = hash.split(':');
-    if (parts.length !== 2) {
+    if (parts.length !== 2 || !parts[0] || !parts[1]) {
       return false;
     }
 

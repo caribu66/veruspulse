@@ -8,19 +8,47 @@ export async function GET() {
     logger.info('🔍 Fetching PBaaS chains...');
 
     // Use listcurrencies with systemtype filter to get PBaaS chains
-    const pbaasChains = await verusAPI.listCurrenciesWithFilter({
+    const allChains = await verusAPI.listCurrenciesWithFilter({
       systemtype: 'pbaas',
     });
 
+    // Filter out VRSC (main chain) - Real PBaaS chains have a 'parent' field
+    const pbaasChains = allChains 
+      ? (allChains as any[]).filter(chain => 
+          chain?.currencydefinition?.parent
+        )
+      : [];
+
     logger.info(
-      `✅ Retrieved ${pbaasChains ? pbaasChains.length : 0} PBaaS chains`
+      `✅ Retrieved ${pbaasChains.length} PBaaS chains (filtered from ${allChains?.length || 0} total)`
+    );
+
+    // Enrich each chain with supply data from getcurrency
+    const enrichedChains = await Promise.all(
+      pbaasChains.map(async (chain) => {
+        try {
+          const currencyId = chain?.currencydefinition?.currencyid || chain?.currencyid;
+          if (currencyId) {
+            const currencyDef: any = await verusAPI.call('getcurrency', [currencyId]);
+            if (currencyDef?.bestcurrencystate?.supply) {
+              return {
+                ...chain,
+                supply: currencyDef.bestcurrencystate.supply,
+              };
+            }
+          }
+        } catch (error) {
+          logger.warn(`Failed to get supply for chain ${chain?.currencydefinition?.name}:`, error);
+        }
+        return chain;
+      })
     );
 
     const response = NextResponse.json({
       success: true,
       data: {
-        pbaasChains: pbaasChains || [],
-        count: pbaasChains ? pbaasChains.length : 0,
+        pbaasChains: enrichedChains,
+        count: enrichedChains.length,
         timestamp: Date.now(),
       },
     });

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { VerusIDComprehensiveSync } from '@/lib/services/verusid-comprehensive-sync';
 
 // Global sync instance
@@ -14,7 +14,7 @@ function getSyncService() {
 /**
  * POST: Start or configure a sync job
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse options from request
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = _request.nextUrl.searchParams;
     const batchSize = parseInt(searchParams.get('batch_size') || '5');
     const delay = parseInt(searchParams.get('delay') || '10000');
     const specificId = searchParams.get('specific_id') || undefined;
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
 /**
  * GET: Check sync status
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
 /**
  * DELETE: Stop sync
  */
-export async function DELETE(request: NextRequest) {
+export async function DELETE(_request: NextRequest) {
   try {
     const service = getSyncService();
     if (!service) {
@@ -207,7 +207,7 @@ export async function DELETE(request: NextRequest) {
 /**
  * PATCH: Pause/Resume sync
  */
-export async function PATCH(request: NextRequest) {
+export async function PATCH(_request: NextRequest) {
   try {
     const service = getSyncService();
     if (!service) {
@@ -220,7 +220,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = _request.nextUrl.searchParams;
     const action = searchParams.get('action'); // 'pause' or 'resume'
 
     if (action === 'pause') {

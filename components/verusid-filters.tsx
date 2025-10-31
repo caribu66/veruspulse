@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   MagnifyingGlass,
   Funnel,
@@ -11,7 +12,7 @@ import {
   Star,
   Pulse,
 } from '@phosphor-icons/react';
-import { FilterState } from '@/lib/types/verusid-browse-types';
+import { type FilterState } from '@/lib/types/verusid-browse-types';
 import { getQuickFilterPresets } from '@/lib/utils/verusid-utils';
 
 interface VerusIDFiltersProps {
@@ -29,6 +30,10 @@ export function VerusIDFilters({
   totalIdentities,
   filteredCount,
 }: VerusIDFiltersProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState(filters);
 
@@ -75,7 +80,7 @@ export function VerusIDFilters({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <Funnel className="h-5 w-5 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">Filters</h3>
+          <h3 className="text-lg font-semibold text-white">{tCommon("filter")}</h3>
           {activeFilterCount > 0 && (
             <span className="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full">
               {activeFilterCount} active
@@ -96,25 +101,54 @@ export function VerusIDFilters({
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="mb-4">
-        <div className="relative">
-          <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-300" />
+      {/* Search Bar - Modern Design */}
+      <div className="mb-6">
+        <div className="relative group">
+          {/* Search Icon with Animation */}
+          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-verus-blue transition-all duration-300 group-focus-within:scale-110">
+            <MagnifyingGlass className="h-5 w-5" weight="bold" />
+          </div>
+
+          {/* Input Field with Gradient Border */}
           <input
             type="text"
-            placeholder="Search by name, friendly name, or address..."
+            placeholder="Search by name (e.g., VerusPulse@) or I-address..."
             value={localFilters.searchQuery}
             onChange={e => handleFilterChange('searchQuery', e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/10 border border-slate-300 dark:border-slate-700 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-12 pr-12 py-4
+              bg-gradient-to-br from-slate-800/80 to-slate-900/80
+              backdrop-blur-xl
+              border-2 border-slate-700/50
+              rounded-2xl
+              text-white text-base
+              placeholder-slate-400
+              shadow-lg shadow-black/10
+              transition-all duration-300
+              focus:outline-none
+              focus:border-verus-blue/60
+              focus:shadow-xl focus:shadow-verus-blue/20
+              focus:bg-gradient-to-br focus:from-slate-800/90 focus:to-slate-900/90
+              hover:border-slate-600/60"
           />
+
+          {/* Clear Button with Hover Effect */}
           {localFilters.searchQuery && (
             <button
               onClick={() => handleFilterChange('searchQuery', '')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-300 hover:text-white"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2
+                text-slate-400 hover:text-white
+                bg-slate-700/50 hover:bg-red-500/80
+                rounded-full p-1.5
+                transition-all duration-200
+                hover:scale-110 hover:rotate-90"
+              aria-label="Clear search"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4" weight="bold" />
             </button>
           )}
+
+          {/* Subtle Glow Effect on Focus */}
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-verus-blue/10 via-purple-500/10 to-verus-blue/10 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
         </div>
       </div>
 

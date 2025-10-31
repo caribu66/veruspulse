@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { formatFriendlyNumber } from '@/lib/utils/number-formatting';
+import { useTranslations } from 'next-intl';
 
 interface UTXO {
   value: number; // Value in satoshis
@@ -30,6 +31,9 @@ export function UTXOBubbleChartNew({
   height = 400,
   className = '',
 }: UTXOBubbleChartProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tStaking = useTranslations('staking');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Calculate bubble positions with a simple, reliable algorithm
@@ -515,7 +519,7 @@ export function UTXOBubbleChartNew({
       {/* Status Legend */}
       <div className="flex justify-center mt-4 space-x-6">
         <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-slate-300"></div>
+          <div className="w-3 h-3 rounded-full bg-slate-300" />
           <span className="text-sm text-gray-300">
             Eligible (
             {
@@ -528,7 +532,7 @@ export function UTXOBubbleChartNew({
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-slate-400"></div>
+          <div className="w-3 h-3 rounded-full bg-slate-400" />
           <span className="text-sm text-gray-300">
             Cooldown (
             {
@@ -541,7 +545,7 @@ export function UTXOBubbleChartNew({
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-gray-500"></div>
+          <div className="w-3 h-3 rounded-full bg-gray-500" />
           <span className="text-sm text-gray-300">
             Inactive (
             {
@@ -583,7 +587,7 @@ export function UTXOBubbleChartNew({
         <div className="flex justify-center mt-3 space-x-6">
           {bubbles.some(b => b.isStakeInput) && (
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-slate-500"></div>
+              <div className="w-3 h-3 rounded-full bg-slate-500" />
               <span className="text-sm text-gray-300">
                 Input Stake ({bubbles.filter(b => b.isStakeInput).length})
               </span>
@@ -591,7 +595,7 @@ export function UTXOBubbleChartNew({
           )}
           {bubbles.some(b => b.isStakeOutput) && (
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-slate-600"></div>
+              <div className="w-3 h-3 rounded-full bg-slate-600" />
               <span className="text-sm text-gray-300">
                 Output Stake ({bubbles.filter(b => b.isStakeOutput).length})
               </span>
@@ -606,7 +610,7 @@ export function UTXOBubbleChartNew({
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: '#10b981' }}
-          ></div>
+           />
           <span className="text-sm text-gray-300">
             High Probability (≥50% avg)
           </span>
@@ -615,7 +619,7 @@ export function UTXOBubbleChartNew({
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: '#eab308' }}
-          ></div>
+           />
           <span className="text-sm text-gray-300">
             Medium Probability (25-50% avg)
           </span>
@@ -624,7 +628,7 @@ export function UTXOBubbleChartNew({
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: '#f97316' }}
-          ></div>
+           />
           <span className="text-sm text-gray-300">
             Low Probability (&lt;25% avg)
           </span>

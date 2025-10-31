@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { verusAPI } from '@/lib/rpc-client-robust';
 import { addSecurityHeaders } from '@/lib/middleware/security';
@@ -18,7 +18,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 
     // Main query: Get identities with comprehensive statistics
     const query = `
-      SELECT 
+      SELECT
         i.identity_address,
         i.base_name,
         i.friendly_name,

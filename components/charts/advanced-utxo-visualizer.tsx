@@ -1,6 +1,7 @@
 'use client';
 
 /* eslint-disable react-hooks/rules-of-hooks */
+import { useTranslations } from 'next-intl';
 import {
   useState,
   useMemo,
@@ -932,7 +933,7 @@ function AdvancedUTXOVisualizer({
         style={{ width: safeWidth, height: safeHeight }}
       >
         <div className="text-center p-6">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" />
           <div className="text-blue-400 mb-2 text-lg font-semibold">
             🔄 Loading
           </div>
@@ -2390,7 +2391,7 @@ function AdvancedUTXOVisualizer({
                     tabIndex={visualizationMode === mode ? 0 : -1}
                   >
                     {isLoading ? (
-                      <div className="animate-spin rounded-full h-3 w-3 border-b border-white"></div>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b border-white" />
                     ) : (
                       <Icon className="h-3 w-3" aria-hidden="true" />
                     )}
@@ -2518,7 +2519,7 @@ function AdvancedUTXOVisualizer({
         {isLoadingVisualization ? (
           <div className="flex items-center justify-center h-96 bg-gray-900/30 rounded-lg border border-gray-700/50">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-3"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-3" />
               <div className="text-blue-400 text-sm font-medium">
                 Loading {visualizationMode} visualization...
               </div>
@@ -2539,20 +2540,20 @@ function AdvancedUTXOVisualizer({
         aria-label="UTXO color legend"
       >
         <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+          <div className="w-3 h-3 rounded-full bg-green-500" />
           <span className="text-gray-300">Eligible ({stats.eligible})</span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+          <div className="w-3 h-3 rounded-full bg-orange-500" />
           <span className="text-gray-300">Cooldown ({stats.cooldown})</span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-gray-500"></div>
+          <div className="w-3 h-3 rounded-full bg-gray-500" />
           <span className="text-gray-300">Inactive ({stats.inactive})</span>
         </div>
         {stats.stakeInputs > 0 && (
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-500" />
             <span className="text-gray-300">
               Stake Input ({stats.stakeInputs})
             </span>
@@ -2560,7 +2561,7 @@ function AdvancedUTXOVisualizer({
         )}
         {stats.stakeOutputs > 0 && (
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+            <div className="w-3 h-3 rounded-full bg-purple-500" />
             <span className="text-gray-300">
               Stake Output ({stats.stakeOutputs})
             </span>

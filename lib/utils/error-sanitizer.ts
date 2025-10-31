@@ -271,7 +271,7 @@ export class ErrorSanitizer {
  * Error boundary for React components
  */
 export class ReactErrorBoundary {
-  static createErrorResponse(error: Error, errorInfo?: any): SanitizedError {
+  static createErrorResponse(error: Error, _errorInfo?: any): SanitizedError {
     return ErrorSanitizer.createSanitizedError(error, {
       endpoint: 'react-component',
       method: 'render',

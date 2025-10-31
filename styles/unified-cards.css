@@ -1,0 +1,177 @@
+/* ================================================================
+   UNIFIED CARD SYSTEM
+   Harmonious, consistent card styling across the entire application
+   ================================================================ */
+
+/* ============================================================
+   BASE CARD STANDARDS
+   All cards should follow these principles
+   ============================================================ */
+
+/* Standard card - Light theme */
+[data-theme='light'] .card-standard,
+[data-theme='light'] [class*="card"] {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.75rem; /* 12px */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Standard card - Dark theme */
+[data-theme='dark'] .card-standard,
+[data-theme='dark'] [class*="card"] {
+  background: #0f172a !important; /* slate-900 - Unified dark background */
+  border: 1px solid #334155 !important; /* slate-700 - Unified dark border */
+  border-radius: 0.75rem; /* 12px */
+}
+
+/* ============================================================
+   REMOVE ALL CUSTOM CARD BACKGROUNDS
+   Force harmony by overriding hardcoded styles
+   ============================================================ */
+
+/* Override slate-800 cards to use slate-900 */
+[data-theme='dark'] .bg-slate-800\/80,
+[data-theme='dark'] .bg-slate-800\/90,
+[data-theme='dark'] .bg-slate-800 {
+  background: #0f172a !important; /* slate-900 */
+}
+
+/* Override slate-700 cards to use slate-900 */
+[data-theme='dark'] .bg-slate-700\/30,
+[data-theme='dark'] .bg-slate-700\/50,
+[data-theme='dark'] .bg-slate-700 {
+  background: #0f172a !important; /* slate-900 */
+}
+
+/* Override white opacity cards */
+[data-theme='dark'] .bg-white\/5,
+[data-theme='dark'] .bg-white\/10,
+[data-theme='dark'] .bg-white\/20 {
+  background: #0f172a !important; /* slate-900 */
+  border: 1px solid #334155 !important;
+}
+
+/* Override gray cards */
+[data-theme='dark'] .bg-gray-800,
+[data-theme='dark'] .bg-gray-900 {
+  background: #0f172a !important; /* slate-900 */
+}
+
+[data-theme='light'] .bg-gray-100,
+[data-theme='light'] .bg-gray-50 {
+  background: #ffffff !important;
+}
+
+/* ============================================================
+   UNIFIED BORDER COLORS
+   ============================================================ */
+
+/* Dark theme borders */
+[data-theme='dark'] .border-slate-600,
+[data-theme='dark'] .border-slate-700,
+[data-theme='dark'] .border-slate-800,
+[data-theme='dark'] .border-white\/10,
+[data-theme='dark'] .border-white\/20 {
+  border-color: #334155 !important; /* slate-700 - Unified */
+}
+
+/* Light theme borders */
+[data-theme='light'] .border-slate-200,
+[data-theme='light'] .border-slate-300,
+[data-theme='light'] .border-gray-200,
+[data-theme='light'] .border-gray-300 {
+  border-color: #e2e8f0 !important; /* Unified light border */
+}
+
+/* ============================================================
+   ICON CONTAINERS IN CARDS
+   Consistent icon background styling
+   ============================================================ */
+
+/* Icon containers should use subtle blue tint */
+.card .icon-container,
+.card [class*="bg-gray-100"],
+.card [class*="bg-slate-800"] {
+  background: rgba(49, 101, 212, 0.1) !important;
+  border-color: rgba(49, 101, 212, 0.2) !important;
+}
+
+[data-theme='light'] .card .icon-container {
+  background: rgba(49, 101, 212, 0.08) !important;
+  border-color: rgba(49, 101, 212, 0.15) !important;
+}
+
+/* ============================================================
+   CARD HOVER STATES
+   Unified hover behavior
+   ============================================================ */
+
+.card:hover,
+[class*="card"]:hover {
+  border-color: rgba(49, 101, 212, 0.4) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(49, 101, 212, 0.1) !important;
+}
+
+[data-theme='light'] .card:hover,
+[data-theme='light'] [class*="card"]:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(49, 101, 212, 0.06) !important;
+}
+
+/* ============================================================
+   CARD CONTENT HARMONY
+   ============================================================ */
+
+/* Consistent text colors in cards */
+.card h1, .card h2, .card h3, .card h4, .card h5, .card h6 {
+  color: var(--text-primary);
+}
+
+.card p {
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   SPECIAL CARD VARIANTS
+   ============================================================ */
+
+/* Success card - subtle green accent */
+.card-success {
+  border-left: 3px solid var(--verus-green) !important;
+}
+
+/* Warning card - subtle amber accent */
+.card-warning {
+  border-left: 3px solid var(--color-warning) !important;
+}
+
+/* Error card - subtle red accent */
+.card-error {
+  border-left: 3px solid var(--verus-red) !important;
+}
+
+/* Info card - subtle blue accent */
+.card-info {
+  border-left: 3px solid var(--verus-blue) !important;
+}
+
+/* ============================================================
+   REMOVE ALL GRADIENT BACKGROUNDS FROM CARDS
+   ============================================================ */
+
+.card [class*="bg-gradient"],
+[class*="card"] [class*="bg-gradient"] {
+  background: transparent !important;
+}
+
+/* ============================================================
+   MOBILE CARD OPTIMIZATIONS
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .card,
+  [class*="card"] {
+    border-radius: 0.75rem; /* 12px - slightly less rounded on mobile */
+  }
+}
+

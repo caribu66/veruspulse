@@ -1,7 +1,8 @@
 'use client';
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Warning, ArrowsClockwise, House } from '@phosphor-icons/react';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   children: ReactNode;
@@ -24,7 +25,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({
       error,
@@ -103,6 +104,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
 // Hook for functional components
 export function useErrorHandler() {
+  const tCommon = useTranslations('common');
+
   return (error: Error, errorInfo?: any) => {
     console.error('Error caught by useErrorHandler:', error, errorInfo);
     // You can add additional error reporting here (e.g., Sentry)

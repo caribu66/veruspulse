@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verusAPI } from '@/lib/rpc-client-robust';
-import { CachedRPCClient } from '@/lib/cache/cached-rpc-client';
+import { type NextRequest, NextResponse } from 'next/server';
+// import { verusAPI } from '@/lib/rpc-client-robust'; // Unused
+// import { CachedRPCClient } from '@/lib/cache/cached-rpc-client'; // Unused
 import {
   calculateExpectedStakeTime,
   calculateParticipationRate,
   formatParticipationPercentage,
-  formatStakeDuration,
+  // formatStakeDuration, // Unused
 } from '@/lib/utils/staking-calculations';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -97,7 +97,7 @@ export async function GET(
     }
 
     // Add debug logging to help troubleshoot
-    console.log({
+    console.info({
       stakingData,
       networkWeight,
       yourWeight,

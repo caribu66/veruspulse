@@ -1,20 +1,18 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { AchievementBadge, AchievementBadgeCompact } from './achievement-badge';
 import { Badge } from '@/components/ui/badge';
 import {
-  Funnel,
-  SortAscending,
-  SortDescending,
-  Trophy,
-  TrendUp,
-  Clock,
-  Star,
-  Crown,
   Calendar,
+  Clock,
+  Crown,
+  Star,
   Target,
+  TrendUp,
+  Trophy
 } from '@phosphor-icons/react';
+import { useTranslations } from 'next-intl';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { AchievementBadge, AchievementBadgeCompact } from './achievement-badge';
 
 export interface AchievementData {
   slug: string;
@@ -85,6 +83,7 @@ export function AchievementGallery({
   rarityStats,
   className = '',
 }: AchievementGalleryProps) {
+  const tAchievements = useTranslations('achievements');
   const [viewMode, setViewMode] = useState<ViewMode>('all');
   const [filterCategory, setFilterCategory] = useState<FilterCategory>('all');
   const [sortBy, setSortBy] = useState<SortOption>('tier');
@@ -134,10 +133,10 @@ export function AchievementGallery({
     }
 
     if (showOnlyRecent) {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      // Use current time for filtering instead of creating new Date object
+      const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
       filtered = filtered.filter(
-        a => a.earned && a.unlockedAt && new Date(a.unlockedAt) > oneWeekAgo
+        a => a.earned && a.unlockedAt && new Date(a.unlockedAt).getTime() > oneWeekAgo
       );
     }
 
@@ -199,22 +198,31 @@ export function AchievementGallery({
     return sorted;
   }, [filteredAchievements, sortBy, sortAscending]);
 
-  const handleSortChange = (value: SortOption) => {
+  const handleSortChange = useCallback((value: SortOption) => {
     if (value === sortBy) {
       setSortAscending(!sortAscending);
     } else {
       setSortBy(value);
       setSortAscending(false);
     }
-  };
+  }, [sortBy, sortAscending]);
 
-  const getSortIcon = () => {
-    return sortAscending ? (
-      <SortAscending className="h-4 w-4" />
-    ) : (
-      <SortDescending className="h-4 w-4" />
-    );
-  };
+  // React 18.2: Memoize button handlers to prevent re-renders
+  const handleViewModeChange = useCallback((mode: ViewMode) => {
+    setViewMode(mode);
+  }, []);
+
+  const handleFilterCategoryChange = useCallback((category: FilterCategory) => {
+    setFilterCategory(category);
+  }, []);
+
+  const toggleNearComplete = useCallback(() => {
+    setShowOnlyNearComplete(prev => !prev);
+  }, []);
+
+  const toggleRecent = useCallback(() => {
+    setShowOnlyRecent(prev => !prev);
+  }, []);
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -223,15 +231,18 @@ export function AchievementGallery({
         <div className="flex items-center justify-between mb-4">
           <h3
             className="text-xl font-bold text-white flex items-center space-x-2 cursor-help"
-            title="Your achievement progress across all available badges. Hover over individual badges for detailed information."
+            title={tAchievements('achievementProgressTooltip')}
           >
             <Trophy className="h-6 w-6 text-verus-teal" />
-            <span>Achievement Progress</span>
+            <span>{tAchievements('achievementProgress')}</span>
           </h3>
           <Badge
             variant="outline"
             className="text-yellow-300 border-yellow-500/30 cursor-help"
-            title={`You have earned ${totalStats.earned} out of ${totalStats.available} available achievement badges`}
+            title={tAchievements('earnedCountTooltip', {
+              earned: totalStats.earned,
+              available: totalStats.available,
+            })}
           >
             {totalStats.earned} / {totalStats.available}
           </Badge>
@@ -240,51 +251,61 @@ export function AchievementGallery({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div
             className="text-center"
-            title="Achievements you have successfully unlocked"
+            title={tAchievements('earnedTooltip')}
           >
             <div className="text-2xl font-bold text-green-400">
               {totalStats.earned}
             </div>
-            <div className="text-sm text-gray-300">Earned</div>
+            <div className="text-sm text-gray-300">{tAchievements('earned')}</div>
           </div>
           <div
             className="text-center"
-            title="Achievements you're making progress toward"
+            title={tAchievements('inProgressTooltip')}
           >
             <div className="text-2xl font-bold text-blue-400">
               {totalStats.progress}
             </div>
-            <div className="text-sm text-gray-300">In Progress</div>
+            <div className="text-sm text-gray-300">{tAchievements('inProgress')}</div>
           </div>
-          <div className="text-center" title="Overall completion percentage">
+          <div className="text-center" title={tAchievements('completeTooltip')}>
             <div className="text-2xl font-bold text-verus-blue">
               {Math.round((totalStats.earned / totalStats.available) * 100)}%
             </div>
-            <div className="text-sm text-gray-300">Complete</div>
+            <div className="text-sm text-gray-300">{tAchievements('complete')}</div>
           </div>
           <div
             className="text-center"
-            title="Achievements you haven't started yet"
+            title={tAchievements('lockedTooltip')}
           >
             <div className="text-2xl font-bold text-verus-teal">
               {totalStats.available - totalStats.earned}
             </div>
-            <div className="text-sm text-gray-300">Locked</div>
+            <div className="text-sm text-gray-300">{tAchievements('locked')}</div>
           </div>
         </div>
 
         {/* Rarity breakdown */}
         <div className="mt-4 pt-4 border-t border-white/10">
-          <div className="text-sm text-gray-300 mb-2">Badge Rarity:</div>
+          <div className="text-sm text-gray-300 mb-2">{tAchievements('badgeRarity')}</div>
           <div className="flex flex-wrap gap-2">
             {Object.entries(rarityStats).map(([rarity, count]) => (
               <Badge
                 key={rarity}
                 variant="outline"
                 className="text-xs capitalize cursor-help"
-                title={`You have earned ${count} ${rarity} tier achievement${count !== 1 ? 's' : ''}`}
+                title={
+                  count === 1
+                    ? tAchievements('rarityEarnedTooltipSingular', {
+                        count,
+                        rarity: tAchievements(rarity as 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'),
+                      })
+                    : tAchievements('rarityEarnedTooltip', {
+                        count,
+                        rarity: tAchievements(rarity as 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'),
+                      })
+                }
               >
-                {rarity}: {count}
+                {tAchievements(rarity as 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary')}: {count}
               </Badge>
             ))}
           </div>
@@ -296,7 +317,7 @@ export function AchievementGallery({
         <div className="bg-white/5 rounded-xl p-6 border border-white/10">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
             <Calendar className="h-5 w-5 text-green-400" />
-            <span>Recent Unlocks</span>
+            <span>{tAchievements('recentUnlocks')}</span>
           </h3>
           <div className="flex flex-wrap gap-3">
             {recentUnlocks.map(achievement => (
@@ -318,23 +339,25 @@ export function AchievementGallery({
           {(['all', 'earned', 'progress', 'locked'] as ViewMode[]).map(mode => (
             <button
               key={mode}
-              onClick={() => setViewMode(mode)}
+              onClick={() => handleViewModeChange(mode)}
               className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
                 viewMode === mode
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
-              {mode.charAt(0).toUpperCase() + mode.slice(1)}
+              {mode === 'all'
+                ? tAchievements('all')
+                : tAchievements(mode as 'earned' | 'progress' | 'locked')}
             </button>
           ))}
         </div>
 
         <div className="flex gap-2 items-center flex-wrap">
-          {/* MagnifyingGlass */}
+          {/* Search */}
           <input
             type="text"
-            placeholder="MagnifyingGlass achievements..."
+            placeholder={tAchievements('searchPlaceholder')}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm placeholder-gray-400 min-w-48"
@@ -346,12 +369,12 @@ export function AchievementGallery({
             onChange={e => setFilterCategory(e.target.value as FilterCategory)}
             className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm"
           >
-            <option value="all">All Categories</option>
-            <option value="milestone">Milestone</option>
-            <option value="performance">Performance</option>
-            <option value="consistency">Consistency</option>
-            <option value="special">Special</option>
-            <option value="elite">Elite</option>
+            <option value="all">{tAchievements('allCategories')}</option>
+            <option value="milestone">{tAchievements('milestone')}</option>
+            <option value="performance">{tAchievements('performance')}</option>
+            <option value="consistency">{tAchievements('consistency')}</option>
+            <option value="special">{tAchievements('special')}</option>
+            <option value="elite">{tAchievements('elite')}</option>
           </select>
 
           {/* Sort */}
@@ -360,36 +383,36 @@ export function AchievementGallery({
             onChange={e => handleSortChange(e.target.value as SortOption)}
             className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm"
           >
-            <option value="tier">Tier</option>
-            <option value="rarity">Rarity</option>
-            <option value="progress">Progress</option>
-            <option value="unlockDate">Date</option>
-            <option value="name">Name</option>
+            <option value="tier">{tAchievements('tier')}</option>
+            <option value="rarity">{tAchievements('rarity')}</option>
+            <option value="progress">{tAchievements('progress')}</option>
+            <option value="unlockDate">{tAchievements('date')}</option>
+            <option value="name">{tAchievements('name')}</option>
           </select>
 
           {/* Smart Filters */}
           <div className="flex gap-2">
             <button
-              onClick={() => setShowOnlyNearComplete(!showOnlyNearComplete)}
+              onClick={toggleNearComplete}
               className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
                 showOnlyNearComplete
                   ? 'bg-green-500 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
-              title="Show only achievements >75% complete"
+              title={tAchievements('nearCompleteTooltip')}
             >
-              🎯 Near Complete
+              🎯 {tAchievements('nearComplete')}
             </button>
             <button
-              onClick={() => setShowOnlyRecent(!showOnlyRecent)}
+              onClick={toggleRecent}
               className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
                 showOnlyRecent
                   ? 'bg-yellow-500 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
-              title="Show only achievements unlocked in the last week"
+              title={tAchievements('recentTooltip')}
             >
-              ⏰ Recent
+              ⏰ {tAchievements('recent')}
             </button>
           </div>
         </div>
@@ -400,7 +423,7 @@ export function AchievementGallery({
         {Object.entries(categoryIcons).map(([category, Icon]) => (
           <button
             key={category}
-            onClick={() => setFilterCategory(category as FilterCategory)}
+            onClick={() => handleFilterCategoryChange(category as FilterCategory)}
             className={`px-4 py-2 rounded text-sm font-medium transition-colors flex items-center ${
               filterCategory === category
                 ? 'bg-blue-500 text-white'
@@ -408,7 +431,7 @@ export function AchievementGallery({
             }`}
           >
             <Icon className="h-4 w-4 mr-2" />
-            {category.charAt(0).toUpperCase() + category.slice(1)}
+            {tAchievements(category as 'milestone' | 'performance' | 'consistency' | 'special' | 'elite')}
           </button>
         ))}
       </div>
@@ -446,15 +469,20 @@ export function AchievementGallery({
         <div className="text-center py-12">
           <Trophy className="h-16 w-16 text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-300 mb-2">
-            No achievements found
+            {tAchievements('noAchievementsFound')}
           </h3>
           <p className="text-gray-500">
             {filterCategory === 'all'
-              ? 'No achievements match your current filters.'
-              : `No ${filterCategory} achievements match your current filters.`}
+              ? tAchievements('noAchievementsMatchFilters')
+              : tAchievements('noCategoryAchievementsMatchFilters', {
+                  category: tAchievements(filterCategory as 'milestone' | 'performance' | 'consistency' | 'special' | 'elite'),
+                })}
           </p>
         </div>
       )}
     </div>
   );
 }
+
+// Optimize with React.memo for better performance
+export const AchievementGalleryMemoized = memo(AchievementGallery);

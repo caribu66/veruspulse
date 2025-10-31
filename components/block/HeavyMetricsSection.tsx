@@ -1,6 +1,7 @@
 'use client';
 
 import { BlockDetailRow } from './BlockDetailRow';
+import { useTranslations } from 'next-intl';
 import {
   Shield,
   Hammer,
@@ -9,13 +10,18 @@ import {
   Clock,
   TrendUp,
 } from '@phosphor-icons/react';
-import { Block } from '@/lib/types/block-types';
+import { type Block } from '@/lib/types/block-types';
 
 interface HeavyMetricsSectionProps {
   block: Block;
 }
 
-export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
+export function HeavyMetricsSection({
+  block,
+}: HeavyMetricsSectionProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
   if (!block.feeTotal && block.feeTotal !== 0) {
     return null;
   }
@@ -72,7 +78,7 @@ export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
   return (
     <div className="bg-verus-blue/10 border border-verus-blue/20 rounded-lg p-4">
       <div className="flex items-center space-x-2 mb-4">
-        <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+        <div className="w-2 h-2 bg-purple-400 rounded-full" />
         <span className="text-verus-blue font-semibold">Heavy Metrics</span>
         {block.metricsError && (
           <span className="text-red-400 text-xs bg-red-500/20 px-2 py-1 rounded">
@@ -108,7 +114,7 @@ export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
 
             <BlockDetailRow
               label="Miner Type"
-              value={block.minerType === 'staker' ? 'Staker' : 'Miner'}
+              value={block.minerType === 'staker' ? tBlocks("staker") : tBlocks("miner")}
               icon={getMinerIcon(block.minerType || 'miner')}
             />
           </>

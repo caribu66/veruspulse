@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 import { Pool } from 'pg';
 import { UTXODatabaseService } from '@/lib/services/utxo-database';
@@ -91,7 +91,7 @@ async function calculateStakingFrequency(identityAddress: string): Promise<{
 }
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -186,7 +186,7 @@ export async function GET(
       });
     }
 
-    let total = utxos.length;
+    const total = utxos.length;
     let eligible = 0;
     let cooldown = 0;
     let cooldownValue = 0;

@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '18.x'
@@ -231,9 +232,16 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Deploy to production directory
+        run: |
+          echo "Copying .next directory to production location..."
+          rsync -av --delete "${{ github.workspace }}/.next/" /home/explorer/verus-dapp/.next/
+          echo "✅ Build copied successfully"
+
       - name: Restart PM2 service
         run: |
-          pm2 restart veruspulse || pm2 start npm --name "veruspulse" -- start
+          cd /home/explorer/verus-dapp
+          pm2 restart veruspulse || pm2 start npm --name "veruspulse" -- start:prod
           pm2 save
 
       - name: Health check

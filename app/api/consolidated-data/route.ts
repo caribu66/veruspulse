@@ -15,7 +15,7 @@ export async function GET() {
     // Use cached RPC client for better performance (30s cache TTL)
     // This reduces RPC calls by 95% for frequently accessed data
     // Note: Removed getTxOutSetInfo as it's too slow (10+ seconds)
-    const [blockchainInfo, miningInfo, mempoolInfo, networkInfo, walletInfo] =
+    const [blockchainInfo, miningInfo, mempoolInfo, networkInfo, walletInfo, pbaasInfo] =
       await Promise.allSettled([
         CachedRPCClient.getBlockchainInfo().catch(err => {
           logger.warn('Blockchain info fetch failed:', err);
@@ -37,6 +37,10 @@ export async function GET() {
           logger.warn('Wallet info fetch failed:', err);
           return null;
         }),
+        verusAPI.listCurrenciesWithFilter({ systemtype: 'pbaas' }).catch(err => {
+          logger.warn('PBaaS chains fetch failed:', err);
+          return null;
+        }),
       ]);
 
     // Get the data values
@@ -46,6 +50,40 @@ export async function GET() {
       miningInfo.status === 'fulfilled' ? miningInfo.value : null;
     const blockchainData =
       blockchainInfo.status === 'fulfilled' ? blockchainInfo.value : null;
+    const pbaasData =
+      pbaasInfo.status === 'fulfilled' ? pbaasInfo.value : null;
+    
+    // Filter out VRSC from PBaaS chains (it's the main chain, not a PBaaS chain)
+    // Real PBaaS chains have a 'parent' field
+    const pbaasChainsList = pbaasData 
+      ? (pbaasData as any[]).filter(chain => 
+          chain?.currencydefinition?.parent
+        )
+      : [];
+    
+    logger.info(`✅ Found ${pbaasChainsList.length} PBaaS chains (filtered from ${pbaasData?.length || 0} total)`);
+
+    // Enrich each chain with supply data from getcurrency
+    const pbaasChains = await Promise.all(
+      pbaasChainsList.map(async (chain) => {
+        try {
+          const currencyId = chain?.currencydefinition?.currencyid || chain?.currencyid;
+          if (currencyId) {
+            const currencyDef: any = await verusAPI.call('getcurrency', [currencyId]);
+            if (currencyDef?.bestcurrencystate?.supply) {
+              return {
+                ...chain,
+                supply: currencyDef.bestcurrencystate.supply,
+              };
+            }
+          }
+        } catch (error) {
+          logger.warn(`Failed to get supply for chain ${chain?.currencydefinition?.name}:`, error);
+        }
+        return chain;
+      })
+    );
+
 
     // Get blockchain info and add circulating supply
     // Use cached supply value or approximation, and update cache in background
@@ -242,15 +280,16 @@ export async function GET() {
       mempool: mempoolInfo.status === 'fulfilled' ? mempoolInfo.value : null,
       network: networkInfo.status === 'fulfilled' ? networkInfo.value : null,
       staking: stakingData,
+      pbaasChains: pbaasChains,
       timestamp: Date.now(),
       responseTime: Date.now() - startTime,
     };
 
     // Calculate success rate
     const successCount = Object.values(result).filter(
-      value => value !== null
+      value => value !== null && !Array.isArray(value) // Don't count arrays (pbaasChains can be empty)
     ).length;
-    const totalCount = 6; // blockchain, mining, mempool, network, staking, timestamp/responseTime
+    const totalCount = 6; // blockchain, mining, mempool, network, staking, timestamp/responseTime (pbaasChains not counted - optional)
     const successRate = (successCount / totalCount) * 100;
 
     // Debug logging (only log when there are issues)

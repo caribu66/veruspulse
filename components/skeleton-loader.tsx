@@ -11,6 +11,7 @@
 export * from './animations/skeleton-loader';
 
 // Legacy exports for backward compatibility
+import { useTranslations } from 'next-intl';
 import {
   SkeletonLoader,
   HeroStatsSkeleton,
@@ -28,10 +29,13 @@ export const StatsCardSkeleton = () => (
 );
 
 export function ActivityCardSkeleton() {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+
   return (
     <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
       <div className="flex items-center justify-between mb-4">
-        <Skeleton variant="circular" width={48} height={48} />
+        <Skeleton variant="circle" className="w-12 h-12" />
         <div className="text-right space-y-2 flex-1 ml-4">
           <Skeleton className="h-8 w-24 ml-auto" />
           <Skeleton className="h-4 w-32 ml-auto" />
@@ -41,11 +45,11 @@ export function ActivityCardSkeleton() {
   );
 }
 
-export function ActivityCardSkeleton() {
+export function ActivityListItemSkeleton() {
   return (
     <div className="bg-white/5 rounded-lg p-4 border border-white/10">
       <div className="flex items-start gap-3">
-        <Skeleton variant="rounded" width={40} height={40} />
+        <Skeleton variant="card" className="w-10 h-10" />
         <div className="flex-1 space-y-2">
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-3 w-1/2" />
@@ -59,7 +63,7 @@ export function CarouselCardSkeleton() {
   return (
     <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
       <div className="flex items-start gap-4 mb-6">
-        <Skeleton variant="circular" width={64} height={64} />
+        <Skeleton variant="circle" className="w-16 h-16" />
         <div className="flex-1 space-y-2">
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-4 w-64" />
@@ -79,8 +83,8 @@ export function TrendingItemSkeleton() {
   return (
     <div className="bg-white/5 rounded-xl p-4 border border-white/10">
       <div className="flex items-start gap-4">
-        <Skeleton variant="circular" width={32} height={32} />
-        <Skeleton variant="rounded" width={40} height={40} />
+        <Skeleton variant="circle" className="w-8 h-8" />
+        <Skeleton variant="card" className="w-10 h-10" />
         <div className="flex-1 space-y-2">
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-3 w-1/2" />

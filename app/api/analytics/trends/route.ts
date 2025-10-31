@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 let dbPool: Pool | null = null;
@@ -15,7 +15,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = _request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get('limit') || '10');
     const sortBy = searchParams.get('sort') || 'trend'; // trend, views, rewards, stakes
 
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     }
 
     const query = `
-      SELECT 
+      SELECT
         tm.verusid_address,
         tm.recent_stakes_7d,
         tm.recent_rewards_7d,
@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await _request.json();
     const { verusidAddress } = body;
 
     if (!verusidAddress) {

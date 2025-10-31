@@ -250,7 +250,7 @@ export async function cacheIdentity(
 async function indexIdentityInBackground(
   identityAddress: string
 ): Promise<void> {
-  console.log(
+  console.info(
     `[VerusID Cache] Starting background index for ${identityAddress}`
   );
 
@@ -260,7 +260,7 @@ async function indexIdentityInBackground(
       { addresses: [identityAddress] },
     ])) as any[];
 
-    console.log(`[VerusID Cache] Found ${txids.length} transactions to index`);
+    console.info(`[VerusID Cache] Found ${txids.length} transactions to index`);
 
     // Process in batches to avoid overwhelming the system
     for (let i = 0; i < txids.length; i++) {
@@ -369,7 +369,7 @@ async function indexIdentityInBackground(
 
       // Progress update every 100 txs
       if ((i + 1) % 100 === 0) {
-        console.log(
+        console.info(
           `[VerusID Cache] Indexed ${i + 1}/${txids.length} transactions`
         );
       }
@@ -378,7 +378,7 @@ async function indexIdentityInBackground(
     // Refresh materialized view
     await pool.query('REFRESH MATERIALIZED VIEW CONCURRENTLY staking_daily');
 
-    console.log(`[VerusID Cache] ✅ Completed indexing ${identityAddress}`);
+    console.info(`[VerusID Cache] ✅ Completed indexing ${identityAddress}`);
   } catch (error) {
     console.error(
       `[VerusID Cache] ❌ Indexing failed for ${identityAddress}:`,

@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { type Pool } from 'pg';
 
 export interface AchievementDefinition {
   id: number;
@@ -78,13 +78,13 @@ export class AchievementService {
       SELECT id, slug, name, description, icon, category, tier, requirements, rarity, is_active
       FROM achievement_definitions
       WHERE is_active = true
-      ORDER BY 
-        CASE tier 
-          WHEN 'bronze' THEN 1 
-          WHEN 'silver' THEN 2 
-          WHEN 'gold' THEN 3 
-          WHEN 'platinum' THEN 4 
-          WHEN 'legendary' THEN 5 
+      ORDER BY
+        CASE tier
+          WHEN 'bronze' THEN 1
+          WHEN 'silver' THEN 2
+          WHEN 'gold' THEN 3
+          WHEN 'platinum' THEN 4
+          WHEN 'legendary' THEN 5
         END,
         name
     `;
@@ -100,7 +100,7 @@ export class AchievementService {
     identityAddress: string
   ): Promise<EarnedAchievement[]> {
     const query = `
-      SELECT 
+      SELECT
         va.id,
         va.identity_address,
         va.achievement_slug,
@@ -129,7 +129,7 @@ export class AchievementService {
     identityAddress: string
   ): Promise<AchievementProgress[]> {
     const query = `
-      SELECT 
+      SELECT
         ap.identity_address,
         ap.achievement_slug,
         ap.current_value,
@@ -230,7 +230,7 @@ export class AchievementService {
     target: number;
     unlockValue?: number;
   }> {
-    const { type, operator, value, period } = definition.requirements;
+    const { type, operator, value } = definition.requirements;
 
     switch (type) {
       case 'stake_count':
@@ -354,8 +354,12 @@ export class AchievementService {
     // Group stakes by day and calculate consecutive days
     const stakesByDay = new Map<string, number>();
     history.forEach(stake => {
-      const day = stake.block_time.split('T')[0];
-      stakesByDay.set(day, (stakesByDay.get(day) || 0) + 1);
+      if (stake.block_time) {
+        const day = stake.block_time.split('T')[0];
+        if (day) {
+          stakesByDay.set(day, (stakesByDay.get(day) || 0) + 1);
+        }
+      }
     });
 
     const sortedDays = Array.from(stakesByDay.keys()).sort();
@@ -363,7 +367,9 @@ export class AchievementService {
     let currentConsecutive = 0;
 
     for (let i = 0; i < sortedDays.length; i++) {
-      if (i === 0 || this.isConsecutiveDay(sortedDays[i - 1], sortedDays[i])) {
+      const prevDay = sortedDays[i - 1];
+      const currentDay = sortedDays[i];
+      if (i === 0 || (prevDay && currentDay && this.isConsecutiveDay(prevDay, currentDay))) {
         currentConsecutive++;
       } else {
         maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
@@ -400,8 +406,12 @@ export class AchievementService {
 
     const stakesByDay = new Set<string>();
     history.forEach(stake => {
-      const day = stake.block_time.split('T')[0];
-      stakesByDay.add(day);
+      if (stake.block_time) {
+        const day = stake.block_time.split('T')[0];
+        if (day) {
+          stakesByDay.add(day);
+        }
+      }
     });
 
     const sortedDays = Array.from(stakesByDay).sort();
@@ -409,7 +419,9 @@ export class AchievementService {
     let currentConsecutive = 0;
 
     for (let i = 0; i < sortedDays.length; i++) {
-      if (i === 0 || this.isConsecutiveDay(sortedDays[i - 1], sortedDays[i])) {
+      const prevDay = sortedDays[i - 1];
+      const currentDay = sortedDays[i];
+      if (i === 0 || (prevDay && currentDay && this.isConsecutiveDay(prevDay, currentDay))) {
         currentConsecutive++;
       } else {
         maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
@@ -474,7 +486,7 @@ export class AchievementService {
       INSERT INTO achievement_progress (identity_address, achievement_slug, current_value, target_value)
       VALUES ($1, $2, $3, $4)
       ON CONFLICT (identity_address, achievement_slug)
-      DO UPDATE SET 
+      DO UPDATE SET
         current_value = $3,
         target_value = $4,
         last_updated = NOW()
@@ -493,7 +505,7 @@ export class AchievementService {
    */
   async getBadgeRarity(): Promise<Record<string, number>> {
     const query = `
-      SELECT 
+      SELECT
         ad.rarity,
         COUNT(ad.id) as total_badges,
         COUNT(va.id) as earned_count,
@@ -502,13 +514,13 @@ export class AchievementService {
       LEFT JOIN verusid_achievements va ON ad.slug = va.achievement_slug
       WHERE ad.is_active = true
       GROUP BY ad.rarity
-      ORDER BY 
-        CASE ad.rarity 
-          WHEN 'common' THEN 1 
-          WHEN 'uncommon' THEN 2 
-          WHEN 'rare' THEN 3 
-          WHEN 'epic' THEN 4 
-          WHEN 'legendary' THEN 5 
+      ORDER BY
+        CASE ad.rarity
+          WHEN 'common' THEN 1
+          WHEN 'uncommon' THEN 2
+          WHEN 'rare' THEN 3
+          WHEN 'epic' THEN 4
+          WHEN 'legendary' THEN 5
         END
     `;
 
@@ -530,7 +542,7 @@ export class AchievementService {
     days: number = 7
   ): Promise<EarnedAchievement[]> {
     const query = `
-      SELECT 
+      SELECT
         va.id,
         va.identity_address,
         va.achievement_slug,

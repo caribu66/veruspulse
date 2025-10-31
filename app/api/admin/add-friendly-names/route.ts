@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { logger } from '@/lib/utils/logger';
 
@@ -14,7 +14,7 @@ const friendlyNames = {
   iO0jPoU2vVw3xY4zA5bC6dE7fG8hI9jK0lM1: 'CryptoNode.VRSC@',
 };
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     logger.info('🚀 Adding friendly names to VerusID statistics...');
 

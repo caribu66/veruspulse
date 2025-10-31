@@ -4,6 +4,7 @@
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface User {
   id: number;
@@ -14,6 +15,8 @@ interface User {
 }
 
 export function GitHubAuthButton() {
+  const tCommon = useTranslations('common');
+
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,7 +45,7 @@ export function GitHubAuthButton() {
   };
 
   if (loading) {
-    return <div className="px-4 py-2 text-sm text-gray-500">Loading...</div>;
+    return <div className="px-4 py-2 text-sm text-gray-500">{tCommon("loading")}</div>;
   }
 
   if (user) {

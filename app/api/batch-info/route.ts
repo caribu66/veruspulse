@@ -35,22 +35,22 @@ export async function GET() {
         note: 'Single HTTP request for 3 RPC calls',
       },
       data: {
-        blockchain: blockchainResult.error
+        blockchain: blockchainResult?.error
           ? { error: blockchainResult.error.message, available: false }
           : {
-              ...blockchainResult.result,
+              ...(blockchainResult?.result || {}),
               available: true,
             },
-        network: networkResult.error
+        network: networkResult?.error
           ? { error: networkResult.error.message, available: false }
           : {
-              ...networkResult.result,
+              ...(networkResult?.result || {}),
               available: true,
             },
-        mining: miningResult.error
+        mining: miningResult?.error
           ? { error: miningResult.error.message, available: false }
           : {
-              ...miningResult.result,
+              ...(miningResult?.result || {}),
               available: true,
             },
       },

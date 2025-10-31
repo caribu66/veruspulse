@@ -148,7 +148,7 @@ export function sanitizeInput(input: string, maxLength: number = 1000): string {
         '"': '&quot;',
         "'": '&#x27;',
       };
-      return escapeMap[match];
+      return escapeMap[match] || match;
     })
     .substring(0, maxLength); // Limit length
 }

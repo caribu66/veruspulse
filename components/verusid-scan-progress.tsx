@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useTranslations } from 'next-intl';
 import {
   Loader2,
   CheckCircle,
@@ -35,6 +36,10 @@ export function VerusIDScanProgress({
   onComplete,
   onError,
 }: VerusIDScanProgressProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [progress, setProgress] = useState<ScanProgress>({
     status: 'idle',
     progress: 0,
@@ -180,7 +185,7 @@ export function VerusIDScanProgress({
             <div className="text-2xl font-bold text-purple-600">
               {progress.totalBlocks.toLocaleString()}
             </div>
-            <div className="text-sm text-gray-600">Total Blocks</div>
+            <div className="text-sm text-gray-600">{tBlocks("totalBlocks")}</div>
           </div>
 
           <div className="text-center">

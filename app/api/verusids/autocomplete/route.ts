@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 let dbPool: Pool | null = null;
@@ -15,7 +15,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     // Prioritize: exact match on name > starts with > contains
     const sqlQuery = `
       WITH ranked_results AS (
-        SELECT 
+        SELECT
           i.identity_address,
           i.base_name,
           i.friendly_name,
@@ -79,12 +79,12 @@ export async function GET(request: NextRequest) {
           END as rank
         FROM identities i
         LEFT JOIN verusid_statistics s ON i.identity_address = s.address
-        WHERE 
+        WHERE
           i.base_name ILIKE $2
           OR i.friendly_name ILIKE $2
           OR i.identity_address LIKE $1 || '%'
       )
-      SELECT 
+      SELECT
         identity_address,
         base_name,
         friendly_name,

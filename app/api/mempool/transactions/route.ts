@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     logger.info('🔍 Fetching mempool transactions...');
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     const limit = parseInt(searchParams.get('limit') || '100');
-    const verbose = searchParams.get('verbose') === 'true';
+    const _verbose = searchParams.get('verbose') === 'true';
 
     // Get raw mempool transactions with verbose details
     const rawMempool = await verusAPI.getRawMempool(true);

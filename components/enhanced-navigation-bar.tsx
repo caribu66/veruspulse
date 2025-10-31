@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import {
   ChartBar,
   MagnifyingGlass,
@@ -10,9 +11,11 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { MinimalPriceIndicator } from './minimal-price-indicator';
-import { ThemeToggleCompact } from './theme-toggle';
 import { ICON_SIZES, SPACING_UTILS } from '@/lib/constants/design-tokens';
 import { useTheme } from '@/contexts/theme-context';
+import { LanguageSwitcher } from './language-switcher';
+import { useLocale } from 'next-intl';
+import { useNavTranslations } from '@/lib/i18n/hooks';
 
 // Ultra-simplified navigation - consolidated to 3 core sections
 type ExplorerTab =
@@ -29,7 +32,13 @@ export function EnhancedNavigationBar({
   activeTab,
   onTabChange,
 }: EnhancedNavigationBarProps) {
+  const tCommon = useTranslations('common');
+  const tDashboard = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
   const { theme } = useTheme();
+  const locale = useLocale();
+  const t = useNavTranslations(); // Using typed hook
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Navigation items with icons and keyboard shortcuts
@@ -37,24 +46,24 @@ export function EnhancedNavigationBar({
     () => [
       {
         key: 'dashboard' as ExplorerTab,
-        label: 'Dashboard',
+        label: t('dashboard'),
         icon: ChartBar,
         shortcut: '⌥1',
       },
       {
         key: 'explorer' as ExplorerTab,
-        label: 'Search',
+        label: t('explorer'),
         icon: MagnifyingGlass,
         shortcut: '⌥2',
       },
       {
         key: 'verusids' as ExplorerTab,
-        label: 'VerusIDs',
+        label: t('verusids'),
         icon: UsersThree,
         shortcut: '⌥3',
       },
     ],
-    []
+    [t]
   );
 
   const handleTabChange = (tab: ExplorerTab) => {
@@ -127,7 +136,7 @@ export function EnhancedNavigationBar({
                   VerusPulse
                 </span>
                 <span className="text-[10px] text-gray-500 dark:text-gray-400 leading-none">
-                  Blockchain Explorer
+                  {t('blockchainExplorer')}
                 </span>
               </div>
             </div>
@@ -188,8 +197,10 @@ export function EnhancedNavigationBar({
               <MinimalPriceIndicator refreshInterval={10000} maxAssets={2} />
             </div>
 
-            {/* Theme Toggle */}
-            <ThemeToggleCompact />
+            {/* Language Switcher (Desktop) */}
+            <div className="hidden md:flex">
+              <LanguageSwitcher currentLocale={locale} />
+            </div>
 
             {/* Mobile Menu Button */}
             <button
@@ -215,6 +226,11 @@ export function EnhancedNavigationBar({
             {/* Mobile Price Indicator */}
             <div className="mb-3 pb-3 border-b border-slate-200 dark:border-slate-700">
               <MinimalPriceIndicator refreshInterval={10000} maxAssets={2} />
+            </div>
+
+            {/* Mobile Language Switcher */}
+            <div className="mb-3 pb-3 border-b border-slate-200 dark:border-slate-700">
+              <LanguageSwitcher currentLocale={locale} />
             </div>
 
             {/* Mobile Navigation */}

@@ -51,10 +51,9 @@ export class VerusZMQListener extends EventEmitter {
       // Dynamic import to avoid errors if zeromq not installed
       let zmq: any;
       try {
-        // @ts-ignore - zeromq is optional dependency
         zmq = await import('zeromq');
         this.zmqAvailable = true;
-      } catch (importError) {
+      } catch (_importError) {
         logger.warn('⚠️  ZMQ package not installed. Run: npm install zeromq');
         logger.info(
           '💡 ZMQ provides real-time updates but is optional. The app will work without it.'

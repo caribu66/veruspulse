@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   TrendUp,
   Fire,
@@ -23,6 +24,7 @@ import { logger } from '@/lib/utils/logger';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { TrendingItemSkeleton } from './skeleton-loader';
 import { sanitizeInput, validateRequestSize } from '@/lib/utils/validation';
+import { Tabs } from '@/components/ui/tabs';
 
 interface TrendingItem {
   id: string;
@@ -154,10 +156,10 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
 
         {/* Icon */}
         <div
-          className={`p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 group-hover:scale-105 transition-transform flex-shrink-0`}
+          className="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 group-hover:scale-105 transition-transform flex-shrink-0"
         >
           <Icon
-            className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-600 dark:text-slate-300`}
+            className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-600 dark:text-slate-300"
           />
         </div>
 
@@ -281,6 +283,11 @@ export function TrendingSection({
   autoRefresh = true,
   refreshInterval = 60000, // 1 minute
 }: TrendingSectionProps) {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [activeTab, setActiveTab] = useState<
     'all' | 'blocks' | 'verusids' | 'addresses'
   >('all');
@@ -543,49 +550,36 @@ export function TrendingSection({
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide pb-2">
-          {[
+        <Tabs
+          tabs={[
             {
-              key: 'all',
+              id: 'all',
               label: 'All Trending',
-              icon: TrendUp,
-              count: currentItems.length,
+              icon: <TrendUp className="h-4 w-4" />,
+              badge: currentItems.length,
             },
             {
-              key: 'blocks',
+              id: 'blocks',
               label: 'Blocks',
-              icon: Database,
-              count: trendingData.blocks.length,
+              icon: <Database className="h-4 w-4" />,
+              badge: trendingData.blocks.length,
             },
             {
-              key: 'verusids',
+              id: 'verusids',
               label: 'VerusIDs',
-              icon: UsersThree,
-              count: trendingData.verusids.length,
+              icon: <UsersThree className="h-4 w-4" />,
+              badge: trendingData.verusids.length,
             },
             {
-              key: 'addresses',
+              id: 'addresses',
               label: 'Addresses',
-              icon: Hash,
-              count: trendingData.addresses.length,
+              icon: <Hash className="h-4 w-4" />,
+              badge: trendingData.addresses.length,
             },
-          ].map(({ key, label, icon: Icon, count }) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key as any)}
-              className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all whitespace-nowrap text-xs sm:text-sm touch-manipulation ${
-                activeTab === key
-                  ? 'bg-gray-800 text-white shadow-md'
-                  : 'bg-white dark:bg-slate-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-600 hover:text-gray-900 dark:hover:text-white border border-slate-300 dark:border-slate-600'
-              }`}
-            >
-              <Icon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-              <span className="hidden sm:inline">{label}</span>
-              <span className="sm:hidden">{label.split(' ')[0]}</span>
-              <span className="text-xs opacity-75">({count})</span>
-            </button>
-          ))}
-        </div>
+          ]}
+          activeTab={activeTab}
+          onTabChange={tab => setActiveTab(tab as any)}
+        />
       </div>
 
       {/* Trending Items */}

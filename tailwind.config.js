@@ -128,19 +128,19 @@ module.exports = {
         96: '24rem', // 384px
       },
 
-      // Typography scale - Optimized for Poppins
+      // Typography scale - Optimized for readability
       fontSize: {
-        xs: ['0.75rem', { lineHeight: '1.1rem' }], // 12px
-        sm: ['0.875rem', { lineHeight: '1.3rem' }], // 14px
-        base: ['1rem', { lineHeight: '1.6rem' }], // 16px
-        lg: ['1.125rem', { lineHeight: '1.8rem' }], // 18px
-        xl: ['1.25rem', { lineHeight: '1.8rem' }], // 20px
-        '2xl': ['1.5rem', { lineHeight: '2.1rem' }], // 24px
-        '3xl': ['1.875rem', { lineHeight: '2.3rem' }], // 30px
-        '4xl': ['2.25rem', { lineHeight: '2.6rem' }], // 36px
-        '5xl': ['3rem', { lineHeight: '1.1' }], // 48px
-        '6xl': ['3.75rem', { lineHeight: '1.1' }], // 60px
-        '7xl': ['4.5rem', { lineHeight: '1.1' }], // 72px
+        xs: ['0.75rem', { lineHeight: '1.125rem' }], // 12px → 18px line height (1.5 ratio)
+        sm: ['0.875rem', { lineHeight: '1.313rem' }], // 14px → 21px line height (1.5 ratio)
+        base: ['1rem', { lineHeight: '1.6rem' }], // 16px → 25.6px line height (1.6 ratio)
+        lg: ['1.125rem', { lineHeight: '1.8rem' }], // 18px → 28.8px line height (1.6 ratio)
+        xl: ['1.25rem', { lineHeight: '2rem' }], // 20px → 32px line height (1.6 ratio)
+        '2xl': ['1.5rem', { lineHeight: '2.25rem' }], // 24px → 36px line height (1.5 ratio)
+        '3xl': ['1.875rem', { lineHeight: '2.625rem' }], // 30px → 42px line height (1.4 ratio)
+        '4xl': ['2.25rem', { lineHeight: '3.15rem' }], // 36px → 50.4px line height (1.4 ratio)
+        '5xl': ['3rem', { lineHeight: '3.6rem' }], // 48px → 57.6px line height (1.2 ratio)
+        '6xl': ['3.75rem', { lineHeight: '4.5rem' }], // 60px → 72px line height (1.2 ratio)
+        '7xl': ['4.5rem', { lineHeight: '5.4rem' }], // 72px → 86.4px line height (1.2 ratio)
       },
 
       // Font family configuration

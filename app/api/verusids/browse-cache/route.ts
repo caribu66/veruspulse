@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
 import { getCachedIdentity } from '@/lib/verusid-cache';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     logger.info('🔍 Fetching VerusIDs using cache system...');
 
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
       limitedIdentities.map(async (identity: any) => {
         try {
           // Get cached identity data (same as VerusID lookup)
-          const cachedData = await getCachedIdentity(
+          const _cachedData = await getCachedIdentity(
             identity.friendlyname || identity.identity?.name
           );
 

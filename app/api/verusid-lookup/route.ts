@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
@@ -8,10 +8,10 @@ import { getCachedIdentity, cacheIdentity } from '@/lib/verusid-cache';
 import { needsPriorityScan } from '@/lib/services/priority-verusid-scanner';
 import {
   validateVerusIDFormat,
-  autoCorrectVerusID,
+  // autoCorrectVerusID, // Unused
 } from '@/lib/utils/verusid-validation';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   const startTime = Date.now();
   let searchDb: SearchDatabaseService | null = null;
   let identity: string | undefined = undefined;
@@ -65,11 +65,11 @@ export async function POST(request: NextRequest) {
 
     // Try cache first to avoid RPC call
     let cachedIdentity = null;
-    let wasCached = false;
+    let _wasCached = false;
     try {
       cachedIdentity = await getCachedIdentity(identity);
       if (cachedIdentity) {
-        wasCached = true;
+        _wasCached = true;
         enhancedLogger.info('CACHE', `Found cached identity for: ${identity}`);
       }
     } catch (error) {

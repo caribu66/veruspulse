@@ -6,29 +6,40 @@
  */
 
 /**
- * Icon Sizes - Consistent sizing based on text context
+ * Icon Sizes - Consistent sizing matched to text size
  * Use these constants for all icon sizing to maintain visual hierarchy
  *
+ * BEST PRACTICE: Icons should match the height of the text they accompany
+ * 
  * @example
  * ```tsx
  * import { ICON_SIZES } from '@/lib/constants/design-tokens';
- * <Search className={ICON_SIZES.md} />
+ * 
+ * // With text-sm (14px)
+ * <button className="text-sm">
+ *   <Icon className={ICON_SIZES.sm} /> Button
+ * </button>
+ * 
+ * // With text-base (16px)
+ * <button className="text-base">
+ *   <Icon className={ICON_SIZES.md} /> Button
+ * </button>
  * ```
  */
 export const ICON_SIZES = {
-  /** 12px - Tiny indicators, badges */
+  /** 12px - For text-xs (12px) - badges, tiny indicators */
   xs: 'h-3 w-3',
-  /** 16px - Small text (12-14px), inline icons */
+  /** 16px - For text-sm (14px) and text-base (16px) - buttons, inline icons */
   sm: 'h-4 w-4',
-  /** 20px - Body text (16px), default size */
+  /** 20px - For text-lg (18px) and text-xl (20px) - default for most UI */
   md: 'h-5 w-5',
-  /** 24px - Headings (20-24px), prominent icons */
+  /** 24px - For text-2xl (24px) - headings, prominent icons */
   lg: 'h-6 w-6',
-  /** 32px - Large headings, featured icons */
+  /** 32px - For text-3xl (30px) and text-4xl (36px) - large headings */
   xl: 'h-8 w-8',
-  /** 48px - Hero sections, major features */
+  /** 48px - For text-5xl (48px) - hero sections, major features */
   '2xl': 'h-12 w-12',
-  /** 64px - Landing pages, major hero elements */
+  /** 64px - For text-6xl+ (60px+) - landing pages, major hero elements */
   '3xl': 'h-16 w-16',
 } as const;
 
@@ -310,19 +321,21 @@ export const SPACING_UTILS = {
  */
 export const HOVER_PATTERNS = {
   /** Standard card hover - subtle border and background change */
-  card: 'hover:border-slate-600/50 hover:bg-slate-700/30',
+  card: 'hover:border-slate-600/50 hover:bg-slate-700/30 transition-all duration-200',
   /** Card hover with brand accent - blue border highlight */
-  cardAccent: 'hover:border-verus-blue/60 hover:bg-slate-700/30',
+  cardAccent: 'hover:border-verus-blue/60 hover:bg-slate-700/30 transition-all duration-200',
   /** Button hover - scale effect for interactivity */
-  button: 'hover:scale-[1.02] active:scale-[0.98]',
+  button: 'hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200',
+  /** Icon hover - subtle scale for feedback */
+  icon: 'hover:scale-110 active:scale-95 transition-transform duration-200',
   /** Background hover only - for clickable backgrounds */
-  background: 'hover:bg-slate-700/50',
+  background: 'hover:bg-slate-700/50 transition-colors duration-200',
   /** Border hover only - for subtle interactions */
-  border: 'hover:border-slate-600/50',
+  border: 'hover:border-slate-600/50 transition-colors duration-200',
   /** Group hover - for revealing elements on parent hover */
-  groupReveal: 'group-hover:opacity-100 opacity-0 transition-opacity',
+  groupReveal: 'group-hover:opacity-100 opacity-0 transition-opacity duration-200',
   /** Interactive element - combination of background and border */
-  interactive: 'hover:bg-slate-700/30 hover:border-slate-600/40',
+  interactive: 'hover:bg-slate-700/30 hover:border-slate-600/40 transition-all duration-200',
 } as const;
 
 /**

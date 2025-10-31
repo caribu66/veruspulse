@@ -160,7 +160,7 @@ export class BlockRewardTracker {
         ? Math.min(nextReward.height - 1, endHeight)
         : endHeight;
 
-      if (currentHeight <= periodEndHeight) {
+      if (currentHeight <= periodEndHeight && currentReward) {
         const blocksInPeriod = periodEndHeight - currentHeight + 1;
         totalReward += currentReward.reward * blocksInPeriod;
         totalBlocks += blocksInPeriod;
@@ -206,7 +206,7 @@ export class BlockRewardTracker {
         ? Math.min(nextReward.height - 1, endHeight)
         : endHeight;
 
-      if (currentHeight <= periodEndHeight) {
+      if (currentHeight <= periodEndHeight && currentReward) {
         const blocksInPeriod = periodEndHeight - currentHeight + 1;
         const periodReward = currentReward.reward * blocksInPeriod;
 

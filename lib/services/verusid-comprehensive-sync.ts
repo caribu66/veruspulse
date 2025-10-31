@@ -143,13 +143,13 @@ export class VerusIDComprehensiveSync {
 
     try {
       // Fetch all active VerusIDs
-      console.log('Fetching all active VerusIDs...');
+      console.info('Fetching all active VerusIDs...');
       const identities = specificId
         ? [await verusAPI.getIdentity(specificId)]
         : await verusAPI.listIdentities();
 
       if (!identities || identities.length === 0) {
-        console.log('No identities found');
+        console.info('No identities found');
         this.progress.status = 'completed';
         return this.progress;
       }
@@ -162,14 +162,14 @@ export class VerusIDComprehensiveSync {
         })
         .filter(Boolean);
 
-      console.log(`Found ${addresses.length} VerusID addresses`);
+      console.info(`Found ${addresses.length} VerusID addresses`);
       this.progress.total = addresses.length;
 
       // If incremental, filter to only updated IDs
       let addressesToSync = addresses;
       if (incremental) {
         addressesToSync = await this.filterUpdatedAddresses(addresses);
-        console.log(
+        console.info(
           `Incremental mode: ${addressesToSync.length} addresses need updating`
         );
         this.progress.total = addressesToSync.length;
@@ -178,7 +178,7 @@ export class VerusIDComprehensiveSync {
       // Process in batches
       for (let i = 0; i < addressesToSync.length; i += batchSize) {
         if (this.shouldStop) {
-          console.log('Sync stopped by user');
+          console.info('Sync stopped by user');
           this.progress.status = 'idle';
           break;
         }
@@ -188,7 +188,7 @@ export class VerusIDComprehensiveSync {
         }
 
         const batch = addressesToSync.slice(i, i + batchSize);
-        console.log(
+        console.info(
           `\nProcessing batch ${Math.floor(i / batchSize) + 1} (${batch.length} addresses)...`
         );
 
@@ -214,10 +214,10 @@ export class VerusIDComprehensiveSync {
           this.progress.estimatedTimeRemaining = this.formatDuration(remaining);
         }
 
-        console.log(
+        console.info(
           `Progress: ${this.progress.processed}/${this.progress.total} (${this.progress.percentComplete.toFixed(1)}%)`
         );
-        console.log(
+        console.info(
           `ETA: ${this.progress.estimatedTimeRemaining || 'calculating...'}`
         );
 
@@ -226,7 +226,7 @@ export class VerusIDComprehensiveSync {
 
         // Delay between batches to avoid overwhelming the system
         if (i + batchSize < addressesToSync.length) {
-          console.log(
+          console.info(
             `Waiting ${delayBetweenBatches / 1000}s before next batch...`
           );
           await new Promise(resolve =>
@@ -236,14 +236,14 @@ export class VerusIDComprehensiveSync {
       }
 
       this.progress.status = 'completed';
-      console.log(
+      console.info(
         `\n✅ Sync completed: ${this.progress.processed} processed, ${this.progress.failed} failed`
       );
 
       if (this.progress.errors.length > 0) {
-        console.log(`\nErrors encountered:`);
+        console.info(`\nErrors encountered:`);
         this.progress.errors.forEach(err => {
-          console.log(`  - ${err.address}: ${err.error}`);
+          console.info(`  - ${err.address}: ${err.error}`);
         });
       }
     } catch (error: any) {
@@ -263,15 +263,15 @@ export class VerusIDComprehensiveSync {
    */
   private async syncSingleVerusID(address: string): Promise<void> {
     this.progress.current = address;
-    console.log(`  Syncing ${address}...`);
+    console.info(`  Syncing ${address}...`);
 
     try {
       // Step 1: Get all stake events for this address (from existing UTXO database)
-      console.log(`    [1/3] Fetching stake events from database...`);
+      console.info(`    [1/3] Fetching stake events from database...`);
       const stakeEvents = await this.utxoDb.getStakeEvents(address);
 
       // Step 2: Extract block analytics for each stake block
-      console.log(
+      console.info(
         `    [2/3] Extracting block analytics (${stakeEvents.length} blocks)...`
       );
       let blockAnalyticsExtracted = 0;
@@ -305,16 +305,16 @@ export class VerusIDComprehensiveSync {
           await new Promise(resolve => setTimeout(resolve, 100));
         }
       }
-      console.log(
+      console.info(
         `      Extracted ${blockAnalyticsExtracted} new block analytics`
       );
 
       // Step 3: Calculate comprehensive statistics
-      console.log(`    [3/3] Calculating statistics...`);
+      console.info(`    [3/3] Calculating statistics...`);
       const stats = await this.statsCalculator.calculateStats(address);
       await this.statsCalculator.storeStats(stats);
 
-      console.log(`  ✅ ${address} completed`);
+      console.info(`  ✅ ${address} completed`);
     } catch (error: any) {
       console.error(`  ❌ ${address} failed:`, error.message);
       this.progress.failed++;

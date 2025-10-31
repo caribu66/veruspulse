@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import {
   SecurityMonitor,
   securityMonitoringMiddleware,
@@ -9,14 +9,14 @@ import { addSecurityHeaders } from '@/lib/middleware/security';
  * Security monitoring API endpoint
  * Provides access to security events, metrics, and monitoring data
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   // Apply security monitoring middleware
-  const securityCheck = securityMonitoringMiddleware(request);
+  const securityCheck = securityMonitoringMiddleware(_request);
   if (securityCheck) return securityCheck;
 
   try {
     const monitor = SecurityMonitor.getInstance();
-    const url = new URL(request.url);
+    const url = new URL(_request.url);
     const action = url.searchParams.get('action');
 
     switch (action) {
@@ -143,9 +143,9 @@ export async function GET(request: NextRequest) {
  * POST endpoint for manual security event logging
  * (For testing or manual incident reporting)
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const monitor = SecurityMonitor.getInstance();
 
     // Validate required fields

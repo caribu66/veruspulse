@@ -161,7 +161,7 @@ class ZMQBlockIndexer {
   /**
    * Invalidate relevant caches when new block arrives
    */
-  private async invalidateCaches(block: any) {
+  private async invalidateCaches(_block: any) {
     if ((redisClient as any)?.status !== 'ready') {
       return;
     }

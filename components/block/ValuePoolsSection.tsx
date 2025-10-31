@@ -2,13 +2,17 @@
 
 import { BlockDetailRow } from './BlockDetailRow';
 import { Database, TrendUp, TrendDown, Minus } from '@phosphor-icons/react';
-import { Block } from '@/lib/types/block-types';
+import { type Block } from '@/lib/types/block-types';
+import { useTranslations } from 'next-intl';
 
 interface ValuePoolsSectionProps {
   block: Block;
 }
 
-export function ValuePoolsSection({ block }: ValuePoolsSectionProps) {
+export function ValuePoolsSection({
+  block,
+}: ValuePoolsSectionProps) {
+  const tCommon = useTranslations('common');
   if (!block.valuePools || block.valuePools.length === 0) {
     return null;
   }

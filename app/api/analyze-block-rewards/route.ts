@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { dynamicBlockRewardAnalyzer } from '@/lib/services/dynamic-block-reward-analyzer';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     const sampleSize = parseInt(searchParams.get('samples') || '100');
     const forceRefresh = searchParams.get('refresh') === 'true';
 
@@ -41,12 +41,12 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { sampleSize = 100, forceRefresh = true } = body;
 
-    console.log(
+    console.info(
       `Triggering block reward analysis with ${sampleSize} samples...`
     );
 

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { VerusIDComprehensiveSync } from '@/lib/services/verusid-comprehensive-sync';
 
 // Global sync service instance
@@ -15,7 +15,7 @@ function getSyncService() {
  * POST: Start syncing a specific VerusID
  */
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -133,7 +133,7 @@ export async function POST(
  * GET: Check sync status for a specific VerusID
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {

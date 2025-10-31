@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { TrendUp, TrendDown, WifiHigh, WifiSlash } from '@phosphor-icons/react';
 import { logger } from '@/lib/utils/logger';
+import { useTranslations } from 'next-intl';
 
 interface LivePriceData {
   symbol: string;
@@ -27,6 +28,7 @@ export function MinimalPriceIndicator({
   refreshInterval = 10000, // 10 seconds for less frequent updates
   maxAssets = 3,
 }: MinimalPriceIndicatorProps) {
+  const tCommon = useTranslations('common');
   const [prices, setPrices] = useState<LivePriceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,8 +68,8 @@ export function MinimalPriceIndicator({
   }, [fetchLivePrices, refreshInterval]);
 
   const formatPrice = (price: number | null | undefined) => {
-    if (price == null || isNaN(price)) {
-      return '$-.--';
+    if (price == null || isNaN(price) || price === 0) {
+      return 'N/A';
     }
     if (price >= 1) {
       return `$${price.toFixed(2)}`;
@@ -117,10 +119,10 @@ export function MinimalPriceIndicator({
 
   if (error || prices.length === 0) {
     return (
-      <div className={`flex items-center space-x-2 ${className}`}>
-        <WifiSlash className="h-3 w-3 text-white/40" />
-        <span className="text-xs text-gray-600 dark:text-white/40">
-          Prices unavailable
+      <div className={`flex items-center space-x-2 ${className}`} title="Price data requires stablecoin bridges (USDC, DAI, etc.) on PBaaS chains">
+        <WifiSlash className="h-3 w-3 text-gray-500 dark:text-slate-500" />
+        <span className="text-xs text-gray-600 dark:text-slate-500">
+          Price N/A
         </span>
       </div>
     );
@@ -143,11 +145,13 @@ export function MinimalPriceIndicator({
         {prices.map((price, index) => {
           const isPositive = price.change24h != null && price.change24h > 0;
           const isNegative = price.change24h != null && price.change24h < 0;
+          const hasPrice = price.priceUSD != null && price.priceUSD > 0;
 
           return (
             <div
               key={price.symbol}
               className="flex items-center space-x-1.5 group"
+              title={!hasPrice ? `${price.symbol} price unavailable - awaiting stablecoin bridge data` : undefined}
             >
               {/* Symbol */}
               <span className="text-xs text-gray-600 dark:text-white/60 font-medium tracking-wide">
@@ -155,19 +159,21 @@ export function MinimalPriceIndicator({
               </span>
 
               {/* Price */}
-              <span className="text-sm text-gray-900 dark:text-white font-medium">
+              <span className={`text-sm font-medium ${hasPrice ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-slate-500'}`}>
                 {formatPrice(price.priceUSD)}
               </span>
 
-              {/* Change */}
-              <div
-                className={`flex items-center space-x-0.5 ${getChangeColor(price.change24h)}`}
-              >
-                {getChangeIcon(price.change24h)}
-                <span className="text-xs font-medium">
-                  {formatChange(price.change24h)}
-                </span>
-              </div>
+              {/* Change - only show if we have a price */}
+              {hasPrice && (
+                <div
+                  className={`flex items-center space-x-0.5 ${getChangeColor(price.change24h)}`}
+                >
+                  {getChangeIcon(price.change24h)}
+                  <span className="text-xs font-medium">
+                    {formatChange(price.change24h)}
+                  </span>
+                </div>
+              )}
 
               {/* Separator (except for last item) */}
               {index < prices.length - 1 && (

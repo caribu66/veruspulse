@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   CheckCircle,
   Pulse,
@@ -18,6 +19,8 @@ interface LoadingStep {
 }
 
 export function EnhancedLoadingScreen() {
+  const tCommon = useTranslations('common');
+
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [steps, setSteps] = useState<LoadingStep[]>([
@@ -67,14 +70,14 @@ export function EnhancedLoadingScreen() {
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <div className="relative">
-                <div className="w-16 h-16 border-4 border-blue-200/20 border-t-blue-400 rounded-full animate-spin"></div>
+                <div className="w-16 h-16 border-4 border-blue-200/20 border-t-blue-400 rounded-full animate-spin" />
                 <div
                   className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-purple-400 rounded-full animate-spin"
                   style={{
                     animationDirection: 'reverse',
                     animationDuration: '1.5s',
                   }}
-                ></div>
+                 />
               </div>
             </div>
 
@@ -136,7 +139,7 @@ export function EnhancedLoadingScreen() {
 
                 {index === currentStep && !step.completed && (
                   <div className="animate-pulse">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full" />
                   </div>
                 )}
               </div>
@@ -153,7 +156,7 @@ export function EnhancedLoadingScreen() {
               <div
                 className="bg-gradient-to-r from-verus-blue to-verus-green h-2 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${progress}%` }}
-              ></div>
+               />
             </div>
           </div>
 

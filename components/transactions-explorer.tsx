@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Pulse,
   Clock,
@@ -59,6 +60,11 @@ interface Transaction {
 }
 
 export function TransactionsExplorer() {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tStaking = useTranslations('staking');
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -156,7 +162,7 @@ export function TransactionsExplorer() {
   if (loading && transactions.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
         <span className="ml-3 text-slate-300">Loading transactions...</span>
       </div>
     );
@@ -168,7 +174,7 @@ export function TransactionsExplorer() {
         <div className="flex items-center space-x-3">
           <WarningCircle className="h-5 w-5 text-slate-300" />
           <div>
-            <div className="text-slate-300 font-semibold">Error</div>
+            <div className="text-slate-300 font-semibold">{tCommon("error")}</div>
             <div className="text-slate-400 text-sm">{error}</div>
           </div>
         </div>
@@ -319,7 +325,7 @@ export function TransactionsExplorer() {
                   </div>
 
                   <div>
-                    <div className="text-slate-300 mb-1">Size</div>
+                    <div className="text-slate-300 mb-1">{tBlocks("size")}</div>
                     <div className="text-white">{formatFileSize(tx.size)}</div>
                   </div>
 
@@ -442,7 +448,7 @@ export function TransactionsExplorer() {
               className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowRight className="h-4 w-4 rotate-180" />
-              <span>Previous</span>
+              <span>{tCommon("previous")}</span>
             </button>
 
             <div className="text-slate-300 text-sm">
@@ -456,7 +462,7 @@ export function TransactionsExplorer() {
               disabled={currentPage >= totalPages - 1}
               className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span>Next</span>
+              <span>{tCommon("next")}</span>
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { MagnifyingGlass, Clock } from '@phosphor-icons/react';
+import { useTranslations } from 'next-intl';
 import {
   Card,
   CardHeader,
@@ -27,6 +28,8 @@ export function VerusIDSearchBar({
   initialValue = '',
   showRecentSearches = true,
 }: VerusIDSearchBarProps) {
+  const tCommon = useTranslations('common');
+  const tVerusId = useTranslations('verusid');
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
   // Load recent searches from localStorage
@@ -70,7 +73,7 @@ export function VerusIDSearchBar({
       <CardHeader>
         <CardTitle as="h2">Find a VerusID</CardTitle>
         <CardDescription>
-          Search by name (e.g., Joanna@) or I-address
+          Search by name (e.g., VerusPulse@) or I-address
         </CardDescription>
       </CardHeader>
       <CardContent>

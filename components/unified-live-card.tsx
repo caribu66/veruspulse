@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Hash,
   Clock,
@@ -96,7 +97,14 @@ interface UnifiedLiveCardProps {
   className?: string;
 }
 
-export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
+export function UnifiedLiveCard({
+  className = '',
+}: UnifiedLiveCardProps) {
+  const tCommon = useTranslations('common');
+  const tTime = useTranslations('time');
+  const tBlocks = useTranslations('blocks');
+  const tNetwork = useTranslations('network');
+  const tStaking = useTranslations('staking');
   // Tab state
   const [activeTab, setActiveTab] = useState<'blocks' | 'mempool'>('blocks');
 
@@ -469,7 +477,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
             <div className="text-blue-200 text-sm">
               {currentLastUpdate
                 ? `Updated ${formatTime(Math.floor(currentLastUpdate.getTime() / 1000))}`
-                : 'Loading...'}
+                : tCommon("loading")}
               {activeTab === 'blocks' && syncStatus && !syncStatus.isSynced && (
                 <div className="text-blue-400 text-xs mt-1">
                   ⚠️ Blockchain syncing: {syncStatus.syncPercentage}%
@@ -701,7 +709,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
           className="flex items-center justify-center space-x-2 text-verus-blue hover:text-verus-blue-light transition-all duration-300 ease-in-out group hover:scale-105"
         >
           <span className="text-sm font-medium transition-all duration-300 ease-in-out">
-            Search {activeTab === 'blocks' ? 'Blocks' : 'Transactions'}
+            Search {activeTab === 'blocks' ? 'Blocks' : tBlocks("transactions")}
           </span>
           <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-all duration-300 ease-in-out" />
         </Link>
@@ -739,17 +747,17 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                     </div>
                   </div>
                   <div>
-                    <div className="text-blue-200 text-sm">Size</div>
+                    <div className="text-blue-200 text-sm">{tBlocks("size")}</div>
                     <div className="text-white">
                       {formatSize(selectedBlock.size)}
                     </div>
                   </div>
                   <div>
-                    <div className="text-blue-200 text-sm">Transactions</div>
+                    <div className="text-blue-200 text-sm">{tBlocks("transactions")}</div>
                     <div className="text-white">{selectedBlock.nTx}</div>
                   </div>
                   <div>
-                    <div className="text-blue-200 text-sm">Difficulty</div>
+                    <div className="text-blue-200 text-sm">{tBlocks("difficulty")}</div>
                     <div className="text-white">
                       {formatDifficulty(selectedBlock.difficulty)}
                     </div>
@@ -816,7 +824,7 @@ export function UnifiedLiveCard({ className = '' }: UnifiedLiveCardProps) {
                     </div>
                   </div>
                   <div>
-                    <div className="text-blue-200 text-sm">Size</div>
+                    <div className="text-blue-200 text-sm">{tBlocks("size")}</div>
                     <div className="text-white">
                       {formatFileSize(selectedTransaction.size)}
                     </div>

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
-import { addSecurityHeaders } from '@/lib/middleware/security';
+// import { addSecurityHeaders } from '@/lib/middleware/security'; // Unused
 import { logger } from '@/lib/utils/logger';
 
 let dbPool: Pool | null = null;
@@ -17,7 +17,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -54,12 +54,12 @@ export async function GET(request: NextRequest) {
 
     // Build search condition - FIXED the parameter issue
     let searchCondition = '';
-    let queryParams: any[] = [limit, offset];
+    const queryParams: any[] = [limit, offset];
 
     if (search) {
       searchCondition = `WHERE (
-        i.base_name ILIKE $3 
-        OR i.friendly_name ILIKE $3 
+        i.base_name ILIKE $3
+        OR i.friendly_name ILIKE $3
         OR i.identity_address ILIKE $3
       )`;
       queryParams.push(`%${search}%`);
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
 
     // Main query with left join to staking stats
     const query = `
-      SELECT 
+      SELECT
         i.identity_address,
         i.base_name,
         i.friendly_name,
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
 
     // Get total count for pagination - FIXED the parameter issue
     const countQuery = `
-      SELECT COUNT(*) as total 
+      SELECT COUNT(*) as total
       FROM identities i
       ${searchCondition}
     `;

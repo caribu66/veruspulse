@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { type Pool } from 'pg';
 
 export class TrendCalculationService {
   private db: Pool;
@@ -12,7 +12,7 @@ export class TrendCalculationService {
    */
   async calculateAllTrends(): Promise<void> {
     try {
-      console.log('Starting trend calculation for all VerusIDs...');
+      console.info('Starting trend calculation for all VerusIDs...');
 
       // Get all VerusIDs with recent staking activity (direct I-address stakes only)
       const verusidsQuery = `
@@ -26,7 +26,7 @@ export class TrendCalculationService {
       const result = await this.db.query(verusidsQuery);
       const verusids = result.rows.map(row => row.identity_address);
 
-      console.log(`Found ${verusids.length} VerusIDs with recent activity`);
+      console.info(`Found ${verusids.length} VerusIDs with recent activity`);
 
       // Calculate trends for each VerusID
       for (const address of verusids) {
@@ -37,7 +37,7 @@ export class TrendCalculationService {
         }
       }
 
-      console.log('Trend calculation completed for all VerusIDs');
+      console.info('Trend calculation completed for all VerusIDs');
     } catch (error) {
       console.error('Error in calculateAllTrends:', error);
       throw error;
@@ -114,7 +114,7 @@ export class TrendCalculationService {
     const result = await this.db.query(query);
     const staleAddresses = result.rows.map(row => row.identity_address);
 
-    console.log(
+    console.info(
       `Found ${staleAddresses.length} VerusIDs with stale trend data`
     );
 

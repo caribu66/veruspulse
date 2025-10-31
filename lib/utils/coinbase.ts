@@ -75,7 +75,7 @@ export function extractCoinbasePayout(tx: Transaction): CoinbaseResult {
     }
   } else {
     // Transparent output
-    result.payoutAddress = largestOutput.scriptPubKey.addresses[0];
+    result.payoutAddress = largestOutput.scriptPubKey.addresses[0] ?? null;
     result.isShielded = false;
 
     // Determine miner type based on address patterns or script type

@@ -130,13 +130,13 @@ export default function APYQualityPage() {
       <div className="min-h-screen theme-bg-primary p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-white/10 rounded w-64"></div>
+            <div className="h-8 bg-white/10 rounded w-64" />
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-white/5 rounded-xl"></div>
+                <div key={i} className="h-32 bg-white/5 rounded-xl" />
               ))}
             </div>
-            <div className="h-96 bg-white/5 rounded-xl"></div>
+            <div className="h-96 bg-white/5 rounded-xl" />
           </div>
         </div>
       </div>
@@ -286,7 +286,7 @@ export default function APYQualityPage() {
                     style={{
                       width: `${(stats.stakesWithAmounts / stats.totalStakes) * 100}%`,
                     }}
-                  ></div>
+                   />
                 </div>
                 <div className="text-xs text-gray-400">
                   {(

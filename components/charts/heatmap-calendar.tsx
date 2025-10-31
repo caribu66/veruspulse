@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface HeatmapCalendarProps {
   data: Array<{ date: string; value: number }>; // date in YYYY-MM-DD format
@@ -19,6 +20,8 @@ export function HeatmapCalendar({
   gap = 2,
   className = '',
 }: HeatmapCalendarProps) {
+  const tCommon = useTranslations('common');
+  const tStaking = useTranslations('staking');
   const { grid, maxValue, monthLabels } = useMemo(() => {
     // Default to last 365 days if no dates provided
     const end = endDate || new Date();

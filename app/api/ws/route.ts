@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
 
 // WebSocket handler for real-time updates
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   // Check if this is a WebSocket upgrade request
-  const upgrade = request.headers.get('upgrade');
+  const upgrade = _request.headers.get('upgrade');
 
   if (upgrade !== 'websocket') {
     return new Response('Expected WebSocket upgrade', { status: 426 });
@@ -23,8 +23,8 @@ export async function GET(request: NextRequest) {
 }
 
 // Alternative: Server-Sent Events (SSE) implementation
-export async function POST(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+export async function POST(_request: NextRequest) {
+  const { searchParams } = new URL(_request.url);
   const type = searchParams.get('type') || 'all';
 
   // Create a readable stream for Server-Sent Events
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       }, 5000); // Update every 5 seconds
 
       // Cleanup on close
-      request.signal.addEventListener('abort', () => {
+      _request.signal.addEventListener('abort', () => {
         clearInterval(interval);
         controller.close();
       });

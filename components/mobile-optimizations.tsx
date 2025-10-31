@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 
 // Mobile-specific optimizations hook
 export function useMobileOptimizations() {
@@ -48,21 +50,25 @@ export function MobileLoadingSpinner({
   size?: 'small' | 'medium' | 'large';
 }) {
   const { isMobile } = useMobileOptimizations();
+  const tCommon = useTranslations('common');
 
   const sizeClasses = {
     small: 'h-6 w-6',
     medium: isMobile ? 'h-8 w-8' : 'h-12 w-12',
     large: isMobile ? 'h-12 w-12' : 'h-16 w-16',
-  };
+  } as const;
 
   return (
     <div className="flex items-center justify-center p-4">
       <div
-        className={`animate-spin rounded-full border-b-2 border-blue-500 ${sizeClasses[size]}`}
+        className={cn(
+          'animate-spin rounded-full border-b-2 border-blue-500',
+          sizeClasses[size]
+        )}
         role="status"
-        aria-label="Loading"
+        aria-label={tCommon("loading")}
       >
-        <span className="sr-only">Loading...</span>
+        <span className="sr-only">{tCommon("loading")}</span>
       </div>
     </div>
   );
@@ -74,23 +80,21 @@ export function MobileCard({
   className = '',
   onClick,
   ...props
-}: {
+}: React.HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
   className?: string;
-  onClick?: () => void;
-  [key: string]: any;
 }) {
   const { isMobile, isTouchDevice } = useMobileOptimizations();
 
   return (
     <div
-      className={`
-        theme-card rounded-xl p-4 transition-all duration-200
-        ${isMobile ? 'p-3' : 'p-6'}
-        ${onClick ? 'cursor-pointer hover:scale-[1.02] active:scale-[0.98]' : ''}
-        ${isTouchDevice ? 'touch-manipulation' : ''}
-        ${className}
-      `}
+      className={cn(
+        'theme-card rounded-xl transition-all duration-200',
+        isMobile ? 'p-3' : 'p-6',
+        onClick && 'cursor-pointer hover:scale-[1.02] active:scale-[0.98]',
+        isTouchDevice && 'touch-manipulation',
+        className
+      )}
       onClick={onClick}
       {...props}
     >
@@ -108,14 +112,10 @@ export function MobileButton({
   onClick,
   disabled = false,
   ...props
-}: {
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'ghost';
   size?: 'small' | 'medium' | 'large';
-  className?: string;
-  onClick?: () => void;
-  disabled?: boolean;
-  [key: string]: any;
 }) {
   const { isMobile, isTouchDevice } = useMobileOptimizations();
 
@@ -123,25 +123,25 @@ export function MobileButton({
     primary: 'theme-button',
     secondary: 'bg-white/10 hover:bg-white/20 text-white',
     ghost: 'bg-transparent hover:bg-white/10 text-white',
-  };
+  } as const;
 
   const sizeClasses = {
     small: isMobile ? 'px-3 py-1.5 text-sm' : 'px-4 py-2 text-sm',
     medium: isMobile ? 'px-4 py-2 text-sm' : 'px-6 py-3 text-base',
     large: isMobile ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg',
-  };
+  } as const;
 
   return (
     <button
-      className={`
-        inline-flex items-center justify-center rounded-lg font-medium
-        transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50
-        ${variantClasses[variant]}
-        ${sizeClasses[size]}
-        ${isTouchDevice ? 'touch-manipulation' : ''}
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'}
-        ${className}
-      `}
+      className={cn(
+        'inline-flex items-center justify-center rounded-lg font-medium',
+        'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50',
+        variantClasses[variant],
+        sizeClasses[size],
+        isTouchDevice && 'touch-manipulation',
+        disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95',
+        className
+      )}
       onClick={onClick}
       disabled={disabled}
       {...props}
@@ -165,19 +165,14 @@ export function MobileGrid({
 }) {
   const { isMobile } = useMobileOptimizations();
 
-  const getGridCols = () => {
-    if (isMobile) {
-      return cols === 1 ? 'grid-cols-1' : 'grid-cols-2';
-    }
-    return `grid-cols-${cols}`;
-  };
+  const gridCols = isMobile
+    ? cols === 1 ? 'grid-cols-1' : 'grid-cols-2'
+    : `grid-cols-${cols}`;
 
-  const getGap = () => {
-    return isMobile ? 'gap-3' : `gap-${gap}`;
-  };
+  const gridGap = isMobile ? 'gap-3' : `gap-${gap}`;
 
   return (
-    <div className={`grid ${getGridCols()} ${getGap()} ${className}`}>
+    <div className={cn('grid', gridCols, gridGap, className)}>
       {children}
     </div>
   );
@@ -225,7 +220,7 @@ export function MobileText({
 
   return (
     <span
-      className={`theme-text-primary ${getSizeClass()} ${getWeightClass()} ${className}`}
+      className={cn('theme-text-primary', getSizeClass(), getWeightClass(), className)}
     >
       {children}
     </span>

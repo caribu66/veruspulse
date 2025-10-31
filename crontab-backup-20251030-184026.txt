@@ -1,0 +1,13 @@
+
+0 0 * * * cd /home/explorer/verus-dapp && node scripts/cleanup-history.js >> logs/cleanup-history.log 2>&1
+0 */6 * * * cd /home/explorer/verus-dapp && node scripts/recalculate-all-stats.js >> ~/logs/apy-calc.log 2>&1
+0 */6 * * * cd /home/explorer/verus-dapp && node scripts/update-refresh-dates.js >> logs/refresh-dates-update.log 2>&1
+0 * * * * cd /home/explorer/verus-dapp && node scripts/calculate-trending-scores.js >> logs/trending-scores.log 2>&1
+0 * * * * /home/explorer/verus-dapp/scripts/cron-update-new-stakes.sh >> ~/logs/stake-update.log 2>&1
+*/15 * * * * /home/explorer/verus-dapp/scripts/cron-update-last-stake.sh
+*/30 * * * * /home/explorer/verus-dapp/scripts/generate-dashboard.sh >> /home/explorer/verus-dapp/logs/dashboard-updates.log 2>&1
+# Calculate trending scores every hour
+# Clean up old history daily at midnight
+# Recalculate APY statistics (every 6 hours)
+# Update refresh dates for VerusIDs with recent activity every 6 hours
+# VerusPulse Oink's Method Autonomous Scanner System

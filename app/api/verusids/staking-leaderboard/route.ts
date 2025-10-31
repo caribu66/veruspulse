@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 let dbPool: Pool | null = null;
@@ -15,7 +15,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     }
 
     const query = `
-      SELECT 
+      SELECT
         vs.address,
         COALESCE(i.friendly_name, i.base_name || '.VRSC@', vs.address) as friendly_name,
         vs.total_stakes,
@@ -92,14 +92,14 @@ export async function GET(request: NextRequest) {
       LEFT JOIN verusid_trend_metrics tm ON vs.address = tm.verusid_address
       -- Get actual latest stake time from staking_rewards table
       LEFT JOIN (
-        SELECT 
+        SELECT
           identity_address,
           MAX(block_time) as last_stake_time
         FROM staking_rewards
         GROUP BY identity_address
       ) sr_latest ON vs.address = sr_latest.identity_address
       LEFT JOIN (
-        SELECT 
+        SELECT
           verusid_address,
           SUM(total_views) as total_views
         FROM verusid_daily_views
@@ -145,14 +145,14 @@ export async function GET(request: NextRequest) {
 
     // Get total count for pagination (only active stakers)
     const countResult = await db.query(
-      `SELECT COUNT(*) as total 
+      `SELECT COUNT(*) as total
        FROM verusid_statistics vs
        LEFT JOIN (
          SELECT identity_address, MAX(block_time) as last_stake_time
          FROM staking_rewards
          GROUP BY identity_address
        ) sr_latest ON vs.address = sr_latest.identity_address
-       WHERE vs.total_stakes >= $1 
+       WHERE vs.total_stakes >= $1
          AND sr_latest.last_stake_time IS NOT NULL
          AND sr_latest.last_stake_time >= NOW() - INTERVAL '30 days'`,
       [minStakes]

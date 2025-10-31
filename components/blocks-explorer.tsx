@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 import {
   Database,
@@ -22,6 +24,7 @@ import {
   ArrowsDownUp,
   TrendUp,
   TrendDown,
+  Scales,
 } from '@phosphor-icons/react';
 import {
   formatFriendlyNumber,
@@ -122,6 +125,10 @@ type SortDirection = 'asc' | 'desc';
 type FilterType = 'all' | 'pow' | 'pos';
 
 export function BlocksExplorer() {
+  const t = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tCommon = useTranslations('common');
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addToHistory } = useNavigationHistory();
@@ -481,7 +488,7 @@ export function BlocksExplorer() {
   if (loading && blocks.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
         <span className="ml-3 text-slate-300">Loading blocks...</span>
       </div>
     );
@@ -536,14 +543,14 @@ export function BlocksExplorer() {
 
         <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-slate-500/20">
-              <Hash className="h-5 w-5 text-slate-200" />
+            <div className="p-2 rounded-lg bg-purple-500/20">
+              <Scales className="h-5 w-5 text-purple-500 dark:text-purple-400" />
             </div>
             <div>
               <div className="text-gray-900 dark:text-white font-semibold">
                 Average Size
               </div>
-              <div className="text-slate-300 text-sm">
+              <div className="text-slate-600 dark:text-slate-300 text-sm">
                 {blocks.length > 0
                   ? formatFileSize(
                       blocks.reduce((sum, block) => sum + block.size, 0) /
@@ -617,7 +624,7 @@ export function BlocksExplorer() {
       <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-6 border border-slate-300 dark:border-slate-700">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
           <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
-            Recent Blocks
+            {t('recentBlocks')}
           </h3>
 
           {/* Controls */}
@@ -630,9 +637,9 @@ export function BlocksExplorer() {
                 onChange={e => setFilterType(e.target.value as FilterType)}
                 className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-sm text-gray-900 dark:text-white"
               >
-                <option value="all">All Blocks</option>
-                <option value="pow">PoW Only</option>
-                <option value="pos">PoS Only</option>
+                <option value="all">{t('allBlocks')}</option>
+                <option value="pow">{t('powOnly')}</option>
+                <option value="pos">{t('posOnly')}</option>
               </select>
             </div>
 
@@ -644,11 +651,11 @@ export function BlocksExplorer() {
                 onChange={e => setSortField(e.target.value as SortField)}
                 className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-sm text-gray-900 dark:text-white"
               >
-                <option value="height">Height</option>
-                <option value="time">Time</option>
-                <option value="size">Size</option>
-                <option value="nTx">Transactions</option>
-                <option value="reward">Reward</option>
+                <option value="height">{tBlocks('blockHeight')}</option>
+                <option value="time">{tCommon('time')}</option>
+                <option value="size">{tBlocks('size')}</option>
+                <option value="nTx">{tBlocks('transactions')}</option>
+                <option value="reward">{tBlocks('reward')}</option>
               </select>
               <button
                 onClick={() =>
@@ -715,7 +722,7 @@ export function BlocksExplorer() {
                     ? sortedBlocks[index + 1]
                     : null;
                 const temporalMetrics = calculateTemporalMetrics(
-                  block,
+                  block ?? null,
                   previousBlock
                 );
 
@@ -724,11 +731,8 @@ export function BlocksExplorer() {
                     key={`blocks-explorer-${block.hash}`}
                     className="bg-white dark:bg-slate-800 rounded-lg p-4 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60"
                     onClick={() => {
-                      // Add current page to navigation history before navigating
-                      const currentUrl =
-                        window.location.pathname + window.location.search;
-                      addToHistory(currentUrl);
-                      router.push(`/block/${block.hash}`);
+                      // Open block details in new tab
+                      window.open(`/block/${block.hash}`, '_blank', 'noopener,noreferrer');
                     }}
                   >
                     <div className="flex items-center justify-between mb-3">
@@ -813,30 +817,30 @@ export function BlocksExplorer() {
                                 `height-${index}`
                               );
                             }}
-                            className="flex items-center space-x-1 px-2 py-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
+                            className="flex items-center space-x-1 px-2 py-1.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
                             title="Copy Height"
                           >
                             {copied === `height-${index}` ? (
-                              <Check className="h-3 w-3" />
+                              <Check className="h-4 w-4 text-green-500" />
                             ) : (
-                              <Copy className="h-3 w-3" />
+                              <Copy className="h-4 w-4" />
                             )}
-                            <span className="text-xs">H</span>
+                            <span className="text-xs font-medium">Height</span>
                           </button>
                           <button
                             onClick={e => {
                               e.stopPropagation();
                               copyToClipboard(block.hash, `hash-${index}`);
                             }}
-                            className="flex items-center space-x-1 px-2 py-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
+                            className="flex items-center space-x-1 px-2 py-1.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
                             title="Copy Hash"
                           >
                             {copied === `hash-${index}` ? (
-                              <Check className="h-3 w-3" />
+                              <Check className="h-4 w-4 text-green-500" />
                             ) : (
-                              <Copy className="h-3 w-3" />
+                              <Copy className="h-4 w-4" />
                             )}
-                            <span className="text-xs">Hash</span>
+                            <span className="text-xs font-medium">Hash</span>
                           </button>
                         </div>
                       </div>
@@ -1092,12 +1096,17 @@ export function BlocksExplorer() {
                                     key={idx}
                                     className="flex items-center space-x-1"
                                   >
-                                    <span className="text-white font-mono">
+                                    <Link
+                                      href={`/address/${recipient.addr}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-400 hover:underline font-mono"
+                                    >
                                       {recipient.addr.substring(0, 8)}...
                                       {recipient.addr.substring(
                                         recipient.addr.length - 4
                                       )}
-                                    </span>
+                                    </Link>
                                     <span className="text-slate-200">
                                       ({recipient.value.toFixed(2)} VRSC)
                                     </span>

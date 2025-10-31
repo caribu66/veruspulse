@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Pulse,
   CheckCircle,
@@ -34,6 +35,9 @@ export function VerusIDSyncStatus({
   refreshInterval = 5000,
   currentVerusID,
 }: VerusIDSyncStatusProps) {
+  const tCommon = useTranslations('common');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [progress, setProgress] = useState<SyncProgress | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -140,7 +144,7 @@ export function VerusIDSyncStatus({
         color: 'text-gray-400',
         bgColor: 'bg-gray-500/20',
         borderColor: 'border-gray-500/30',
-        label: checkingVerusID ? 'Checking VerusID...' : 'Loading...',
+        label: checkingVerusID ? 'Checking VerusID...' : tCommon("loading"),
         pulse: true,
       };
     }
@@ -204,7 +208,7 @@ export function VerusIDSyncStatus({
           color: 'text-red-400',
           bgColor: 'bg-red-500/20',
           borderColor: 'border-red-500/30',
-          label: 'Error',
+          label: tCommon("error"),
           pulse: false,
         };
       default: // idle

@@ -23,6 +23,77 @@ interface VRSCPriceSource {
 }
 
 /**
+ * Fetches VRSC price in USD from Bridge.vETH basket with DAI
+ * Bridge.vETH contains both VRSC and DAI.vETH reserves
+ * We can calculate: 1 VRSC = (DAI price in basket / VRSC price in basket) * $1
+ */
+async function getVRSCPriceFromBridgeVETH(): Promise<{
+  price: number;
+  sources: VRSCPriceSource[];
+} | null> {
+  try {
+    logger.info('🔍 Fetching VRSC price from Bridge.vETH basket...');
+    
+    const bridgeVethResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/bridge-veth-price`
+    );
+
+    if (!bridgeVethResponse.ok) {
+      logger.warn('Bridge.vETH API not available');
+      return null;
+    }
+
+    const bridgeData = await bridgeVethResponse.json();
+    if (!bridgeData.success || !bridgeData.data.allReserves) {
+      logger.warn('Invalid Bridge.vETH response');
+      return null;
+    }
+
+    const reserves = bridgeData.data.allReserves;
+    
+    // Find VRSC reserve
+    const vrscReserve = reserves.find((r: any) => 
+      r.currencyId === 'i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV'
+    );
+    
+    // Find DAI reserve (iGBs4DWztRNvNEJBt4mqHszLxfKTNHTkhM is DAI.vETH)
+    const daiReserve = reserves.find((r: any) => 
+      r.currencyId === 'iGBs4DWztRNvNEJBt4mqHszLxfKTNHTkhM'
+    );
+
+    if (!vrscReserve || !daiReserve) {
+      logger.warn('VRSC or DAI reserve not found in Bridge.vETH');
+      logger.info('Available reserves:', reserves.map((r: any) => r.currencyId));
+      return null;
+    }
+
+    // Calculate VRSC price in USD
+    // If 1 Bridge.vETH = 9.01 VRSC and 1 Bridge.vETH = 13.45 DAI
+    // Then 1 VRSC = 13.45 / 9.01 DAI ≈ $1.49 USD (assuming DAI = $1)
+    const vrscPriceInDAI = daiReserve.priceInReserve / vrscReserve.priceInReserve;
+    const vrscPriceUSD = vrscPriceInDAI; // DAI ≈ $1 USD
+
+    logger.info(`✅ VRSC Price from Bridge.vETH: $${vrscPriceUSD.toFixed(4)} USD`);
+    logger.info(`   Bridge.vETH = ${vrscReserve.priceInReserve.toFixed(4)} VRSC`);
+    logger.info(`   Bridge.vETH = ${daiReserve.priceInReserve.toFixed(4)} DAI`);
+    logger.info(`   Therefore: 1 VRSC = ${vrscPriceInDAI.toFixed(4)} DAI ≈ $${vrscPriceUSD.toFixed(4)} USD`);
+
+    return {
+      price: vrscPriceUSD,
+      sources: [{
+        basketName: 'Bridge.vETH (DAI)',
+        priceUSD: vrscPriceUSD,
+        liquidity: vrscReserve.reserves,
+        method: 'basket',
+      }],
+    };
+  } catch (error) {
+    logger.error('Failed to fetch VRSC price from Bridge.vETH:', error);
+    return null;
+  }
+}
+
+/**
  * Fetches VRSC price in USD from PBaaS basket currencies containing stablecoins
  * Uses method similar to cryptodashboard.faldt.net:
  * - Finds baskets with both VRSC and USD stablecoins (USDC, DAI, USDT, etc.)
@@ -63,9 +134,12 @@ async function getVRSCPriceFromPBaaS(): Promise<{
     // Find all baskets with stablecoins to derive VRSC price
     for (const chain of pbaasData.data.chains) {
       const chainName = chain.name?.toUpperCase();
+      const fullName = chain.fullyQualifiedName?.toUpperCase();
 
-      // Check if this is a stablecoin
-      const stablecoin = usdStablecoins.find(s => chainName?.includes(s));
+      // Check if this is a stablecoin (check both name and full name)
+      const stablecoin = usdStablecoins.find(s => 
+        chainName?.includes(s) || fullName?.includes(s)
+      );
       if (stablecoin && chain.priceInVRSC && chain.priceInVRSC > 0) {
         // For stablecoins: If 1 USDC = X VRSC, then 1 VRSC = 1/X USD
         let vrscPriceUSD = 1 / chain.priceInVRSC;
@@ -153,10 +227,35 @@ export async function GET() {
 
     const prices: LivePriceData[] = [];
 
-    // Get VRSC price from PBaaS stablecoin bridges (USDC, DAI, etc.)
-    // Uses weighted average across multiple baskets like cryptodashboard.faldt.net
-    const vrscPriceData = await getVRSCPriceFromPBaaS();
+    // Try to get VRSC price from Bridge.vETH (contains DAI.vETH)
+    let vrscPriceData = await getVRSCPriceFromBridgeVETH();
+    
+    // Fallback to PBaaS method if Bridge.vETH fails
+    if (!vrscPriceData) {
+      logger.info('⚠️ Bridge.vETH price calculation failed, trying PBaaS method...');
+      vrscPriceData = await getVRSCPriceFromPBaaS();
+    }
+    
     const vrscPriceUSD = vrscPriceData?.price || null;
+    
+    if (!vrscPriceUSD || !vrscPriceData) {
+      logger.warn('⚠️ Could not calculate VRSC USD price - no stablecoins found');
+    } else {
+      logger.info(`✅ VRSC Price: $${vrscPriceUSD.toFixed(4)} USD (from ${vrscPriceData.sources.length} source(s))`);
+    }
+
+    // Always add VRSC as the first asset (even if we don't have USD price)
+    prices.push({
+      symbol: 'VRSC',
+      name: 'Verus Coin',
+      price: vrscPriceUSD || 0,
+      priceUSD: vrscPriceUSD || 0,
+      priceInVRSC: 1.0, // VRSC is always 1 VRSC
+      change24h: 0, // Would need historical data to calculate
+      volume24h: 0, // Would need to calculate from on-chain data
+      lastUpdate: Date.now(),
+      source: 'pbaas',
+    });
 
     // Fetch all PBaaS chain prices from RPC
     try {
@@ -176,9 +275,14 @@ export async function GET() {
 
       logger.info(`📊 Processing ${pbaasData.data.chains.length} PBaaS chains`);
 
-      // Add all PBaaS chains with on-chain pricing
+      // Add all PBaaS chains with on-chain pricing (skip VRSC as it's already added)
       for (const chain of pbaasData.data.chains) {
         if (chain.priceInVRSC !== undefined) {
+          // Skip VRSC as we already added it manually above
+          if (chain.name === 'VRSC' || chain.fullyQualifiedName === 'VRSC') {
+            continue;
+          }
+
           // Calculate USD price if we have VRSC price
           const priceUSD = vrscPriceUSD ? vrscPriceUSD * chain.priceInVRSC : 0;
 

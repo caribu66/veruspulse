@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
-import { CurrencyDefinition } from 'verus-typescript-primitives/dist/currency/CurrencyDefinition';
+import { type CurrencyDefinition } from 'verus-typescript-primitives/dist/currency/CurrencyDefinition';
 
 interface PBaaSChainPrice {
   chainId: string;
@@ -18,6 +18,76 @@ interface PBaaSChainPrice {
 let cachedData: any = null;
 let cacheTimestamp = 0;
 const CACHE_TTL = 30000; // 30 seconds
+
+// Fallback function to return mock data when RPC is unavailable
+function getFallbackMockData() {
+  logger.info('📦 Using fallback mock data (RPC unavailable)');
+  
+  const mockChains: PBaaSChainPrice[] = [
+    {
+      chainId: 'i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV',
+      name: 'VRSC',
+      fullyQualifiedName: 'VRSC',
+      priceInVRSC: 1.0,
+      reserves: 0,
+      supply: 0,
+      lastUpdate: Date.now(),
+    },
+    {
+      chainId: 'i3f7tSctFkiPpiedY8QR5Tep9p4qDVebDx',
+      name: 'Bridge.vETH',
+      fullyQualifiedName: 'Bridge.vETH',
+      priceInVRSC: 8.77,
+      reserves: 9851,
+      supply: 50000000,
+      lastUpdate: Date.now(),
+    },
+    {
+      chainId: 'iC5TQFrFXSYLQGkiZ8FYmZHFLuKPa7rjz2',
+      name: 'Bridge.vDEX',
+      fullyQualifiedName: 'Bridge.vDEX',
+      priceInVRSC: 0.56,
+      reserves: 79152,
+      supply: 61200,
+      lastUpdate: Date.now(),
+    },
+    {
+      chainId: 'iH6789012345FGHIJKLMNOPQRSTUVWXYZ1',
+      name: 'DAI.vETH',
+      fullyQualifiedName: 'DAI.vETH',
+      priceInVRSC: 0.65, // 1 DAI = 0.65 VRSC, so 1 VRSC = 1.54 USD
+      reserves: 68069,
+      supply: 100000000,
+      lastUpdate: Date.now(),
+    },
+    {
+      chainId: 'iI7890123456GHIJKLMNOPQRSTUVWXYZ12',
+      name: 'USDC.vETH',
+      fullyQualifiedName: 'USDC.vETH',
+      priceInVRSC: 0.65,
+      reserves: 4031,
+      supply: 50000000,
+      lastUpdate: Date.now(),
+    },
+  ];
+
+  const responseData = {
+    success: true,
+    data: {
+      chains: mockChains,
+      count: mockChains.length,
+      timestamp: Date.now(),
+      source: 'fallback-mock',
+      note: 'Using fallback mock data - RPC connection unavailable. Please check Verus daemon is running.',
+    },
+  };
+
+  // Cache the response
+  cachedData = responseData;
+  cacheTimestamp = Date.now();
+
+  return addSecurityHeaders(NextResponse.json(responseData));
+}
 
 export async function GET() {
   // Check if PBaaS prices are disabled (to reduce daemon load)
@@ -41,129 +111,51 @@ export async function GET() {
     return addSecurityHeaders(NextResponse.json(cachedData));
   }
   try {
-    logger.info('🔍 Fetching PBaaS chain prices...');
+    logger.info('🔍 Fetching PBaaS chain prices from Verus blockchain...');
 
-    // Skip RPC calls and use mock data directly (RPC listcurrencies with systemtype filter not supported)
-    // TODO: Remove this block and uncomment RPC logic below once RPC endpoint supports the required filters
-    const USE_MOCK_DATA = true; // Set to false to re-enable RPC calls
-
-    if (USE_MOCK_DATA) {
-      logger.info(
-        'Using realistic mock data based on cryptodashboard.faldt.net (RPC not configured)'
-      );
-      // Return realistic mock data based on actual cryptodashboard.faldt.net data
-      const mockChains: PBaaSChainPrice[] = [
-        {
-          chainId: 'iJhCezBExJHvtyH3fGhNnt2NhU4Ztkf2yq',
-          name: 'VRSC',
-          fullyQualifiedName: 'VRSC',
-          priceInVRSC: 1.0,
-          reserves: 1000000,
-          supply: 100000000,
-          lastUpdate: Date.now(),
-        },
-        {
-          chainId: 'iBSUYP2aH3cLttnWWeMq4hQ2nVSFN8tWzo',
-          name: 'Bridge.vETH',
-          fullyQualifiedName: 'Bridge.vETH',
-          priceInVRSC: 8.77, // Based on cryptodashboard: VRSC 8.77 = $13.42
-          reserves: 9851,
-          supply: 50000000,
-          lastUpdate: Date.now(),
-        },
-        {
-          chainId: 'iC1234567890ABCDEFGHIJKLMNOPQRSTUV',
-          name: 'Bridge.vDEX',
-          fullyQualifiedName: 'Bridge.vDEX',
-          priceInVRSC: 0.56, // Based on cryptodashboard: $0.86 VRSC
-          reserves: 79152,
-          supply: 61200,
-          lastUpdate: Date.now(),
-        },
-        {
-          chainId: 'iD2345678901BCDEFGHIJKLMNOPQRSTUVW',
-          name: 'Bridge.vARRR',
-          fullyQualifiedName: 'Bridge.vARRR',
-          priceInVRSC: 0.28, // Based on cryptodashboard: $0.43 VRSC
-          reserves: 312567,
-          supply: 104246,
-          lastUpdate: Date.now(),
-        },
-        {
-          chainId: 'iE3456789012CDEFGHIJKLMNOPQRSTUVWX',
-          name: 'SUPER🛒',
-          fullyQualifiedName: 'SUPER🛒',
-          priceInVRSC: 0.65, // Based on cryptodashboard: $1.53 VRSC
-          reserves: 50000,
-          supply: 1000000,
-          lastUpdate: Date.now(),
-        },
-        {
-          chainId: 'iF4567890123DEFGHIJKLMNOPQRSTUVWXY',
-          name: 'NATI🦉',
-          fullyQualifiedName: 'NATI🦉',
-          priceInVRSC: 0.65, // Based on cryptodashboard: $1.54 VRSC
-          reserves: 25000,
-          supply: 500000,
-          lastUpdate: Date.now(),
-        },
-        {
-          chainId: 'iG5678901234EFGHIJKLMNOPQRSTUVWXYZ',
-          name: 'CHIPS',
-          fullyQualifiedName: 'CHIPS',
-          priceInVRSC: 0.065, // Based on cryptodashboard: $0.10 VRSC
-          reserves: 1735790,
-          supply: 10000000,
-          lastUpdate: Date.now(),
-        },
-        {
-          chainId: 'iH6789012345FGHIJKLMNOPQRSTUVWXYZ1',
-          name: 'DAI.vETH',
-          fullyQualifiedName: 'DAI.vETH',
-          priceInVRSC: 0.65, // 1 DAI = 0.65 VRSC, so 1 VRSC = 1.54 USD
-          reserves: 68069,
-          supply: 100000000,
-          lastUpdate: Date.now(),
-        },
-        {
-          chainId: 'iI7890123456GHIJKLMNOPQRSTUVWXYZ12',
-          name: 'USDC',
-          fullyQualifiedName: 'USDC',
-          priceInVRSC: 0.65, // Same as DAI for demo
-          reserves: 4031,
-          supply: 50000000,
-          lastUpdate: Date.now(),
-        },
-      ];
-
-      const responseData = {
-        success: true,
-        data: {
-          chains: mockChains,
-          count: mockChains.length,
-          timestamp: Date.now(),
-          note: 'Using realistic mock data based on cryptodashboard.faldt.net - connect to real Verus RPC endpoint for live data',
-        },
-      };
-
-      // Cache the response
-      cachedData = responseData;
-      cacheTimestamp = Date.now();
-
-      const response = NextResponse.json(responseData);
-      return addSecurityHeaders(response);
+    let allChains;
+    try {
+      // ===== Fetch list of PBaaS chains =====
+      allChains = await verusAPI.listCurrenciesWithFilter({
+        systemtype: 'pbaas',
+      });
+    } catch (rpcError: any) {
+      logger.warn('⚠️ RPC not available, using fallback mock data:', rpcError.message);
+      // Fallback to mock data if RPC fails
+      return getFallbackMockData();
     }
 
-    // ===== RPC Logic (currently disabled) =====
-    // Uncomment below to re-enable RPC calls once the endpoint supports required filters
-    /*
-    // Fetch price data for each PBaaS chain
+    // Filter to get real PBaaS chains (have a parent field)
+    const pbaasChains = allChains
+      ? (allChains as any[]).filter(chain => chain?.currencydefinition?.parent)
+      : [];
+
+    logger.info(
+      `📊 Found ${pbaasChains.length} PBaaS chains to process for pricing`
+    );
+
+    // ===== Fetch price data for each PBaaS chain =====
     const chainPrices: PBaaSChainPrice[] = [];
+    const seenChains = new Set<string>(); // Track unique chains to avoid duplicates
+
+    // Always add VRSC with price 1.0 first
+    chainPrices.push({
+      chainId: 'i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV',
+      name: 'VRSC',
+      fullyQualifiedName: 'VRSC',
+      priceInVRSC: 1.0,
+      reserves: 0,
+      supply: 0,
+      lastUpdate: Date.now(),
+    });
+    seenChains.add('VRSC');
 
     for (const chain of pbaasChains) {
       try {
-        // Validate chain.currencyid before making the RPC call
-        if (!chain?.currencyid || typeof chain.currencyid !== 'string') {
+        // Validate chain data
+        const currencyId =
+          chain?.currencydefinition?.currencyid || chain?.currencyid;
+        if (!currencyId || typeof currencyId !== 'string') {
           logger.warn(`Skipping chain with invalid currencyid:`, chain);
           continue;
         }
@@ -171,7 +163,7 @@ export async function GET() {
         // Get currency definition with bestcurrencystate
         const currencyDef: CurrencyDefinition = await verusAPI.call(
           'getcurrency',
-          [chain.currencyid]
+          [currencyId]
         );
 
         if (currencyDef?.bestcurrencystate?.reservecurrencies) {
@@ -179,7 +171,7 @@ export async function GET() {
 
           // Find price in primary reserve (VRSC or main chain)
           const vrscReserve = currencyState?.reservecurrencies.find(
-            r =>
+            (r: any) =>
               r.currencyid === 'VRSC' ||
               r.currencyid === 'i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV' ||
               r.currencyid === 'VRSCTEST'
@@ -188,6 +180,12 @@ export async function GET() {
           if (vrscReserve) {
             const priceInVRSC = vrscReserve?.priceinreserve || 0;
             const reserves = vrscReserve?.reserves || 0;
+
+            // Skip if we've already seen this chain (avoid duplicates)
+            if (seenChains.has(currencyDef.name)) {
+              logger.info(`⏭️  Skipping duplicate: ${currencyDef.name}`);
+              continue;
+            }
 
             chainPrices.push({
               chainId: currencyDef.currencyid,
@@ -198,30 +196,43 @@ export async function GET() {
               supply: currencyState?.supply || 0,
               lastUpdate: Date.now(),
             });
+            seenChains.add(currencyDef.name);
+
+            logger.info(
+              `✅ ${currencyDef.name}: ${priceInVRSC} VRSC (reserves: ${reserves})`
+            );
           }
         }
       } catch (error) {
         logger.warn(
-          `Failed to fetch price for chain ${chain.currencyid}:`,
+          `Failed to fetch price for chain ${chain?.currencydefinition?.name || 'unknown'}:`,
           error
         );
         // Continue with other chains
       }
     }
 
-    logger.info(`✅ Retrieved prices for ${chainPrices.length} PBaaS chains`);
+    logger.info(
+      `✅ Retrieved prices for ${chainPrices.length} assets from Verus blockchain`
+    );
 
-    const response = NextResponse.json({
+    const responseData = {
       success: true,
       data: {
         chains: chainPrices,
         count: chainPrices.length,
         timestamp: Date.now(),
+        source: 'verus-rpc',
+        note: 'Live prices from Verus blockchain via RPC',
       },
-    });
+    };
 
+    // Cache the response
+    cachedData = responseData;
+    cacheTimestamp = Date.now();
+
+    const response = NextResponse.json(responseData);
     return addSecurityHeaders(response);
-    */
   } catch (error: any) {
     logger.error('❌ Failed to fetch PBaaS chain prices:', error);
 

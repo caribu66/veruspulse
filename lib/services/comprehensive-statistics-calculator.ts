@@ -3,7 +3,7 @@
  * Calculates all advanced staking metrics from historical blockchain data
  */
 
-import { Pool } from 'pg';
+import { type Pool } from 'pg';
 
 interface VerusIDStats {
   address: string;
@@ -56,7 +56,7 @@ export class ComprehensiveStatisticsCalculator {
    * Calculate comprehensive statistics for a single address
    */
   async calculateStatsForAddress(address: string): Promise<VerusIDStats> {
-    console.log(`[Stats Calculator] Calculating statistics for ${address}`);
+    console.info(`[Stats Calculator] Calculating statistics for ${address}`);
 
     // Get all stake events for this address
     const stakeEventsResult = await this.db.query(
@@ -220,7 +220,7 @@ export class ComprehensiveStatisticsCalculator {
     const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
     const result = await this.db.query(
-      `SELECT 
+      `SELECT
         SUM(reward_amount) as total_rewards,
         AVG(stake_amount) as avg_stake
       FROM stake_events
@@ -246,7 +246,7 @@ export class ComprehensiveStatisticsCalculator {
     const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
     const result = await this.db.query(
-      `SELECT 
+      `SELECT
         SUM(reward_amount) as total_rewards,
         SUM(stake_amount) as total_stake
       FROM stake_events
@@ -284,7 +284,7 @@ export class ComprehensiveStatisticsCalculator {
    */
   private async getUTXOMetrics(address: string) {
     const result = await this.db.query(
-      `SELECT 
+      `SELECT
         COUNT(*) as current_utxos,
         COUNT(*) FILTER (WHERE is_eligible = true) as eligible_utxos,
         COUNT(*) FILTER (WHERE cooldown_until > EXTRACT(EPOCH FROM NOW())) as cooldown_utxos,
@@ -530,11 +530,21 @@ export class ComprehensiveStatisticsCalculator {
 
     // Group events by day
     for (const event of stakeEvents) {
-      const date = new Date(event.block_time).toISOString().split('T')[0];
-      if (!dailyData.has(date)) {
-        dailyData.set(date, []);
+      if (event.block_time) {
+        const dateParts = new Date(event.block_time).toISOString().split('T');
+        const date = dateParts[0];
+        if (date) {
+          if (!dailyData.has(date)) {
+            dailyData.set(date, []);
+          }
+          const dayEvents = dailyData.get(date);
+          if (dayEvents) {
+            dayEvents.push(event);
+          } else {
+            dailyData.set(date, [event]);
+          }
+        }
       }
-      dailyData.get(date)!.push(event);
     }
 
     // Store daily aggregates
@@ -589,7 +599,7 @@ export class ComprehensiveStatisticsCalculator {
       const date = new Date(event.block_time);
       const weekStart = new Date(date);
       weekStart.setDate(date.getDate() - date.getDay());
-      const weekKey = weekStart.toISOString().split('T')[0];
+      const weekKey = weekStart.toISOString().split('T')[0] || '';
 
       if (!weeklyData.has(weekKey)) {
         weeklyData.set(weekKey, []);
@@ -690,7 +700,7 @@ export class ComprehensiveStatisticsCalculator {
    * Calculate network rankings
    */
   async calculateNetworkRankings(): Promise<void> {
-    console.log('[Stats Calculator] Calculating network rankings...');
+    console.info('[Stats Calculator] Calculating network rankings...');
 
     // Update ranks based on total rewards
     await this.db.query(`
@@ -698,7 +708,7 @@ export class ComprehensiveStatisticsCalculator {
       SET network_rank = ranks.rank,
           network_percentile = ranks.percentile
       FROM (
-        SELECT 
+        SELECT
           address,
           ROW_NUMBER() OVER (ORDER BY total_rewards_satoshis DESC) as rank,
           (100.0 * ROW_NUMBER() OVER (ORDER BY total_rewards_satoshis DESC) / COUNT(*) OVER()) as percentile
@@ -707,6 +717,6 @@ export class ComprehensiveStatisticsCalculator {
       WHERE verusid_statistics.address = ranks.address
     `);
 
-    console.log('[Stats Calculator] Network rankings updated');
+    console.info('[Stats Calculator] Network rankings updated');
   }
 }

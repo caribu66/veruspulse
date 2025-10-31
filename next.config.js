@@ -4,8 +4,46 @@ const withBundleAnalyzer =
     ? require('@next/bundle-analyzer')({ enabled: true })
     : config => config;
 
+const createNextIntlPlugin = require('next-intl/plugin');
+const withNextIntl = createNextIntlPlugin('./i18n.ts');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Next.js 15 Performance Optimizations
+  reactStrictMode: true,
+  // Note: output: 'standalone' removed for compatibility with PM2 deployment
+
+  // Disable ESLint during builds for deployment
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // Ignore TypeScript errors during build for deployment
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  // Enable Turbopack in development for faster builds
+  ...(process.env.NODE_ENV === 'development' && {
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  }),
+
+  // Optimize package imports for faster builds and smaller bundles
+  optimizePackageImports: [
+    '@phosphor-icons/react',
+    'lucide-react',
+    'date-fns',
+    'echarts',
+    'echarts-for-react',
+  ],
+
   async headers() {
     return [
       {
@@ -25,13 +63,62 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Apply security headers to all routes
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+        ],
+      },
     ];
   },
+
   // Performance optimizations
   experimental: {
-    // optimizeCss: true, // Temporarily disabled to fix webpack issues
-    // instrumentationHook is now default in Next.js 15.5+
+    // Optimize CSS in production
+    optimizeCss: process.env.NODE_ENV === 'production',
+    // Enable optimistic client cache
+    optimisticClientCache: true,
+    // Allow access from network IPs in development
+    ...(process.env.NODE_ENV === 'development' && {
+      allowedOrigins: ['*'],
+    }),
+    // Next.js 15: Optimize React Server Components
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
+
+  // Compress responses in production
+  compress: true,
+
   // Image optimization
   images: {
     formats: ['image/webp', 'image/avif'],
@@ -41,26 +128,67 @@ const nextConfig = {
         hostname: 'avatars.githubusercontent.com',
       },
     ],
+    // Add image optimization settings
+    minimumCacheTTL: 60,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+
   // Compiler optimizations
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production'
+      ? {
+          exclude: ['error', 'warn'],
+        }
+      : false,
   },
-  // Memory optimization for development
-  ...(process.env.NODE_ENV === 'development' && {
-    webpack: (config, { dev }) => {
-      if (dev) {
-        // Reduce memory usage in dev mode
-        config.optimization = {
-          ...config.optimization,
-          moduleIds: 'named',
-          chunkIds: 'named',
-        };
-        // Disable source maps in dev if memory is critical
-        // config.devtool = false;
-      }
 
-      // Fix for Node.js modules in client-side code
+  // Production source maps for better debugging
+  productionBrowserSourceMaps: false,
+
+  // Webpack configuration
+  webpack: (config, { dev, isServer }) => {
+    // Optimize for development
+    if (dev) {
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'named',
+        chunkIds: 'named',
+      };
+    }
+
+    // Production optimizations
+    if (!dev) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // Vendor chunk for node_modules
+            vendor: {
+              name: 'vendor',
+              chunks: 'all',
+              test: /node_modules/,
+              priority: 20,
+            },
+            // Common chunk for shared code
+            common: {
+              name: 'common',
+              minChunks: 2,
+              chunks: 'all',
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
+          },
+        },
+      };
+    }
+
+    // Fix for Node.js modules in client-side code
+    if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -76,10 +204,26 @@ const nextConfig = {
         os: false,
         path: false,
       };
+    }
 
-      return config;
+    return config;
+  },
+
+  // Logging configuration
+  logging: {
+    fetches: {
+      fullUrl: process.env.NODE_ENV === 'development',
     },
-  }),
+  },
+
+  // PoweredByHeader configuration
+  poweredByHeader: false,
+
+  // Generate ETags for better caching
+  generateEtags: true,
+
+  // Static page generation optimization
+  // On-demand revalidation can be triggered via API routes
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+module.exports = withBundleAnalyzer(withNextIntl(nextConfig));

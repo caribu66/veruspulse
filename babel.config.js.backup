@@ -1,0 +1,33 @@
+/**
+ * Babel Configuration for VerusPulse
+ *
+ * React Compiler Configuration (React 19+)
+ * Currently using React 18, but configuration is ready for future upgrade
+ *
+ * @see https://react.dev/learn/react-compiler
+ */
+
+module.exports = {
+  presets: ['next/babel'],
+
+  // React Compiler Plugin (currently disabled, enable when upgrading to React 19)
+  // Uncomment when React 19 is stable:
+  // plugins: [
+  //   ['babel-plugin-react-compiler', {
+  //     // Compilation mode
+  //     compilationMode: 'annotation', // 'annotation' | 'all' | 'infer'
+  //
+  //     // Runtime module (required)
+  //     runtimeModule: 'react-compiler-runtime',
+  //
+  //     // Sources to compile
+  //     sources: (filename) => {
+  //       return filename.indexOf('node_modules') === -1;
+  //     },
+  //
+  //     // Panicthreshold for errors
+  //     panicThreshold: 'all_errors',
+  //   }]
+  // ],
+};
+

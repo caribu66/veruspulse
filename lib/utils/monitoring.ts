@@ -168,6 +168,7 @@ export class PerformanceMonitor {
         performance.measure(label, `${label}-start`, `${label}-end`);
 
         const measure = performance.getEntriesByName(label)[0];
+        if (!measure || measure.duration === undefined) return null;
         const duration = measure.duration;
 
         // Store measurement

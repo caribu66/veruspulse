@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
+import { Pool } from 'pg';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -76,7 +77,6 @@ export async function GET(
 
     // Fallback to database for historical data if no recent stakes found
     if (stakes7d === 0 && stakes30d === 0) {
-      const { Pool } = require('pg');
       const pool = new Pool({
         connectionString: process.env.DATABASE_URL,
       });
@@ -84,9 +84,9 @@ export async function GET(
       try {
         const stakes7dResult = await pool.query(
           `
-          SELECT COUNT(*) as count 
-          FROM staking_rewards 
-          WHERE identity_address = $1 
+          SELECT COUNT(*) as count
+          FROM staking_rewards
+          WHERE identity_address = $1
           AND block_time > NOW() - INTERVAL '7 days'
         `,
           [iaddr]
@@ -94,9 +94,9 @@ export async function GET(
 
         const stakes30dResult = await pool.query(
           `
-          SELECT COUNT(*) as count 
-          FROM staking_rewards 
-          WHERE identity_address = $1 
+          SELECT COUNT(*) as count
+          FROM staking_rewards
+          WHERE identity_address = $1
           AND block_time > NOW() - INTERVAL '30 days'
         `,
           [iaddr]

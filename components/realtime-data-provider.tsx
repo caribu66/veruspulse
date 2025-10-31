@@ -1,11 +1,12 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   createContext,
   useContext,
   useEffect,
   useState,
-  ReactNode,
+  type ReactNode,
 } from 'react';
 import {
   useRealtimeUpdates,
@@ -42,7 +43,13 @@ interface RealtimeDataProviderProps {
   children: ReactNode;
 }
 
-export function RealtimeDataProvider({ children }: RealtimeDataProviderProps) {
+export function RealtimeDataProvider({
+  children,
+}: RealtimeDataProviderProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tNetwork = useTranslations('network');
+  const tStaking = useTranslations('staking');
   const [updateCount, setUpdateCount] = useState(0);
   const [lastUpdate, setLastUpdate] = useState<any>(null);
 

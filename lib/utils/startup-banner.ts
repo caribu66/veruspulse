@@ -2,19 +2,19 @@ import { enhancedLogger } from './enhanced-logger';
 import { initializeSmartVerusIDUpdater } from '../services/smart-verusid-updater';
 
 export function showStartupBanner() {
-  console.log('\n');
-  console.log('🚀 ========================================');
-  console.log('   VERUS EXPLORER - ENHANCED LOGGING');
-  console.log('========================================');
-  console.log('📊 Real-time monitoring active');
-  console.log('🔍 API calls tracked');
-  console.log('💰 Staking rewards monitored');
-  console.log('🔗 RPC calls logged');
-  console.log('⚠️  Errors highlighted');
-  console.log('📈 Performance metrics enabled');
-  console.log('========================================');
-  console.log('🎯 Watch this console for detailed activity');
-  console.log('========================================\n');
+  console.info('\n');
+  console.info('🚀 ========================================');
+  console.info('   VERUS EXPLORER - ENHANCED LOGGING');
+  console.info('========================================');
+  console.info('📊 Real-time monitoring active');
+  console.info('🔍 API calls tracked');
+  console.info('💰 Staking rewards monitored');
+  console.info('🔗 RPC calls logged');
+  console.info('⚠️  Errors highlighted');
+  console.info('📈 Performance metrics enabled');
+  console.info('========================================');
+  console.info('🎯 Watch this console for detailed activity');
+  console.info('========================================\n');
 
   enhancedLogger.info('SYSTEM', 'Enhanced logging system initialized');
   enhancedLogger.info('SYSTEM', `Environment: ${process.env.NODE_ENV}`);

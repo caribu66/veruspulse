@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   MagnifyingGlass,
   X,
@@ -28,7 +29,7 @@ import { useRouter } from 'next/navigation';
  * ```tsx
  * <SmartSearch
  *   placeholder="MagnifyingGlass blocks, transactions, addresses..."
- *   onSelect={(result) => console.log('Selected:', result)}
+ *   onSelect={(result) => console.info('Selected:', result)}
  * />
  * ```
  */
@@ -74,6 +75,9 @@ export function SmartSearch({
   showRecentSearches = true,
   className,
 }: SmartSearchProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -354,7 +358,7 @@ export function SmartSearch({
 
         {loading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full" />
           </div>
         )}
       </div>

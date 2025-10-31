@@ -1,0 +1,20 @@
+import React from 'react';
+import { VerusExplorer } from '@/components/verus-explorer';
+import { DonationBanner } from '@/components/donation-banner';
+
+/**
+ * VerusPulse - The Internet of Value
+ * Comprehensive blockchain data and network statistics
+ * 
+ * Note: Removed Suspense wrapper to eliminate multiple cascading loading states.
+ * VerusExplorer now handles its own loading state with proper caching.
+ */
+export default function Home() {
+  return (
+    <>
+      <VerusExplorer />
+      <DonationBanner />
+    </>
+  );
+}
+

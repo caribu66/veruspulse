@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 let dbPool: Pool | null = null;
@@ -15,7 +15,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -64,10 +64,10 @@ export async function POST(request: NextRequest) {
     // Insert view record
     const query = `
       INSERT INTO verusid_views (
-        verusid_address, 
-        ip_address, 
-        user_agent, 
-        referrer, 
+        verusid_address,
+        ip_address,
+        user_agent,
+        referrer,
         session_id
       ) VALUES ($1, $2, $3, $4, $5)
     `;
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
     }
 
     let query = `
-      SELECT 
+      SELECT
         verusid_address,
         SUM(total_views) as total_views,
         SUM(unique_views) as unique_views

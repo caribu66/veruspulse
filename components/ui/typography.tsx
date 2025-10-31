@@ -1,6 +1,6 @@
 'use client';
 
-import React, { HTMLAttributes, ReactNode } from 'react';
+import React, { type HTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { ArrowSquareOut } from '@phosphor-icons/react';
 
@@ -71,7 +71,7 @@ export function Heading({
       className={cn(
         sizeClasses[effectiveSize],
         weightClasses[weight],
-        'text-white leading-tight tracking-tight',
+        'text-gray-900 dark:text-white',
         className
       )}
       {...props}
@@ -103,8 +103,7 @@ export function DisplayHeading({
       className={cn(
         'text-4xl sm:text-5xl md:text-6xl lg:text-7xl',
         `font-${weight}`,
-        'text-white leading-tight tracking-tight',
-        'bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent',
+        'text-gray-900 dark:text-white',
         className
       )}
       {...props}

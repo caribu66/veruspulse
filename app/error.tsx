@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { WarningCircle, ArrowsClockwise } from '@phosphor-icons/react';
+import { useTranslations } from 'next-intl';
 import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 import { ErrorSanitizer } from '@/lib/utils/error-sanitizer';
 
@@ -12,6 +13,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const tErrors = useTranslations('errors');
   const { goBack } = useNavigationHistory();
 
   useEffect(() => {
@@ -39,17 +41,17 @@ export default function Error({
           </div>
 
           <h1 className="text-2xl font-bold text-white mb-4">
-            Something went wrong!
+            {tErrors('somethingWentWrong')}
           </h1>
 
           <p className="text-blue-200 mb-6">
-            We encountered an unexpected error. This might be a temporary issue.
+            {tErrors('unexpectedError')}
           </p>
 
           {process.env.NODE_ENV === 'development' && (
             <details className="mb-6 text-left">
               <summary className="text-blue-300 cursor-pointer mb-2">
-                Error Details (Development - Sanitized)
+                {tErrors('errorDetails')}
               </summary>
               <pre className="bg-black/20 p-3 rounded text-xs text-red-300 overflow-auto">
                 {sanitizedMessage}
@@ -64,19 +66,19 @@ export default function Error({
               className="flex items-center justify-center space-x-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors text-white font-medium"
             >
               <ArrowsClockwise className="h-4 w-4" />
-              <span>Try Again</span>
+              <span>{tErrors('tryAgain')}</span>
             </button>
 
             <button
               onClick={() => goBack()}
               className="flex items-center justify-center space-x-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-white font-medium"
             >
-              <span>Go Back</span>
+              <span>{tErrors('goBack')}</span>
             </button>
           </div>
 
           <div className="mt-6 text-xs text-blue-300">
-            Error ID: {error.digest || 'unknown'}
+            {tErrors('errorId')}: {error.digest || 'unknown'}
           </div>
         </div>
       </div>

@@ -1,70 +1,38 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 
-type Theme = 'dark' | 'light';
+type Theme = 'dark';
 
 interface ThemeContextType {
   theme: Theme;
-  toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
+  toggleTheme: () => void; // Keep for compatibility but does nothing
+  setTheme: (theme: Theme) => void; // Keep for compatibility but does nothing
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
-
-  // Handle hydration
+  // Always use dark theme
   useEffect(() => {
-    setMounted(true);
-
-    // Get theme from localStorage or default to dark
-    const savedTheme = localStorage.getItem('theme') as Theme;
-
-    setThemeState(savedTheme || 'dark');
+    const root = document.documentElement;
+    root.classList.add('dark');
+    root.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
   }, []);
 
-  // Update document class and localStorage when theme changes
-  useEffect(() => {
-    if (!mounted) return;
-
-    const root = document.documentElement;
-
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      root.setAttribute('data-theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      root.setAttribute('data-theme', 'light');
-    }
-
-    localStorage.setItem('theme', theme);
-  }, [theme, mounted]);
-
+  // No-op functions for compatibility
   const toggleTheme = () => {
-    setThemeState(prev => (prev === 'dark' ? 'light' : 'dark'));
+    // Dark theme only - no toggling
   };
 
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
+  const setTheme = () => {
+    // Dark theme only - ignore set theme calls
   };
-
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return (
-      <ThemeContext.Provider
-        value={{ theme: 'dark', toggleTheme: () => {}, setTheme: () => {} }}
-      >
-        <div className="dark">{children}</div>
-      </ThemeContext.Provider>
-    );
-  }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      {children}
+    <ThemeContext.Provider value={{ theme: 'dark', toggleTheme, setTheme }}>
+      <div className="dark">{children}</div>
     </ThemeContext.Provider>
   );
 }

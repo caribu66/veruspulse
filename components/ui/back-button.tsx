@@ -3,6 +3,7 @@
 import { ArrowLeft } from '@phosphor-icons/react';
 import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface BackButtonProps {
   /**
@@ -11,7 +12,7 @@ interface BackButtonProps {
   fallbackPath?: string;
 
   /**
-   * Optional custom label (defaults to "Back")
+   * Optional custom label (defaults to {tCommon("back")})
    */
   label?: string;
 
@@ -41,13 +42,15 @@ interface BackButtonProps {
  */
 export function BackButton({
   fallbackPath,
-  label = 'Back',
+  label,
   className,
   iconOnly = false,
   size = 'md',
   variant = 'default',
 }: BackButtonProps) {
+  const tCommon = useTranslations('common');
   const { goBack, getBackPath } = useNavigationHistory();
+  const displayLabel = label || tCommon("back");
 
   const handleClick = () => {
     goBack(fallbackPath);
@@ -84,11 +87,11 @@ export function BackButton({
         variantStyles[variant],
         className
       )}
-      aria-label={label}
+      aria-label={displayLabel}
       title={`Go back to ${getBackPath()}`}
     >
       <ArrowLeft className={iconSizes[size]} />
-      {!iconOnly && <span>{label}</span>}
+      {!iconOnly && <span>{displayLabel}</span>}
     </button>
   );
 }

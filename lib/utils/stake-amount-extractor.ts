@@ -151,6 +151,10 @@ export async function extractStakeAmount(
     for (let i = 0; i < coinstakeTx.vin.length; i++) {
       const vin = coinstakeTx.vin[i];
 
+      if (!vin) {
+        continue;
+      }
+
       // Skip coinbase inputs (shouldn't exist in coinstake, but check anyway)
       if (vin.coinbase) {
         if (includeDetails) {
@@ -200,7 +204,11 @@ export async function extractStakeAmount(
           continue;
         }
 
-        const prevOutput = prevTx.vout[vin.vout];
+        const prevOutput = vin.vout !== undefined ? prevTx.vout[vin.vout] : undefined;
+
+        if (!prevOutput) {
+          continue;
+        }
 
         // Check if this UTXO belonged to our identity address
         const outputAddresses = prevOutput.scriptPubKey?.addresses || [];
@@ -213,8 +221,8 @@ export async function extractStakeAmount(
 
           if (includeDetails) {
             inputDetails.push({
-              txid: vin.txid,
-              vout: vin.vout,
+              txid: vin.txid || 'unknown',
+              vout: vin.vout ?? -1,
               value_sats: inputValueSats,
               value_vrsc: prevOutput.value,
               matched: true,
@@ -224,8 +232,8 @@ export async function extractStakeAmount(
           // Input belongs to a different address
           if (includeDetails) {
             inputDetails.push({
-              txid: vin.txid,
-              vout: vin.vout,
+              txid: vin.txid || 'unknown',
+              vout: vin.vout ?? -1,
               value_sats: Math.round(prevOutput.value * 100000000),
               value_vrsc: prevOutput.value,
               addresses: outputAddresses,
@@ -238,10 +246,10 @@ export async function extractStakeAmount(
         await sleep(rateLimit);
       } catch (error: any) {
         failedInputs++;
-        if (includeDetails) {
+        if (includeDetails && vin) {
           inputDetails.push({
-            txid: vin.txid,
-            vout: vin.vout,
+            txid: vin.txid || 'unknown',
+            vout: vin.vout ?? -1,
             value_vrsc: 0,
             type: 'error',
             skipped: true,
@@ -249,9 +257,11 @@ export async function extractStakeAmount(
           });
         }
         // Log error but continue processing other inputs
-        console.warn(
-          `Error fetching previous transaction ${vin.txid}:${vin.vout} for ${identityAddress}: ${error.message}`
-        );
+        if (vin) {
+          console.warn(
+            `Error fetching previous transaction ${vin.txid}:${vin.vout} for ${identityAddress}: ${error.message}`
+          );
+        }
       }
     }
 

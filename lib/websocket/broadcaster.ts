@@ -20,14 +20,14 @@ class EventBroadcaster {
       controller,
       connectedAt: new Date(),
     });
-    console.log(
+    console.info(
       `[Broadcaster] Client connected: ${id} (Total: ${this.listeners.size})`
     );
   }
 
   removeListener(id: string): void {
     this.listeners.delete(id);
-    console.log(
+    console.info(
       `[Broadcaster] Client disconnected: ${id} (Total: ${this.listeners.size})`
     );
   }

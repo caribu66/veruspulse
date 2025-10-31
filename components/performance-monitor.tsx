@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Pulse, Memory, Clock, Lightning } from '@phosphor-icons/react';
+import { useTranslations } from 'next-intl';
 
 interface PerformanceMetrics {
   memoryUsage: number;
@@ -11,6 +12,8 @@ interface PerformanceMetrics {
 }
 
 export function PerformanceMonitor() {
+  const tCommon = useTranslations('common');
+
   const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 

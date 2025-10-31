@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Pulse,
   CheckCircle,
@@ -44,6 +45,10 @@ export function VerusIDLoadingWithSync({
   onSyncError,
   className = '',
 }: VerusIDLoadingWithSyncProps) {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [syncProgress, setSyncProgress] = useState<SyncProgress | null>(null);
   const [isAutoSyncing, setIsAutoSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -189,7 +194,7 @@ export function VerusIDLoadingWithSync({
       default:
         return {
           icon: Clock,
-          title: 'Loading',
+          title: tCommon("loading"),
           description: 'Please wait...',
           color: 'text-gray-400',
           bgColor: 'bg-gray-500/20',

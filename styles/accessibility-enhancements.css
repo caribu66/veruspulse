@@ -1,0 +1,544 @@
+/**
+ * Accessibility Enhancements for VerusPulse
+ * Enhanced focus indicators, reduced motion support, and high contrast mode
+ */
+
+/* ============================================================================
+   REDUCED MOTION SUPPORT
+   Respects user's motion preferences (prefers-reduced-motion)
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable transforms that cause motion */
+  .hover\:scale-105:hover,
+  .hover\:scale-\[1\.02\]:hover,
+  .hover\:translateY-1:hover,
+  .hover\:-translate-y-1:hover {
+    transform: none !important;
+  }
+
+  /* Keep essential transforms (like translateX for off-canvas menus) */
+  [data-essential-transform] {
+    transition-duration: 0.2s !important;
+  }
+
+  /* Disable parallax and scroll-driven animations */
+  [data-parallax],
+  [data-scroll-animation] {
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* Disable gradient animations */
+  .animate-gradient,
+  .gradient-animation {
+    animation: none !important;
+    background-position: 0% 50% !important;
+  }
+
+  /* Keep fade-in but make it instant */
+  .fade-in,
+  .animate-fade-in {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Disable shimmer/skeleton animations */
+  .animate-shimmer,
+  .skeleton {
+    animation: none !important;
+  }
+
+  /* Disable ticker/marquee animations */
+  .ticker-slide,
+  .animate-ticker {
+    animation: none !important;
+  }
+
+  /* Disable pulse animations */
+  .animate-pulse,
+  .pulse-glow {
+    animation: none !important;
+  }
+
+  /* Disable spin animations except for loading indicators */
+  .animate-spin:not([role='status']) {
+    animation: none !important;
+  }
+
+  /* Loading spinners can have minimal animation */
+  .animate-spin[role='status'],
+  [aria-label*='Loading'] .animate-spin {
+    animation-duration: 1s !important;
+  }
+}
+
+/* ============================================================================
+   ENHANCED FOCUS INDICATORS
+   Highly visible focus states for keyboard navigation
+   ============================================================================ */
+
+/* Remove default outline and add custom focus styles */
+*:focus {
+  outline: none;
+}
+
+/* Enhanced focus-visible for modern browsers */
+*:focus-visible {
+  outline: 3px solid var(--verus-blue);
+  outline-offset: 3px;
+  box-shadow: 
+    0 0 0 3px rgba(49, 101, 212, 0.2),
+    0 0 0 1px rgba(49, 101, 212, 0.4);
+  border-radius: 4px;
+  transition: outline 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Specific focus styles for interactive elements */
+button:focus-visible,
+a:focus-visible,
+[role='button']:focus-visible {
+  outline: 3px solid var(--verus-blue);
+  outline-offset: 3px;
+  box-shadow: 
+    0 0 0 4px rgba(49, 101, 212, 0.15),
+    0 0 0 1px var(--verus-blue);
+}
+
+/* Input focus styles */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--verus-blue);
+  outline-offset: 0;
+  border-color: var(--verus-blue);
+  box-shadow: 
+    0 0 0 4px rgba(49, 101, 212, 0.1),
+    inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Card focus styles when tabbed to */
+.card:focus-visible,
+.theme-card:focus-visible,
+[tabindex='0']:focus-visible {
+  outline: 2px solid var(--verus-blue);
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 0 3px rgba(49, 101, 212, 0.15),
+    var(--elevation-raised);
+}
+
+/* Navigation focus styles */
+nav a:focus-visible,
+nav button:focus-visible {
+  outline: 3px solid var(--verus-blue);
+  outline-offset: 2px;
+  background: rgba(49, 101, 212, 0.1);
+}
+
+/* Tab focus styles */
+[role='tab']:focus-visible {
+  outline: 2px solid var(--verus-blue);
+  outline-offset: -2px;
+  background: rgba(49, 101, 212, 0.08);
+}
+
+/* Modal/Dialog focus styles */
+[role='dialog']:focus-visible,
+[role='alertdialog']:focus-visible {
+  outline: 3px solid var(--verus-blue);
+  outline-offset: -3px;
+}
+
+/* Skip link focus (always visible when focused) */
+.skip-link:focus,
+.skip-navigation:focus {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 9999;
+  padding: 1rem 1.5rem;
+  background: var(--verus-blue);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 0 0 4px rgba(49, 101, 212, 0.2);
+  font-weight: 600;
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
+/* ============================================================================
+   HIGH CONTRAST MODE SUPPORT
+   Enhanced visibility for users with low vision
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+  :root,
+  [data-theme='dark'],
+  [data-theme='light'] {
+    /* Stronger borders */
+    --border-primary: currentColor;
+    --border-secondary: currentColor;
+    
+    /* Higher contrast text */
+    --text-muted: var(--text-secondary);
+  }
+
+  /* Remove subtle backgrounds */
+  .bg-opacity-5,
+  .bg-opacity-10 {
+    background-opacity: 0.2 !important;
+  }
+
+  /* Stronger shadows */
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg {
+    box-shadow: 0 0 0 2px currentColor !important;
+  }
+
+  /* Thicker borders */
+  button,
+  input,
+  select,
+  textarea,
+  .card,
+  .theme-card {
+    border-width: 2px !important;
+  }
+
+  /* Enhanced focus indicators */
+  *:focus-visible {
+    outline-width: 4px !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Remove transparency */
+  * {
+    opacity: 1 !important;
+  }
+
+  /* Disable hover effects that reduce contrast */
+  *:hover {
+    opacity: 1 !important;
+  }
+}
+
+/* High contrast mode for Windows */
+@media (forced-colors: active) {
+  * {
+    forced-color-adjust: auto;
+  }
+
+  /* Preserve SVG colors where needed */
+  svg[data-preserve-color] {
+    forced-color-adjust: preserve-parent-color;
+  }
+
+  /* Enhanced focus for forced colors */
+  *:focus-visible {
+    outline: 3px solid HighlightText !important;
+    outline-offset: 2px;
+  }
+}
+
+/* ============================================================================
+   KEYBOARD NAVIGATION ENHANCEMENTS
+   Better visual feedback for keyboard users
+   ============================================================================ */
+
+/* Show keyboard shortcut hints on focus */
+[data-shortcut]:focus-visible::after {
+  content: ' (' attr(data-shortcut) ')';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.5rem;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  font-size: 0.75rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  margin-bottom: 0.5rem;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Visible focus indicator for tab key users */
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Enhanced visible state for current page/section */
+[aria-current='page'],
+[aria-current='step'],
+[aria-current='location'] {
+  position: relative;
+  font-weight: 600;
+}
+
+[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 100%;
+  background: var(--verus-blue);
+  border-radius: 0 4px 4px 0;
+}
+
+/* ============================================================================
+   SCREEN READER ENHANCEMENTS
+   Better experience for screen reader users
+   ============================================================================ */
+
+/* Screen reader only content */
+.sr-only,
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Screen reader only but focusable */
+.sr-only-focusable:focus,
+.visually-hidden:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Loading states for screen readers */
+[aria-busy='true']::before {
+  content: '';
+  speak: never;
+}
+
+/* Error state announcements */
+[aria-invalid='true'] {
+  border-color: var(--verus-red) !important;
+}
+
+[aria-invalid='true']:focus-visible {
+  outline-color: var(--verus-red);
+  box-shadow: 
+    0 0 0 4px rgba(212, 49, 62, 0.15),
+    0 0 0 1px var(--verus-red);
+}
+
+/* Required field indicator */
+[aria-required='true']::after,
+[required]::after {
+  content: ' *';
+  color: var(--verus-red);
+  speak: literal-punctuation;
+}
+
+/* ============================================================================
+   DARK MODE SPECIFIC A11Y ENHANCEMENTS
+   ============================================================================ */
+
+[data-theme='dark'] *:focus-visible {
+  outline-color: var(--verus-blue-light);
+  box-shadow: 
+    0 0 0 3px rgba(74, 124, 232, 0.3),
+    0 0 0 1px var(--verus-blue-light);
+}
+
+[data-theme='dark'] .skip-link:focus {
+  background: var(--verus-blue-light);
+  outline-color: white;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    0 0 0 4px rgba(74, 124, 232, 0.3);
+}
+
+/* ============================================================================
+   LIGHT MODE SPECIFIC A11Y ENHANCEMENTS
+   ============================================================================ */
+
+[data-theme='light'] *:focus-visible {
+  outline-color: var(--verus-blue-dark);
+  box-shadow: 
+    0 0 0 3px rgba(38, 80, 179, 0.15),
+    0 0 0 1px var(--verus-blue-dark);
+}
+
+[data-theme='light'] .skip-link:focus {
+  background: var(--verus-blue-dark);
+  outline-color: var(--verus-blue-dark);
+  outline-offset: 3px;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 0 0 4px rgba(38, 80, 179, 0.1);
+}
+
+/* ============================================================================
+   TOUCH AND POINTER ENHANCEMENTS
+   Better experience for touch and pointer devices
+   ============================================================================ */
+
+/* Larger touch targets on touch devices */
+@media (pointer: coarse) {
+  button,
+  a,
+  [role='button'],
+  [role='tab'],
+  input[type='checkbox'],
+  input[type='radio'] {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Larger spacing between interactive elements */
+  button + button,
+  a + a,
+  [role='button'] + [role='button'] {
+    margin-left: 0.75rem;
+  }
+}
+
+/* Hover states only for pointer devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+  .hover-effect {
+    transition: all 0.2s ease;
+  }
+
+  .hover-effect:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--elevation-raised);
+  }
+}
+
+/* Remove hover effects on touch devices */
+@media (hover: none) {
+  .hover-effect:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   Accessible printed output
+   ============================================================================ */
+
+@media print {
+  /* Remove unnecessary elements */
+  nav,
+  .no-print,
+  button:not(.print-button),
+  [aria-hidden='true'] {
+    display: none !important;
+  }
+
+  /* Ensure good contrast */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Show links URLs */
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  /* Remove shadows and effects */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Ensure focus indicators are visible */
+  *:focus-visible {
+    outline: 2px solid black !important;
+  }
+}
+
+/* ============================================================================
+   UTILITIES FOR ACCESSIBILITY
+   ============================================================================ */
+
+/* Disable pointer events for decorative elements */
+[aria-hidden='true'] {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Ensure interactive elements are focusable */
+button,
+a,
+[role='button'],
+[tabindex='0'] {
+  position: relative;
+  /* Ensure focus ring is visible */
+  z-index: 1;
+}
+
+button:focus-visible,
+a:focus-visible,
+[role='button']:focus-visible,
+[tabindex='0']:focus-visible {
+  z-index: 10;
+}
+
+/* Disabled state styling */
+:disabled,
+[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Loading state */
+[aria-busy='true'] {
+  cursor: wait;
+  pointer-events: none;
+}
+
+/* Hidden but accessible */
+[aria-hidden='false'] {
+  clip: auto;
+  height: auto;
+  width: auto;
+  overflow: visible;
+  position: static;
+}
+
+/* Focus within (for container focus management) */
+.focus-within:focus-within {
+  outline: 2px solid var(--verus-blue);
+  outline-offset: 2px;
+}
+
+

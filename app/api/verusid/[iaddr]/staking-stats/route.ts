@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { verusAPI } from '@/lib/rpc-client-robust';
 
@@ -63,7 +63,7 @@ function getAPYConfidenceLevel(
 }
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -171,7 +171,7 @@ export async function GET(
     // Generate COMPLETE monthly timeline data (ALL TIME, not just 12 months)
     // Only include stakes where the VerusID staked directly with their I-address
     const monthlyQuery = `
-      SELECT 
+      SELECT
         DATE_TRUNC('month', block_time) as period_start,
         COUNT(DISTINCT block_height) as stake_count,
         SUM(amount_sats) as total_rewards_satoshis,
@@ -198,7 +198,7 @@ export async function GET(
     // Generate COMPLETE weekly timeline data (ALL TIME)
     // Only include stakes where the VerusID staked directly with their I-address
     const weeklyQuery = `
-      SELECT 
+      SELECT
         DATE_TRUNC('week', block_time) as period_start,
         COUNT(DISTINCT block_height) as stake_count,
         SUM(amount_sats) as total_rewards_satoshis,
@@ -225,7 +225,7 @@ export async function GET(
     // Generate COMPLETE daily timeline data (ALL TIME)
     // Only include stakes where the VerusID staked directly with their I-address
     const dailyQuery = `
-      SELECT 
+      SELECT
         DATE(block_time) as stake_date,
         COUNT(DISTINCT block_height) as stake_count,
         SUM(amount_sats) as total_rewards_satoshis,
@@ -259,9 +259,9 @@ export async function GET(
       0
     );
     const calculatedFirstStake =
-      dailyData && dailyData.length > 0 ? dailyData[0].periodStart : null;
+      dailyData && dailyData.length > 0 && dailyData[0] ? dailyData[0].periodStart : null;
     const calculatedLastStake =
-      dailyData && dailyData.length > 0
+      dailyData && dailyData.length > 0 && dailyData[dailyData.length - 1]
         ? dailyData[dailyData.length - 1].periodEnd
         : null;
 
@@ -286,7 +286,7 @@ export async function GET(
 
         // Validate dates
         if (isNaN(firstDate.getTime()) || isNaN(lastDate.getTime())) {
-          console.log({
+          console.info({
             calculatedFirstStake,
             calculatedLastStake,
           });

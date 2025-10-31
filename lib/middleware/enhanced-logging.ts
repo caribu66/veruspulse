@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { enhancedLogger } from '@/lib/utils/enhanced-logger';
 
 export function withEnhancedLogging(handler: Function) {

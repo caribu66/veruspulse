@@ -1,9 +1,8 @@
 // Search Database Service for Verus Explorer
 import { Pool } from 'pg';
 import {
-  SearchHistory,
-  VerusIDSearch,
-  SearchAnalytics,
+  type SearchHistory,
+  type VerusIDSearch,
 } from '@/lib/models/search';
 import { enhancedLogger } from '@/lib/utils/enhanced-logger';
 
@@ -215,8 +214,8 @@ export class SearchDatabaseService {
   // Get recent searches
   async getRecentSearches(limit: number = 50): Promise<SearchHistory[]> {
     const query = `
-      SELECT * FROM search_history 
-      ORDER BY timestamp DESC 
+      SELECT * FROM search_history
+      ORDER BY timestamp DESC
       LIMIT $1
     `;
 
@@ -241,7 +240,7 @@ export class SearchDatabaseService {
     mostSearchedVerusIDs: Array<{ verusID: string; count: number }>;
   }> {
     const query = `
-      SELECT 
+      SELECT
         COUNT(*) as total_searches,
         COUNT(DISTINCT vs.verus_id) as unique_verus_ids,
         COUNT(CASE WHEN sh.result_found = true THEN 1 END) as successful_searches
@@ -251,7 +250,7 @@ export class SearchDatabaseService {
     `;
 
     const topSearchesQuery = `
-      SELECT 
+      SELECT
         vs.verus_id,
         COUNT(*) as search_count
       FROM verusid_searches vs
@@ -306,7 +305,7 @@ export class SearchDatabaseService {
         successful_searches = search_analytics.successful_searches + $2,
         failed_searches = search_analytics.failed_searches + $3,
         average_response_time = (
-          (search_analytics.average_response_time * search_analytics.total_searches + $4) / 
+          (search_analytics.average_response_time * search_analytics.total_searches + $4) /
           (search_analytics.total_searches + 1)
         ),
         updated_at = NOW()

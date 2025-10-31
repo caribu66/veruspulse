@@ -1,0 +1,63 @@
+# Files that should NEVER be deleted during cleanup
+
+# Essential configuration
+.env
+.env.local
+package.json
+package-lock.json
+tsconfig.json
+next.config.js
+tailwind.config.js
+postcss.config.js
+jest.config.js
+playwright.config.ts
+ecosystem.config.js
+
+# Essential README
+README.md
+
+# Environment templates
+env.example
+env.production.template
+
+# Recommended config
+verus.conf.optimized
+verus-explorer.config.example
+utxo-config.example
+
+# Application code
+app/
+components/
+lib/
+contexts/
+styles/
+public/
+
+# Build and dependencies
+node_modules/
+.next/
+dist/
+build/
+
+# Database
+db/
+migrations/
+
+# Scripts (directory)
+scripts/
+
+# Tests
+__tests__/
+tests/
+
+# Logs (keep directory structure)
+logs/
+
+# Docs (keep organized)
+docs/
+
+# Instrumentation
+instrumentation.ts
+middleware.ts
+sentry.*.config.ts
+

@@ -1,0 +1,28 @@
+{
+  "pools": [
+    {
+      "name": "Verus Coin Foundation",
+      "identity_address": "i5v3h9FWVdRFbNHU7DfcpGykQjRaHtMqu7",
+      "reason": "Foundation address - receives delegated stakes"
+    },
+    {
+      "name": "Verus Community Pool",
+      "identity_address": "iSXF8KbbvpHDWBm4zHxeA4n7uc1LsfR15X",
+      "reason": "Community pool - aggregates stakes from multiple sources"
+    },
+    {
+      "name": "LuckPool",
+      "identity_address": "iExampleLuckPoolAddress",
+      "reason": "Mining pool (luckpool.net) - receives stakes from pool miners",
+      "note": "Update with actual address if you have it"
+    },
+    {
+      "name": "Verus Development Fund",
+      "identity_address": "iDhAAg4dXUkuBbxgdP3RKveCr1gvu8o7Vg",
+      "reason": "Development fund - may receive delegated stakes"
+    }
+  ],
+  "last_updated": "2025-10-30",
+  "note": "These addresses are excluded from trending browse because they receive delegated stakes from other addresses rather than staking with their own I-address UTXOs"
+}
+

@@ -18,7 +18,7 @@ export default function LoadingTestPage() {
     // Sync completed
   };
 
-  const handleSyncError = (error: string) => {
+  const handleSyncError = (_error: string) => {
     // Silent error handling
   };
 

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Copy, Check } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface TruncatedAddressProps {
   address: string;
@@ -26,6 +27,7 @@ export function TruncatedAddress({
   className,
   copyClassName,
 }: TruncatedAddressProps) {
+  const tCommon = useTranslations('common');
   const [copied, setCopied] = useState(false);
 
   const truncateAddress = (addr: string, maxLen: number): string => {

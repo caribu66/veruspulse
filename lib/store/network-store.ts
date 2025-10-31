@@ -118,7 +118,7 @@ export const useNetworkStore = create<NetworkState>()(
           // Actions
           setNetworkStats: stats => {
             if (process.env.NODE_ENV === 'development') {
-              console.log('Store: setNetworkStats called with:', stats);
+              console.info('Store: setNetworkStats called with:', stats);
             }
             set({ networkStats: stats }, false, 'setNetworkStats');
           },

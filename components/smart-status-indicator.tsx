@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   WifiHigh,
   WifiSlash,
@@ -32,6 +33,8 @@ export function SmartStatusIndicator({
   showDetails = false,
   compact = false,
 }: SmartStatusIndicatorProps) {
+  const tCommon = useTranslations('common');
+  const tNetwork = useTranslations('network');
   const [status, setStatus] = useState<ConnectionStatus>({
     connected: false,
     host: '',

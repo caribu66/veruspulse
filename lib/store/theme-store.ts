@@ -3,19 +3,19 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-export type Theme = 'dark' | 'light' | 'auto';
+export type Theme = 'dark';
 
 export interface ThemeState {
   theme: Theme;
-  systemTheme: 'dark' | 'light';
-  effectiveTheme: 'dark' | 'light';
+  systemTheme: 'dark';
+  effectiveTheme: 'dark';
   highContrast: boolean;
   reducedMotion: boolean;
 
-  setTheme: (theme: Theme) => void;
+  setTheme: (theme: Theme) => void; // No-op for compatibility
   setHighContrast: (enabled: boolean) => void;
   setReducedMotion: (enabled: boolean) => void;
-  toggleTheme: () => void;
+  toggleTheme: () => void; // No-op for compatibility
   initializeTheme: () => void;
 }
 
@@ -29,22 +29,10 @@ export const useThemeStore = create<ThemeState>()(
         highContrast: false,
         reducedMotion: false,
 
-        setTheme: theme => {
-          const { systemTheme } = get();
-          const effectiveTheme = theme === 'auto' ? systemTheme : theme;
-
-          set(
-            {
-              theme,
-              effectiveTheme,
-            },
-            false,
-            'setTheme'
-          );
-
-          // Apply theme to document (only in browser)
+        setTheme: () => {
+          // Always dark theme - no-op for compatibility
           if (typeof document !== 'undefined') {
-            document.documentElement.setAttribute('data-theme', effectiveTheme);
+            document.documentElement.setAttribute('data-theme', 'dark');
             document.documentElement.setAttribute(
               'data-high-contrast',
               get().highContrast.toString()
@@ -77,9 +65,7 @@ export const useThemeStore = create<ThemeState>()(
         },
 
         toggleTheme: () => {
-          const { theme } = get();
-          const newTheme = theme === 'dark' ? 'light' : 'dark';
-          get().setTheme(newTheme);
+          // Always dark theme - no-op for compatibility
         },
 
         initializeTheme: () => {
@@ -91,32 +77,24 @@ export const useThemeStore = create<ThemeState>()(
             return () => {}; // Return empty cleanup function for SSR
           }
 
-          // Detect system theme
-          const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-            .matches
-            ? 'dark'
-            : 'light';
-
           // Detect reduced motion preference
           const reducedMotion = window.matchMedia(
             '(prefers-reduced-motion: reduce)'
           ).matches;
 
-          const { theme } = get();
-          const effectiveTheme = theme === 'auto' ? systemTheme : theme;
-
           set(
             {
-              systemTheme,
-              effectiveTheme,
+              systemTheme: 'dark',
+              effectiveTheme: 'dark',
               reducedMotion,
             },
             false,
             'initializeTheme'
           );
 
-          // Apply initial theme
-          document.documentElement.setAttribute('data-theme', effectiveTheme);
+          // Apply initial theme - always dark
+          document.documentElement.setAttribute('data-theme', 'dark');
+          document.documentElement.classList.add('dark');
           document.documentElement.setAttribute(
             'data-high-contrast',
             get().highContrast.toString()
@@ -125,19 +103,6 @@ export const useThemeStore = create<ThemeState>()(
             'data-reduced-motion',
             reducedMotion.toString()
           );
-
-          // Listen for system theme changes
-          const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-          const handleChange = (e: MediaQueryListEvent) => {
-            const newSystemTheme = e.matches ? 'dark' : 'light';
-            set({ systemTheme: newSystemTheme }, false, 'updateSystemTheme');
-
-            if (get().theme === 'auto') {
-              get().setTheme('auto');
-            }
-          };
-
-          mediaQuery.addEventListener('change', handleChange);
 
           // Listen for reduced motion changes
           const motionQuery = window.matchMedia(
@@ -151,7 +116,6 @@ export const useThemeStore = create<ThemeState>()(
 
           // Return cleanup function
           return () => {
-            mediaQuery.removeEventListener('change', handleChange);
             motionQuery.removeEventListener('change', handleMotionChange);
           };
         },

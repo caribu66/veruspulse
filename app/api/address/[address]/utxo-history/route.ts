@@ -1,9 +1,9 @@
 // API endpoint for historical UTXO data
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { UTXODatabaseService } from '@/lib/services/utxo-database';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ address: string }> }
 ): Promise<NextResponse> {
   try {
@@ -35,7 +35,7 @@ export async function GET(
     const dbService = new UTXODatabaseService(databaseUrl);
 
     // Parse query parameters
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = _request.nextUrl.searchParams;
     const startDate = searchParams.get('startDate')
       ? new Date(searchParams.get('startDate')!)
       : undefined;
@@ -52,21 +52,21 @@ export async function GET(
     let filteredEvents = stakeEvents;
     if (startDate || endDate) {
       filteredEvents = stakeEvents.filter((event: any) => {
-        const eventDate = new Date(event.block_time);
+        const eventDate = new Date(event.blockTime); // Use camelCase from mapper
         if (startDate && eventDate < startDate) return false;
         if (endDate && eventDate > endDate) return false;
         return true;
       });
     }
 
-    // Format timeline data
+    // Format timeline data (mapper returns camelCase!)
     const timeline = filteredEvents.map((event: any) => ({
-      blockHeight: event.block_height,
-      blockTime: event.block_time,
+      blockHeight: event.blockHeight,  // Already camelCase from mapper
+      blockTime: event.blockTime,      // Already camelCase from mapper
       txid: event.txid,
-      rewardAmount: event.reward_amount,
-      stakeAmount: event.stake_amount,
-      stakeAge: event.stake_age,
+      rewardAmount: event.rewardAmount,  // Already camelCase from mapper
+      stakeAmount: event.stakeAmount,    // Already camelCase from mapper
+      stakeAge: event.stakeAge,          // Already camelCase from mapper
     }));
 
     return NextResponse.json({
@@ -97,7 +97,7 @@ export async function GET(
 
 // POST endpoint for triggering historical sync with custom parameters
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ address: string }> }
 ): Promise<NextResponse> {
   try {

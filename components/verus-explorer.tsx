@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   useState,
   useMemo,
@@ -21,6 +22,8 @@ import {
   WarningCircle,
   CheckCircle,
   Network,
+  DiscordLogo,
+  XLogo,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useNetworkStore, useNetworkActions } from '@/lib/store/network-store';
@@ -64,8 +67,8 @@ const PerformanceMonitor = lazy(() =>
 function ComponentSkeleton() {
   return (
     <div className="animate-pulse space-y-4">
-      <div className="h-8 bg-gray-200 dark:bg-white/10 rounded w-1/4"></div>
-      <div className="h-64 bg-gray-100 dark:bg-white/5 rounded-xl"></div>
+      <div className="h-8 bg-gray-200 dark:bg-white/10 rounded w-1/4" />
+      <div className="h-64 bg-gray-100 dark:bg-white/5 rounded-xl" />
     </div>
   );
 }
@@ -103,6 +106,13 @@ function normalizeLegacyTab(tab: string): ExplorerTab {
 }
 
 export function VerusExplorer() {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tNetwork = useTranslations('network');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
+
   const [activeTab, setActiveTab] = useState<ExplorerTab>('dashboard');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -195,7 +205,7 @@ export function VerusExplorer() {
   //   { key: 'dashboard', label: 'Dashboard', icon: ChartBar },
   //   { key: 'search', label: 'MagnifyingGlass', icon: MagnifyingGlass },
   //   { key: 'blocks', label: 'Blocks', icon: Database },
-  //   { key: 'transactions', label: 'Transactions', icon: Pulse },
+  //   { key: 'transactions', label: {tBlocks("transactions")}, icon: Pulse },
   //   { key: 'addresses', label: 'Addresses', icon: User },
   //   { key: 'verusids', label: 'VerusIDs', icon: UsersThree },
   //   { key: 'live', label: 'Live Data', icon: Clock },
@@ -222,8 +232,10 @@ export function VerusExplorer() {
       try {
         setIsFetching(true);
 
-        // Only show loading screen on initial load or when explicitly requested
-        if (isInitialLoad) {
+        // Only show loading screen on VERY FIRST initial load with NO cached data
+        // This prevents loading screens on every refresh/tab change
+        const hasAnyData = localNetworkStats || networkStats || localMiningStats || miningStats;
+        if (isInitialLoad && !hasAnyData) {
           setLocalLoading(true);
           setLoading(true);
         } else {
@@ -245,7 +257,7 @@ export function VerusExplorer() {
         }
 
         if (consolidatedResult && consolidatedResult.success) {
-          const { blockchain, mining, mempool, network, staking } =
+          const { blockchain, mining, mempool, network, staking, pbaasChains } =
             consolidatedResult.data;
 
           // Set all the data from the consolidated response
@@ -282,6 +294,11 @@ export function VerusExplorer() {
           } else if (mining) {
             setLocalStakingStats(mining);
             setStakingStats(mining);
+          }
+
+          // Set PBaaS chains from consolidated data
+          if (pbaasChains) {
+            setPbaasChains(pbaasChains);
           }
 
           setLastUpdate(new Date());
@@ -398,6 +415,10 @@ export function VerusExplorer() {
       apiFetch,
       announceSuccess,
       announceError,
+      localNetworkStats,
+      networkStats,
+      localMiningStats,
+      miningStats,
     ]
   );
   // Smart interval for auto-refresh - disabled immediate to prevent request spam
@@ -464,7 +485,7 @@ export function VerusExplorer() {
       { key: 'dashboard', label: 'Dashboard', icon: ChartBar },
       { key: 'search', label: 'MagnifyingGlass', icon: MagnifyingGlass },
       { key: 'blocks', label: 'Blocks', icon: Database },
-      { key: 'transactions', label: 'Transactions', icon: Pulse },
+      { key: 'transactions', label: tBlocks("transactions"), icon: Pulse },
       { key: 'addresses', label: 'Addresses', icon: User },
       { key: 'verusids', label: 'VerusIDs', icon: UsersThree },
       { key: 'mempool', label: 'Mempool', icon: Network },
@@ -630,15 +651,15 @@ export function VerusExplorer() {
       <aside
         role="complementary"
         aria-label="Network status"
-        className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3"
+        className="w-full max-w-7xl mx-auto container-spacing pt-3"
       >
         {/* Blockchain Sync Progress */}
-        <BlockchainSyncProgress className="mb-2" />
+        <BlockchainSyncProgress className="mb-content" />
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-500/10 backdrop-blur-sm rounded-lg p-4 border border-red-500/20 mb-2">
-            <div className="flex items-center space-x-3">
+          <div className="bg-red-500/10 backdrop-blur-sm rounded-lg card-padding border border-red-500/20 mb-content">
+            <div className="flex items-center gap-3">
               <WarningCircle className="h-5 w-5 text-red-400" />
               <div className="text-gray-900 dark:text-white font-semibold">
                 {error}
@@ -659,7 +680,7 @@ export function VerusExplorer() {
         id="main-content"
         role="main"
         aria-label="Main content"
-        className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
+        className="w-full max-w-7xl mx-auto container-spacing section-spacing"
       >
         <div className="space-y-8 w-full">
           {/* Tab Content */}
@@ -675,15 +696,15 @@ export function VerusExplorer() {
               <div className="theme-text-secondary text-sm">
                 VerusPulse - Powered by Verus Protocol
               </div>
-              <div className="hidden md:block w-px h-4 bg-gray-300 dark:bg-white/20"></div>
-              <div className="theme-text-secondary text-xs">
+              <div className="hidden md:block w-px h-4 bg-gray-300 dark:bg-white/20" />
+              <span className="internet-of-value-text text-xs font-semibold">
                 The Internet of Value
-              </div>
+              </span>
             </div>
 
-            <div className="flex items-center space-x-4 text-xs theme-text-secondary">
+            <div className="flex items-center gap-4 text-xs theme-text-secondary">
               {lastUpdate && (
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center gap-1.5">
                   <Clock className="h-3 w-3" />
                   <span>
                     Updated{' '}
@@ -693,10 +714,34 @@ export function VerusExplorer() {
                   </span>
                 </div>
               )}
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center gap-1.5">
                 <Network className="h-3 w-3" />
                 <span>Live Network</span>
               </div>
+              {/* Discord Link */}
+              <a
+                href="https://discord.gg/verus"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#5865F2]/10 hover:bg-[#5865F2]/20 border border-[#5865F2]/30 hover:border-[#5865F2]/50 transition-all duration-200 group"
+                title="Join Verus Discord"
+                aria-label="Join Verus Discord community"
+              >
+                <DiscordLogo className="h-4 w-4 text-[#5865F2] group-hover:scale-110 transition-transform duration-200" weight="fill" />
+                <span className="hidden sm:inline text-[#5865F2] font-medium">Discord</span>
+              </a>
+              {/* X (Twitter) Link */}
+              <a
+                href="https://x.com/veruscoin"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/20 hover:bg-black/30 border border-gray-500/30 hover:border-gray-400/50 transition-all duration-200 group"
+                title="Follow Verus on X"
+                aria-label="Follow Verus on X (Twitter)"
+              >
+                <XLogo className="h-4 w-4 text-white group-hover:scale-110 transition-transform duration-200" weight="fill" />
+                <span className="hidden sm:inline text-white font-medium">X</span>
+              </a>
             </div>
           </div>
         </div>

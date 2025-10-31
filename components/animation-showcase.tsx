@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Play,
   Gear,
@@ -21,6 +22,11 @@ import {
 import './animations/new-block-animations.css';
 
 export function AnimationShowcase() {
+  const tCommon = useTranslations('common');
+  const tTime = useTranslations('time');
+  const tBlocks = useTranslations('blocks');
+  const tStaking = useTranslations('staking');
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [showParticles, setShowParticles] = useState(false);
   const [particles, setParticles] = useState(createParticleEffects());
@@ -180,7 +186,7 @@ export function AnimationShowcase() {
                   <div className="flex items-center space-x-4 text-xs text-gray-400 mt-1">
                     <div className="flex items-center space-x-1">
                       <Clock className="h-3 w-3" />
-                      <span>Just now</span>
+                      <span>{tTime("justNow")}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Pulse className="h-3 w-3" />

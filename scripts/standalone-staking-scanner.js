@@ -46,7 +46,7 @@ const RPC_PASS = process.env.VERUS_RPC_PASSWORD || 'verus';
 const dbConfig = {
   connectionString:
     process.env.DATABASE_URL ||
-    'postgresql://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db',
+    'postgresql://verus_user:verus_secure_2024@localhost:5432/pos_db',
   max: 10,
 };
 
@@ -63,6 +63,7 @@ let stats = {
   lastSavedBlock: 0,
   currentHeight: 0,
   startHeight: 0,
+  checked: 0, // For source address verification logging
 };
 
 // Logging function
@@ -295,47 +296,64 @@ async function getActualStakingAddress(txid, identityAddress) {
 
     if (!tx || !tx.vin || tx.vin.length === 0) {
       log(`⚠️  No inputs found for tx ${txid}`, 'WARN');
-      return identityAddress; // Fallback to identity address
+      return null; // CHANGED: Return null when we can't determine - don't assume!
     }
 
-    // Look for the address that provided the stake
+    // Check if this is a coinbase transaction (PoW, not PoS)
+    if (tx.vin[0] && tx.vin[0].coinbase) {
+      // This is a PoW block, not PoS - skip it
+      return null;
+    }
+
+    // Look for the address that provided the stake (from vin)
     for (const vin of tx.vin) {
       if (vin.txid && vin.vout !== undefined) {
         try {
-          const prevTx = await rpcCall('getrawtransaction', [vin.txid, true]);
-          if (prevTx && prevTx.vout && prevTx.vout[vin.vout]) {
-            const prevVout = prevTx.vout[vin.vout];
+          // FIX: Ensure vout is an integer (sometimes returned as string)
+          const voutIndex = typeof vin.vout === 'string' ? parseInt(vin.vout) : vin.vout;
+          
+          if (isNaN(voutIndex)) {
+            log(`   ⚠️  Invalid vout index for ${vin.txid}`, 'WARN');
+            continue;
+          }
+
+          const prevTx = await rpcCall('getrawtransaction', [vin.txid, 1]);
+          if (prevTx && prevTx.vout && prevTx.vout[voutIndex]) {
+            const prevVout = prevTx.vout[voutIndex];
             if (prevVout.scriptPubKey && prevVout.scriptPubKey.addresses) {
               const addresses = prevVout.scriptPubKey.addresses;
-              // Look for R-addresses (starting with 'R')
-              for (const addr of addresses) {
-                if (addr.startsWith('R')) {
-                  return addr; // Found the actual R-address that staked
-                }
-              }
-              // If no R-address found, return the first address
+              // Return the first address found (the UTXO owner)
               if (addresses.length > 0) {
-                return addresses[0];
+                const stakingAddress = addresses[0];
+                // Log if it's an I-address staking vs R-address
+                if (stakingAddress === identityAddress) {
+                  log(`   ✅ CONFIRMED Direct I-address stake: ${stakingAddress}`, 'INFO');
+                } else if (stakingAddress.startsWith('R')) {
+                  log(`   📝 R-address ${stakingAddress} staked for I-address ${identityAddress}`, 'INFO');
+                } else {
+                  log(`   ⚠️  Other address ${stakingAddress} staked for I-address ${identityAddress}`, 'WARN');
+                }
+                return stakingAddress;
               }
             }
           }
         } catch (err) {
-          log(
-            `⚠️  Error getting previous tx ${vin.txid}: ${err.message}`,
-            'WARN'
-          );
+          // Log occasionally to help debugging
+          if (stats.checked % 100 === 0) {
+            log(`   ⚠️  Error checking vin for ${vin.txid}: ${err.message}`, 'WARN');
+          }
           continue;
         }
       }
     }
 
-    return identityAddress; // Fallback to identity address
+    // CHANGED: Return null instead of identityAddress when we can't determine
+    // This prevents incorrectly marking delegated stakes as direct
+    log(`   ⚠️  Could not determine staking address for ${txid} - marking as unknown`, 'WARN');
+    return null;
   } catch (err) {
-    log(
-      `⚠️  Error getting staking address for tx ${txid}: ${err.message}`,
-      'WARN'
-    );
-    return identityAddress; // Fallback to identity address
+    // CHANGED: Return null on error - don't assume it's direct!
+    return null;
   }
 }
 
@@ -347,6 +365,10 @@ async function insertStake(stake) {
       stake.txid,
       stake.address
     );
+
+    // CRITICAL: If we can't determine the source, mark it as null
+    // This ensures we don't incorrectly count delegated stakes as direct
+    const sourceAddress = actualStakingAddress;
 
     await db.query(
       `
@@ -366,20 +388,11 @@ async function insertStake(stake) {
         stake.blockTime,
         stake.amount,
         'coinbase', // PoS rewards
-        actualStakingAddress, // Use the actual staking address
+        sourceAddress, // Use the actual staking address (can be null if unknown)
       ]
     );
 
-    // Log the attribution for verification
-    if (actualStakingAddress === stake.address) {
-      log(`   ✅ Direct I-address stake: ${stake.address}`, 'INFO');
-    } else {
-      log(
-        `   📝 Indirect stake: ${stake.address} <- ${actualStakingAddress}`,
-        'INFO'
-      );
-    }
-
+    // Log attribution is already done in getActualStakingAddress()
     stats.stakeEventsFound++;
   } catch (error) {
     log(`Error inserting stake: ${error.message}`, 'ERROR');

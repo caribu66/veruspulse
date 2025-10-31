@@ -6,9 +6,9 @@ import {
   needsPriorityScan,
 } from '@/lib/services/priority-verusid-scanner';
 
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   try {
-    const { identityAddress } = await request.json();
+    const { identityAddress } = await _request.json();
 
     if (!identityAddress) {
       return NextResponse.json(
@@ -96,9 +96,9 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     const identityAddress = searchParams.get('address');
 
     if (!identityAddress) {

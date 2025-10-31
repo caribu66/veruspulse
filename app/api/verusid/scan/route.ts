@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { fastScanVerusID, getProgress } from '@/scripts/fast-on-demand-scanner';
 
 /**
@@ -9,7 +9,7 @@ import { fastScanVerusID, getProgress } from '@/scripts/fast-on-demand-scanner';
  * Response: { success: boolean, scanId?: string, error?: string }
  */
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const body = await request.json();
     const { verusidName } = body;
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`🚀 Starting FAST on-demand scan for: ${verusidName}`);
+    console.info(`🚀 Starting FAST on-demand scan for: ${verusidName}`);
 
     // Start the scan (this will run synchronously and return results)
     const result = await fastScanVerusID(verusidName);
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
  * GET endpoint to check scan progress
  * GET /api/verusid/scan/progress
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const progress = getProgress();
     return NextResponse.json({

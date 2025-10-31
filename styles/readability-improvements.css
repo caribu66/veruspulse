@@ -1,0 +1,455 @@
+/* ================================================================
+   READABILITY IMPROVEMENTS
+   Enhanced typography for better reading experience
+   Based on WCAG 2.1 AA standards
+   ================================================================ */
+
+/* ============================================================
+   IMPROVED LINE HEIGHTS
+   Current line heights are too tight, causing readability issues
+   ============================================================ */
+
+/* Base text - comfortable reading */
+.text-xs {
+  line-height: 1.5; /* Was 1.1rem - too tight */
+}
+
+.text-sm {
+  line-height: 1.5; /* Was 1.3rem - too tight */
+}
+
+.text-base {
+  line-height: 1.6; /* Was 1.6rem - good, keeping it */
+}
+
+.text-lg {
+  line-height: 1.6; /* Was 1.8rem - good, keeping it */
+}
+
+/* Headings - need more breathing room */
+h1, .text-display {
+  line-height: 1.2 !important; /* Was 1.1 - too tight */
+}
+
+h2, .text-headline {
+  line-height: 1.3 !important; /* Was 1.2 - too tight */
+}
+
+h3, .text-title {
+  line-height: 1.4 !important; /* Was 1.3 - too tight */
+}
+
+h4, .text-subheading {
+  line-height: 1.5 !important; /* Was 1.4 - too tight */
+}
+
+/* ============================================================
+   IMPROVED TEXT CONTRAST
+   Many text colors fail WCAG AA contrast ratios
+   ============================================================ */
+
+/* Dark theme improvements */
+[data-theme='dark'] .text-gray-400,
+[data-theme='dark'] .text-slate-400 {
+  color: #cbd5e1 !important; /* Increased contrast from #94a3b8 */
+}
+
+[data-theme='dark'] .text-gray-500,
+[data-theme='dark'] .text-slate-500 {
+  color: #9ca3af !important; /* Increased contrast from #64748b */
+}
+
+[data-theme='dark'] .text-gray-600,
+[data-theme='dark'] .text-slate-600 {
+  color: #6b7280 !important; /* Slightly lightened */
+}
+
+/* Light theme improvements */
+[data-theme='light'] .text-gray-400,
+[data-theme='light'] .text-slate-400 {
+  color: #4b5563 !important; /* Increased contrast */
+}
+
+[data-theme='light'] .text-gray-500,
+[data-theme='light'] .text-slate-500 {
+  color: #374151 !important; /* Increased contrast */
+}
+
+/* ============================================================
+   PARAGRAPH SPACING
+   Improve readability with better spacing between paragraphs
+   ============================================================ */
+
+p + p {
+  margin-top: 1em;
+}
+
+.prose p {
+  margin-bottom: 1em;
+}
+
+/* ============================================================
+   OPTIMAL LINE LENGTH
+   Limit text width for comfortable reading (45-75 characters)
+   ============================================================ */
+
+.readable-text {
+  max-width: 65ch; /* Optimal reading width */
+}
+
+.readable-text-wide {
+  max-width: 80ch; /* Slightly wider for less dense content */
+}
+
+.readable-text-narrow {
+  max-width: 50ch; /* Narrower for more focused reading */
+}
+
+/* ============================================================
+   TEXT RENDERING IMPROVEMENTS
+   Better font rendering for sharper text
+   ============================================================ */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+/* ============================================================
+   MINIMUM FONT SIZES
+   Prevent text from being too small
+   ============================================================ */
+
+/* Prevent text smaller than 12px */
+@media screen {
+  * {
+    min-font-size: 12px;
+  }
+}
+
+/* Mobile: Increase base font size */
+@media (max-width: 640px) {
+  html {
+    font-size: 16px; /* Ensure 16px minimum on mobile */
+  }
+  
+  /* Slightly larger touch-friendly text */
+  .text-xs {
+    font-size: 0.813rem; /* 13px instead of 12px */
+  }
+  
+  .text-sm {
+    font-size: 0.938rem; /* 15px instead of 14px */
+  }
+}
+
+/* ============================================================
+   FOCUS INDICATORS
+   Better visibility for keyboard navigation
+   ============================================================ */
+
+:focus-visible {
+  outline: 2px solid var(--verus-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--verus-blue);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   LINK STYLING
+   Better readability for links
+   ============================================================ */
+
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* ============================================================
+   HEADING HIERARCHY
+   Clear visual distinction between heading levels
+   ============================================================ */
+
+h1 {
+  margin-bottom: 0.5em;
+  font-weight: 700;
+}
+
+h2 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+h3 {
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+h4, h5, h6 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+/* ============================================================
+   LIST READABILITY
+   Better spacing for lists
+   ============================================================ */
+
+ul, ol {
+  line-height: 1.6;
+  margin: 1em 0;
+}
+
+li {
+  margin-bottom: 0.5em;
+}
+
+li:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   CODE READABILITY
+   Improve code block readability
+   ============================================================ */
+
+code {
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+}
+
+pre {
+  line-height: 1.5;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+pre code {
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   TABLE READABILITY
+   Better spacing and contrast in tables
+   ============================================================ */
+
+table {
+  line-height: 1.5;
+}
+
+th {
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+}
+
+td {
+  padding: 0.75rem 1rem;
+}
+
+/* Zebra striping for better row distinction */
+tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='dark'] tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ============================================================
+   FORM READABILITY
+   Better labels and input text
+   ============================================================ */
+
+label {
+  display: block;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+input, textarea, select {
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+/* Prevent iOS zoom on input focus */
+@media screen and (max-width: 640px) {
+  input, textarea, select {
+    font-size: 16px;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION SUPPORT
+   Respect user preferences
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   HIGH CONTRAST MODE SUPPORT
+   Better visibility for high contrast users
+   ============================================================ */
+
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: #000000;
+    --text-secondary: #1a1a1a;
+    --bg-primary: #ffffff;
+  }
+  
+  [data-theme='dark'] {
+    --text-primary: #ffffff;
+    --text-secondary: #f0f0f0;
+    --bg-primary: #000000;
+  }
+  
+  /* Stronger borders */
+  * {
+    border-width: 2px;
+  }
+}
+
+/* ============================================================
+   SELECTION STYLING
+   Better text selection visibility
+   ============================================================ */
+
+::selection {
+  background: rgba(49, 101, 212, 0.3);
+  color: inherit;
+}
+
+::-moz-selection {
+  background: rgba(49, 101, 212, 0.3);
+  color: inherit;
+}
+
+/* ============================================================
+   MOBILE READABILITY IMPROVEMENTS
+   ============================================================ */
+
+@media (max-width: 640px) {
+  /* Larger tap targets */
+  a, button {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* More comfortable paragraph spacing */
+  p {
+    margin-bottom: 1.25em;
+  }
+  
+  /* Better heading sizes for mobile */
+  h1 {
+    font-size: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.75rem !important;
+  }
+  
+  h3 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* ============================================================
+   PRINT OPTIMIZATIONS
+   ============================================================ */
+
+@media print {
+  /* Black text for print */
+  * {
+    color: #000 !important;
+  }
+  
+  /* Better line heights for print */
+  body {
+    line-height: 1.6;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  
+  p, li {
+    orphans: 3;
+    widows: 3;
+  }
+  
+  /* Ensure links are visible */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+  }
+}
+
+/* ============================================================
+   UTILITY CLASSES FOR READABILITY
+   ============================================================ */
+
+/* Enhanced readability text */
+.text-readable {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+/* Large, easy-to-read text */
+.text-large-readable {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+/* Tight text for UI elements */
+.text-ui {
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+

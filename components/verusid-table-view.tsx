@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   CaretUp,
   CaretDown,
@@ -14,8 +15,8 @@ import {
   Clock,
 } from '@phosphor-icons/react';
 import {
-  VerusIDBrowseData,
-  SortOptions,
+  type VerusIDBrowseData,
+  type SortOptions,
 } from '@/lib/types/verusid-browse-types';
 import {
   formatVRSCAmount,
@@ -38,6 +39,10 @@ export function VerusIDTableView({
   onSort,
   onIdentityClick,
 }: VerusIDTableViewProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
   if (identities.length === 0) {

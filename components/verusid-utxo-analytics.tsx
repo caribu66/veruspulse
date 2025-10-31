@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Database,
   Target,
@@ -19,7 +20,14 @@ interface UTXOAnalyticsProps {
   iaddr: string;
 }
 
-export function VerusIDUTXOAnalytics({ iaddr }: UTXOAnalyticsProps) {
+export function VerusIDUTXOAnalytics({
+  iaddr,
+}: UTXOAnalyticsProps) {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [liveUTXOData, setLiveUTXOData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +105,7 @@ export function VerusIDUTXOAnalytics({ iaddr }: UTXOAnalyticsProps) {
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="flex items-center space-x-2 text-xs sm:text-sm bg-green-500/20 px-3 sm:px-4 py-2 rounded-xl border border-green-500/30">
-              <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
               <span className="text-green-300 font-medium">Live Data</span>
             </div>
             <button
@@ -105,7 +113,7 @@ export function VerusIDUTXOAnalytics({ iaddr }: UTXOAnalyticsProps) {
               className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all duration-200 text-white hover:scale-105"
             >
               <ArrowsClockwise className="h-4 w-4" />
-              <span className="font-medium text-sm sm:text-base">Refresh</span>
+              <span className="font-medium text-sm sm:text-base">{tCommon("refresh")}</span>
             </button>
           </div>
         </div>
@@ -201,31 +209,31 @@ export function VerusIDUTXOAnalytics({ iaddr }: UTXOAnalyticsProps) {
             {/* Quick Value Tier Reference */}
             <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
               <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded">
-                <div className="w-2 h-2 rounded-full bg-white opacity-95"></div>
+                <div className="w-2 h-2 rounded-full bg-white opacity-95" />
                 <span className="text-gray-300">100K+</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded">
-                <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
+                <div className="w-2 h-2 rounded-full bg-yellow-400" />
                 <span className="text-gray-300">10K-100K</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded">
-                <div className="w-2 h-2 rounded-full bg-yellow-600"></div>
+                <div className="w-2 h-2 rounded-full bg-yellow-600" />
                 <span className="text-gray-300">1K-10K</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded">
-                <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                <div className="w-2 h-2 rounded-full bg-orange-500" />
                 <span className="text-gray-300">100-1K</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded">
-                <div className="w-2 h-2 rounded-full bg-orange-600"></div>
+                <div className="w-2 h-2 rounded-full bg-orange-600" />
                 <span className="text-gray-300">10-100</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                <div className="w-2 h-2 rounded-full bg-green-500" />
                 <span className="text-gray-300">1-10</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-1 bg-red-900/30 border border-gray-600 rounded">
-                <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                <div className="w-2 h-2 rounded-full bg-gray-500" />
                 <span className="text-gray-400">&lt;1 (Low Chance Zone)</span>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import { logger } from './utils/logger';
 import { enhancedLogger } from './utils/enhanced-logger';
 import { RPCErrorHandler } from './utils/rpc-error-handler';
-import { ListIdentitiesParams, RateLimitConfig } from './types/verus-rpc-types';
+import { type ListIdentitiesParams, type RateLimitConfig } from './types/verus-rpc-types';
 import { RateLimiter, defaultRateLimiter } from './utils/rate-limiter';
 import {
   circuitBreakerManager,

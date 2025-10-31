@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   TrendUp,
   Target,
@@ -149,6 +150,8 @@ export function ProfessionalAchievementProgress({
   rarityStats,
   className = '',
 }: ProfessionalAchievementProgressProps) {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
   const [viewMode, setViewMode] = useState<ViewMode>('all');
   const [filterCategory, setFilterCategory] = useState<FilterCategory>('all');
   const [sortBy, setSortBy] = useState<SortOption>('tier');
@@ -352,7 +355,7 @@ export function ProfessionalAchievementProgress({
                 <div
                   className="bg-gradient-to-r from-slate-600 to-slate-500 h-3 rounded-full transition-all duration-1000 ease-out"
                   style={{ width: `${completionRate}%` }}
-                ></div>
+                 />
               </div>
               <div className="flex justify-between text-xs text-slate-300">
                 <span>
@@ -604,7 +607,7 @@ export function ProfessionalAchievementProgress({
                                   style={{
                                     width: `${achievement.percentage}%`,
                                   }}
-                                ></div>
+                                 />
                               </div>
                               {achievement.current !== undefined &&
                                 achievement.target !== undefined && (

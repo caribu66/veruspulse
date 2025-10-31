@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get basic network metrics
     const [blockchainInfo, txOutInfo, miningInfo] = await Promise.all([
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     return NextResponse.json(
       {
@@ -71,7 +71,7 @@ function calculateAverageBlockTime(blockchainInfo: any): number {
   }
 
   // Simplified calculation - in reality you'd want to analyze recent block times
-  const currentTime = Date.now() / 1000;
+  const _currentTime = Date.now() / 1000;
   const blocksInLastHour = 60; // Assuming 1 block per minute
   const timeSpan = 3600; // 1 hour in seconds
 
@@ -79,7 +79,7 @@ function calculateAverageBlockTime(blockchainInfo: any): number {
 }
 
 // Helper function to calculate participation trends (placeholder)
-async function calculateParticipationTrends() {
+async function _calculateParticipationTrends() {
   // This would analyze historical participation data
   // For now, return placeholder data
   return {

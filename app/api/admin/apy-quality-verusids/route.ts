@@ -1,19 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     const limit = parseInt(searchParams.get('limit') || '100');
     const minStakes = parseInt(searchParams.get('minStakes') || '1');
 
     // Get VerusID quality details using the view we created
     const verusIDsQuery = `
-      SELECT 
+      SELECT
         address,
         friendly_name,
         total_stakes,

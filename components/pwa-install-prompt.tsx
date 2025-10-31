@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Download, X } from '@phosphor-icons/react';
 import { haptics } from '@/lib/utils/haptics';
+import { useTranslations } from 'next-intl';
 
 /**
  * PWA Install Prompt
@@ -19,6 +20,8 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function PWAInstallPrompt() {
+  const tCommon = useTranslations('common');
+
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);

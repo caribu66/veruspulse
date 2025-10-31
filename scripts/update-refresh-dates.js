@@ -7,9 +7,16 @@
 
 const { Pool } = require('pg');
 
+// Load environment variables
+require('dotenv').config();
+
+if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL not set');
+  process.exit(1);
+}
+
 const db = new Pool({
-  connectionString:
-    'postgresql://verus_user:verus_secure_2024@localhost:5432/verus_utxo_db',
+  connectionString: process.env.DATABASE_URL,
   max: 3,
 });
 

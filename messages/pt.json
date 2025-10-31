@@ -1,0 +1,116 @@
+{
+  "nav": {
+    "dashboard": "Painel",
+    "explorer": "Explorador",
+    "verusids": "VerusIDs",
+    "blocks": "Blocos",
+    "transactions": "Transações",
+    "addresses": "Endereços"
+  },
+  "dashboard": {
+    "title": "VerusPulse - A Internet do Valor",
+    "description": "Explore o ecossistema do Protocolo Verus - Rastreie Transações Inteligentes, analise cadeias PBaaS, monitore recompensas de staking, explore o sistema de identidade VerusID e descubra moedas em nível de protocolo.",
+    "welcome": "Bem-vindo ao VerusPulse",
+    "welcomeMessage": "Seu portal abrangente para a blockchain Verus. Todas as métricas-chave da rede são exibidas acima no ticker de estatísticas.",
+    "blockchainExplorer": "Explorador de Blockchain",
+    "browseBlocksTransactions": "Navegar blocos e transações",
+    "networkStats": "Estatísticas da Rede",
+    "stakingMetrics": "Métricas de staking e mineração em tempo real",
+    "verusidSystem": "Sistema VerusID",
+    "identityManagement": "Gestão e resolução de identidade"
+  },
+  "blocks": {
+    "title": "Explorador de Blocos",
+    "description": "Explore os blocos e transações da blockchain Verus",
+    "totalBlocks": "Total de Blocos",
+    "blockHeight": "Altura do Bloco",
+    "transactions": "Transações",
+    "blockTime": "Tempo do Bloco",
+    "difficulty": "Dificuldade",
+    "miner": "Minerador",
+    "reward": "Recompensa",
+    "size": "Tamanho"
+  },
+  "transactions": {
+    "title": "Explorador de Transações",
+    "description": "Explore as transações da blockchain Verus e movimentos UTXO",
+    "totalTransactions": "Total de Transações",
+    "transactionId": "ID da Transação",
+    "amount": "Quantidade",
+    "fee": "Taxa",
+    "confirmations": "Confirmações",
+    "timestamp": "Carimbo de Tempo"
+  },
+  "verusid": {
+    "title": "Explorador VerusID",
+    "description": "Explore identidades VerusID e seus endereços associados",
+    "search": "Pesquisar",
+    "browse": "Navegar",
+    "statistics": "Estatísticas",
+    "identity": "Identidade",
+    "address": "Endereço",
+    "primaryAddresses": "Endereços Principais",
+    "revocationAuthority": "Autoridade de Revogação",
+    "recoveryAuthority": "Autoridade de Recuperação",
+    "privateAddresses": "Endereços Privados"
+  },
+  "staking": {
+    "title": "Staking",
+    "stakingRewards": "Recompensas de Staking",
+    "averageStakeAge": "Idade Média do Stake",
+    "totalStaked": "Total em Stake",
+    "stakingParticipation": "Participação no Staking",
+    "recentStakes": "Stakes Recentes",
+    "stakingStats": "Estatísticas de Staking",
+    "networkParticipation": "Participação na Rede",
+    "achievements": "Conquistas"
+  },
+  "network": {
+    "height": "Altura",
+    "difficulty": "Dificuldade",
+    "hashrate": "Taxa de Hash",
+    "supply": "Fornecimento",
+    "connections": "Conexões",
+    "version": "Versão",
+    "protocol": "Protocolo",
+    "networkInfo": "Informações da Rede"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "retry": "Tentar Novamente",
+    "refresh": "Atualizar",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "view": "Visualizar",
+    "details": "Detalhes",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "home": "Início",
+    "donate": "Doar",
+    "language": "Idioma",
+    "theme": "Tema",
+    "dark": "Escuro",
+    "light": "Claro",
+    "auto": "Auto"
+  },
+  "search": {
+    "placeholder": "Pesquisar blocos, transações, endereços ou VerusIDs...",
+    "results": "Resultados da Pesquisa",
+    "noResults": "Nenhum resultado encontrado",
+    "searchType": "Tipo de Pesquisa"
+  },
+  "time": {
+    "ago": "atrás",
+    "seconds": "segundos",
+    "minutes": "minutos",
+    "hours": "horas",
+    "days": "dias",
+    "weeks": "semanas",
+    "months": "meses",
+    "years": "anos"
+  }
+}
+

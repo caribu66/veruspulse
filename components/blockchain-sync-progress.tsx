@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   CircleNotch,
   CheckCircle,
@@ -31,6 +32,8 @@ export function BlockchainSyncProgress({
   className = '',
   refreshInterval = 5000, // Check every 5 seconds during sync
 }: BlockchainSyncProgressProps) {
+  const tCommon = useTranslations('common');
+  const tNetwork = useTranslations('network');
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     connected: false,
     blockHeight: 0,

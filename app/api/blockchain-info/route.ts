@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { CachedRPCClient } from '@/lib/cache/cached-rpc-client';
-import { verusAPI } from '@/lib/rpc-client-robust';
+// import { verusAPI } from '@/lib/rpc-client-robust'; // Unused
 import { logger } from '@/lib/utils/logger';
 import { ErrorSanitizer } from '@/lib/utils/error-sanitizer';
 

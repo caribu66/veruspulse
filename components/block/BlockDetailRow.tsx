@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Copy, Check, ArrowSquareOut } from '@phosphor-icons/react';
+import { useTranslations } from 'next-intl';
 
 interface BlockDetailRowProps {
   label: string;
@@ -27,6 +28,7 @@ export function BlockDetailRow({
   tooltip,
   className = '',
 }: BlockDetailRowProps) {
+  const tCommon = useTranslations('common');
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -62,6 +64,8 @@ export function BlockDetailRow({
           {isLink && link ? (
             <Link
               href={link}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-blue-400 hover:underline flex items-center space-x-1"
             >
               <span className="truncate">{displayValue}</span>
@@ -76,7 +80,7 @@ export function BlockDetailRow({
           <button
             onClick={handleCopy}
             className="ml-2 p-1 hover:bg-white/10 rounded transition-colors flex-shrink-0"
-            title="Copy to clipboard"
+            title={tCommon('copy')}
           >
             {copied ? (
               <Check className="h-4 w-4 text-green-400" />

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   UsersThree,
   TrendUp,
@@ -47,6 +48,10 @@ export function FeaturedVerusIDsCarousel({
   autoPlay = true,
   interval = 5000,
 }: FeaturedVerusIDsCarouselProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [featuredIDs, setFeaturedIDs] = useState<FeaturedVerusID[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -226,7 +231,7 @@ export function FeaturedVerusIDsCarousel({
               <h3 className="text-xl font-bold text-white">
                 Featured VerusIDs
               </h3>
-              <p className="text-sm text-gray-400">Loading...</p>
+              <p className="text-sm text-gray-400">{tCommon("loading")}</p>
             </div>
           </div>
         </div>
@@ -324,7 +329,7 @@ export function FeaturedVerusIDsCarousel({
                 )}
                 {currentID.stats.stakingRewards !== undefined && (
                   <div className="bg-white/5 rounded-lg p-3">
-                    <div className="text-xs text-gray-400 mb-1">Rewards</div>
+                    <div className="text-xs text-gray-400 mb-1">{tBlocks("reward")}</div>
                     <div className="text-lg font-bold text-green-400">
                       {currentID.stats.stakingRewards.toFixed(2)} VRSC
                     </div>

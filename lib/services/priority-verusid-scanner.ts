@@ -1,10 +1,14 @@
 import { Pool } from 'pg';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { logger } from '@/lib/utils/logger';
 
 /**
  * Priority VerusID Scanner
  * Immediately scans and saves staking data for individual VerusIDs when users search for them
  */
+
+const execAsync = promisify(exec);
 
 let dbPool: Pool | null = null;
 
@@ -22,10 +26,6 @@ function getDbPool() {
 
 // RPC helper
 async function rpcCall(method: string, params: any[] = []) {
-  const { exec } = require('child_process');
-  const { promisify } = require('util');
-  const execAsync = promisify(exec);
-
   const rpcUser = process.env.VERUS_RPC_USER || 'verus';
   const rpcPass = process.env.VERUS_RPC_PASSWORD || 'verus';
   const rpcHost = process.env.VERUS_RPC_HOST || '127.0.0.1';
@@ -64,7 +64,7 @@ async function hasCompleteStakingData(
     const result = await db.query(
       `
       SELECT COUNT(*) as stake_count
-      FROM staking_rewards 
+      FROM staking_rewards
       WHERE identity_address = $1
         AND source_address = identity_address
     `,
@@ -80,7 +80,7 @@ async function hasCompleteStakingData(
     const recentResult = await db.query(
       `
       SELECT MAX(block_time) as last_stake
-      FROM staking_rewards 
+      FROM staking_rewards
       WHERE identity_address = $1
         AND source_address = identity_address
     `,
@@ -159,7 +159,7 @@ async function insertStake(stake: any) {
     await db.query(
       `
       INSERT INTO staking_rewards (
-        identity_address, txid, vout, block_height, block_hash, 
+        identity_address, txid, vout, block_height, block_hash,
         block_time, amount_sats, classifier, source_address
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -210,8 +210,8 @@ export async function priorityScanVerusID(identityAddress: string): Promise<{
     // Get VerusID info
     const verusIDResult = await db.query(
       `
-      SELECT base_name, friendly_name 
-      FROM identities 
+      SELECT base_name, friendly_name
+      FROM identities
       WHERE identity_address = $1
     `,
       [identityAddress]
@@ -234,7 +234,7 @@ export async function priorityScanVerusID(identityAddress: string): Promise<{
     const lastScannedResult = await db.query(
       `
       SELECT MAX(block_height) as last_height
-      FROM staking_rewards 
+      FROM staking_rewards
       WHERE identity_address = $1
         AND source_address = identity_address
     `,
@@ -345,12 +345,12 @@ async function calculateVerusIDStatistics(identityAddress: string) {
     // Calculate new statistics (only count direct I-address stakes)
     const statsResult = await db.query(
       `
-      SELECT 
+      SELECT
         COUNT(*) as total_stakes,
         SUM(amount_sats) as total_rewards_satoshis,
         MIN(block_time) as first_stake_time,
         MAX(block_time) as last_stake_time
-      FROM staking_rewards 
+      FROM staking_rewards
       WHERE identity_address = $1
         AND source_address = identity_address
     `,

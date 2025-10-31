@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { logger } from '@/lib/utils/logger';
 
@@ -10,7 +10,7 @@ import { logger } from '@/lib/utils/logger';
  *
  * Since we don't track actual staked balances, we estimate conservatively.
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   // Initialize database connection
   const db = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
   try {
     logger.info('🔧 Starting APY recalculation...');
-    console.log('🔧 Fixing APY calculations...');
+    console.info('🔧 Fixing APY calculations...');
 
     // Get all identities with suspicious APY values (> 100% or NULL)
     const problematicResult = await db.query(`
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       ORDER BY apy_all_time DESC NULLS LAST
     `);
 
-    console.log(
+    console.info(
       `Found ${problematicResult.rows.length} identities with suspicious APY`
     );
 

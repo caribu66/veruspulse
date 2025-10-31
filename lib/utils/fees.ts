@@ -124,7 +124,10 @@ export async function computeBlockFees(
           if (vin.txid && vin.vout !== undefined) {
             const prevTx = prevTxMap.get(vin.txid);
             if (prevTx && prevTx.vout && prevTx.vout[vin.vout]) {
-              inputTotal += prevTx.vout[vin.vout].value || 0;
+              const prevOutput = prevTx.vout[vin.vout];
+              if (prevOutput) {
+                inputTotal += prevOutput.value || 0;
+              }
             }
           }
         }

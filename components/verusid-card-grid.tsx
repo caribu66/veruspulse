@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import {
   User,
   Hash,
@@ -11,7 +12,7 @@ import {
   Wallet,
   ChartBar,
 } from '@phosphor-icons/react';
-import { VerusIDBrowseData } from '@/lib/types/verusid-browse-types';
+import { type VerusIDBrowseData } from '@/lib/types/verusid-browse-types';
 import {
   formatVRSCAmount,
   formatAPY,
@@ -29,6 +30,10 @@ export function VerusIDCardGrid({
   identities,
   onIdentityClick,
 }: VerusIDCardGridProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   if (identities.length === 0) {
     return (
       <div className="text-center py-12">

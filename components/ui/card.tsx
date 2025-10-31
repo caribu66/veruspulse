@@ -1,6 +1,6 @@
 'use client';
 
-import React, { HTMLAttributes, ReactNode } from 'react';
+import React, { type HTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
@@ -49,15 +49,15 @@ export function Card({
   // Base styles
   const baseStyles = 'rounded-xl transition-all duration-200';
 
-  // Variant styles - Solid, professional design (theme-aware)
+  // Variant styles - Unified, harmonious design (theme-aware)
   const variantStyles = {
     default:
-      'bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700',
+      'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700',
     elevated:
-      'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-xl',
+      'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-lg',
     flat: 'bg-white dark:bg-slate-900',
     outlined: 'bg-white dark:bg-slate-900 border-2 border-verus-blue/40',
-  };
+  } as const;
 
   // Padding styles - 8pt grid system
   const paddingStyles = {
@@ -67,15 +67,15 @@ export function Card({
     md: 'p-4 md:p-6', // 16px → 24px
     lg: 'p-6 md:p-8', // 24px → 32px
     xl: 'p-8 md:p-12', // 32px → 48px - NEW: extra large
-  };
+  } as const;
 
   // Hover styles - Subtle, professional effects (theme-aware)
   const hoverStyles = {
     none: '',
-    lift: 'hover:shadow-2xl hover:-translate-y-0.5',
-    glow: 'hover:border-verus-blue/60 hover:shadow-lg',
-    brighten: 'hover:bg-slate-700 dark:hover:bg-slate-700',
-  };
+    lift: 'hover:shadow-xl hover:-translate-y-1 hover:border-verus-blue/40',
+    glow: 'hover:border-verus-blue/60 hover:shadow-xl',
+    brighten: 'hover:bg-gray-50 dark:hover:bg-slate-800',
+  } as const;
 
   // Clickable cursor
   const clickableStyles = onClick ? 'cursor-pointer' : '';
@@ -231,33 +231,33 @@ export function StatCard({
   className,
 }: StatCardProps) {
   const trendColors = {
-    up: 'text-green-400',
-    down: 'text-red-400',
-    neutral: 'text-gray-400',
+    up: 'text-verus-green',
+    down: 'text-verus-red',
+    neutral: 'text-gray-500 dark:text-slate-400',
   };
 
-  const trendColor = trend ? trendColors[trend] : 'text-gray-400';
+  const trendColor = trend ? trendColors[trend] : 'text-gray-500 dark:text-slate-400';
 
   return (
-    <Card variant="elevated" hover="glow" className={className}>
+    <Card variant="default" hover="glow" className={className}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-sm text-gray-600 dark:text-slate-400 mb-1">
+          <p className="text-sm text-gray-600 dark:text-slate-400 mb-2">
             {label}
           </p>
-          <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white tabular-nums">
             {value}
           </p>
           {change !== undefined && (
-            <p className={cn('text-sm mt-1', trendColor)}>
+            <p className={cn('text-sm mt-2 font-medium', trendColor)}>
               {change > 0 && '+'}
               {change}%
             </p>
           )}
         </div>
         {icon && (
-          <div className="flex-shrink-0 p-3 bg-gray-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg">
-            {icon}
+          <div className="flex-shrink-0 p-2.5 bg-verus-blue/10 border border-verus-blue/20 rounded-lg">
+            <span className="text-verus-blue">{icon}</span>
           </div>
         )}
       </div>

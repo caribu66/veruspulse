@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { AchievementService } from '@/lib/services/achievement-service';
 
@@ -18,7 +18,7 @@ function getDbPool() {
 }
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -100,7 +100,9 @@ export async function GET(
     };
 
     earned.forEach(badge => {
-      earnedRarity[badge.rarity]++;
+      if (badge?.rarity) {
+        earnedRarity[badge.rarity]++;
+      }
     });
 
     // Transform earned badges for API response

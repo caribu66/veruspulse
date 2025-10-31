@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import {
   calculateStakingMomentum,
   formatMomentumTrend,
@@ -9,7 +9,7 @@ import {
 } from '@/lib/utils/momentum-calculations';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -89,7 +89,7 @@ export async function GET(
         : null;
 
     // Log debug info for troubleshooting
-    console.log({
+    console.info({
       liveUTXOAvailable: !!liveUTXOData,
       stakingStatsAvailable: !!stakingStats,
       consolidatedDataAvailable: !!consolidatedData,

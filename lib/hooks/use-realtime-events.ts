@@ -3,8 +3,8 @@
  *
  * Usage:
  * const { connected, lastBlock, lastTransaction } = useRealtimeEvents({
- *   onNewBlock: (block) => console.log('New block:', block),
- *   onNewTransaction: (txid) => console.log('New tx:', txid),
+ *   onNewBlock: (block) => console.info('New block:', block),
+ *   onNewTransaction: (txid) => console.info('New tx:', txid),
  * });
  */
 
@@ -97,7 +97,7 @@ export function useRealtimeEvents(config: RealtimeEventsConfig = {}) {
         try {
           const data = JSON.parse(e.data);
           if (data.type === 'connected') {
-            console.log('[Realtime] Connected to event stream');
+            console.info('[Realtime] Connected to event stream');
             setState(prev => ({ ...prev, connected: true, error: null }));
             reconnectAttemptsRef.current = 0;
             callbacksRef.current.onConnected?.();
@@ -110,7 +110,7 @@ export function useRealtimeEvents(config: RealtimeEventsConfig = {}) {
       eventSource.addEventListener('new-block', e => {
         try {
           const data = JSON.parse(e.data);
-          console.log('[Realtime] New block:', data.block);
+          console.info('[Realtime] New block:', data.block);
           setState(prev => ({ ...prev, lastBlock: data.block }));
           callbacksRef.current.onNewBlock?.(data.block);
         } catch (error) {
@@ -121,7 +121,7 @@ export function useRealtimeEvents(config: RealtimeEventsConfig = {}) {
       eventSource.addEventListener('new-transaction', e => {
         try {
           const data = JSON.parse(e.data);
-          console.log('[Realtime] New transaction:', data.txid);
+          console.info('[Realtime] New transaction:', data.txid);
           setState(prev => ({ ...prev, lastTransaction: data.txid }));
           callbacksRef.current.onNewTransaction?.(data.txid);
         } catch (error) {
@@ -135,7 +135,7 @@ export function useRealtimeEvents(config: RealtimeEventsConfig = {}) {
       eventSource.addEventListener('verusid-update', e => {
         try {
           const data = JSON.parse(e.data);
-          console.log('[Realtime] VerusID update:', data);
+          console.info('[Realtime] VerusID update:', data);
           setState(prev => ({
             ...prev,
             lastVerusIDUpdate: { iaddr: data.iaddr, name: data.name },
@@ -166,7 +166,7 @@ export function useRealtimeEvents(config: RealtimeEventsConfig = {}) {
             30000
           );
           reconnectAttemptsRef.current++;
-          console.log(
+          console.info(
             `[Realtime] Reconnecting in ${delay}ms (attempt ${reconnectAttemptsRef.current})...`
           );
 

@@ -1,9 +1,10 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import Link from 'next/link';
 import { CaretRight, House } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 /**
  * Breadcrumb Navigation Component
@@ -30,6 +31,7 @@ export function Breadcrumb({
   className,
   separator = <CaretRight className="h-4 w-4 text-gray-500" />,
 }: BreadcrumbProps) {
+  const tCommon = useTranslations('common');
   const childrenArray = React.Children.toArray(children);
 
   return (

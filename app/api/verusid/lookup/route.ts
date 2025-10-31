@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import {
   resolveVerusID,
   getCachedStats,
@@ -7,9 +7,9 @@ import {
 } from '@/lib/verusid-cache';
 import { validateVerusIDFormat } from '@/lib/utils/verusid-validation';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { input } = body;
 
     if (!input) {
@@ -35,12 +35,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Try to get from cache first (avoids RPC call if already cached)
-    let cachedIdentity = await getCachedIdentity(input);
-    let wasCached = cachedIdentity !== null;
+    const cachedIdentity = await getCachedIdentity(input);
+    const wasCached = cachedIdentity !== null;
 
     // Always resolve full identity details via RPC to get txid, height, etc.
     // The cache only stores basic info, but we need complete details for the UI
-    let identity = await resolveVerusID(input);
+    const identity = await resolveVerusID(input);
 
     // If not in cache, start background caching (doesn't block response)
     if (!cachedIdentity) {

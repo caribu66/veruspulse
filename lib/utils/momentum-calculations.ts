@@ -86,10 +86,10 @@ export function calculateStakingMomentum(
 
     // Activity indicators
     lastStakeDays:
-      recentStakes.length > 0
+      recentStakes.length > 0 && recentStakes[recentStakes.length - 1]
         ? Math.floor(
             (now.getTime() -
-              recentStakes[recentStakes.length - 1].timestamp.getTime()) /
+              recentStakes[recentStakes.length - 1]!.timestamp.getTime()) /
               (1000 * 60 * 60 * 24)
           )
         : null,

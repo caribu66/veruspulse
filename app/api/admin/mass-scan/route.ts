@@ -3,7 +3,7 @@
  * Optimized to not hammer the RPC
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { IntelligentMassScanner } from '@/lib/services/intelligent-mass-scanner';
 
@@ -25,9 +25,9 @@ function getDbPool(): Pool {
 // Global scanner instance
 let scanner: IntelligentMassScanner | null = null;
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { action, config, options } = body;
 
     if (action === 'start') {
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     if (scanner) {
       const progress = scanner.getProgress();

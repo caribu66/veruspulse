@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   MagnifyingGlass,
   UsersThree,
@@ -29,13 +30,18 @@ interface QuickActionsBarProps {
   onTabChange: (tab: string) => void;
 }
 
-export function QuickActionsBar({ onTabChange }: QuickActionsBarProps) {
+export function QuickActionsBar({
+  onTabChange,
+}: QuickActionsBarProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tVerusId = useTranslations('verusid');
   const [hoveredAction, setHoveredAction] = useState<string | null>(null);
 
   const quickActions: QuickAction[] = [
     {
       id: 'search',
-      label: 'Search',
+      label: tCommon("search"),
       description: 'Find blocks, transactions, addresses',
       icon: MagnifyingGlass,
       color: 'text-slate-300',
@@ -186,7 +192,7 @@ export function QuickActionsCompact({
   const compactActions = [
     {
       id: 'search',
-      label: 'Search',
+      label: tCommon("search"),
       icon: MagnifyingGlass,
       action: () => onTabChange('explorer'),
     },

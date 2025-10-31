@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   formatDifficulty,
   formatHashRate,
@@ -10,7 +11,6 @@ import {
   Pulse,
   Clock,
   Hash,
-  Coins,
   Network,
   TrendUp,
   Lightning,
@@ -75,6 +75,12 @@ interface Block {
 }
 
 export function LiveData() {
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
+  const tNetwork = useTranslations('network');
+  const tBlocks = useTranslations('blocks');
+  const tTransactions = useTranslations('transactions');
+
   const [activeSection, setActiveSection] = useState<
     'overview' | 'blocks' | 'transactions' | 'mempool'
   >('overview');
@@ -151,15 +157,27 @@ export function LiveData() {
       if (transactionsRes.ok) {
         const transactionsData = await transactionsRes.json();
         if (transactionsData.success) {
-          const txData = transactionsData.data.transactions.map((tx: any) => ({
+          type RawTransaction = {
+            txid: string;
+            size?: number;
+            fee?: number;
+            time?: number;
+            height?: number;
+            vin?: unknown[];
+            vout?: unknown[];
+            value?: number;
+            [key: string]: unknown;
+          };
+
+          const txData = (transactionsData.data.transactions as RawTransaction[]).map((tx) => ({
             txid: tx.txid,
-            size: tx.size || 0,
-            fee: tx.fee || 0,
-            time: tx.time || Date.now() / 1000,
-            height: tx.height || 0,
-            inputs: tx.vin?.length || 0,
-            outputs: tx.vout?.length || 0,
-            value: tx.value || 0,
+            size: tx.size ?? 0,
+            fee: tx.fee ?? 0,
+            time: tx.time ?? Date.now() / 1000,
+            height: tx.height ?? 0,
+            inputs: tx.vin?.length ?? 0,
+            outputs: tx.vout?.length ?? 0,
+            value: tx.value ?? 0,
             type: determineTransactionType(tx),
           }));
           setTransactions(txData);
@@ -182,8 +200,14 @@ export function LiveData() {
     }
   }, [stats]);
 
+  type RawTransaction = {
+    vin?: unknown[];
+    vout?: unknown[];
+    [key: string]: unknown;
+  };
+
   const determineTransactionType = (
-    tx: any
+    tx: RawTransaction
   ): 'incoming' | 'outgoing' | 'internal' => {
     if (tx.vin && tx.vout) {
       if (tx.vin.length === 1 && tx.vout.length === 1) {
@@ -204,6 +228,7 @@ export function LiveData() {
       const interval = setInterval(fetchLiveData, 30000); // Poll every 30 seconds
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [autoRefresh, fetchLiveData]);
 
   const copyToClipboard = async (text: string, type: string) => {
@@ -259,7 +284,7 @@ export function LiveData() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
         <span className="ml-3 text-blue-200">Loading live data...</span>
       </div>
     );
@@ -309,7 +334,7 @@ export function LiveData() {
             className="flex items-center space-x-2 px-4 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors"
           >
             <ArrowsClockwise className="h-4 w-4" />
-            <span className="text-sm">Refresh</span>
+            <span className="text-sm">{tCommon('refresh')}</span>
           </button>
         </div>
       </div>
@@ -317,14 +342,14 @@ export function LiveData() {
       {/* Section Navigation */}
       <div className="flex space-x-4">
         {[
-          { key: 'overview', label: 'Overview', icon: ChartBar },
-          { key: 'blocks', label: 'Recent Blocks', icon: Database },
+          { key: 'overview', label: t('overview'), icon: ChartBar },
+          { key: 'blocks', label: t('recentBlocks'), icon: Database },
           {
             key: 'transactions',
-            label: 'Recent Transactions',
+            label: t('recentTransactions'),
             icon: Pulse,
           },
-          { key: 'mempool', label: 'Mempool', icon: Clock },
+          { key: 'mempool', label: t('mempool'), icon: Clock },
         ].map(section => (
           <button
             key={section.key}
@@ -353,7 +378,7 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {stats.blocks.toLocaleString()}
                   </div>
-                  <div className="text-blue-200 text-sm">Total Blocks</div>
+                  <div className="text-blue-200 text-sm">{tBlocks('totalBlocks')}</div>
                 </div>
               </div>
             </div>
@@ -366,7 +391,7 @@ export function LiveData() {
                     {stats.transactions.toLocaleString()}
                   </div>
                   <div className="text-blue-200 text-sm">
-                    Total Transactions
+                    {tTransactions('totalTransactions')}
                   </div>
                 </div>
               </div>
@@ -379,7 +404,7 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {stats.mempoolSize.toLocaleString()}
                   </div>
-                  <div className="text-blue-200 text-sm">Mempool Size</div>
+                  <div className="text-blue-200 text-sm">{tNetwork('mempoolSize')}</div>
                 </div>
               </div>
             </div>
@@ -391,7 +416,7 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {stats.connections}
                   </div>
-                  <div className="text-blue-200 text-sm">Connections</div>
+                  <div className="text-blue-200 text-sm">{tNetwork('connections')}</div>
                 </div>
               </div>
             </div>
@@ -403,7 +428,7 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {formatHashRate(stats.networkHashRate)}
                   </div>
-                  <div className="text-blue-200 text-sm">Network Hash Rate</div>
+                  <div className="text-blue-200 text-sm">{tNetwork('networkHashrate')}</div>
                 </div>
               </div>
             </div>
@@ -415,7 +440,7 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {formatDifficulty(stats.difficulty)}
                   </div>
-                  <div className="text-blue-200 text-sm">Difficulty</div>
+                  <div className="text-blue-200 text-sm">{tNetwork('difficulty')}</div>
                 </div>
               </div>
             </div>
@@ -427,7 +452,7 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {stats.chain}
                   </div>
-                  <div className="text-blue-200 text-sm">Network</div>
+                  <div className="text-blue-200 text-sm">{tNetwork('chainType')}</div>
                 </div>
               </div>
             </div>
@@ -449,13 +474,13 @@ export function LiveData() {
           {mempoolInfo && (
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <h3 className="text-xl font-bold text-white mb-4">
-                Mempool Information
+                {t('mempool')} {tCommon('info')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                  <div className="text-blue-200 text-sm">Size</div>
+                  <div className="text-blue-200 text-sm">{tCommon('size')}</div>
                   <div className="text-white font-semibold">
-                    {mempoolInfo.size.toLocaleString()} transactions
+                    {mempoolInfo.size.toLocaleString()} {tTransactions('transactions')}
                   </div>
                 </div>
                 <div>
@@ -473,7 +498,7 @@ export function LiveData() {
                   </div>
                 </div>
                 <div>
-                  <div className="text-blue-200 text-sm">Max Size</div>
+                  <div className="text-blue-200 text-sm">Max {tCommon('size')}</div>
                   <div className="text-white font-semibold">
                     {formatSize(mempoolInfo.maxmempool)}
                   </div>
@@ -487,7 +512,7 @@ export function LiveData() {
       {/* Blocks Section */}
       {activeSection === 'blocks' && (
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-          <h3 className="text-xl font-bold text-white mb-4">Recent Blocks</h3>
+          <h3 className="text-xl font-bold text-white mb-4">{t('recentBlocks')}</h3>
           {blocks.length > 0 ? (
             <div className="space-y-4">
               {blocks.map((block, index) => (

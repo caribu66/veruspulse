@@ -81,9 +81,12 @@ logs/
 # Redis
 dump.rdb
 
-# IDE
-.vscode/
+# IDE (but allow .vscode for shared settings)
+# .vscode/ - Keep for team settings
 .idea/
+*.swp
+*.swo
+*~
 
 # Cache
 .cache/
@@ -128,3 +131,23 @@ calculate-*.js
 *.png
 !public/**/*.png
 
+# Temporary fix scripts and config files (auto-generated)
+fix-*.sh
+fix-*.sql
+*-fix.sh
+*-fix.sql
+.config-locked
+CONFIGURATION_STATUS.md
+STARTUP_CHECKLIST.md
+
+# Temporary database dumps
+*.dump
+backup*.sql
+dump-*.sql
+
+# Development temporary files
+TODO.md
+NOTES.md
+SCRATCH.md
+temp*.md
+tmp*.md

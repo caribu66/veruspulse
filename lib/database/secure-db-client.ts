@@ -1,4 +1,4 @@
-import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
+import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from 'pg';
 import { logger } from '@/lib/utils/logger';
 import { SecurityMonitor } from '@/lib/security/security-monitor';
 

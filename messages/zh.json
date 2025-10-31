@@ -1,0 +1,116 @@
+{
+  "nav": {
+    "dashboard": "仪表板",
+    "explorer": "浏览器",
+    "verusids": "VerusID",
+    "blocks": "区块",
+    "transactions": "交易",
+    "addresses": "地址"
+  },
+  "dashboard": {
+    "title": "VerusPulse - 价值互联网",
+    "description": "探索Verus协议生态系统 - 追踪智能交易，分析PBaaS链，监控质押奖励，探索VerusID身份系统，发现协议级货币。",
+    "welcome": "欢迎来到VerusPulse",
+    "welcomeMessage": "您通往Verus区块链的综合门户。所有关键网络指标都显示在上方的统计滚动条中。",
+    "blockchainExplorer": "区块链浏览器",
+    "browseBlocksTransactions": "浏览区块和交易",
+    "networkStats": "网络统计",
+    "stakingMetrics": "实时质押和挖矿指标",
+    "verusidSystem": "VerusID系统",
+    "identityManagement": "身份管理和解析"
+  },
+  "blocks": {
+    "title": "区块浏览器",
+    "description": "探索Verus区块链的区块和交易",
+    "totalBlocks": "总区块数",
+    "blockHeight": "区块高度",
+    "transactions": "交易",
+    "blockTime": "区块时间",
+    "difficulty": "难度",
+    "miner": "矿工",
+    "reward": "奖励",
+    "size": "大小"
+  },
+  "transactions": {
+    "title": "交易浏览器",
+    "description": "探索Verus区块链交易和UTXO移动",
+    "totalTransactions": "总交易数",
+    "transactionId": "交易ID",
+    "amount": "金额",
+    "fee": "手续费",
+    "confirmations": "确认数",
+    "timestamp": "时间戳"
+  },
+  "verusid": {
+    "title": "VerusID浏览器",
+    "description": "探索VerusID身份及其关联地址",
+    "search": "搜索",
+    "browse": "浏览",
+    "statistics": "统计",
+    "identity": "身份",
+    "address": "地址",
+    "primaryAddresses": "主要地址",
+    "revocationAuthority": "撤销权限",
+    "recoveryAuthority": "恢复权限",
+    "privateAddresses": "私有地址"
+  },
+  "staking": {
+    "title": "质押",
+    "stakingRewards": "质押奖励",
+    "averageStakeAge": "平均质押期限",
+    "totalStaked": "总质押量",
+    "stakingParticipation": "质押参与度",
+    "recentStakes": "最近质押",
+    "stakingStats": "质押统计",
+    "networkParticipation": "网络参与度",
+    "achievements": "成就"
+  },
+  "network": {
+    "height": "高度",
+    "difficulty": "难度",
+    "hashrate": "算力",
+    "supply": "供应量",
+    "connections": "连接数",
+    "version": "版本",
+    "protocol": "协议",
+    "networkInfo": "网络信息"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "retry": "重试",
+    "refresh": "刷新",
+    "search": "搜索",
+    "filter": "筛选",
+    "sort": "排序",
+    "view": "查看",
+    "details": "详情",
+    "back": "返回",
+    "next": "下一页",
+    "previous": "上一页",
+    "home": "首页",
+    "donate": "捐赠",
+    "language": "语言",
+    "theme": "主题",
+    "dark": "深色",
+    "light": "浅色",
+    "auto": "自动"
+  },
+  "search": {
+    "placeholder": "搜索区块、交易、地址或VerusID...",
+    "results": "搜索结果",
+    "noResults": "未找到结果",
+    "searchType": "搜索类型"
+  },
+  "time": {
+    "ago": "前",
+    "seconds": "秒",
+    "minutes": "分钟",
+    "hours": "小时",
+    "days": "天",
+    "weeks": "周",
+    "months": "月",
+    "years": "年"
+  }
+}
+

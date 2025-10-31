@@ -1,7 +1,7 @@
 // GitHub OAuth - Sign In
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const clientId = process.env.GITHUB_ID;
 
   if (!clientId) {

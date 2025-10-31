@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { House, MagnifyingGlass, User } from '@phosphor-icons/react';
 import { useMobileOptimizations } from './mobile-optimizations';
 import { haptics } from '@/lib/utils/haptics';
+import { useTranslations } from 'next-intl';
 
 /**
  * Mobile Bottom Navigation Bar
@@ -20,6 +21,9 @@ interface NavItem {
 }
 
 export function MobileBottomNav() {
+  const tCommon = useTranslations('common');
+  const tVerusId = useTranslations('verusid');
+
   const { isMobile } = useMobileOptimizations();
   const pathname = usePathname();
 
@@ -28,7 +32,7 @@ export function MobileBottomNav() {
 
   const navItems: NavItem[] = [
     { icon: House, label: 'Home', href: '/' },
-    { icon: MagnifyingGlass, label: 'Search', href: '/verusid' },
+    { icon: MagnifyingGlass, label: tCommon("search"), href: '/verusid' },
     { icon: User, label: 'Browse', href: '/verusid/browse' },
   ];
 

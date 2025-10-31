@@ -1,6 +1,7 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Warning,
   WarningCircle,
@@ -13,10 +14,7 @@ import {
 import { Button, ButtonGroup } from '@/components/ui/button';
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardContent,
-  CardFooter,
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
@@ -240,7 +238,37 @@ export function SmartError({
   onBack,
   className,
 }: SmartErrorProps) {
+  const t = useTranslations('errors');
   const errorInfo = classifyError(error);
+
+  // Get translated error messages
+  const getErrorTitle = (type: ErrorType): string => {
+    const titles: Record<ErrorType, string> = {
+      NETWORK_ERROR: t('connectionError'),
+      API_ERROR: t('apiError'),
+      NOT_FOUND: t('notFound'),
+      VALIDATION_ERROR: t('validationError'),
+      TIMEOUT_ERROR: t('timeoutError'),
+      PERMISSION_ERROR: t('permissionError'),
+      SERVER_ERROR: t('serverError'),
+      UNKNOWN_ERROR: t('unknownError'),
+    };
+    return titles[type];
+  };
+
+  const getErrorMessage = (type: ErrorType): string => {
+    const messages: Record<ErrorType, string> = {
+      NETWORK_ERROR: t('connectionErrorMessage'),
+      API_ERROR: t('apiErrorMessage'),
+      NOT_FOUND: t('notFoundMessage'),
+      VALIDATION_ERROR: t('validationErrorMessage'),
+      TIMEOUT_ERROR: t('timeoutErrorMessage'),
+      PERMISSION_ERROR: t('permissionErrorMessage'),
+      SERVER_ERROR: t('serverErrorMessage'),
+      UNKNOWN_ERROR: t('unknownErrorMessage'),
+    };
+    return messages[type];
+  };
 
   const severityColors = {
     low: 'text-blue-400',
@@ -278,13 +306,13 @@ export function SmartError({
 
   const getActionLabel = (action: ErrorAction): string => {
     const labels: Record<ErrorAction, string> = {
-      retry: 'Try Again',
-      refresh: 'Refresh Page',
-      'go-back': 'Go Back',
-      'search-again': 'MagnifyingGlass Again',
-      'contact-support': 'Contact Support',
-      'check-status': 'Check Network Status',
-      'go-home': 'Go to House',
+      retry: t('tryAgain'),
+      refresh: t('refreshPage'),
+      'go-back': t('goBack'),
+      'search-again': t('searchAgain'),
+      'contact-support': t('contactSupport'),
+      'check-status': t('checkNetworkStatus'),
+      'go-home': t('goHome'),
     };
     return labels[action];
   };
@@ -326,12 +354,12 @@ export function SmartError({
 
           {/* Title */}
           <h2 className="text-2xl font-bold text-white text-center mb-3">
-            {errorInfo.title}
+            {getErrorTitle(errorInfo.type)}
           </h2>
 
           {/* Message */}
           <p className="text-gray-300 text-center mb-6 leading-relaxed">
-            {errorInfo.message}
+            {getErrorMessage(errorInfo.type)}
           </p>
 
           {/* Actions */}

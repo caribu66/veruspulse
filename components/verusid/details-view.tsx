@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense, lazy } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Card,
   CardHeader,
@@ -50,9 +51,9 @@ export interface VerusIDDetailsViewProps {
 function TabSkeleton() {
   return (
     <div className="animate-pulse space-y-4">
-      <div className="h-8 bg-white/10 rounded w-1/3"></div>
-      <div className="h-32 bg-white/5 rounded-xl"></div>
-      <div className="h-48 bg-white/5 rounded-xl"></div>
+      <div className="h-8 bg-white/10 rounded w-1/3" />
+      <div className="h-32 bg-white/5 rounded-xl" />
+      <div className="h-48 bg-white/5 rounded-xl" />
     </div>
   );
 }
@@ -63,6 +64,10 @@ export function VerusIDDetailsView({
   balance,
   onClose,
 }: VerusIDDetailsViewProps) {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('dashboard');
+  const tVerusId = useTranslations('verusid');
+  const tStaking = useTranslations('staking');
   const [activeTab, setActiveTab] = useState<
     'overview' | 'staking' | 'utxo' | 'achievements' | 'identity'
   >('overview');
@@ -137,53 +142,37 @@ export function VerusIDDetailsView({
       {/* Tabs for Different Views */}
       <div className="space-y-6">
         {/* Tab Navigation */}
-        <div className="flex gap-1 border-b border-slate-300 dark:border-white/10 overflow-x-auto scrollbar-hide -mb-px">
-          {[
+        <Tabs
+          tabs={[
             {
-              value: 'overview',
-              label: 'Overview',
+              id: 'overview',
+              label: t("overview"),
               icon: <Info className="h-4 w-4" />,
             },
             {
-              value: 'staking',
+              id: 'staking',
               label: 'Staking',
               icon: <TrendUp className="h-4 w-4" />,
             },
             {
-              value: 'utxo',
+              id: 'utxo',
               label: 'UTXOs',
               icon: <Database className="h-4 w-4" />,
             },
             {
-              value: 'achievements',
+              id: 'achievements',
               label: 'Achievements',
               icon: <Medal className="h-4 w-4" />,
             },
             {
-              value: 'identity',
-              label: 'Identity',
+              id: 'identity',
+              label: tVerusId("identity"),
               icon: <User className="h-4 w-4" />,
             },
-          ].map(tab => (
-            <button
-              key={tab.value}
-              onClick={() => setActiveTab(tab.value as any)}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 sm:py-3 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-xs sm:text-sm font-medium rounded-t-lg ${
-                activeTab === tab.value
-                  ? 'border-verus-blue text-white bg-verus-blue'
-                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5'
-              }`}
-              role="tab"
-              aria-selected={activeTab === tab.value}
-            >
-              <span className="flex-shrink-0">{tab.icon}</span>
-              <span className="hidden xs:inline">{tab.label}</span>
-              <span className="inline xs:hidden">
-                {tab.label.split(' ')[0]}
-              </span>
-            </button>
-          ))}
-        </div>
+          ]}
+          activeTab={activeTab}
+          onTabChange={tab => setActiveTab(tab as any)}
+        />
 
         {/* Tab Content */}
         {activeTab === 'overview' && (

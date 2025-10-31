@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, ReactNode, useCallback } from 'react';
+import React, { useEffect, type ReactNode, useCallback } from 'react';
 import { X, CaretLeft } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 /**
  * Slide-In Panel Component
@@ -59,6 +60,7 @@ export function SlidePanel({
   headerActions,
   footer,
 }: SlidePanelProps) {
+  const tCommon = useTranslations('common');
   // Width styles
   const widthStyles = {
     sm: 'w-full md:w-96',

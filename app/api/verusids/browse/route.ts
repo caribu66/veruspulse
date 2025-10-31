@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 // Disable caching - always fetch fresh data
@@ -19,11 +19,36 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
+      // In development, gracefully return an empty, valid payload instead of 503
+      if (process.env.NODE_ENV !== 'production') {
+        const page = 1;
+        const limit = Math.min(parseInt('50'), 100);
+        return NextResponse.json({
+          success: true,
+          data: {
+            identities: [],
+            pagination: {
+              page,
+              limit,
+              total: 0,
+              totalPages: 0,
+              hasNextPage: false,
+              hasPrevPage: false,
+            },
+            metadata: {
+              sortBy: 'name',
+              search: null,
+            },
+          },
+          timestamp: new Date().toISOString(),
+        });
+      }
+
       return NextResponse.json(
         {
           success: false,
@@ -45,7 +70,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Parse query parameters
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = _request.nextUrl.searchParams;
     const search = searchParams.get('search') || '';
     const sortBy = searchParams.get('sort') || 'name'; // name, activity, stakes, recent
     const page = parseInt(searchParams.get('page') || '1');
@@ -54,11 +79,18 @@ export async function GET(request: NextRequest) {
 
     // Build search condition with TRENDING RULES: Only direct I-address stakers, active in last 30 days
     let searchCondition = '';
-    let queryParams: any[] = [limit, offset];
+    const queryParams: any[] = [limit, offset];
     let paramIndex = 3;
 
     // CRITICAL FILTER: Only show VerusIDs with direct I-address stakes (not delegated)
     // AND recently active (last 30 days)
+    // EXCLUDE known pools/foundations (they receive delegated stakes)
+    const knownPools = [
+      'i5v3h9FWVdRFbNHU7DfcpGykQjRaHtMqu7', // Verus Coin Foundation
+      'iSXF8KbbvpHDWBm4zHxeA4n7uc1LsfR15X', // Verus Community Pool
+      'iDhAAg4dXUkuBbxgdP3RKveCr1gvu8o7Vg', // Verus Development Fund
+    ];
+
     const trendingFilter = `
       WHERE EXISTS (
         SELECT 1 FROM staking_rewards sr
@@ -66,7 +98,10 @@ export async function GET(request: NextRequest) {
         AND sr.source_address = sr.identity_address
         AND sr.block_time >= NOW() - INTERVAL '30 days'
       )
+      AND i.identity_address NOT IN ('${knownPools.join("', '")}')
     `;
+
+    paramIndex = 3;
 
     if (search) {
       searchCondition = `${trendingFilter} AND (
@@ -81,54 +116,59 @@ export async function GET(request: NextRequest) {
     }
 
     // Build order by clause - ALWAYS sort by stakes to show active stakers first
-    let orderByClause =
-      'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
+    // const orderByClause = // Unused but keep for future use
+    //   'ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC';
 
     // Main query with left join to staking stats and earliest block fallback
     // ONLY shows VerusIDs with direct I-address stakes in last 30 days
     // Get last_stake_time directly from staking_rewards for real-time data
+    // Calculate TRENDING_RANK dynamically based on filtered results
     const query = `
-      SELECT 
-        i.identity_address,
-        i.base_name,
-        i.friendly_name,
-        i.first_seen_block,
-        i.last_scanned_block,
-        i.last_refreshed_at,
-        s.total_stakes,
-        s.total_rewards_satoshis,
-        COALESCE(sr_recent.last_stake_time, s.last_stake_time) as last_stake_time,
-        s.apy_all_time,
-        s.network_rank,
-        COALESCE(i.first_seen_block, sr.earliest_block) as effective_first_seen_block
-      FROM identities i
-      LEFT JOIN verusid_statistics s ON i.identity_address = s.address
-      LEFT JOIN (
-        SELECT identity_address, MIN(block_height) as earliest_block
-        FROM staking_rewards
-        WHERE source_address = identity_address
-        GROUP BY identity_address
-      ) sr ON i.identity_address = sr.identity_address
-      LEFT JOIN (
-        SELECT 
-          identity_address, 
-          MAX(block_time) as last_stake_time
-        FROM staking_rewards
-        WHERE source_address = identity_address
-        GROUP BY identity_address
-      ) sr_recent ON i.identity_address = sr_recent.identity_address
-      ${searchCondition}
-      ${orderByClause}
+      WITH filtered_identities AS (
+        SELECT
+          i.identity_address,
+          i.base_name,
+          i.friendly_name,
+          i.first_seen_block,
+          i.last_scanned_block,
+          i.last_refreshed_at,
+          s.total_stakes,
+          s.total_rewards_satoshis,
+          COALESCE(sr_recent.last_stake_time, s.last_stake_time) as last_stake_time,
+          s.apy_all_time,
+          s.network_rank,
+          COALESCE(i.first_seen_block, sr.earliest_block) as effective_first_seen_block,
+          ROW_NUMBER() OVER (ORDER BY COALESCE(s.total_stakes, 0) DESC, i.base_name ASC) as trending_rank
+        FROM identities i
+        LEFT JOIN verusid_statistics s ON i.identity_address = s.address
+        LEFT JOIN (
+          SELECT identity_address, MIN(block_height) as earliest_block
+          FROM staking_rewards
+          WHERE source_address = identity_address
+          GROUP BY identity_address
+        ) sr ON i.identity_address = sr.identity_address
+        LEFT JOIN (
+          SELECT
+            identity_address,
+            MAX(block_time) as last_stake_time
+          FROM staking_rewards
+          WHERE source_address = identity_address
+          GROUP BY identity_address
+        ) sr_recent ON i.identity_address = sr_recent.identity_address
+        ${searchCondition}
+      )
+      SELECT * FROM filtered_identities
+      ORDER BY COALESCE(total_stakes, 0) DESC, base_name ASC
       LIMIT $1 OFFSET $2
     `;
 
-    console.log('Executing browse query with params:', queryParams.slice(0, 5));
+    console.info('Executing browse query with params:', queryParams.slice(0, 5));
     const result = await db.query(query, queryParams);
-    console.log('Query returned', result.rows.length, 'rows');
+    console.info('Query returned', result.rows.length, 'rows');
 
     // Get total count for pagination with SAME trending filter
     const countQuery = `
-      SELECT COUNT(*) as total 
+      SELECT COUNT(*) as total
       FROM identities i
       ${searchCondition}
     `;
@@ -173,7 +213,7 @@ export async function GET(request: NextRequest) {
           : 0,
         lastStake: row.last_stake_time,
         apyAllTime: row.apy_all_time ? parseFloat(row.apy_all_time) : null,
-        networkRank: row.network_rank,
+        networkRank: row.trending_rank || row.network_rank, // Use trending_rank for filtered list
         totalValueVRSC: 0, // We'll get balance data separately if needed
         activityStatus,
         daysSinceLastStake,

@@ -1,6 +1,7 @@
 'use client';
 
 import { BlockDetailRow } from './BlockDetailRow';
+import { useTranslations } from 'next-intl';
 import {
   Coins,
   Shield,
@@ -8,13 +9,18 @@ import {
   TrendUp as TrendingUp,
   Clock,
 } from '@phosphor-icons/react';
-import { Block } from '@/lib/types/block-types';
+import { type Block } from '@/lib/types/block-types';
 
 interface BlockRewardSectionProps {
   block: Block;
 }
 
-export function BlockRewardSection({ block }: BlockRewardSectionProps) {
+export function BlockRewardSection({
+  block,
+}: BlockRewardSectionProps) {
+  const tCommon = useTranslations('common');
+  const tBlocks = useTranslations('blocks');
+  const tStaking = useTranslations('staking');
   if (!block.hasStakeReward && !block.reward) {
     return null;
   }
@@ -52,7 +58,7 @@ export function BlockRewardSection({ block }: BlockRewardSectionProps) {
   return (
     <div className={`${getRewardColor()} border rounded-lg p-4`}>
       <div className="flex items-center space-x-2 mb-4">
-        <div className={`w-2 h-2 ${getRewardDotColor()} rounded-full`}></div>
+        <div className={`w-2 h-2 ${getRewardDotColor()} rounded-full`} />
         <span className="text-white font-semibold flex items-center space-x-2">
           {getRewardIcon()}
           <span>Block Reward</span>

@@ -178,7 +178,7 @@ function generateDailyData(verusId: any) {
   return data;
 }
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     logger.info('🚀 Starting fresh VerusID data population...');
 

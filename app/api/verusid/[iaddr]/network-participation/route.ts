@@ -9,7 +9,7 @@ import {
 } from '@/lib/utils/staking-calculations';
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {

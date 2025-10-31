@@ -121,7 +121,12 @@ const BlockDetailsPage = ({
 
           {/* Main Block Details */}
           <div className="space-y-4">
-            <BlockDetailRow label={tBlocks('hash')} value={block.hash} isHash copyable />
+            <BlockDetailRow
+              label={tBlocks('hash')}
+              value={block.hash}
+              isHash
+              copyable
+            />
             <BlockDetailRow
               label={tBlocks('confirmations')}
               value={
@@ -130,7 +135,10 @@ const BlockDetailsPage = ({
                   : 'N/A'
               }
             />
-            <BlockDetailRow label={tBlocks('time')} value={formatTime(block.time)} />
+            <BlockDetailRow
+              label={tBlocks('time')}
+              value={formatTime(block.time)}
+            />
             {block.mediantime && (
               <BlockDetailRow
                 label={tBlocks('medianTime')}
@@ -172,7 +180,10 @@ const BlockDetailsPage = ({
               label={tBlocks('transactions')}
               value={block.nTx || block.tx?.length || 0}
             />
-            <BlockDetailRow label={tBlocks('size')} value={formatSize(block.size)} />
+            <BlockDetailRow
+              label={tBlocks('size')}
+              value={formatSize(block.size)}
+            />
             <BlockDetailRow
               label={tBlocks('difficulty')}
               value={formatDifficulty(block.difficulty)}
@@ -184,8 +195,16 @@ const BlockDetailsPage = ({
               }
             />
             <BlockDetailRow label={tBlocks('version')} value={block.version} />
-            <BlockDetailRow label={tBlocks('nonce')} value={block.nonce} copyable />
-            <BlockDetailRow label={tBlocks('bits')} value={block.bits} copyable />
+            <BlockDetailRow
+              label={tBlocks('nonce')}
+              value={block.nonce}
+              copyable
+            />
+            <BlockDetailRow
+              label={tBlocks('bits')}
+              value={block.bits}
+              copyable
+            />
             <BlockDetailRow
               label={tBlocks('chainwork')}
               value={block.chainwork}
@@ -366,7 +385,13 @@ const BlockDetailsPage = ({
               </div>
               <div className="bg-black/20 p-2 rounded-md max-h-96 overflow-y-auto space-y-2">
                 {block.tx
-                  .filter((tx) => tx && typeof tx === 'object' && tx.txid && !tx.error)
+                  .filter(
+                    tx =>
+                      tx &&
+                      typeof tx === 'object' &&
+                      tx.txid &&
+                      !(tx as any).error
+                  )
                   .map((tx, index) => (
                     <TransactionDetail
                       key={tx.txid || `tx-${index}`}

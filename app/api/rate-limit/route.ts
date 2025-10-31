@@ -12,9 +12,9 @@ import { AuthService } from '@/lib/auth/auth-service';
  * Rate Limiting Status API
  * Provides real-time monitoring of rate limiting status
  */
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   // Require authentication for monitoring access
-  const user = await AuthService.getUserFromRequest(_request);
+  const user = await AuthService.getUserFromRequest(request);
 
   if (!user) {
     return NextResponse.json(
@@ -116,9 +116,9 @@ export async function GET(_request: NextRequest) {
  * Reset Rate Limiting API
  * Allows manual reset of rate limits (admin only)
  */
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   // Require admin role for reset operations
-  const user = await AuthService.getUserFromRequest(_request);
+  const user = await AuthService.getUserFromRequest(request);
 
   if (!user) {
     return NextResponse.json(
@@ -145,7 +145,7 @@ export async function POST(_request: NextRequest) {
   }
 
   try {
-    const body = await _request.json();
+    const body = await request.json();
     const { limiter, action, key } = body;
 
     logger.info(

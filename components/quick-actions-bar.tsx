@@ -30,9 +30,7 @@ interface QuickActionsBarProps {
   onTabChange: (tab: string) => void;
 }
 
-export function QuickActionsBar({
-  onTabChange,
-}: QuickActionsBarProps) {
+export function QuickActionsBar({ onTabChange }: QuickActionsBarProps) {
   const tCommon = useTranslations('common');
   const tBlocks = useTranslations('blocks');
   const tVerusId = useTranslations('verusid');
@@ -41,7 +39,7 @@ export function QuickActionsBar({
   const quickActions: QuickAction[] = [
     {
       id: 'search',
-      label: tCommon("search"),
+      label: tCommon('search'),
       description: 'Find blocks, transactions, addresses',
       icon: MagnifyingGlass,
       color: 'text-slate-300',
@@ -189,10 +187,11 @@ export function QuickActionsCompact({
 }: {
   onTabChange: (tab: string) => void;
 }) {
+  const tCommon = useTranslations('common');
   const compactActions = [
     {
       id: 'search',
-      label: tCommon("search"),
+      label: tCommon('search'),
       icon: MagnifyingGlass,
       action: () => onTabChange('explorer'),
     },

@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { UTXODatabaseService } from '@/lib/services/utxo-database';
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ address: string }> }
 ): Promise<NextResponse> {
   try {
@@ -35,7 +35,7 @@ export async function GET(
     const dbService = new UTXODatabaseService(databaseUrl);
 
     // Parse query parameters
-    const searchParams = _request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams;
     const startDate = searchParams.get('startDate')
       ? new Date(searchParams.get('startDate')!)
       : undefined;
@@ -61,12 +61,12 @@ export async function GET(
 
     // Format timeline data (mapper returns camelCase!)
     const timeline = filteredEvents.map((event: any) => ({
-      blockHeight: event.blockHeight,  // Already camelCase from mapper
-      blockTime: event.blockTime,      // Already camelCase from mapper
+      blockHeight: event.blockHeight, // Already camelCase from mapper
+      blockTime: event.blockTime, // Already camelCase from mapper
       txid: event.txid,
-      rewardAmount: event.rewardAmount,  // Already camelCase from mapper
-      stakeAmount: event.stakeAmount,    // Already camelCase from mapper
-      stakeAge: event.stakeAge,          // Already camelCase from mapper
+      rewardAmount: event.rewardAmount, // Already camelCase from mapper
+      stakeAmount: event.stakeAmount, // Already camelCase from mapper
+      stakeAge: event.stakeAge, // Already camelCase from mapper
     }));
 
     return NextResponse.json({
@@ -97,7 +97,7 @@ export async function GET(
 
 // POST endpoint for triggering historical sync with custom parameters
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ address: string }> }
 ): Promise<NextResponse> {
   try {

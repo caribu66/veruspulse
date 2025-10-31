@@ -8,7 +8,7 @@ import { logger } from '@/lib/utils/logger';
  * Provides detailed view of pending transactions with statistics
  * Based on verus-explorer pattern from official Verus GitHub
  */
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     logger.info('📊 Fetching comprehensive mempool data...');
 

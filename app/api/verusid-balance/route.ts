@@ -9,9 +9,9 @@ import {
   cacheBalance,
 } from '@/lib/verusid-cache';
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const { verusid } = await _request.json();
+    const { verusid } = await request.json();
 
     if (!verusid) {
       return NextResponse.json(

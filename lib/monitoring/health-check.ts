@@ -1,4 +1,4 @@
-// import { captureSystemHealth, captureAPIError } from './sentry';
+import { captureSystemHealth, captureAPIError } from './sentry';
 import { CachedRPCClient } from '@/lib/cache/cached-rpc-client';
 import { CacheManager } from '@/lib/cache/cache-utils';
 import { redis } from '@/lib/cache/redis';
@@ -70,7 +70,11 @@ class HealthMonitor {
       };
 
       // Report to Sentry
-      captureSystemHealth('redis', status.status, status.metrics);
+      captureSystemHealth({
+        component: 'redis',
+        status: status.status,
+        ...status.metrics,
+      });
 
       return status;
     } catch (error) {
@@ -130,7 +134,11 @@ class HealthMonitor {
         lastChecked: new Date().toISOString(),
       };
 
-      captureSystemHealth('rpc', status.status, status.metrics);
+      captureSystemHealth({
+        component: 'rpc',
+        status: status.status,
+        ...status.metrics,
+      });
 
       return status;
     } catch (error) {
@@ -191,7 +199,11 @@ class HealthMonitor {
         lastChecked: new Date().toISOString(),
       };
 
-      captureSystemHealth('cache', status.status, status.metrics);
+      captureSystemHealth({
+        component: 'cache',
+        status: status.status,
+        ...status.metrics,
+      });
 
       return status;
     } catch (error) {
@@ -231,7 +243,12 @@ class HealthMonitor {
       let systemTotalMemory = 0;
       let systemUsedMemory = 0;
 
-      if (memTotalMatch && memAvailableMatch) {
+      if (
+        memTotalMatch &&
+        memAvailableMatch &&
+        memTotalMatch[1] &&
+        memAvailableMatch[1]
+      ) {
         systemTotalMemory = parseInt(memTotalMatch[1]) * 1024; // Convert to bytes
         const systemAvailableMemory = parseInt(memAvailableMatch[1]) * 1024; // Convert to bytes
         systemUsedMemory = systemTotalMemory - systemAvailableMemory;
@@ -268,7 +285,11 @@ class HealthMonitor {
         lastChecked: new Date().toISOString(),
       };
 
-      captureSystemHealth('memory', status, healthStatus.metrics);
+      captureSystemHealth({
+        component: 'memory',
+        status,
+        ...healthStatus.metrics,
+      });
 
       return healthStatus;
     } catch (error) {
@@ -368,7 +389,9 @@ class HealthMonitor {
     };
 
     // Report overall health to Sentry
-    captureSystemHealth('system', overall, {
+    captureSystemHealth({
+      component: 'system',
+      overall,
       unhealthyCount,
       degradedCount,
       totalComponents: components.length,

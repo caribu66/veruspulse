@@ -4,7 +4,7 @@ import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
 import { getCachedIdentity } from '@/lib/verusid-cache';
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     logger.info('🔍 Fetching VerusIDs using cache system...');
 

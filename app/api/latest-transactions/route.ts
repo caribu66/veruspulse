@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50); // Cap at 50 to prevent memory issues

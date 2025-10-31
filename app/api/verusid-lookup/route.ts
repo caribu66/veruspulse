@@ -11,7 +11,7 @@ import {
   // autoCorrectVerusID, // Unused
 } from '@/lib/utils/verusid-validation';
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   const startTime = Date.now();
   let searchDb: SearchDatabaseService | null = null;
   let identity: string | undefined = undefined;

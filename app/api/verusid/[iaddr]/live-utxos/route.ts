@@ -91,7 +91,7 @@ async function calculateStakingFrequency(identityAddress: string): Promise<{
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {

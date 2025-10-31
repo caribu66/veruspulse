@@ -8,7 +8,7 @@ import {
   WarningCircle,
   XCircle,
   Eye,
-  EyeSlash
+  EyeSlash,
 } from '@phosphor-icons/react';
 
 /**
@@ -27,7 +27,8 @@ import {
  * ```
  */
 
-export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export interface InputProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /** Input label */
   label?: string;
   /** Helper text shown below input */
@@ -85,6 +86,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const tCommon = useTranslations('common');
     const [isFocused, setIsFocused] = useState(false);
     const [internalValue, setInternalValue] = useState(value || '');
     const [validationState, setValidationState] = useState<{
@@ -101,7 +103,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     // Determine current state
     const hasError = Boolean(error);
     const hasWarning = Boolean(warning) && !hasError;
-    const hasSuccess = Boolean(success || validationState?.valid) && !hasError && !hasWarning;
+    const hasSuccess =
+      Boolean(success || validationState?.valid) && !hasError && !hasWarning;
     const isPassword = type === 'password';
 
     // Size styles
@@ -173,33 +176,60 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const StatusIcon = () => {
       if (loading) {
         return (
-          <div className="animate-spin h-5 w-5 border-2 border-verus-blue border-t-transparent rounded-full"
-               role="status"
-               aria-label={tCommon("loading")} />
+          <div
+            className="animate-spin h-5 w-5 border-2 border-verus-blue border-t-transparent rounded-full"
+            role="status"
+            aria-label={tCommon('loading')}
+          />
         );
       }
 
       if (hasError) {
-        return <XCircle className="h-5 w-5 text-verus-red" weight="fill" aria-hidden="true" />;
+        return (
+          <XCircle
+            className="h-5 w-5 text-verus-red"
+            weight="fill"
+            aria-hidden="true"
+          />
+        );
       }
 
       if (hasWarning) {
-        return <WarningCircle className="h-5 w-5 text-yellow-500" weight="fill" aria-hidden="true" />;
+        return (
+          <WarningCircle
+            className="h-5 w-5 text-yellow-500"
+            weight="fill"
+            aria-hidden="true"
+          />
+        );
       }
 
       if (hasSuccess) {
-        return <CheckCircle className="h-5 w-5 text-verus-green" weight="fill" aria-hidden="true" />;
+        return (
+          <CheckCircle
+            className="h-5 w-5 text-verus-green"
+            weight="fill"
+            aria-hidden="true"
+          />
+        );
       }
 
       return null;
     };
 
     // Character count
-    const currentLength = typeof internalValue === 'string' ? internalValue.length : 0;
+    const currentLength =
+      typeof internalValue === 'string' ? internalValue.length : 0;
     const showCharCount = showCount && maxLength;
 
     return (
-      <div className={cn('flex flex-col gap-1.5', fullWidth && 'w-full', className)}>
+      <div
+        className={cn(
+          'flex flex-col gap-1.5',
+          fullWidth && 'w-full',
+          className
+        )}
+      >
         {/* Label */}
         {label && (
           <label
@@ -209,11 +239,18 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               hasError && 'text-verus-red',
               hasWarning && 'text-yellow-600 dark:text-yellow-500',
               hasSuccess && 'text-verus-green',
-              !hasError && !hasWarning && !hasSuccess && 'text-gray-700 dark:text-slate-300'
+              !hasError &&
+                !hasWarning &&
+                !hasSuccess &&
+                'text-gray-700 dark:text-slate-300'
             )}
           >
             {label}
-            {required && <span className="text-verus-red ml-1" aria-label="required">*</span>}
+            {required && (
+              <span className="text-verus-red ml-1" aria-label="required">
+                *
+              </span>
+            )}
           </label>
         )}
 
@@ -244,10 +281,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               'bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100'
             )}
             aria-invalid={hasError}
-            aria-describedby={cn(
-              helperText && helperId,
-              error && errorId
-            )}
+            aria-describedby={cn(helperText && helperId, error && errorId)}
             aria-required={required}
             {...props}
           />
@@ -269,9 +303,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 )}
               </button>
             )}
-            {!isPassword && endIcon && !loading && !hasError && !hasWarning && !hasSuccess && (
-              <span className="text-gray-400 dark:text-slate-500">{endIcon}</span>
-            )}
+            {!isPassword &&
+              endIcon &&
+              !loading &&
+              !hasError &&
+              !hasWarning &&
+              !hasSuccess && (
+                <span className="text-gray-400 dark:text-slate-500">
+                  {endIcon}
+                </span>
+              )}
             <StatusIcon />
           </div>
         </div>
@@ -306,37 +347,49 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             </p>
           )}
 
-          {!error && !warning && !successMessage && validationState?.message && (
-            <p
-              className={cn(
-                'text-sm flex items-center gap-1',
-                validationState.valid ? 'text-verus-green' : 'text-verus-red'
-              )}
-            >
-              {validationState.valid ? (
-                <CheckCircle className="h-4 w-4 flex-shrink-0" weight="fill" />
-              ) : (
-                <XCircle className="h-4 w-4 flex-shrink-0" weight="fill" />
-              )}
-              <span>{validationState.message}</span>
-            </p>
-          )}
+          {!error &&
+            !warning &&
+            !successMessage &&
+            validationState?.message && (
+              <p
+                className={cn(
+                  'text-sm flex items-center gap-1',
+                  validationState.valid ? 'text-verus-green' : 'text-verus-red'
+                )}
+              >
+                {validationState.valid ? (
+                  <CheckCircle
+                    className="h-4 w-4 flex-shrink-0"
+                    weight="fill"
+                  />
+                ) : (
+                  <XCircle className="h-4 w-4 flex-shrink-0" weight="fill" />
+                )}
+                <span>{validationState.message}</span>
+              </p>
+            )}
 
-          {!error && !warning && !successMessage && !validationState?.message && helperText && (
-            <p
-              id={helperId}
-              className="text-sm text-gray-500 dark:text-slate-400"
-            >
-              {helperText}
-            </p>
-          )}
+          {!error &&
+            !warning &&
+            !successMessage &&
+            !validationState?.message &&
+            helperText && (
+              <p
+                id={helperId}
+                className="text-sm text-gray-500 dark:text-slate-400"
+              >
+                {helperText}
+              </p>
+            )}
 
           {/* Character count */}
           {showCharCount && (
             <p
               className={cn(
                 'text-xs text-right',
-                currentLength > maxLength! * 0.9 ? 'text-yellow-600' : 'text-gray-400 dark:text-slate-500',
+                currentLength > maxLength! * 0.9
+                  ? 'text-yellow-600'
+                  : 'text-gray-400 dark:text-slate-500',
                 currentLength >= maxLength! && 'text-verus-red'
               )}
               aria-live="polite"
@@ -357,7 +410,8 @@ export { Input };
 /**
  * Textarea Component with same validation features
  */
-export interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
+export interface TextareaProps
+  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
   label?: string;
   helperText?: string;
   error?: string;
@@ -411,7 +465,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     const hasError = Boolean(error);
     const hasWarning = Boolean(warning) && !hasError;
-    const hasSuccess = Boolean(success || validationState?.valid) && !hasError && !hasWarning;
+    const hasSuccess =
+      Boolean(success || validationState?.valid) && !hasError && !hasWarning;
 
     const sizeStyles = {
       sm: 'text-sm px-3 py-2',
@@ -431,9 +486,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const stateStyles = cn({
       'border-gray-300 dark:border-slate-700 focus:border-verus-blue focus:ring-verus-blue/20':
         !hasError && !hasWarning && !hasSuccess,
-      'border-verus-red focus:border-verus-red focus:ring-verus-red/20': hasError,
-      'border-yellow-500 focus:border-yellow-500 focus:ring-yellow-500/20': hasWarning,
-      'border-verus-green focus:border-verus-green focus:ring-verus-green/20': hasSuccess,
+      'border-verus-red focus:border-verus-red focus:ring-verus-red/20':
+        hasError,
+      'border-yellow-500 focus:border-yellow-500 focus:ring-yellow-500/20':
+        hasWarning,
+      'border-verus-green focus:border-verus-green focus:ring-verus-green/20':
+        hasSuccess,
       'ring-2': isFocused,
     });
 
@@ -462,11 +520,18 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       onBlur?.(e);
     };
 
-    const currentLength = typeof internalValue === 'string' ? internalValue.length : 0;
+    const currentLength =
+      typeof internalValue === 'string' ? internalValue.length : 0;
     const showCharCount = showCount && maxLength;
 
     return (
-      <div className={cn('flex flex-col gap-1.5', fullWidth && 'w-full', className)}>
+      <div
+        className={cn(
+          'flex flex-col gap-1.5',
+          fullWidth && 'w-full',
+          className
+        )}
+      >
         {label && (
           <label
             htmlFor={inputId}
@@ -475,11 +540,18 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
               hasError && 'text-verus-red',
               hasWarning && 'text-yellow-600 dark:text-yellow-500',
               hasSuccess && 'text-verus-green',
-              !hasError && !hasWarning && !hasSuccess && 'text-gray-700 dark:text-slate-300'
+              !hasError &&
+                !hasWarning &&
+                !hasSuccess &&
+                'text-gray-700 dark:text-slate-300'
             )}
           >
             {label}
-            {required && <span className="text-verus-red ml-1" aria-label="required">*</span>}
+            {required && (
+              <span className="text-verus-red ml-1" aria-label="required">
+                *
+              </span>
+            )}
           </label>
         )}
 
@@ -501,40 +573,49 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
               'bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100'
             )}
             aria-invalid={hasError}
-            aria-describedby={cn(
-              helperText && helperId,
-              error && errorId
-            )}
+            aria-describedby={cn(helperText && helperId, error && errorId)}
             aria-required={required}
             {...props}
           />
 
           {loading && (
             <div className="absolute right-3 top-3">
-              <div className="animate-spin h-5 w-5 border-2 border-verus-blue border-t-transparent rounded-full"
-                   role="status"
-                   aria-label={tCommon("loading")} />
+              <div
+                className="animate-spin h-5 w-5 border-2 border-verus-blue border-t-transparent rounded-full"
+                role="status"
+                aria-label={tCommon('loading')}
+              />
             </div>
           )}
         </div>
 
         <div className="min-h-[1.25rem]">
           {error && (
-            <p id={errorId} className="text-sm text-verus-red flex items-center gap-1" role="alert">
+            <p
+              id={errorId}
+              className="text-sm text-verus-red flex items-center gap-1"
+              role="alert"
+            >
               <XCircle className="h-4 w-4 flex-shrink-0" weight="fill" />
               <span>{error}</span>
             </p>
           )}
 
           {!error && warning && (
-            <p className="text-sm text-yellow-600 dark:text-yellow-500 flex items-center gap-1" role="alert">
+            <p
+              className="text-sm text-yellow-600 dark:text-yellow-500 flex items-center gap-1"
+              role="alert"
+            >
               <WarningCircle className="h-4 w-4 flex-shrink-0" weight="fill" />
               <span>{warning}</span>
             </p>
           )}
 
           {!error && !warning && helperText && (
-            <p id={helperId} className="text-sm text-gray-500 dark:text-slate-400">
+            <p
+              id={helperId}
+              className="text-sm text-gray-500 dark:text-slate-400"
+            >
               {helperText}
             </p>
           )}
@@ -543,7 +624,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             <p
               className={cn(
                 'text-xs text-right',
-                currentLength > maxLength! * 0.9 ? 'text-yellow-600' : 'text-gray-400 dark:text-slate-500',
+                currentLength > maxLength! * 0.9
+                  ? 'text-yellow-600'
+                  : 'text-gray-400 dark:text-slate-500',
                 currentLength >= maxLength! && 'text-verus-red'
               )}
               aria-live="polite"

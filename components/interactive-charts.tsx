@@ -307,6 +307,8 @@ export function NetworkMetricsChart({
   mempoolData,
   blockTimeData,
 }: NetworkMetricsChartProps) {
+  const tBlocks = useTranslations('blocks');
+  const tNetwork = useTranslations('network');
   const [activeMetric, setActiveMetric] = useState<
     'hashrate' | 'difficulty' | 'mempool' | 'blocktime'
   >('hashrate');
@@ -321,7 +323,7 @@ export function NetworkMetricsChart({
       formatValue: (v: number) => `${(v / 1000000).toFixed(1)} MH/s`,
     },
     difficulty: {
-      label: tBlocks("difficulty"),
+      label: tBlocks('difficulty'),
       icon: ChartBar,
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/20',
@@ -329,7 +331,7 @@ export function NetworkMetricsChart({
       formatValue: (v: number) => `${(v / 1000000).toFixed(1)}M`,
     },
     mempool: {
-      label: tNetwork("mempoolSize"),
+      label: tNetwork('mempoolSize'),
       icon: Pulse,
       color: 'text-blue-400',
       bgColor: 'bg-blue-500/20',
@@ -337,7 +339,7 @@ export function NetworkMetricsChart({
       formatValue: (v: number) => `${v} txs`,
     },
     blocktime: {
-      label: tBlocks("blockTime"),
+      label: tBlocks('blockTime'),
       icon: Clock,
       color: 'text-green-400',
       bgColor: 'bg-green-500/20',

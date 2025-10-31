@@ -15,7 +15,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
@@ -39,7 +39,7 @@ export async function GET(_request: NextRequest) {
       );
     }
 
-    const searchParams = _request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get('limit') || '10');
     const sortBy = searchParams.get('sort') || 'trend'; // trend, views, rewards, stakes
 
@@ -144,7 +144,7 @@ export async function GET(_request: NextRequest) {
   }
 }
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
@@ -168,7 +168,7 @@ export async function POST(_request: NextRequest) {
       );
     }
 
-    const body = await _request.json();
+    const body = await request.json();
     const { verusidAddress } = body;
 
     if (!verusidAddress) {

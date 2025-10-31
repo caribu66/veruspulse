@@ -17,9 +17,9 @@ const db = new Pool({
 let scanner: ComprehensiveBlockScanner | null = null;
 let calculator: ComprehensiveStatisticsCalculator | null = null;
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await _request.json();
+    const body = await request.json();
     const { action, startHeight, endHeight, addresses } = body;
 
     if (action === 'start') {
@@ -267,7 +267,7 @@ export async function POST(_request: NextRequest) {
   }
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     if (scanner) {
       const progress = scanner.getProgress();

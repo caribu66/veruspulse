@@ -16,9 +16,9 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(_request.url);
+    const { searchParams } = new URL(request.url);
     const timeRange = (searchParams.get('range') || '24h') as
       | '24h'
       | '7d'

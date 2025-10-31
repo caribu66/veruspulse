@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { resolveVerusID } from '@/lib/verusid-cache';
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const { verusId } = await request.json();
 
@@ -23,4 +23,3 @@ export async function POST(_request: NextRequest) {
     );
   }
 }
-

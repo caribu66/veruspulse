@@ -618,8 +618,10 @@ function AdvancedUTXOVisualizer({
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       const touch = e.touches[0];
-      setIsPanning(true);
-      setLastPanPoint({ x: touch.clientX, y: touch.clientY });
+      if (touch) {
+        setIsPanning(true);
+        setLastPanPoint({ x: touch.clientX, y: touch.clientY });
+      }
     }
   }, []);
 
@@ -628,11 +630,13 @@ function AdvancedUTXOVisualizer({
       e.preventDefault();
       if (isPanning && e.touches.length === 1) {
         const touch = e.touches[0];
-        const deltaX = touch.clientX - lastPanPoint.x;
-        const deltaY = touch.clientY - lastPanPoint.y;
-        setPanX(prev => prev + deltaX);
-        setPanY(prev => prev + deltaY);
-        setLastPanPoint({ x: touch.clientX, y: touch.clientY });
+        if (touch) {
+          const deltaX = touch.clientX - lastPanPoint.x;
+          const deltaY = touch.clientY - lastPanPoint.y;
+          setPanX(prev => prev + deltaX);
+          setPanY(prev => prev + deltaY);
+          setLastPanPoint({ x: touch.clientX, y: touch.clientY });
+        }
       }
     },
     [isPanning, lastPanPoint]
@@ -649,6 +653,7 @@ function AdvancedUTXOVisualizer({
     if (touches.length < 2) return 0;
     const touch1 = touches[0];
     const touch2 = touches[1];
+    if (!touch1 || !touch2) return 0;
     return Math.sqrt(
       Math.pow(touch2.clientX - touch1.clientX, 2) +
         Math.pow(touch2.clientY - touch1.clientY, 2)
@@ -662,8 +667,10 @@ function AdvancedUTXOVisualizer({
         setIsPanning(false); // Disable panning during pinch
       } else if (e.touches.length === 1) {
         const touch = e.touches[0];
-        setIsPanning(true);
-        setLastPanPoint({ x: touch.clientX, y: touch.clientY });
+        if (touch) {
+          setIsPanning(true);
+          setLastPanPoint({ x: touch.clientX, y: touch.clientY });
+        }
       }
     },
     [getTouchDistance]
@@ -681,11 +688,13 @@ function AdvancedUTXOVisualizer({
         setLastTouchDistance(currentDistance);
       } else if (isPanning && e.touches.length === 1) {
         const touch = e.touches[0];
-        const deltaX = touch.clientX - lastPanPoint.x;
-        const deltaY = touch.clientY - lastPanPoint.y;
-        setPanX(prev => prev + deltaX);
-        setPanY(prev => prev + deltaY);
-        setLastPanPoint({ x: touch.clientX, y: touch.clientY });
+        if (touch) {
+          const deltaX = touch.clientX - lastPanPoint.x;
+          const deltaY = touch.clientY - lastPanPoint.y;
+          setPanX(prev => prev + deltaX);
+          setPanY(prev => prev + deltaY);
+          setLastPanPoint({ x: touch.clientX, y: touch.clientY });
+        }
       }
     },
     [isPanning, lastPanPoint, lastTouchDistance, getTouchDistance]

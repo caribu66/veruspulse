@@ -19,7 +19,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -70,7 +70,7 @@ export async function GET(_request: NextRequest) {
     }
 
     // Parse query parameters
-    const searchParams = _request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get('search') || '';
     const sortBy = searchParams.get('sort') || 'name'; // name, activity, stakes, recent
     const page = parseInt(searchParams.get('page') || '1');
@@ -162,7 +162,10 @@ export async function GET(_request: NextRequest) {
       LIMIT $1 OFFSET $2
     `;
 
-    console.info('Executing browse query with params:', queryParams.slice(0, 5));
+    console.info(
+      'Executing browse query with params:',
+      queryParams.slice(0, 5)
+    );
     const result = await db.query(query, queryParams);
     console.info('Query returned', result.rows.length, 'rows');
 

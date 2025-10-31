@@ -9,7 +9,7 @@ import {
 } from '@/lib/utils/momentum-calculations';
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {

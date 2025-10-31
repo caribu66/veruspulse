@@ -10,7 +10,7 @@ import { logger } from '@/lib/utils/logger';
  *
  * Since we don't track actual staked balances, we estimate conservatively.
  */
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   // Initialize database connection
   const db = new Pool({
     connectionString: process.env.DATABASE_URL,

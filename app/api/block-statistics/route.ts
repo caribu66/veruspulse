@@ -47,7 +47,7 @@ interface BlockStats {
  * Get block statistics for a time range
  * Inspired by Oink70's block-stats.sh
  */
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 

@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   const apiDocs = {
     title: 'Verus Explorer API',
     version: '1.0.0',

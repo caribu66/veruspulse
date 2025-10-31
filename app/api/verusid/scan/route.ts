@@ -9,7 +9,7 @@ import { fastScanVerusID, getProgress } from '@/scripts/fast-on-demand-scanner';
  * Response: { success: boolean, scanId?: string, error?: string }
  */
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { verusidName } = body;
@@ -48,7 +48,7 @@ export async function POST(_request: NextRequest) {
  * GET endpoint to check scan progress
  * GET /api/verusid/scan/progress
  */
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const progress = getProgress();
     return NextResponse.json({

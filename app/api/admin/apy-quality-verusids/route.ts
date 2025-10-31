@@ -5,9 +5,9 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(_request.url);
+    const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '100');
     const minStakes = parseInt(searchParams.get('minStakes') || '1');
 

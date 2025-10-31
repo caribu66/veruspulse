@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { logger } from '@/lib/utils/logger';
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     logger.info('🔧 Starting fix of corrupted staking rewards data...');
 

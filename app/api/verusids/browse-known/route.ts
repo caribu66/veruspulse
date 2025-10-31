@@ -44,7 +44,7 @@ const KNOWN_VERUSIDS = [
   'caribu66.VRSC@',
 ];
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     logger.info('🔍 Fetching known VerusIDs using lookup system...');
 

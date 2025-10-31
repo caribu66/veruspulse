@@ -15,7 +15,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -40,7 +40,7 @@ export async function POST(_request: NextRequest) {
       );
     }
 
-    const body = await _request.json();
+    const body = await request.json();
     const { verusidAddress, sessionId } = body;
 
     if (!verusidAddress) {
@@ -55,11 +55,11 @@ export async function POST(_request: NextRequest) {
 
     // Get client IP and user agent
     const ip =
-      _request.headers.get('x-forwarded-for') ||
-      _request.headers.get('x-real-ip') ||
+      request.headers.get('x-forwarded-for') ||
+      request.headers.get('x-real-ip') ||
       '127.0.0.1';
-    const userAgent = _request.headers.get('user-agent') || '';
-    const referrer = _request.headers.get('referer') || '';
+    const userAgent = request.headers.get('user-agent') || '';
+    const referrer = request.headers.get('referer') || '';
 
     // Insert view record
     const query = `
@@ -91,7 +91,7 @@ export async function POST(_request: NextRequest) {
   }
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
@@ -115,7 +115,7 @@ export async function GET(_request: NextRequest) {
       );
     }
 
-    const searchParams = _request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams;
     const verusidAddress = searchParams.get('address');
     const period = searchParams.get('period') || '7d';
 

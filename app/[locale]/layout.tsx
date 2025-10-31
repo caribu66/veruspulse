@@ -13,6 +13,10 @@ import { RealtimeDataProvider } from '@/components/realtime-data-provider';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { I18nErrorBoundary } from '@/components/i18n-error-boundary';
+
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
 import {
   locales,
   type Locale,

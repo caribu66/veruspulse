@@ -15,7 +15,7 @@ function getSyncService() {
  * POST: Start syncing a specific VerusID
  */
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -133,7 +133,7 @@ export async function POST(
  * GET: Check sync status for a specific VerusID
  */
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {

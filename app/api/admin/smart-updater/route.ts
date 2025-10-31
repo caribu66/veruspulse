@@ -46,9 +46,9 @@ export async function GET() {
   }
 }
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await _request.json();
+    const body = await request.json();
     const { action } = body;
 
     if (action === 'initialize') {

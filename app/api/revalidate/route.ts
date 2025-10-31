@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { revalidateTag, revalidatePath } from 'next/cache';
 import { logger } from '@/lib/utils/logger';
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { type, path, tag } = body;

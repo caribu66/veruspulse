@@ -18,7 +18,7 @@ function getDbPool() {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -100,8 +100,8 @@ export async function GET(
     };
 
     earned.forEach(badge => {
-      if (badge?.rarity) {
-        earnedRarity[badge.rarity]++;
+      if (badge?.rarity && badge.rarity in earnedRarity) {
+        earnedRarity[badge.rarity] = (earnedRarity[badge.rarity] || 0) + 1;
       }
     });
 

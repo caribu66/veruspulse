@@ -62,21 +62,13 @@ export function LoadingSpinner({
       aria-live="polite"
       aria-busy="true"
     >
-      <div
-        className={cn(
-          'animate-spin',
-          sizeMap[size],
-          colorMap[variant]
-        )}
-      >
+      <div className={cn('animate-spin', sizeMap[size], colorMap[variant])}>
         <CircleNotch className="h-full w-full" weight="bold" />
       </div>
       {message && (
-        <p className="text-sm text-gray-600 dark:text-slate-400">
-          {message}
-        </p>
+        <p className="text-sm text-gray-600 dark:text-slate-400">{message}</p>
       )}
-      <span className="sr-only">{tCommon("loading")}</span>
+      <span className="sr-only">{tCommon('loading')}</span>
     </div>
   );
 
@@ -118,6 +110,7 @@ export function LoadingSkeleton({
   animation = 'pulse',
   className,
 }: LoadingSkeletonProps) {
+  const tCommon = useTranslations('common');
   const baseStyles = 'bg-gray-200 dark:bg-slate-700';
 
   const animationStyles = {
@@ -134,7 +127,11 @@ export function LoadingSkeleton({
 
   if (variant === 'text' && lines > 1) {
     return (
-      <div className={cn('space-y-2', className)} role="status" aria-label={tCommon("loading")}>
+      <div
+        className={cn('space-y-2', className)}
+        role="status"
+        aria-label={tCommon('loading')}
+      >
         {Array.from({ length: lines }).map((_, i) => (
           <div
             key={i}
@@ -165,7 +162,7 @@ export function LoadingSkeleton({
         height: height || (variant === 'text' ? '1rem' : '100%'),
       }}
       role="status"
-      aria-label={tCommon("loading")}
+      aria-label={tCommon('loading')}
     />
   );
 }
@@ -176,7 +173,11 @@ export function LoadingSkeleton({
  */
 export function LoadingCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn('card-elevated p-6 space-y-4', className)} role="status" aria-label="Loading card">
+    <div
+      className={cn('card-elevated p-6 space-y-4', className)}
+      role="status"
+      aria-label="Loading card"
+    >
       <div className="flex items-center gap-3">
         <LoadingSkeleton variant="circular" width={48} height={48} />
         <div className="flex-1 space-y-2">
@@ -201,18 +202,26 @@ export function LoadingCardSkeleton({ className }: { className?: string }) {
 export function LoadingTableSkeleton({
   rows = 5,
   columns = 4,
-  className
+  className,
 }: {
   rows?: number;
   columns?: number;
   className?: string;
 }) {
   return (
-    <div className={cn('space-y-3', className)} role="status" aria-label="Loading table">
+    <div
+      className={cn('space-y-3', className)}
+      role="status"
+      aria-label="Loading table"
+    >
       {/* Header */}
       <div className="flex gap-4 pb-3 border-b border-gray-200 dark:border-slate-700">
         {Array.from({ length: columns }).map((_, i) => (
-          <LoadingSkeleton key={`header-${i}`} variant="text" width={`${100 / columns}%`} />
+          <LoadingSkeleton
+            key={`header-${i}`}
+            variant="text"
+            width={`${100 / columns}%`}
+          />
         ))}
       </div>
 
@@ -275,10 +284,18 @@ export function LoadingProgress({
   };
 
   return (
-    <div className={cn('space-y-2', className)} role="progressbar" aria-valuenow={clampedProgress} aria-valuemin={0} aria-valuemax={100}>
+    <div
+      className={cn('space-y-2', className)}
+      role="progressbar"
+      aria-valuenow={clampedProgress}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    >
       {(label || showPercentage) && (
         <div className="flex justify-between items-center text-sm">
-          {label && <span className="text-gray-700 dark:text-slate-300">{label}</span>}
+          {label && (
+            <span className="text-gray-700 dark:text-slate-300">{label}</span>
+          )}
           {showPercentage && (
             <span className="font-medium text-gray-900 dark:text-slate-100">
               {Math.round(clampedProgress)}%
@@ -286,9 +303,17 @@ export function LoadingProgress({
           )}
         </div>
       )}
-      <div className={cn('w-full bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden', sizeMap[size])}>
+      <div
+        className={cn(
+          'w-full bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden',
+          sizeMap[size]
+        )}
+      >
         <div
-          className={cn('h-full transition-all duration-300 ease-out rounded-full', colorMap[variant])}
+          className={cn(
+            'h-full transition-all duration-300 ease-out rounded-full',
+            colorMap[variant]
+          )}
           style={{ width: `${clampedProgress}%` }}
         />
       </div>
@@ -303,7 +328,7 @@ export function LoadingProgress({
 export function LoadingDots({
   size = 'md',
   variant = 'primary',
-  className
+  className,
 }: {
   size?: 'sm' | 'md' | 'lg';
   variant?: 'primary' | 'white' | 'muted';
@@ -322,8 +347,12 @@ export function LoadingDots({
   };
 
   return (
-    <div className={cn('flex items-center gap-1.5', className)} role="status" aria-label={tCommon("loading")}>
-      {[0, 1, 2].map((i) => (
+    <div
+      className={cn('flex items-center gap-1.5', className)}
+      role="status"
+      aria-label={tCommon('loading')}
+    >
+      {[0, 1, 2].map(i => (
         <div
           key={i}
           className={cn('rounded-full', sizeMap[size], colorMap[variant])}
@@ -333,7 +362,7 @@ export function LoadingDots({
           }}
         />
       ))}
-      <span className="sr-only">{tCommon("loading")}</span>
+      <span className="sr-only">{tCommon('loading')}</span>
     </div>
   );
 }
@@ -344,16 +373,19 @@ export function LoadingDots({
  */
 export function InlineLoading({
   message,
-  className
+  className,
 }: {
   message?: string;
   className?: string;
 }) {
   return (
-    <span className={cn('inline-flex items-center gap-2', className)} role="status">
+    <span
+      className={cn('inline-flex items-center gap-2', className)}
+      role="status"
+    >
       <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
       {message && <span className="text-sm">{message}</span>}
-      <span className="sr-only">{tCommon("loading")}</span>
+      <span className="sr-only">{tCommon('loading')}</span>
     </span>
   );
 }
@@ -443,5 +475,3 @@ export function LoadingState({
 
   return <>{children}</>;
 }
-
-

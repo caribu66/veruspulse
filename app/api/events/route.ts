@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
  *   const data = JSON.parse(e.data);
  * });
  */
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   const clientId = randomBytes(16).toString('hex');
 
   const encoder = new TextEncoder();
@@ -44,7 +44,7 @@ export async function GET(_request: NextRequest) {
       }, 30000);
 
       // Cleanup on close
-      _request.signal.addEventListener('abort', () => {
+      request.signal.addEventListener('abort', () => {
         clearInterval(heartbeatInterval);
         removeListener(clientId);
         try {

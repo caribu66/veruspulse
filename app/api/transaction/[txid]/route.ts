@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ txid: string }> }
 ) {
   try {

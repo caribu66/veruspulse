@@ -14,7 +14,7 @@ interface UTXOStakeData {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ address: string }> }
 ) {
   try {

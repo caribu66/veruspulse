@@ -3,9 +3,9 @@ import { verusAPI } from '@/lib/rpc-client-robust';
 import { computeBlockFees } from '@/lib/utils/fees';
 import { extractCoinbasePayout } from '@/lib/utils/coinbase';
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(_request.url);
+    const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
     const metrics = searchParams.get('metrics') === '1';

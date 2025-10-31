@@ -3,7 +3,7 @@ import { SearchDatabaseService } from '@/lib/services/search-database';
 import { enhancedLogger } from '@/lib/utils/enhanced-logger';
 import { addSecurityHeaders } from '@/lib/middleware/security';
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   let searchDb: SearchDatabaseService | null = null;
 
   try {

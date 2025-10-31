@@ -75,7 +75,7 @@ export async function GET() {
  */
 export async function POST(_request: Request) {
   try {
-    const body = await _request.json();
+    const body = await request.json();
     const { action, method } = body;
 
     if (action === 'test_fallback') {

@@ -8,7 +8,7 @@ const pool = new Pool({
 export const dynamic = 'force-dynamic';
 
 // GET: Fetch known addresses
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get('address');
@@ -55,7 +55,7 @@ export async function GET(_request: NextRequest) {
 }
 
 // POST: Add or update known address
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { address, name, type, description, website, verified } = body;
@@ -123,7 +123,7 @@ export async function POST(_request: NextRequest) {
 }
 
 // DELETE: Remove known address
-export async function DELETE(_request: NextRequest) {
+export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get('address');

@@ -7,12 +7,12 @@ import { isOrphan } from '@/lib/utils/orphan';
 import { getMempoolTracker } from '@/lib/monitoring/mempool-tracker';
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ hash: string }> }
 ) {
   try {
     const { hash } = await params;
-    const { searchParams } = new URL(_request.url);
+    const { searchParams } = new URL(request.url);
     const metrics = searchParams.get('metrics') === '1';
 
     if (!hash) {

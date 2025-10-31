@@ -4,9 +4,9 @@ import { logger } from '@/lib/utils/logger';
 
 let scanner: VerusIDScanner | null = null;
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await _request.json();
+    const body = await request.json();
     const {
       batchSize = 10,
       includeExisting = false,

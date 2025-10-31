@@ -122,8 +122,10 @@ export function HeroSection({
           {/* Main Heading */}
           <div className="text-center mb-16 lg:mb-20">
             <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-tight">
-              <span className="text-gray-900 dark:text-white"></span>
-              <span style={{ color: '#3165d4' }}>{t('theInternetOfValue')}</span>
+              <span className="text-gray-900 dark:text-white" />
+              <span style={{ color: '#3165d4' }}>
+                {t('theInternetOfValue')}
+              </span>
             </h1>
 
             <p className="text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed">

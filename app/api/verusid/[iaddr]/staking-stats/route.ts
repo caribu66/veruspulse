@@ -63,7 +63,7 @@ function getAPYConfidenceLevel(
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -259,10 +259,12 @@ export async function GET(
       0
     );
     const calculatedFirstStake =
-      dailyData && dailyData.length > 0 && dailyData[0] ? dailyData[0].periodStart : null;
+      dailyData && dailyData.length > 0 && dailyData[0]
+        ? dailyData[0].periodStart
+        : null;
     const calculatedLastStake =
       dailyData && dailyData.length > 0 && dailyData[dailyData.length - 1]
-        ? dailyData[dailyData.length - 1].periodEnd
+        ? dailyData[dailyData.length - 1]?.periodEnd
         : null;
 
     // Calculate APY from time series data if not available in database

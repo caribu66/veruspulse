@@ -7,9 +7,9 @@ import {
 } from '@/lib/verusid-cache';
 import { validateVerusIDFormat } from '@/lib/utils/verusid-validation';
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await _request.json();
+    const body = await request.json();
     const { input } = body;
 
     if (!input) {

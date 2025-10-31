@@ -154,6 +154,9 @@ jobs:
     runs-on: self-hosted
     # Remove the 'needs' dependency to make deployment independent
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    env:
+      ACTIONS_STEP_DEBUG: true
+      ACTIONS_RUNNER_DEBUG: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

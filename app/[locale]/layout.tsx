@@ -1,27 +1,23 @@
-import type { Viewport } from 'next';
-import { Poppins } from 'next/font/google';
-import '../globals.css';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { GlobalErrorFallback } from '@/components/global-error-fallback';
-import { ThemeProvider } from '@/contexts/theme-context';
-import { SkipNavigation } from '@/components/skip-navigation';
-import { MobileViewportFix } from '@/components/mobile-viewport-fix';
-import { MobileBottomNav } from '@/components/mobile-bottom-nav';
-import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
-import { ToastProvider } from '@/components/ui/toast';
-import { RealtimeDataProvider } from '@/components/realtime-data-provider';
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
 import { I18nErrorBoundary } from '@/components/i18n-error-boundary';
-
-// Force dynamic rendering to prevent prerender errors
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
+import { MobileBottomNav } from '@/components/mobile-bottom-nav';
+import { MobileViewportFix } from '@/components/mobile-viewport-fix';
+import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
+import { RealtimeDataProvider } from '@/components/realtime-data-provider';
+import { SkipNavigation } from '@/components/skip-navigation';
+import { ToastProvider } from '@/components/ui/toast';
+import { ThemeProvider } from '@/contexts/theme-context';
 import {
+  generateMetadata as generateI18nMetadata,
   locales,
   type Locale,
-  generateMetadata as generateI18nMetadata,
 } from '@/lib/i18n';
+import type { Viewport } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { Poppins } from 'next/font/google';
+import '../globals.css';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -45,8 +41,6 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
 };
-
-export const dynamic = 'force-dynamic';
 
 export function generateStaticParams() {
   return locales.map(locale => ({ locale }));

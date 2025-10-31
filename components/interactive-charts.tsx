@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   TrendUp,
@@ -306,6 +306,8 @@ export function NetworkMetricsChart({
   mempoolData,
   blockTimeData,
 }: NetworkMetricsChartProps) {
+  const tBlocks = useTranslations('blocks');
+  const tNetwork = useTranslations('network');
   const [activeMetric, setActiveMetric] = useState<
     'hashrate' | 'difficulty' | 'mempool' | 'blocktime'
   >('hashrate');

@@ -81,6 +81,7 @@ interface DaemonStats {
 
 export function DaemonMonitorDashboard() {
   const tBlocks = useTranslations('blocks');
+  const tNetwork = useTranslations('network');
 
   const [stats, setStats] = useState<DaemonStats | null>(null);
   const [loading, setLoading] = useState(true);

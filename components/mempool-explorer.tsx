@@ -44,6 +44,7 @@ type SortDirection = 'asc' | 'desc';
 export function MempoolExplorer() {
   const t = useTranslations('mempool');
   const tCommon = useTranslations('common');
+  const tTime = useTranslations('time');
   const tErrors = useTranslations('errors');
   const router = useRouter();
   const { addToHistory } = useNavigationHistory();

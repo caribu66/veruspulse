@@ -77,6 +77,7 @@ interface Block {
 export function LiveData() {
   const t = useTranslations('dashboard');
   const tCommon = useTranslations('common');
+  const tNetwork = useTranslations('network');
   const tBlocks = useTranslations('blocks');
   const tTransactions = useTranslations('transactions');
 

@@ -3,7 +3,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { CircleNotch, Spinner } from '@phosphor-icons/react';
-import { useTranslations } from 'next-intl';
 
 /**
  * Standardized Loading State Components
@@ -67,7 +66,7 @@ export function LoadingSpinner({
       {message && (
         <p className="text-sm text-gray-600 dark:text-slate-400">{message}</p>
       )}
-      <span className="sr-only">{tCommon('loading')}</span>
+      <span className="sr-only">Loading</span>
     </div>
   );
 
@@ -128,7 +127,7 @@ export function LoadingSkeleton({
       <div
         className={cn('space-y-2', className)}
         role="status"
-        aria-label={tCommon('loading')}
+        aria-label="Loading"
       >
         {Array.from({ length: lines }).map((_, i) => (
           <div
@@ -160,7 +159,7 @@ export function LoadingSkeleton({
         height: height || (variant === 'text' ? '1rem' : '100%'),
       }}
       role="status"
-      aria-label={tCommon('loading')}
+      aria-label="Loading"
     />
   );
 }
@@ -348,7 +347,7 @@ export function LoadingDots({
     <div
       className={cn('flex items-center gap-1.5', className)}
       role="status"
-      aria-label={tCommon('loading')}
+      aria-label="Loading"
     >
       {[0, 1, 2].map(i => (
         <div
@@ -360,7 +359,7 @@ export function LoadingDots({
           }}
         />
       ))}
-      <span className="sr-only">{tCommon('loading')}</span>
+      <span className="sr-only">Loading</span>
     </div>
   );
 }
@@ -383,7 +382,7 @@ export function InlineLoading({
     >
       <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
       {message && <span className="text-sm">{message}</span>}
-      <span className="sr-only">{tCommon('loading')}</span>
+      <span className="sr-only">Loading</span>
     </span>
   );
 }

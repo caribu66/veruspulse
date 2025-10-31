@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+
 import {
   Play,
   Gear,
@@ -181,7 +181,7 @@ export function AnimationShowcase() {
                   <div className="flex items-center space-x-4 text-xs text-gray-400 mt-1">
                     <div className="flex items-center space-x-1">
                       <Clock className="h-3 w-3" />
-                      <span>{tTime('justNow')}</span>
+                      <span>just now</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Pulse className="h-3 w-3" />

@@ -117,7 +117,9 @@ describe('VerusID Utils Edge Cases', () => {
         createTestIdentity({ baseName: 'bob' }),
       ];
       const result = sortIdentities(identities, 'name', 'asc');
+      expect(result[0]).toBeDefined();
       expect(result[0]?.baseName).toBe('alice');
+      expect(result[2]).toBeDefined();
       expect(result[2]?.baseName).toBe('charlie');
     });
 
@@ -128,6 +130,7 @@ describe('VerusID Utils Edge Cases', () => {
         createTestIdentity({ apyAllTime: 100 }),
       ];
       const result = sortIdentities(identities, 'apy', 'desc');
+      expect(result[0]).toBeDefined();
       expect(result[0]?.apyAllTime).toBe(100);
     });
   });

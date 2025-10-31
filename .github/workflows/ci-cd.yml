@@ -52,7 +52,7 @@ jobs:
         run: npm ci
 
       - name: Run TypeScript compiler
-        run: npx tsc --noEmit
+        run: npx tsc --project tsconfig.ci.json --noEmit
 
   # Job 3: Unit Tests
   test:

@@ -215,6 +215,8 @@ describe('CircuitBreakerManager', () => {
 
       expect(stats).toHaveProperty('service1');
       expect(stats).toHaveProperty('service2');
+      expect(stats.service1).toBeDefined();
+      expect(stats.service2).toBeDefined();
       expect(stats.service1?.totalCalls).toBe(1);
       expect(stats.service2?.totalCalls).toBe(1);
     });

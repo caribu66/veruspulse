@@ -57,6 +57,7 @@ export function QuickStatsTicker({
   const realtimeCharts = useRealtimeCharts();
 
   // Generate chart data for interactive charts
+  const tNetwork = useTranslations('network');
   const [chartData, setChartData] = useState<Record<string, any[]>>({});
 
   useEffect(() => {

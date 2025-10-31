@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+
 import {
   Clock,
   Lightning,
@@ -86,7 +86,7 @@ export function ActivitySnapshot({
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffMinutes < 1) return tTime('justNow');
+    if (diffMinutes < 1) return 'just now';
     if (diffMinutes < 60) return `${diffMinutes} min ago`;
     if (diffHours < 24)
       return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;

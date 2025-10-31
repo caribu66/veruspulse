@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
 import {
   AchievementIconComponent,
   getTierStyling,
@@ -366,7 +365,7 @@ export function AchievementBadge({
                             (1000 * 60 * 60 * 24)
                         );
                         if (daysAgo === 0) return 'Today! 🎉';
-                        if (daysAgo === 1) return tTime('yesterday');
+                        if (daysAgo === 1) return 'yesterday';
                         if (daysAgo < 7) return `${daysAgo} days ago`;
                         if (daysAgo < 30)
                           return `${Math.floor(daysAgo / 7)} weeks ago`;

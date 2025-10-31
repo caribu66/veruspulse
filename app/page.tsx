@@ -2,19 +2,8 @@
 
 import React from 'react';
 import { VerusExplorer } from '@/components/verus-explorer';
-import dynamic from 'next/dynamic';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
-// Dynamic import to avoid SSR issues with QRCode library
-const DonationBanner = dynamic(
-  () =>
-    import('@/components/donation-banner').then(mod => ({
-      default: mod.DonationBanner,
-    })),
-  { ssr: false }
-);
+// Note: removed DonationBanner to avoid SSR issues
 
 /**
  * VerusPulse - The Internet of Value

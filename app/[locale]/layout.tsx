@@ -10,9 +10,9 @@ import { ToastProvider } from '@/components/ui/toast';
 // ThemeProvider removed - dark theme only
 import {
   generateMetadata as generateI18nMetadata,
-  locales,
   type Locale,
 } from '@/lib/i18n';
+import { locales } from '@/i18n';
 import type { Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -42,14 +42,10 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-// Disable static generation for locale pages
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
-
-// Comment out generateStaticParams to prevent prerendering
-// export function generateStaticParams() {
-//   return locales.map(locale => ({ locale }));
-// }
+// Static params for locale pages
+export function generateStaticParams() {
+  return locales.map(locale => ({ locale }));
+}
 
 export default async function LocaleLayout({
   children,

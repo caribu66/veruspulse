@@ -1,23 +1,6 @@
 'use client';
 
 import { VerusIDExplorer } from '@/components/verusid-explorer';
-import dynamic from 'next/dynamic';
-
-// Dynamic imports to avoid SSR issues with QRCode library
-const DonationBanner = dynamic(
-  () =>
-    import('@/components/donation-banner').then(mod => ({
-      default: mod.DonationBanner,
-    })),
-  { ssr: false }
-);
-const DonationWidget = dynamic(
-  () =>
-    import('@/components/donation-widget').then(mod => ({
-      default: mod.DonationWidget,
-    })),
-  { ssr: false }
-);
 
 export default function VerusIDPage() {
   return (

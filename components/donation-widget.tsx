@@ -39,6 +39,8 @@ export function DonationWidget({
 
   const generateQRCode = useCallback(async () => {
     try {
+      // Dynamic import to avoid SSR issues
+      const QRCode = (await import('qrcode')).default;
       const qrDataURL = await QRCode.toDataURL(DONATION_ADDRESS, {
         width: 200,
         margin: 2,

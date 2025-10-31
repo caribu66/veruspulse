@@ -42,9 +42,14 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-export function generateStaticParams() {
-  return locales.map(locale => ({ locale }));
-}
+// Disable static generation for locale pages
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
+// Comment out generateStaticParams to prevent prerendering
+// export function generateStaticParams() {
+//   return locales.map(locale => ({ locale }));
+// }
 
 export default async function LocaleLayout({
   children,

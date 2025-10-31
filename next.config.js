@@ -23,6 +23,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // Disable static page generation completely
+  generateBuildId: async () => {
+    return Date.now().toString();
+  },
+
   // Skip static optimization for dynamic pages
   experimental: {
     isrMemoryCacheSize: 0,

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Heart, X, Copy, Check, Gift, QrCode } from '@phosphor-icons/react';
 import Image from 'next/image';
-import QRCode from 'qrcode';
+// QRCode imported dynamically to avoid SSR issues
 import { useTranslations } from 'next-intl';
 
 interface DonationWidgetProps {

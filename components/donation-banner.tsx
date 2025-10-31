@@ -11,7 +11,7 @@ import {
   QrCode,
 } from '@phosphor-icons/react';
 import Image from 'next/image';
-import QRCode from 'qrcode';
+// QRCode imported dynamically to avoid SSR issues
 
 const DONATION_ADDRESSES = {
   VRSC: 'RPJ39AoZBN3s2uBaCAKdsT6rvSYCGRTwWE',
@@ -48,6 +48,8 @@ export function DonationBanner() {
 
   const generateQRCode = useCallback(async () => {
     try {
+      // Dynamic import to avoid SSR issues
+      const QRCode = (await import('qrcode')).default;
       const address = DONATION_ADDRESSES[selectedCurrency];
       const qrDataURL = await QRCode.toDataURL(address, {
         width: 200,

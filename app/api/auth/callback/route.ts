@@ -3,11 +3,11 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
 export async function GET(_request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
+  const searchParams = _request.nextUrl.searchParams;
   const code = searchParams.get('code');
 
   if (!code) {
-    return NextResponse.redirect(new URL('/?error=no_code', request.url));
+    return NextResponse.redirect(new URL('/?error=no_code', _request.url));
   }
 
   try {
@@ -32,7 +32,7 @@ export async function GET(_request: NextRequest) {
 
     if (tokenData.error || !tokenData.access_token) {
       return NextResponse.redirect(
-        new URL('/?error=token_failed', request.url)
+        new URL('/?error=token_failed', _request.url)
       );
     }
 
@@ -73,9 +73,9 @@ export async function GET(_request: NextRequest) {
     });
 
     // Redirect to home
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/', _request.url));
   } catch (error) {
     console.error('GitHub OAuth error:', error);
-    return NextResponse.redirect(new URL('/?error=auth_failed', request.url));
+    return NextResponse.redirect(new URL('/?error=auth_failed', _request.url));
   }
 }

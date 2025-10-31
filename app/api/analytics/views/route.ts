@@ -40,7 +40,7 @@ export async function POST(_request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await _request.json();
     const { verusidAddress, sessionId } = body;
 
     if (!verusidAddress) {
@@ -55,11 +55,11 @@ export async function POST(_request: NextRequest) {
 
     // Get client IP and user agent
     const ip =
-      request.headers.get('x-forwarded-for') ||
-      request.headers.get('x-real-ip') ||
+      _request.headers.get('x-forwarded-for') ||
+      _request.headers.get('x-real-ip') ||
       '127.0.0.1';
-    const userAgent = request.headers.get('user-agent') || '';
-    const referrer = request.headers.get('referer') || '';
+    const userAgent = _request.headers.get('user-agent') || '';
+    const referrer = _request.headers.get('referer') || '';
 
     // Insert view record
     const query = `
@@ -115,7 +115,7 @@ export async function GET(_request: NextRequest) {
       );
     }
 
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = _request.nextUrl.searchParams;
     const verusidAddress = searchParams.get('address');
     const period = searchParams.get('period') || '7d';
 

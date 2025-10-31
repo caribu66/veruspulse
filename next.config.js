@@ -23,6 +23,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // Skip static optimization for dynamic pages
+  experimental: {
+    isrMemoryCacheSize: 0,
+  },
+
   // Disable Turbopack to avoid self.webpackChunk issues
   // ...(process.env.NODE_ENV === 'development' && {
   //   turbo: {

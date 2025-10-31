@@ -48,7 +48,12 @@ export class MonitoringService {
         const memTotalMatch = memInfo.match(/MemTotal:\s+(\d+)\s+kB/);
         const memAvailableMatch = memInfo.match(/MemAvailable:\s+(\d+)\s+kB/);
 
-        if (memTotalMatch && memAvailableMatch) {
+        if (
+          memTotalMatch &&
+          memAvailableMatch &&
+          memTotalMatch[1] &&
+          memAvailableMatch[1]
+        ) {
           const systemTotalMemory = parseInt(memTotalMatch[1]) * 1024; // Convert to bytes
           const systemAvailableMemory = parseInt(memAvailableMatch[1]) * 1024; // Convert to bytes
           const systemUsedMemory = systemTotalMemory - systemAvailableMemory;

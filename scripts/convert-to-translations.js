@@ -12,33 +12,33 @@ const path = require('path');
 const translationMap = {
   // Common UI
   'Loading...': 'tCommon("loading")',
-  'Loading': 'tCommon("loading")',
-  'Error': 'tCommon("error")',
-  'Retry': 'tCommon("retry")',
-  'Refresh': 'tCommon("refresh")',
-  'Back': 'tCommon("back")',
-  'Next': 'tCommon("next")',
-  'Previous': 'tCommon("previous")',
-  'Details': 'tCommon("details")',
-  'View': 'tCommon("view")',
-  'Search': 'tCommon("search")',
-  'Filter': 'tCommon("filter")',
-  'Sort': 'tCommon("sort")',
-  'Copy': 'tCommon("copy")',
-  'Copied': 'tCommon("copied")',
+  Loading: 'tCommon("loading")',
+  Error: 'tCommon("error")',
+  Retry: 'tCommon("retry")',
+  Refresh: 'tCommon("refresh")',
+  Back: 'tCommon("back")',
+  Next: 'tCommon("next")',
+  Previous: 'tCommon("previous")',
+  Details: 'tCommon("details")',
+  View: 'tCommon("view")',
+  Search: 'tCommon("search")',
+  Filter: 'tCommon("filter")',
+  Sort: 'tCommon("sort")',
+  Copy: 'tCommon("copy")',
+  Copied: 'tCommon("copied")',
   'Show More': 'tCommon("showMore")',
   'Show Less': 'tCommon("showLess")',
-  'Export': 'tCommon("export")',
-  'Download': 'tCommon("download")',
+  Export: 'tCommon("export")',
+  Download: 'tCommon("download")',
 
   // Time
   'Just now': 'tTime("justNow")',
-  'ago': 'tTime("ago")',
-  'Today': 'tTime("today")',
-  'Yesterday': 'tTime("yesterday")',
+  ago: 'tTime("ago")',
+  Today: 'tTime("today")',
+  Yesterday: 'tTime("yesterday")',
 
   // Dashboard
-  'Overview': 't("overview")',
+  Overview: 't("overview")',
   'Recent Blocks': 't("recentBlocks")',
   'Recent Transactions': 't("recentTransactions")',
   'Recent Activity': 't("recentActivity")',
@@ -50,23 +50,23 @@ const translationMap = {
   // Blocks
   'Block Height': 'tBlocks("blockHeight")',
   'Total Blocks': 'tBlocks("totalBlocks")',
-  'Difficulty': 'tBlocks("difficulty")',
-  'Transactions': 'tBlocks("transactions")',
+  Difficulty: 'tBlocks("difficulty")',
+  Transactions: 'tBlocks("transactions")',
   'Block Time': 'tBlocks("blockTime")',
-  'Reward': 'tBlocks("reward")',
-  'Size': 'tBlocks("size")',
-  'Miner': 'tBlocks("miner")',
-  'Staker': 'tBlocks("staker")',
+  Reward: 'tBlocks("reward")',
+  Size: 'tBlocks("size")',
+  Miner: 'tBlocks("miner")',
+  Staker: 'tBlocks("staker")',
 
   // Network
-  'Connections': 'tNetwork("connections")',
-  'Hashrate': 'tNetwork("hashrate")',
+  Connections: 'tNetwork("connections")',
+  Hashrate: 'tNetwork("hashrate")',
   'Network Hash': 'tNetwork("networkHashrate")',
   'Mempool Size': 'tNetwork("mempoolSize")',
   'Circulating Supply': 'tNetwork("circulatingSupply")',
 
   // VerusID
-  'Identity': 'tVerusId("identity")',
+  Identity: 'tVerusId("identity")',
   'Primary Addresses': 'tVerusId("primaryAddresses")',
 };
 
@@ -75,16 +75,28 @@ function determineNeededHooks(content) {
   const hooks = new Set();
 
   // Check for common patterns
-  if (content.match(/Loading|Error|Retry|Refresh|Back|Next|Search|Filter|Sort|Copy/i)) {
+  if (
+    content.match(
+      /Loading|Error|Retry|Refresh|Back|Next|Search|Filter|Sort|Copy/i
+    )
+  ) {
     hooks.add('common');
   }
   if (content.match(/ago|Just now|Today|Yesterday/i)) {
     hooks.add('time');
   }
-  if (content.match(/Overview|Recent Blocks|Recent Transactions|Network Stats|Dashboard/i)) {
+  if (
+    content.match(
+      /Overview|Recent Blocks|Recent Transactions|Network Stats|Dashboard/i
+    )
+  ) {
     hooks.add('dashboard');
   }
-  if (content.match(/Block Height|Total Blocks|Difficulty|Transactions|Reward|Miner|Staker/i)) {
+  if (
+    content.match(
+      /Block Height|Total Blocks|Difficulty|Transactions|Reward|Miner|Staker/i
+    )
+  ) {
     hooks.add('blocks');
   }
   if (content.match(/Connections|Hashrate|Network Hash|Mempool Size|Supply/i)) {
@@ -122,7 +134,7 @@ function generateHooks(neededHooks) {
 
 // Add translation import if not present
 function addTranslationImport(content) {
-  if (content.includes("useTranslations")) {
+  if (content.includes('useTranslations')) {
     return content; // Already has import
   }
 
@@ -131,7 +143,10 @@ function addTranslationImport(content) {
   let insertIndex = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i].includes("'use client'") || lines[i].includes('"use client"')) {
+    if (
+      lines[i].includes("'use client'") ||
+      lines[i].includes('"use client"')
+    ) {
       insertIndex = i + 1;
       // Skip blank lines after 'use client'
       while (insertIndex < lines.length && lines[insertIndex].trim() === '') {
@@ -184,7 +199,9 @@ function replaceStrings(content) {
   let modified = content;
 
   // Sort by length (longest first) to avoid partial replacements
-  const entries = Object.entries(translationMap).sort((a, b) => b[0].length - a[0].length);
+  const entries = Object.entries(translationMap).sort(
+    (a, b) => b[0].length - a[0].length
+  );
 
   for (const [original, replacement] of entries) {
     // Match string literals: 'text', "text", or {`text`}
@@ -220,13 +237,20 @@ function processFile(filePath) {
 
     // Skip if already converted
     if (content.includes('useTranslations')) {
-      console.log(`⏭️  Skipped (already converted): ${path.relative(process.cwd(), filePath)}`);
+      console.log(
+        `⏭️  Skipped (already converted): ${path.relative(process.cwd(), filePath)}`
+      );
       return { converted: false, skipped: true };
     }
 
     // Skip if no 'use client' directive (server components)
-    if (!content.includes("'use client'") && !content.includes('"use client"')) {
-      console.log(`⏭️  Skipped (server component): ${path.relative(process.cwd(), filePath)}`);
+    if (
+      !content.includes("'use client'") &&
+      !content.includes('"use client"')
+    ) {
+      console.log(
+        `⏭️  Skipped (server component): ${path.relative(process.cwd(), filePath)}`
+      );
       return { converted: false, skipped: true };
     }
 
@@ -234,7 +258,9 @@ function processFile(filePath) {
     const neededHooks = determineNeededHooks(content);
 
     if (neededHooks.size === 0) {
-      console.log(`⏭️  Skipped (no translations needed): ${path.relative(process.cwd(), filePath)}`);
+      console.log(
+        `⏭️  Skipped (no translations needed): ${path.relative(process.cwd(), filePath)}`
+      );
       return { converted: false, skipped: true };
     }
 
@@ -253,7 +279,9 @@ function processFile(filePath) {
       console.log(`✅ Converted: ${path.relative(process.cwd(), filePath)}`);
       return { converted: true, skipped: false };
     } else {
-      console.log(`⏭️  No changes needed: ${path.relative(process.cwd(), filePath)}`);
+      console.log(
+        `⏭️  No changes needed: ${path.relative(process.cwd(), filePath)}`
+      );
       return { converted: false, skipped: true };
     }
   } catch (error) {
@@ -325,4 +353,3 @@ if (require.main === module) {
 }
 
 module.exports = { processFile, findTsxFiles };
-

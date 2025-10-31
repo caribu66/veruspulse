@@ -13,7 +13,11 @@ import { RealtimeDataProvider } from '@/components/realtime-data-provider';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { I18nErrorBoundary } from '@/components/i18n-error-boundary';
-import { locales, type Locale, generateMetadata as generateI18nMetadata } from '@/lib/i18n';
+import {
+  locales,
+  type Locale,
+  generateMetadata as generateI18nMetadata,
+} from '@/lib/i18n';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -37,6 +41,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
 };
+
+export const dynamic = 'force-dynamic';
 
 export function generateStaticParams() {
   return locales.map(locale => ({ locale }));
@@ -191,4 +197,3 @@ export default async function LocaleLayout({
     </html>
   );
 }
-

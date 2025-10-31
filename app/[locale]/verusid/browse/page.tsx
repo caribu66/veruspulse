@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { BrowseAllVerusIDs } from '@/components/browse-all-verusids';
 import { DonationWidget } from '@/components/donation-widget';
 

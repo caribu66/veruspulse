@@ -14,11 +14,11 @@ console.log('🔧 Starting automated lint warning fixes...\n');
 // Get all TypeScript/TypeScript React files
 function getAllTSFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
-  
+
   files.forEach(file => {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
-    
+
     if (stat.isDirectory()) {
       // Skip node_modules, .next, etc.
       if (!['node_modules', '.next', 'out', 'dist', 'build'].includes(file)) {
@@ -28,7 +28,7 @@ function getAllTSFiles(dir, fileList = []) {
       fileList.push(filePath);
     }
   });
-  
+
   return fileList;
 }
 
@@ -42,7 +42,7 @@ function fixUnusedCatchErrors(content) {
       // Check if error variable is used in the body
       const errorRegex = new RegExp(`\\b${errorName}\\b`, 'g');
       const matches = body.match(errorRegex);
-      
+
       // If not used or only in comments, prefix with underscore
       if (!matches || matches.length === 0) {
         return match.replace(`(${errorName})`, `(_${errorName})`);
@@ -63,13 +63,13 @@ function removeUnusedImports(content) {
   const lines = content.split('\n');
   const importLines = [];
   const codeContent = lines.join('\n');
-  
+
   lines.forEach((line, index) => {
     if (line.trim().startsWith('import ')) {
       importLines.push({ line, index });
     }
   });
-  
+
   // Check each import
   let newContent = content;
   importLines.forEach(({ line }) => {
@@ -78,8 +78,10 @@ function removeUnusedImports(content) {
     if (match) {
       const imports = match[1] || match[2];
       if (imports) {
-        const importNames = imports.split(',').map(i => i.trim().split(' as ')[0].trim());
-        
+        const importNames = imports
+          .split(',')
+          .map(i => i.trim().split(' as ')[0].trim());
+
         // Check if any are used (basic check)
         const allUnused = importNames.every(name => {
           const regex = new RegExp(`\\b${name}\\b`, 'g');
@@ -87,15 +89,18 @@ function removeUnusedImports(content) {
           // If appears only once (in the import itself), it's unused
           return !matches || matches.length <= 1;
         });
-        
+
         if (allUnused && !line.includes('type')) {
           // Comment out instead of removing (safer)
-          newContent = newContent.replace(line, `// ${line} // Unused - commented by auto-fixer`);
+          newContent = newContent.replace(
+            line,
+            `// ${line} // Unused - commented by auto-fixer`
+          );
         }
       }
     }
   });
-  
+
   return newContent;
 }
 
@@ -109,10 +114,10 @@ files.forEach(filePath => {
   try {
     let content = fs.readFileSync(filePath, 'utf8');
     const originalContent = content;
-    
+
     // Apply fixes
     content = fixUnusedCatchErrors(content);
-    
+
     // Write back if changed
     if (content !== originalContent) {
       fs.writeFileSync(filePath, content, 'utf8');
@@ -135,4 +140,3 @@ try {
 
 console.log('\n✅ Automated fixes complete!');
 console.log('📊 Run "npm run lint" to see remaining warnings\n');
-

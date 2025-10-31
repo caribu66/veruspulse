@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { checkSystemHealth } from '@/lib/monitoring/health-check';
-import { captureAPIError } from '@/lib/monitoring/sentry';
+// import { captureAPIError } from '@/lib/monitoring/sentry';
 import { logger } from '@/lib/utils/logger';
 
 // Health check API endpoint
@@ -28,13 +28,13 @@ export async function GET() {
   } catch (error) {
     logger.error('❌ Health check failed:', error);
 
-    captureAPIError(
-      error instanceof Error ? error : new Error('Health check failed'),
-      {
-        apiRoute: 'health',
-        method: 'GET',
-      }
-    );
+    // captureAPIError(
+    //   error instanceof Error ? error : new Error('Health check failed'),
+    //   {
+    //     apiRoute: 'health',
+    //     method: 'GET',
+    //   }
+    // );
 
     return NextResponse.json(
       {

@@ -1,7 +1,8 @@
-import { captureSystemHealth, captureAPIError } from './sentry';
+// import { captureSystemHealth, captureAPIError } from './sentry';
 import { CachedRPCClient } from '@/lib/cache/cached-rpc-client';
 import { CacheManager } from '@/lib/cache/cache-utils';
 import { redis } from '@/lib/cache/redis';
+import fs from 'fs';
 
 // Health check utilities for Verus Explorer
 
@@ -222,7 +223,6 @@ class HealthMonitor {
       const memoryUsage = process.memoryUsage();
 
       // Get system memory information
-      const fs = require('fs');
       const memInfo = fs.readFileSync('/proc/meminfo', 'utf8');
       const memTotalMatch = memInfo.match(/MemTotal:\s+(\d+)\s+kB/);
       const memAvailableMatch = memInfo.match(/MemAvailable:\s+(\d+)\s+kB/);

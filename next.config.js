@@ -23,26 +23,27 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // Enable Turbopack in development for faster builds
-  ...(process.env.NODE_ENV === 'development' && {
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-  }),
+  // Disable Turbopack to avoid self.webpackChunk issues
+  // ...(process.env.NODE_ENV === 'development' && {
+  //   turbo: {
+  //     rules: {
+  //       '*.svg': {
+  //         loaders: ['@svgr/webpack'],
+  //         as: '*.js',
+  //       },
+  //     },
+  //   },
+  // }),
 
   // Optimize package imports for faster builds and smaller bundles
-  optimizePackageImports: [
-    '@phosphor-icons/react',
-    'lucide-react',
-    'date-fns',
-    'echarts',
-    'echarts-for-react',
-  ],
+  // NOTE: optimizePackageImports is not supported in this Next.js version, keeping for future compatibility
+  // optimizePackageImports: [
+  //   '@phosphor-icons/react',
+  //   'lucide-react',
+  //   'date-fns',
+  //   'echarts',
+  //   'echarts-for-react',
+  // ],
 
   async headers() {
     return [
@@ -136,11 +137,12 @@ const nextConfig = {
 
   // Compiler optimizations
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production'
-      ? {
-          exclude: ['error', 'warn'],
-        }
-      : false,
+    removeConsole:
+      process.env.NODE_ENV === 'production'
+        ? {
+            exclude: ['error', 'warn'],
+          }
+        : false,
   },
 
   // Production source maps for better debugging
@@ -157,35 +159,35 @@ const nextConfig = {
       };
     }
 
-    // Production optimizations
-    if (!dev) {
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            default: false,
-            vendors: false,
-            // Vendor chunk for node_modules
-            vendor: {
-              name: 'vendor',
-              chunks: 'all',
-              test: /node_modules/,
-              priority: 20,
-            },
-            // Common chunk for shared code
-            common: {
-              name: 'common',
-              minChunks: 2,
-              chunks: 'all',
-              priority: 10,
-              reuseExistingChunk: true,
-              enforce: true,
-            },
-          },
-        },
-      };
-    }
+    // Production optimizations - disabled vendor chunking to avoid self.webpackChunk issues
+    // if (!dev) {
+    //   config.optimization = {
+    //     ...config.optimization,
+    //     splitChunks: {
+    //       chunks: 'all',
+    //       cacheGroups: {
+    //         default: false,
+    //         vendors: false,
+    //         // Vendor chunk for node_modules
+    //         vendor: {
+    //           name: 'vendor',
+    //           chunks: 'all',
+    //           test: /node_modules/,
+    //           priority: 20,
+    //         },
+    //         // Common chunk for shared code
+    //         common: {
+    //           name: 'common',
+    //           minChunks: 2,
+    //           chunks: 'all',
+    //           priority: 10,
+    //           reuseExistingChunk: true,
+    //           enforce: true,
+    //         },
+    //       },
+    //     },
+    //   };
+    // }
 
     // Fix for Node.js modules in client-side code
     if (!isServer) {
@@ -204,6 +206,45 @@ const nextConfig = {
         os: false,
         path: false,
       };
+    }
+
+    // Fix for 'self is not defined' error in server-side code
+    if (isServer) {
+      // Replace self with globalThis in generated code
+      config.plugins = config.plugins || [];
+      config.plugins.push({
+        apply: compiler => {
+          compiler.hooks.compilation.tap('FixSelfUndefined', compilation => {
+            compilation.hooks.processAssets.tap(
+              {
+                name: 'FixSelfUndefined',
+                stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
+              },
+              assets => {
+                Object.keys(assets).forEach(filename => {
+                  if (filename.endsWith('.js')) {
+                    const asset = assets[filename];
+                    let source = asset.source();
+                    if (
+                      typeof source === 'string' &&
+                      source.includes('self.webpackChunk')
+                    ) {
+                      source = source.replace(
+                        /\bself\.webpackChunk/g,
+                        '(typeof self !== "undefined" ? self : globalThis).webpackChunk'
+                      );
+                      compilation.updateAsset(
+                        filename,
+                        new (require('webpack-sources').RawSource)(source)
+                      );
+                    }
+                  }
+                });
+              }
+            );
+          });
+        },
+      });
     }
 
     return config;

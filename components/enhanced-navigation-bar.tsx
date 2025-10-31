@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   ChartBar,
   MagnifyingGlass,
@@ -14,7 +14,6 @@ import { MinimalPriceIndicator } from './minimal-price-indicator';
 import { ICON_SIZES, SPACING_UTILS } from '@/lib/constants/design-tokens';
 import { useTheme } from '@/contexts/theme-context';
 import { LanguageSwitcher } from './language-switcher';
-import { useLocale } from 'next-intl';
 import { useNavTranslations } from '@/lib/i18n/hooks';
 
 // Ultra-simplified navigation - consolidated to 3 core sections

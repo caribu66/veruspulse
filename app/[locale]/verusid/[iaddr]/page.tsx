@@ -1,8 +1,7 @@
 'use client';
 
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { VerusIDStakingDashboard } from '@/components/verusid-staking-dashboard';
 import { DonationBanner } from '@/components/donation-banner';

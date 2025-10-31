@@ -278,7 +278,7 @@ export function Label({
  * Lead Text Component
  * Larger text for introductions
  */
-export interface LeadProps extends Omit<TextProps, 'size'> {}
+export type LeadProps = Omit<TextProps, 'size'>;
 
 export function Lead({ className, children, ...props }: LeadProps) {
   return (

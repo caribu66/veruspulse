@@ -1,4 +1,5 @@
 import { logger } from './logger';
+import fs from 'fs';
 
 // Application metrics
 export interface AppMetrics {
@@ -43,7 +44,6 @@ export class MonitoringService {
     if (typeof process !== 'undefined' && process.memoryUsage) {
       try {
         // Get system memory information
-        const fs = require('fs');
         const memInfo = fs.readFileSync('/proc/meminfo', 'utf8');
         const memTotalMatch = memInfo.match(/MemTotal:\s+(\d+)\s+kB/);
         const memAvailableMatch = memInfo.match(/MemAvailable:\s+(\d+)\s+kB/);

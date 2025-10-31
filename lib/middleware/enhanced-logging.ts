@@ -1,7 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { enhancedLogger } from '@/lib/utils/enhanced-logger';
 
-export function withEnhancedLogging(handler: Function) {
+type RouteHandler = (
+  request: NextRequest,
+  context?: any
+) => Promise<NextResponse>;
+
+export function withEnhancedLogging(handler: RouteHandler) {
   return async (request: NextRequest, context?: any) => {
     const startTime = Date.now();
     const method = request.method;

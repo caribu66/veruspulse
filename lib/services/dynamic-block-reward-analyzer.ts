@@ -39,7 +39,7 @@ export class DynamicBlockRewardAnalyzer {
   private scheduleCache: RewardSchedule[] | null = null;
   // Track last analyzed height for cache invalidation
   // Property is set but TypeScript doesn't detect usage - intentionally kept for future use
-  // @ts-ignore TS6133 - property is set but not read in current code flow
+  // @ts-expect-error TS6133 - property is set but not read in current code flow
   private lastAnalysisHeight = 0;
 
   private constructor() {}

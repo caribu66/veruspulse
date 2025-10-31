@@ -11,9 +11,7 @@ const withNextIntl = createNextIntlPlugin('./i18n.ts');
 const nextConfig = {
   // Next.js 15 Performance Optimizations
   reactStrictMode: true,
-
-  // Use standalone output to avoid static generation errors
-  output: 'standalone',
+  // Note: output: 'standalone' removed for compatibility with PM2 deployment
 
   // Disable ESLint during builds for deployment
   eslint: {

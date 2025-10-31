@@ -232,15 +232,6 @@ jobs:
           ENABLE_PERFORMANCE_MONITORING=true
           EOF
 
-      - name: Load environment variables
-        run: |
-          if [ -f /home/explorer/verus-dapp/.env ]; then
-            echo "✅ Loading existing .env file from production directory"
-            cp /home/explorer/verus-dapp/.env .env
-          else
-            echo "⚠️  No .env file found, using secrets"
-          fi
-
       - name: Build application
         run: npm run build
 

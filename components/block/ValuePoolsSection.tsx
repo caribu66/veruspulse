@@ -9,10 +9,7 @@ interface ValuePoolsSectionProps {
   block: Block;
 }
 
-export function ValuePoolsSection({
-  block,
-}: ValuePoolsSectionProps) {
-  const tCommon = useTranslations('common');
+export function ValuePoolsSection({ block }: ValuePoolsSectionProps) {
   if (!block.valuePools || block.valuePools.length === 0) {
     return null;
   }
@@ -71,7 +68,7 @@ export function ValuePoolsSection({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        {block.valuePools.map((pool, index) => (
+        {block.valuePools.map(pool => (
           <div key={pool.id} className="space-y-2">
             <div className="flex items-center space-x-2">
               <span className="text-lg">{getPoolIcon(pool.id)}</span>

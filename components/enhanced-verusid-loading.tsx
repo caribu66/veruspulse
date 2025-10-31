@@ -54,10 +54,7 @@ export function EnhancedVerusIDLoading({
   onError,
   className = '',
 }: EnhancedLoadingProps) {
-  const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [scanProgress, setScanProgress] = useState<ScanProgress>({
     status: 'not_started',
     stage: 'initial',

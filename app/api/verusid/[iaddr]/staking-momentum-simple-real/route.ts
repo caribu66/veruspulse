@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -15,11 +15,10 @@ export async function GET(
       );
     }
 
-    // Fetch real data from staking stats, network participation, live UTXOs, and recent stakes
+    // Fetch real data from staking stats, network participation, and recent stakes
     const [
       stakingStatsResponse,
       networkParticipationResponse,
-      liveUTXOsResponse,
       recentStakesResponse,
     ] = await Promise.allSettled([
       fetch(
@@ -28,9 +27,10 @@ export async function GET(
       fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid/${iaddr}/network-participation`
       ).then(res => res.json()),
-      fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid/${iaddr}/live-utxos`
-      ).then(res => res.json()),
+      // Note: Live UTXOs endpoint commented out as data not currently used in momentum calculation
+      // fetch(
+      //   `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid/${iaddr}/live-utxos`
+      // ).then(res => res.json()),
       fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/verusid/${iaddr}/recent-stakes`
       ).then(res => res.json()),
@@ -48,11 +48,11 @@ export async function GET(
         ? networkParticipationResponse.value
         : null;
 
-    const _liveUTXOs =
-      liveUTXOsResponse.status === 'fulfilled' &&
-      liveUTXOsResponse.value.success
-        ? liveUTXOsResponse.value.data
-        : null;
+    // Note: Live UTXOs data fetched but not currently used in momentum calculation
+    // Kept for potential future features
+    // const liveUTXOs = liveUTXOsResponse.status === 'fulfilled' && liveUTXOsResponse.value.success
+    //   ? liveUTXOsResponse.value.data
+    //   : null;
 
     const recentStakes =
       recentStakesResponse.status === 'fulfilled' &&
@@ -71,7 +71,6 @@ export async function GET(
     const yourWeight = networkParticipation.data.yourWeight || 0;
     const networkWeight = networkParticipation.data.networkWeight || 0;
     const totalStakes = stakingStats.summary?.totalStakes || 0;
-    const _totalRewards = stakingStats.summary?.totalRewardsVRSC || 0;
     const firstStake = stakingStats.summary?.firstStake
       ? new Date(stakingStats.summary.firstStake)
       : null;

@@ -3,6 +3,11 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Button, ButtonGroup } from '@/components/ui/button';
 
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
 describe('Button Component', () => {
   describe('Basic Rendering', () => {
     it('should render button with text', () => {
@@ -77,7 +82,7 @@ describe('Button Component', () => {
       render(<Button loading>Loading</Button>);
       const spinner = screen.getByRole('status');
       expect(spinner).toBeInTheDocument();
-      expect(spinner).toHaveAttribute('aria-label', 'Loading');
+      expect(spinner).toHaveAttribute('aria-label', 'loading');
     });
 
     it('should disable button when loading', () => {

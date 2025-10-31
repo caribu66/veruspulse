@@ -28,7 +28,6 @@ export function MinimalPriceIndicator({
   refreshInterval = 10000, // 10 seconds for less frequent updates
   maxAssets = 3,
 }: MinimalPriceIndicatorProps) {
-  const tCommon = useTranslations('common');
   const [prices, setPrices] = useState<LivePriceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,7 +118,10 @@ export function MinimalPriceIndicator({
 
   if (error || prices.length === 0) {
     return (
-      <div className={`flex items-center space-x-2 ${className}`} title="Price data requires stablecoin bridges (USDC, DAI, etc.) on PBaaS chains">
+      <div
+        className={`flex items-center space-x-2 ${className}`}
+        title="Price data requires stablecoin bridges (USDC, DAI, etc.) on PBaaS chains"
+      >
         <WifiSlash className="h-3 w-3 text-gray-500 dark:text-slate-500" />
         <span className="text-xs text-gray-600 dark:text-slate-500">
           Price N/A
@@ -151,7 +153,11 @@ export function MinimalPriceIndicator({
             <div
               key={price.symbol}
               className="flex items-center space-x-1.5 group"
-              title={!hasPrice ? `${price.symbol} price unavailable - awaiting stablecoin bridge data` : undefined}
+              title={
+                !hasPrice
+                  ? `${price.symbol} price unavailable - awaiting stablecoin bridge data`
+                  : undefined
+              }
             >
               {/* Symbol */}
               <span className="text-xs text-gray-600 dark:text-white/60 font-medium tracking-wide">
@@ -159,7 +165,9 @@ export function MinimalPriceIndicator({
               </span>
 
               {/* Price */}
-              <span className={`text-sm font-medium ${hasPrice ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-slate-500'}`}>
+              <span
+                className={`text-sm font-medium ${hasPrice ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-slate-500'}`}
+              >
                 {formatPrice(price.priceUSD)}
               </span>
 

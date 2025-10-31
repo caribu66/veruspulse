@@ -38,9 +38,6 @@ const ITEMS_PER_PAGE = 50;
 
 export function BrowseAllVerusIDs() {
   const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
 
   const router = useRouter();
   const { isMobile } = useMobileOptimizations();
@@ -470,7 +467,7 @@ export function BrowseAllVerusIDs() {
               className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
             >
               <ArrowsClockwise className="h-4 w-4" />
-              <span>{tCommon("refresh")}</span>
+              <span>{tCommon('refresh')}</span>
             </button>
           </div>
         </div>

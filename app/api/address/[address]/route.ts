@@ -3,7 +3,7 @@ import { verusAPI } from '@/lib/rpc-client-robust';
 import { verusClientWithFallback } from '@/lib/rpc-client-with-fallback';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ address: string }> }
 ) {
   try {

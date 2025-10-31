@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
  * GET endpoint to check scan progress
  * GET /api/verusid/scan/progress
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const progress = getProgress();
     return NextResponse.json({

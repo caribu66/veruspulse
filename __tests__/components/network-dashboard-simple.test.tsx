@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { NetworkDashboard } from '@/components/network-dashboard';
 
 // Simple test to check if component renders without crashing

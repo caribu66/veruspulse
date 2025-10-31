@@ -29,7 +29,6 @@ export function VerusIDLoadingState({
   className = '',
 }: VerusIDLoadingStateProps) {
   const tCommon = useTranslations('common');
-  const tVerusId = useTranslations('verusid');
   const [isRetrying, setIsRetrying] = useState(false);
 
   const handleRetry = async () => {
@@ -115,7 +114,7 @@ export function VerusIDLoadingState({
             ) : (
               <>
                 <ArrowsClockwise className="h-4 w-4" />
-                <span>{tCommon("retry")}</span>
+                <span>{tCommon('retry')}</span>
               </>
             )}
           </button>
@@ -155,7 +154,7 @@ export function SimpleVerusIDLoading({
     <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
       <div className="flex items-center justify-center space-x-3">
         <CircleNotch className="h-5 w-5 text-blue-400 animate-spin" />
-        <span className="text-blue-300">{message || tCommon("loading")}</span>
+        <span className="text-blue-300">{message || tCommon('loading')}</span>
       </div>
     </div>
   );

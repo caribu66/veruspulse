@@ -7,7 +7,7 @@ import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
 import { RealtimeDataProvider } from '@/components/realtime-data-provider';
 import { SkipNavigation } from '@/components/skip-navigation';
 import { ToastProvider } from '@/components/ui/toast';
-import { ThemeProvider } from '@/contexts/theme-context';
+// ThemeProvider removed - dark theme only
 import {
   generateMetadata as generateI18nMetadata,
   locales,
@@ -176,19 +176,17 @@ export default async function LocaleLayout({
       <body className={poppins.className}>
         <I18nErrorBoundary>
           <NextIntlClientProvider messages={messages}>
-            <ThemeProvider>
-              <ToastProvider>
-                <RealtimeDataProvider>
-                  <MobileViewportFix />
-                  <SkipNavigation />
-                  <ErrorBoundary fallback={<GlobalErrorFallback />}>
-                    {children}
-                  </ErrorBoundary>
-                  <MobileBottomNav />
-                  <PWAInstallPrompt />
-                </RealtimeDataProvider>
-              </ToastProvider>
-            </ThemeProvider>
+            <ToastProvider>
+              <RealtimeDataProvider>
+                <MobileViewportFix />
+                <SkipNavigation />
+                <ErrorBoundary fallback={<GlobalErrorFallback />}>
+                  {children}
+                </ErrorBoundary>
+                <MobileBottomNav />
+                <PWAInstallPrompt />
+              </RealtimeDataProvider>
+            </ToastProvider>
           </NextIntlClientProvider>
         </I18nErrorBoundary>
       </body>

@@ -12,8 +12,6 @@ import {
 import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 
 export function GlobalErrorFallback() {
-  const tCommon = useTranslations('common');
-
   const { goBack } = useNavigationHistory();
 
   const handleReload = () => {

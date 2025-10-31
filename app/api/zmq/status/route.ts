@@ -80,7 +80,7 @@ export async function GET() {
  */
 export async function POST(_request: Request) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { action } = body;
 
     if (action === 'start') {

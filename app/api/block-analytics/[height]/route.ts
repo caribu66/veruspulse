@@ -16,7 +16,7 @@ function getDbPool() {
 }
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ height: string }> }
 ) {
   try {

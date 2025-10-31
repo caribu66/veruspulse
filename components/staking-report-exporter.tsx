@@ -29,10 +29,6 @@ export function StakingReportExporter({
   data,
   iaddr,
 }: StakingReportExporterProps) {
-  const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [exporting, setExporting] = useState(false);
 
@@ -158,7 +154,7 @@ export function StakingReportExporter({
           <div
             className="fixed inset-0 z-40"
             onClick={() => setShowExportMenu(false)}
-           />
+          />
 
           {/* Menu */}
           <div className="absolute top-full right-0 mt-2 w-72 bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden">

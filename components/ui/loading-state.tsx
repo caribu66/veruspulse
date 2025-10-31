@@ -37,7 +37,6 @@ export function LoadingSpinner({
   overlay = false,
   className,
 }: LoadingSpinnerProps) {
-  const tCommon = useTranslations('common');
   const sizeMap = {
     sm: 'h-4 w-4',
     md: 'h-6 w-6',
@@ -110,7 +109,6 @@ export function LoadingSkeleton({
   animation = 'pulse',
   className,
 }: LoadingSkeletonProps) {
-  const tCommon = useTranslations('common');
   const baseStyles = 'bg-gray-200 dark:bg-slate-700';
 
   const animationStyles = {
@@ -414,7 +412,6 @@ export function LoadingOverlay({
   blur = true,
   className,
 }: LoadingOverlayProps) {
-  const tCommon = useTranslations('common');
   if (!show) return null;
 
   return (

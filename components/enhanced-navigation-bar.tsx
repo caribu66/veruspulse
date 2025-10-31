@@ -12,7 +12,7 @@ import {
 } from '@phosphor-icons/react';
 import { MinimalPriceIndicator } from './minimal-price-indicator';
 import { ICON_SIZES, SPACING_UTILS } from '@/lib/constants/design-tokens';
-import { useTheme } from '@/contexts/theme-context';
+// useTheme removed - dark theme only
 import { LanguageSwitcher } from './language-switcher';
 import { useNavTranslations } from '@/lib/i18n/hooks';
 
@@ -31,11 +31,8 @@ export function EnhancedNavigationBar({
   activeTab,
   onTabChange,
 }: EnhancedNavigationBarProps) {
-  const tCommon = useTranslations('common');
   const tDashboard = useTranslations('dashboard');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const { theme } = useTheme();
+  // theme removed - dark theme only
   const locale = useLocale();
   const t = useNavTranslations(); // Using typed hook
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

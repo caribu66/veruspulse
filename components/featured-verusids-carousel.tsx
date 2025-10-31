@@ -50,8 +50,6 @@ export function FeaturedVerusIDsCarousel({
 }: FeaturedVerusIDsCarouselProps) {
   const tCommon = useTranslations('common');
   const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [featuredIDs, setFeaturedIDs] = useState<FeaturedVerusID[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -231,7 +229,7 @@ export function FeaturedVerusIDsCarousel({
               <h3 className="text-xl font-bold text-white">
                 Featured VerusIDs
               </h3>
-              <p className="text-sm text-gray-400">{tCommon("loading")}</p>
+              <p className="text-sm text-gray-400">{tCommon('loading')}</p>
             </div>
           </div>
         </div>
@@ -252,6 +250,8 @@ export function FeaturedVerusIDsCarousel({
   }
 
   const currentID = featuredIDs[currentIndex];
+
+  if (!currentID) return null;
 
   return (
     <div className="relative bg-gradient-to-br from-verus-blue/20 via-verus-green/20 to-verus-blue/20 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
@@ -329,7 +329,9 @@ export function FeaturedVerusIDsCarousel({
                 )}
                 {currentID.stats.stakingRewards !== undefined && (
                   <div className="bg-white/5 rounded-lg p-3">
-                    <div className="text-xs text-gray-400 mb-1">{tBlocks("reward")}</div>
+                    <div className="text-xs text-gray-400 mb-1">
+                      {tBlocks('reward')}
+                    </div>
                     <div className="text-lg font-bold text-green-400">
                       {currentID.stats.stakingRewards.toFixed(2)} VRSC
                     </div>

@@ -155,12 +155,8 @@ function TrendingCard({ item, rank }: { item: TrendingItem; rank: number }) {
         </div>
 
         {/* Icon */}
-        <div
-          className="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 group-hover:scale-105 transition-transform flex-shrink-0"
-        >
-          <Icon
-            className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-600 dark:text-slate-300"
-          />
+        <div className="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 group-hover:scale-105 transition-transform flex-shrink-0">
+          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-600 dark:text-slate-300" />
         </div>
 
         {/* Content */}
@@ -283,11 +279,7 @@ export function TrendingSection({
   autoRefresh = true,
   refreshInterval = 60000, // 1 minute
 }: TrendingSectionProps) {
-  const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [activeTab, setActiveTab] = useState<
     'all' | 'blocks' | 'verusids' | 'addresses'
   >('all');

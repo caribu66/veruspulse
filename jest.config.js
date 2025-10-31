@@ -17,6 +17,9 @@ const customJestConfig = {
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    // Mock next-intl for tests
+    '^next-intl$': '<rootDir>/__mocks__/next-intl.js',
+    '^next-intl/(.*)$': '<rootDir>/__mocks__/next-intl.js',
   },
   transformIgnorePatterns: ['node_modules/(?!(echarts|echarts-for-react)/)'],
   collectCoverageFrom: [

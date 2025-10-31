@@ -28,7 +28,6 @@ export function VerusIDSearchBar({
   initialValue = '',
   showRecentSearches = true,
 }: VerusIDSearchBarProps) {
-  const tCommon = useTranslations('common');
   const tVerusId = useTranslations('verusid');
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 

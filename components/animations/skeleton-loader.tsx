@@ -16,8 +16,6 @@ export function SkeletonLoader({
   className = '',
   count = 1,
 }: SkeletonLoaderProps) {
-  const tCommon = useTranslations('common');
-  const t = useTranslations('dashboard');
   const baseClasses =
     'animate-pulse bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 bg-[length:200%_100%] rounded';
 

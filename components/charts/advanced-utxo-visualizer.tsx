@@ -148,7 +148,8 @@ const COOLDOWN_ZONE = {
 // Utility function to get bin index for a UTXO value
 const getValueBin = (valueVRSC: number): number => {
   for (let i = 0; i < VALUE_BINS.length; i++) {
-    if (valueVRSC >= VALUE_BINS[i].min && valueVRSC < VALUE_BINS[i].max) {
+    const bin = VALUE_BINS[i];
+    if (bin && valueVRSC >= bin.min && valueVRSC < bin.max) {
       return i;
     }
   }
@@ -1029,9 +1030,11 @@ function AdvancedUTXOVisualizer({
       // Group UTXOs by value within each bin for better clustering
       const binStart = binIndex * binWidth;
       const binEnd = (binIndex + 1) * binWidth;
+      const currentBin = VALUE_BINS[binIndex];
+      if (!currentBin) return; // Skip if bin is undefined
+
       const valueWithinBin =
-        (value - VALUE_BINS[binIndex].min) /
-        (VALUE_BINS[binIndex].max - VALUE_BINS[binIndex].min);
+        (value - currentBin.min) / (currentBin.max - currentBin.min);
       const col = Math.floor(
         binStart + valueWithinBin * (binEnd - binStart - 1)
       );
@@ -1043,8 +1046,9 @@ function AdvancedUTXOVisualizer({
         Math.floor((utxo.confirmations / maxConfirmations) * rows)
       );
 
-      if (row >= 0 && row < rows && col >= 0 && col < mainGridCols) {
-        grid[row][col]++;
+      const gridRow = grid[row];
+      if (row >= 0 && row < rows && col >= 0 && col < mainGridCols && gridRow) {
+        gridRow[col] = (gridRow[col] || 0) + 1;
         const key = `${row}-${col}`;
         if (!cellUtxos[key]) cellUtxos[key] = [];
         cellUtxos[key].push(utxo);
@@ -1092,7 +1096,10 @@ function AdvancedUTXOVisualizer({
         cooldownCol >= mainGridCols &&
         cooldownCol < cols
       ) {
-        grid[progressRow][cooldownCol]++;
+        const gridRow = grid[progressRow];
+        if (gridRow) {
+          gridRow[cooldownCol] = (gridRow[cooldownCol] || 0) + 1;
+        }
         const key = `${progressRow}-${cooldownCol}`;
         if (!cellUtxos[key]) cellUtxos[key] = [];
         cellUtxos[key].push(utxo);
@@ -1121,7 +1128,10 @@ function AdvancedUTXOVisualizer({
         lowChanceCol >= mainGridCols + cooldownZoneWidth &&
         lowChanceCol < cols
       ) {
-        grid[valueRow][lowChanceCol]++;
+        const gridRow = grid[valueRow];
+        if (gridRow) {
+          gridRow[lowChanceCol] = (gridRow[lowChanceCol] || 0) + 1;
+        }
         const key = `${valueRow}-${lowChanceCol}`;
         if (!cellUtxos[key]) cellUtxos[key] = [];
         cellUtxos[key].push(utxo);
@@ -1519,7 +1529,10 @@ function AdvancedUTXOVisualizer({
                   // Determine color based on UTXO characteristics
                   let fillColor = 'rgba(0,0,0,0)'; // Transparent for empty cells
 
-                  if (count > 0 && cellData.length > 0) {
+                  if (count > 0 && cellData && cellData.length > 0) {
+                    const firstUtxo = cellData[0];
+                    if (!firstUtxo) return null;
+
                     // Check which zone this cell is in
                     const isInCooldownZone =
                       colIndex >= mainGridCols &&
@@ -1529,7 +1542,8 @@ function AdvancedUTXOVisualizer({
 
                     if (isInCooldownZone) {
                       // Enhanced cooldown zone colors based on progress
-                      const utxo = cellData[0]; // Get first UTXO for progress calculation
+                      const utxo = cellData[0];
+                      if (!utxo) return null; // Get first UTXO for progress calculation
                       const progress = Math.min(
                         100,
                         (utxo.confirmations / 150) * 100
@@ -1591,12 +1605,14 @@ function AdvancedUTXOVisualizer({
                         }
                         className="cursor-pointer transition-all duration-150"
                         style={{
-                          filter: cellData.some(u => hoveredUTXO === u.txid)
-                            ? 'brightness(1.3)'
-                            : 'none',
+                          filter:
+                            cellData &&
+                            cellData.some(u => hoveredUTXO === u.txid)
+                              ? 'brightness(1.3)'
+                              : 'none',
                         }}
                         onClick={e => {
-                          if (cellData.length > 0) {
+                          if (cellData && cellData.length > 0) {
                             // Select all UTXOs in this cell, not just the first one
                             cellData.forEach(utxo => {
                               handleUTXOClick(utxo.txid, e);
@@ -1604,7 +1620,7 @@ function AdvancedUTXOVisualizer({
                           }
                         }}
                         onMouseEnter={() => {
-                          if (cellData.length > 0) {
+                          if (cellData && cellData.length > 0 && cellData[0]) {
                             // Show hover for the first UTXO, but tooltip will show all UTXOs in cell
                             handleUTXOHover(cellData[0].txid);
                           }

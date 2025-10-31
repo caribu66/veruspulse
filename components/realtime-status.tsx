@@ -23,10 +23,6 @@ export function RealtimeStatus({
   showDetails = false,
 }: RealtimeStatusProps) {
   const tCommon = useTranslations('common');
-  const tTime = useTranslations('time');
-  const tBlocks = useTranslations('blocks');
-  const tNetwork = useTranslations('network');
-  const tStaking = useTranslations('staking');
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
   const [updateCount, setUpdateCount] = useState(0);
 
@@ -64,7 +60,7 @@ export function RealtimeStatus({
       case 'connecting':
         return 'Connecting...';
       case 'error':
-        return tCommon("error");
+        return tCommon('error');
       default:
         return 'Offline';
     }

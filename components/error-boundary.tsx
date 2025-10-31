@@ -104,8 +104,6 @@ export class ErrorBoundary extends Component<Props, State> {
 
 // Hook for functional components
 export function useErrorHandler() {
-  const tCommon = useTranslations('common');
-
   return (error: Error, errorInfo?: any) => {
     console.error('Error caught by useErrorHandler:', error, errorInfo);
     // You can add additional error reporting here (e.g., Sentry)

@@ -2,12 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import {
-  CaretLeft,
-  CaretRight,
-  ArrowLeft,
-  ArrowRight,
-} from '@phosphor-icons/react';
+import { CaretLeft, CaretRight, ArrowLeft } from '@phosphor-icons/react';
 import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 
 interface BlockNavigationProps {
@@ -18,9 +13,7 @@ interface BlockNavigationProps {
   };
 }
 
-export function BlockNavigation({
-  block,
-}: BlockNavigationProps) {
+export function BlockNavigation({ block }: BlockNavigationProps) {
   const tCommon = useTranslations('common');
   const tBlocks = useTranslations('blocks');
   const { goBack } = useNavigationHistory();
@@ -39,7 +32,9 @@ export function BlockNavigation({
             >
               <CaretLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
               <div className="text-left">
-                <div className="text-xs text-gray-400">{tBlocks('previousBlockNav')}</div>
+                <div className="text-xs text-gray-400">
+                  {tBlocks('previousBlockNav')}
+                </div>
                 <div className="font-semibold">#{block.height - 1}</div>
               </div>
             </Link>
@@ -47,7 +42,9 @@ export function BlockNavigation({
             <div className="flex items-center space-x-2 text-gray-500">
               <CaretLeft className="h-4 w-4" />
               <div className="text-left">
-                <div className="text-xs text-gray-400">{tBlocks('previousBlockNav')}</div>
+                <div className="text-xs text-gray-400">
+                  {tBlocks('previousBlockNav')}
+                </div>
                 <div className="font-semibold">{tBlocks('genesis')}</div>
               </div>
             </div>
@@ -70,7 +67,9 @@ export function BlockNavigation({
               className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors group ml-auto justify-end"
             >
               <div className="text-right">
-                <div className="text-xs text-gray-400">{tBlocks('nextBlockNav')}</div>
+                <div className="text-xs text-gray-400">
+                  {tBlocks('nextBlockNav')}
+                </div>
                 <div className="font-semibold">#{block.height + 1}</div>
               </div>
               <CaretRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -78,7 +77,9 @@ export function BlockNavigation({
           ) : (
             <div className="flex items-center space-x-2 text-gray-500 ml-auto justify-end">
               <div className="text-right">
-                <div className="text-xs text-gray-400">{tBlocks('nextBlockNav')}</div>
+                <div className="text-xs text-gray-400">
+                  {tBlocks('nextBlockNav')}
+                </div>
                 <div className="font-semibold">{tBlocks('latest')}</div>
               </div>
               <CaretRight className="h-4 w-4" />

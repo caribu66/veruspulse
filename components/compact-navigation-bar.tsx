@@ -12,7 +12,7 @@ import {
 } from '@phosphor-icons/react';
 import { MinimalPriceIndicator } from './minimal-price-indicator';
 import { ICON_SIZES, SPACING_UTILS } from '@/lib/constants/design-tokens';
-import { useTheme } from '@/contexts/theme-context';
+// useTheme removed - dark theme only
 
 // Ultra-compact navigation - 3 core sections
 type ExplorerTab =
@@ -29,12 +29,9 @@ export function CompactNavigationBar({
   activeTab,
   onTabChange,
 }: CompactNavigationBarProps) {
-  const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme } = useTheme();
+  // theme removed - dark theme only
 
   // Ultra-compact navigation items
   const navigationItems = useMemo(

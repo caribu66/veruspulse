@@ -15,7 +15,6 @@ export function DonationWidget({
   position = 'bottom-right',
   dismissible = true,
 }: DonationWidgetProps) {
-  const tCommon = useTranslations('common');
   const [isOpen, setIsOpen] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -102,8 +101,13 @@ export function DonationWidget({
             onClick={() => setIsOpen(true)}
             className="group bg-gradient-to-r from-verus-blue to-verus-green hover:from-verus-blue-dark hover:to-verus-green-dark text-white rounded-full px-6 py-3 shadow-2xl hover:shadow-3xl ring-4 ring-red-500/30 hover:ring-red-500/50 border-2 border-white/30 transition-all duration-300 flex items-center space-x-2 animate-pulse hover:animate-none hover:scale-105"
           >
-            <Heart className="h-5 w-5 fill-current drop-shadow-[0_2px_8px_rgba(255,255,255,0.5)]" weight="fill" />
-            <span className="font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">Support Development</span>
+            <Heart
+              className="h-5 w-5 fill-current drop-shadow-[0_2px_8px_rgba(255,255,255,0.5)]"
+              weight="fill"
+            />
+            <span className="font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+              Support Development
+            </span>
           </button>
         </div>
       )}

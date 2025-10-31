@@ -2,13 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  Copy,
-  Check,
-  ArrowSquareOut,
-  Coins,
-  ArrowRight,
-} from '@phosphor-icons/react';
+import { Copy, Check, Coins, ArrowRight } from '@phosphor-icons/react';
 import Link from 'next/link';
 
 interface Vin {
@@ -49,11 +43,7 @@ interface TransactionDetailProps {
   index: number;
 }
 
-export function TransactionDetail({
-  tx,
-  index,
-}: TransactionDetailProps) {
-  const tCommon = useTranslations('common');
+export function TransactionDetail({ tx }: TransactionDetailProps) {
   const [copied, setCopied] = useState(false);
 
   const totalOutput = tx.vout?.reduce((sum, out) => sum + out.value, 0) || 0;

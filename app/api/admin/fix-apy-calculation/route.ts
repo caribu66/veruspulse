@@ -10,7 +10,7 @@ import { logger } from '@/lib/utils/logger';
  *
  * Since we don't track actual staked balances, we estimate conservatively.
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   // Initialize database connection
   const db = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     // Get all identities with suspicious APY values (> 100% or NULL)
     const problematicResult = await db.query(`
-      SELECT 
+      SELECT
         address,
         friendly_name,
         total_stakes,
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       await db.query(
         `
         UPDATE verusid_statistics
-        SET 
+        SET
           apy_all_time = $1,
           updated_at = NOW()
         WHERE address = $2
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
 
     // Get updated statistics
     const statsResult = await db.query(`
-      SELECT 
+      SELECT
         COUNT(*) as total,
         COUNT(CASE WHEN apy_all_time > 0 THEN 1 END) as with_apy,
         ROUND(AVG(apy_all_time)::numeric, 2) as avg_apy,

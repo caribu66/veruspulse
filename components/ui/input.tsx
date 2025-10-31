@@ -452,6 +452,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
+    const tCommon = useTranslations('common');
     const [isFocused, setIsFocused] = useState(false);
     const [internalValue, setInternalValue] = useState(value || '');
     const [validationState, setValidationState] = useState<{

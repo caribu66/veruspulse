@@ -8,7 +8,7 @@ import {
 
 export async function POST(_request: Request) {
   try {
-    const { identityAddress } = await request.json();
+    const { identityAddress } = await _request.json();
 
     if (!identityAddress) {
       return NextResponse.json(
@@ -98,7 +98,7 @@ export async function POST(_request: Request) {
 
 export async function GET(_request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     const identityAddress = searchParams.get('address');
 
     if (!identityAddress) {

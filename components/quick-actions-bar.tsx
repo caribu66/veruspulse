@@ -32,8 +32,6 @@ interface QuickActionsBarProps {
 
 export function QuickActionsBar({ onTabChange }: QuickActionsBarProps) {
   const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
   const [hoveredAction, setHoveredAction] = useState<string | null>(null);
 
   const quickActions: QuickAction[] = [

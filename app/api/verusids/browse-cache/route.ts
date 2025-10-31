@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
       limitedIdentities.map(async (identity: any) => {
         try {
           // Get cached identity data (same as VerusID lookup)
-          const _cachedData = await getCachedIdentity(
+          await getCachedIdentity(
             identity.friendlyname || identity.identity?.name
           );
 

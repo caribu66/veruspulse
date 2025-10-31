@@ -24,9 +24,7 @@ interface SearchResult {
 }
 
 export function UniversalSearch() {
-  const tCommon = useTranslations('common');
   const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -45,7 +43,12 @@ export function UniversalSearch() {
       const trimmedQuery = query.trim();
 
       // Determine search type based on query format
-      type SearchType = 'auto' | 'verusid' | 'transaction' | 'block' | 'address';
+      type SearchType =
+        | 'auto'
+        | 'verusid'
+        | 'transaction'
+        | 'block'
+        | 'address';
       let searchType: SearchType = 'auto';
 
       if (trimmedQuery.startsWith('@')) {
@@ -68,7 +71,9 @@ export function UniversalSearch() {
       const searchResults: SearchResult[] = [];
 
       // Type guard for API response
-      const isValidResponse = (response: unknown): response is { success: boolean; data: unknown } => {
+      const isValidResponse = (
+        response: unknown
+      ): response is { success: boolean; data: unknown } => {
         return (
           typeof response === 'object' &&
           response !== null &&
@@ -233,7 +238,9 @@ export function UniversalSearch() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-white font-semibold mb-1">{tBlocks("blockHeight")}</div>
+              <div className="text-white font-semibold mb-1">
+                {tBlocks('blockHeight')}
+              </div>
               <div className="text-blue-300">751165</div>
             </div>
             <div className="bg-white/5 rounded-lg p-3">

@@ -19,8 +19,6 @@ interface LoadingStep {
 }
 
 export function EnhancedLoadingScreen() {
-  const tCommon = useTranslations('common');
-
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [steps, setSteps] = useState<LoadingStep[]>([
@@ -77,7 +75,7 @@ export function EnhancedLoadingScreen() {
                     animationDirection: 'reverse',
                     animationDuration: '1.5s',
                   }}
-                 />
+                />
               </div>
             </div>
 
@@ -156,7 +154,7 @@ export function EnhancedLoadingScreen() {
               <div
                 className="bg-gradient-to-r from-verus-blue to-verus-green h-2 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${progress}%` }}
-               />
+              />
             </div>
           </div>
 

@@ -3,43 +3,53 @@
 import { useState, useTransition, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Globe, Check } from '@phosphor-icons/react';
-import { type Locale, SUPPORTED_LANGUAGES, getAllLanguages } from '@/lib/i18n/types';
+import {
+  type Locale,
+  SUPPORTED_LANGUAGES,
+  getAllLanguages,
+} from '@/lib/i18n/types';
 import { useTranslations } from 'next-intl';
 
 interface LanguageSwitcherProps {
   currentLocale: string;
 }
 
-export function LanguageSwitcher({
-  currentLocale,
-}: LanguageSwitcherProps) {
-  const tCommon = useTranslations('common');
+export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const pathname = usePathname();
   const languages = getAllLanguages();
 
-  const handleLanguageChange = useCallback((newLocale: Locale) => {
-    if (newLocale === currentLocale) {
-      setIsOpen(false);
-      return;
-    }
+  const handleLanguageChange = useCallback(
+    (newLocale: Locale) => {
+      if (newLocale === currentLocale) {
+        setIsOpen(false);
+        return;
+      }
 
-    startTransition(() => {
-      // Remove the current locale from the pathname if present
-      // Match both /es/ and /es patterns
-      const pathnameWithoutLocale = pathname.replace(/^\/([a-z]{2})(\/|$)/, '/');
+      startTransition(() => {
+        // Remove the current locale from the pathname if present
+        // Match both /es/ and /es patterns
+        const pathnameWithoutLocale = pathname.replace(
+          /^\/([a-z]{2})(\/|$)/,
+          '/'
+        );
 
-      // Add the new locale to the pathname (unless it's the default locale 'en')
-      const newPathname = newLocale === 'en'
-        ? pathnameWithoutLocale === '/' ? '/' : pathnameWithoutLocale
-        : `/${newLocale}${pathnameWithoutLocale === '/' ? '' : pathnameWithoutLocale}`;
+        // Add the new locale to the pathname (unless it's the default locale 'en')
+        const newPathname =
+          newLocale === 'en'
+            ? pathnameWithoutLocale === '/'
+              ? '/'
+              : pathnameWithoutLocale
+            : `/${newLocale}${pathnameWithoutLocale === '/' ? '' : pathnameWithoutLocale}`;
 
-      // Force a hard navigation to ensure the locale changes
-      window.location.href = newPathname;
-    });
-  }, [currentLocale, pathname, router]);
+        // Force a hard navigation to ensure the locale changes
+        window.location.href = newPathname;
+      });
+    },
+    [currentLocale, pathname, router]
+  );
 
   return (
     <div className="relative">
@@ -89,7 +99,11 @@ export function LanguageSwitcher({
                       <span className="text-xs opacity-75">{english}</span>
                     </span>
                     {isActive && (
-                      <Check className="h-5 w-5" weight="bold" aria-hidden="true" />
+                      <Check
+                        className="h-5 w-5"
+                        weight="bold"
+                        aria-hidden="true"
+                      />
                     )}
                   </button>
                 );
@@ -101,4 +115,3 @@ export function LanguageSwitcher({
     </div>
   );
 }
-

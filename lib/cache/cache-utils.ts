@@ -196,15 +196,17 @@ export class CacheManager {
 
       // Parse memory usage
       const memoryMatch = info.match(/used_memory_human:(.+)/);
-      const memoryUsage = memoryMatch ? memoryMatch[1].trim() : 'unknown';
+      const memoryUsage = memoryMatch?.[1]?.trim() || 'unknown';
 
       // Parse connected clients
       const clientsMatch = stats.match(/connected_clients:(\d+)/);
-      const connectedClients = clientsMatch && clientsMatch[1] ? parseInt(clientsMatch[1]) : 0;
+      const connectedClients =
+        clientsMatch && clientsMatch[1] ? parseInt(clientsMatch[1]) : 0;
 
       // Parse uptime
       const uptimeMatch = server.match(/uptime_in_seconds:(\d+)/);
-      const uptime = uptimeMatch && uptimeMatch[1] ? parseInt(uptimeMatch[1]) : 0;
+      const uptime =
+        uptimeMatch && uptimeMatch[1] ? parseInt(uptimeMatch[1]) : 0;
 
       // Count keys
       const totalKeys = await redis.dbsize();

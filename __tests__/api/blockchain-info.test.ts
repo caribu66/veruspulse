@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/blockchain-info/route';
 import { CachedRPCClient } from '@/lib/cache/cached-rpc-client';
 

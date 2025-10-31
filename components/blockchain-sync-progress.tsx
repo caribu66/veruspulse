@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  CircleNotch,
-  CheckCircle,
-  HardDrives,
-  Clock,
-  CloudArrowDown,
-  Network,
-} from '@phosphor-icons/react';
+import { CircleNotch, HardDrives, Clock, Network } from '@phosphor-icons/react';
 
 interface BlockchainSyncProgressProps {
   className?: string;
@@ -32,8 +25,6 @@ export function BlockchainSyncProgress({
   className = '',
   refreshInterval = 5000, // Check every 5 seconds during sync
 }: BlockchainSyncProgressProps) {
-  const tCommon = useTranslations('common');
-  const tNetwork = useTranslations('network');
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     connected: false,
     blockHeight: 0,

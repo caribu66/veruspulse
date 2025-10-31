@@ -5,16 +5,16 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get overall APY quality statistics
     const statsQuery = `
-      SELECT 
+      SELECT
         COUNT(*) as total_verusids,
         COUNT(CASE WHEN stakes_with_real_amounts > 0 THEN 1 END) as with_actual_data,
         COUNT(CASE WHEN stakes_with_real_amounts = 0 THEN 1 END) as with_estimated_data,
         AVG(
-          CASE 
+          CASE
             WHEN total_stakes > 0 THEN (stakes_with_real_amounts::DECIMAL / total_stakes) * 100
             ELSE 0
           END

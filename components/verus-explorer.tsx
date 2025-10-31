@@ -106,12 +106,8 @@ function normalizeLegacyTab(tab: string): ExplorerTab {
 }
 
 export function VerusExplorer() {
-  const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
   const tBlocks = useTranslations('blocks');
-  const tNetwork = useTranslations('network');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
 
   const [activeTab, setActiveTab] = useState<ExplorerTab>('dashboard');
   const router = useRouter();
@@ -234,7 +230,8 @@ export function VerusExplorer() {
 
         // Only show loading screen on VERY FIRST initial load with NO cached data
         // This prevents loading screens on every refresh/tab change
-        const hasAnyData = localNetworkStats || networkStats || localMiningStats || miningStats;
+        const hasAnyData =
+          localNetworkStats || networkStats || localMiningStats || miningStats;
         if (isInitialLoad && !hasAnyData) {
           setLocalLoading(true);
           setLoading(true);
@@ -485,7 +482,7 @@ export function VerusExplorer() {
       { key: 'dashboard', label: 'Dashboard', icon: ChartBar },
       { key: 'search', label: 'MagnifyingGlass', icon: MagnifyingGlass },
       { key: 'blocks', label: 'Blocks', icon: Database },
-      { key: 'transactions', label: tBlocks("transactions"), icon: Pulse },
+      { key: 'transactions', label: tBlocks('transactions'), icon: Pulse },
       { key: 'addresses', label: 'Addresses', icon: User },
       { key: 'verusids', label: 'VerusIDs', icon: UsersThree },
       { key: 'mempool', label: 'Mempool', icon: Network },
@@ -727,8 +724,13 @@ export function VerusExplorer() {
                 title="Join Verus Discord"
                 aria-label="Join Verus Discord community"
               >
-                <DiscordLogo className="h-4 w-4 text-[#5865F2] group-hover:scale-110 transition-transform duration-200" weight="fill" />
-                <span className="hidden sm:inline text-[#5865F2] font-medium">Discord</span>
+                <DiscordLogo
+                  className="h-4 w-4 text-[#5865F2] group-hover:scale-110 transition-transform duration-200"
+                  weight="fill"
+                />
+                <span className="hidden sm:inline text-[#5865F2] font-medium">
+                  Discord
+                </span>
               </a>
               {/* X (Twitter) Link */}
               <a
@@ -739,8 +741,13 @@ export function VerusExplorer() {
                 title="Follow Verus on X"
                 aria-label="Follow Verus on X (Twitter)"
               >
-                <XLogo className="h-4 w-4 text-white group-hover:scale-110 transition-transform duration-200" weight="fill" />
-                <span className="hidden sm:inline text-white font-medium">X</span>
+                <XLogo
+                  className="h-4 w-4 text-white group-hover:scale-110 transition-transform duration-200"
+                  weight="fill"
+                />
+                <span className="hidden sm:inline text-white font-medium">
+                  X
+                </span>
               </a>
             </div>
           </div>

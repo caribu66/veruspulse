@@ -39,9 +39,6 @@ interface VerusIDBalance {
 }
 
 export function VerusIDExplorerRefactored() {
-  const tCommon = useTranslations('common');
-  const tVerusId = useTranslations('verusid');
-
   const [selectedIdentity, setSelectedIdentity] = useState<string | null>(null);
   const [verusID, setVerusID] = useState<VerusID | null>(null);
   const [balance, setBalance] = useState<VerusIDBalance | null>(null);

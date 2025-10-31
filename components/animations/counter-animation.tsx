@@ -22,7 +22,6 @@ export function AnimatedCounter({
   className = '',
   format = 'number',
 }: AnimatedCounterProps) {
-  const tCommon = useTranslations('common');
   const [displayValue, setDisplayValue] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const animationRef = useRef<number | null>(null);

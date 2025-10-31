@@ -15,7 +15,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
         FROM verusid_statistics s
         LIMIT 5
       )
-      SELECT 
+      SELECT
         i.*,
         s.*,
         r.new_identities_7d,

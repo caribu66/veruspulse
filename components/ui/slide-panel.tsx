@@ -60,7 +60,6 @@ export function SlidePanel({
   headerActions,
   footer,
 }: SlidePanelProps) {
-  const tCommon = useTranslations('common');
   // Width styles
   const widthStyles = {
     sm: 'w-full md:w-96',

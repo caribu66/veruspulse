@@ -77,7 +77,6 @@ interface Block {
 export function LiveData() {
   const t = useTranslations('dashboard');
   const tCommon = useTranslations('common');
-  const tNetwork = useTranslations('network');
   const tBlocks = useTranslations('blocks');
   const tTransactions = useTranslations('transactions');
 
@@ -169,7 +168,9 @@ export function LiveData() {
             [key: string]: unknown;
           };
 
-          const txData = (transactionsData.data.transactions as RawTransaction[]).map((tx) => ({
+          const txData = (
+            transactionsData.data.transactions as RawTransaction[]
+          ).map(tx => ({
             txid: tx.txid,
             size: tx.size ?? 0,
             fee: tx.fee ?? 0,
@@ -378,7 +379,9 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {stats.blocks.toLocaleString()}
                   </div>
-                  <div className="text-blue-200 text-sm">{tBlocks('totalBlocks')}</div>
+                  <div className="text-blue-200 text-sm">
+                    {tBlocks('totalBlocks')}
+                  </div>
                 </div>
               </div>
             </div>
@@ -404,7 +407,9 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {stats.mempoolSize.toLocaleString()}
                   </div>
-                  <div className="text-blue-200 text-sm">{tNetwork('mempoolSize')}</div>
+                  <div className="text-blue-200 text-sm">
+                    {tNetwork('mempoolSize')}
+                  </div>
                 </div>
               </div>
             </div>
@@ -416,7 +421,9 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {stats.connections}
                   </div>
-                  <div className="text-blue-200 text-sm">{tNetwork('connections')}</div>
+                  <div className="text-blue-200 text-sm">
+                    {tNetwork('connections')}
+                  </div>
                 </div>
               </div>
             </div>
@@ -428,7 +435,9 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {formatHashRate(stats.networkHashRate)}
                   </div>
-                  <div className="text-blue-200 text-sm">{tNetwork('networkHashrate')}</div>
+                  <div className="text-blue-200 text-sm">
+                    {tNetwork('networkHashrate')}
+                  </div>
                 </div>
               </div>
             </div>
@@ -440,7 +449,9 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {formatDifficulty(stats.difficulty)}
                   </div>
-                  <div className="text-blue-200 text-sm">{tNetwork('difficulty')}</div>
+                  <div className="text-blue-200 text-sm">
+                    {tNetwork('difficulty')}
+                  </div>
                 </div>
               </div>
             </div>
@@ -452,7 +463,9 @@ export function LiveData() {
                   <div className="text-3xl font-bold text-white">
                     {stats.chain}
                   </div>
-                  <div className="text-blue-200 text-sm">{tNetwork('chainType')}</div>
+                  <div className="text-blue-200 text-sm">
+                    {tNetwork('chainType')}
+                  </div>
                 </div>
               </div>
             </div>
@@ -480,7 +493,8 @@ export function LiveData() {
                 <div>
                   <div className="text-blue-200 text-sm">{tCommon('size')}</div>
                   <div className="text-white font-semibold">
-                    {mempoolInfo.size.toLocaleString()} {tTransactions('transactions')}
+                    {mempoolInfo.size.toLocaleString()}{' '}
+                    {tTransactions('transactions')}
                   </div>
                 </div>
                 <div>
@@ -498,7 +512,9 @@ export function LiveData() {
                   </div>
                 </div>
                 <div>
-                  <div className="text-blue-200 text-sm">Max {tCommon('size')}</div>
+                  <div className="text-blue-200 text-sm">
+                    Max {tCommon('size')}
+                  </div>
                   <div className="text-white font-semibold">
                     {formatSize(mempoolInfo.maxmempool)}
                   </div>
@@ -512,7 +528,9 @@ export function LiveData() {
       {/* Blocks Section */}
       {activeSection === 'blocks' && (
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-          <h3 className="text-xl font-bold text-white mb-4">{t('recentBlocks')}</h3>
+          <h3 className="text-xl font-bold text-white mb-4">
+            {t('recentBlocks')}
+          </h3>
           {blocks.length > 0 ? (
             <div className="space-y-4">
               {blocks.map((block, index) => (

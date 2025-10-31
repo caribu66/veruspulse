@@ -20,8 +20,6 @@ export function HeatmapCalendar({
   gap = 2,
   className = '',
 }: HeatmapCalendarProps) {
-  const tCommon = useTranslations('common');
-  const tStaking = useTranslations('staking');
   const { grid, maxValue, monthLabels } = useMemo(() => {
     // Default to last 365 days if no dates provided
     const end = endDate || new Date();
@@ -51,7 +49,7 @@ export function HeatmapCalendar({
     let weekIndex = 0;
 
     while (current <= end) {
-      const dateStr = current.toISOString().split('T')[0];
+      const dateStr = current.toISOString().split('T')[0] || '';
       const value = dataMap.get(dateStr) || 0;
 
       week.push({
@@ -64,7 +62,9 @@ export function HeatmapCalendar({
       if (current.getMonth() !== currentMonth) {
         currentMonth = current.getMonth();
         monthLabels.push({
-          month: current.toLocaleDateString('en-US', { month: 'short' }),
+          month: current.toLocaleDateString('en-US' as string as string, {
+            month: 'short',
+          }),
           x: weekIndex,
         });
       }

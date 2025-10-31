@@ -23,14 +23,9 @@ interface AchievementsProps {
   iaddr: string;
 }
 
-export function VerusIDAchievements({
-  iaddr,
-}: AchievementsProps) {
+export function VerusIDAchievements({ iaddr }: AchievementsProps) {
   const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [achievements, setAchievements] = useState<any>(null);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -97,7 +92,7 @@ export function VerusIDAchievements({
               className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition-colors flex items-center space-x-2"
             >
               <ArrowsClockwise className="h-4 w-4" />
-              <span>{tCommon("retry")}</span>
+              <span>{tCommon('retry')}</span>
             </button>
           </div>
         </div>
@@ -141,7 +136,7 @@ export function VerusIDAchievements({
             className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-white"
           >
             <ArrowsClockwise className="h-4 w-4" />
-            <span>{tCommon("refresh")}</span>
+            <span>{tCommon('refresh')}</span>
           </button>
         </div>
       </div>

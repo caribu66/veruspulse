@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { logger } from '@/lib/utils/logger';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     logger.info('🧹 Starting cleanup of corrupted staking rewards...');
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // First, let's see what we're dealing with
     const statsQuery = `
-      SELECT 
+      SELECT
         COUNT(*) as total_records,
         COUNT(CASE WHEN amount_sats > $1 THEN 1 END) as corrupted_records,
         MIN(amount_sats) as min_amount,
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Show some examples of corrupted records
     const examplesQuery = `
-      SELECT 
+      SELECT
         identity_address,
         txid,
         amount_sats,
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     // Delete corrupted records
     const deleteQuery = `
-      DELETE FROM staking_rewards 
+      DELETE FROM staking_rewards
       WHERE amount_sats > $1
     `;
 
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     const recalcQuery = `
       -- Clear existing statistics
       TRUNCATE TABLE verusid_statistics;
-      
+
       -- Recalculate statistics from clean data
       INSERT INTO verusid_statistics (
         address,
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
         created_at,
         updated_at
       )
-      SELECT 
+      SELECT
         sr.identity_address as address,
         COALESCE(i.friendly_name, i.base_name || '.VRSC@') as friendly_name,
         COUNT(*) as total_stakes,
@@ -128,11 +128,11 @@ export async function POST(request: NextRequest) {
         MIN(sr.block_time) as first_stake_time,
         MAX(sr.block_time) as last_stake_time,
         -- Simple APY calculation
-        CASE 
-          WHEN EXTRACT(EPOCH FROM (MAX(sr.block_time) - MIN(sr.block_time))) > 86400 
-          THEN (SUM(sr.amount_sats)::numeric / 100000000) / 
+        CASE
+          WHEN EXTRACT(EPOCH FROM (MAX(sr.block_time) - MIN(sr.block_time))) > 86400
+          THEN (SUM(sr.amount_sats)::numeric / 100000000) /
                (EXTRACT(EPOCH FROM (MAX(sr.block_time) - MIN(sr.block_time))) / 31536000) * 100
-          ELSE 0 
+          ELSE 0
         END as apy_all_time,
         0 as staking_efficiency,
         ROW_NUMBER() OVER (ORDER BY SUM(sr.amount_sats) DESC) as network_rank,
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
 
     // Final stats
     const finalStatsQuery = `
-      SELECT 
+      SELECT
         COUNT(*) as total_records,
         MIN(amount_sats) as min_amount,
         MAX(amount_sats) as max_amount,

@@ -64,10 +64,8 @@ export function VerusIDDetailsView({
   balance,
   onClose,
 }: VerusIDDetailsViewProps) {
-  const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
   const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [activeTab, setActiveTab] = useState<
     'overview' | 'staking' | 'utxo' | 'achievements' | 'identity'
   >('overview');
@@ -146,7 +144,7 @@ export function VerusIDDetailsView({
           tabs={[
             {
               id: 'overview',
-              label: t("overview"),
+              label: t('overview'),
               icon: <Info className="h-4 w-4" />,
             },
             {
@@ -166,7 +164,7 @@ export function VerusIDDetailsView({
             },
             {
               id: 'identity',
-              label: tVerusId("identity"),
+              label: tVerusId('identity'),
               icon: <User className="h-4 w-4" />,
             },
           ]}

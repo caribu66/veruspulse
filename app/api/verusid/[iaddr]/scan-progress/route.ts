@@ -15,7 +15,7 @@ function getDbPool() {
 }
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ iaddr: string }> }
 ) {
   try {
@@ -32,14 +32,14 @@ export async function GET(
 
     // Check if identity exists and has been scanned
     const identityCheck = await db.query(
-      `SELECT 
+      `SELECT
         identity_address,
         base_name,
         friendly_name,
         scan_status,
         last_scanned_at,
         created_at
-      FROM identities 
+      FROM identities
       WHERE identity_address = $1`,
       [iaddr]
     );
@@ -68,7 +68,7 @@ export async function GET(
 
     // Check if there's an active scan
     const scanMetadata = await db.query(
-      `SELECT 
+      `SELECT
         scan_type,
         scan_progress,
         start_height,
@@ -76,9 +76,9 @@ export async function GET(
         current_height,
         estimated_completion_time,
         created_at
-      FROM scan_metadata 
-      WHERE identity_address = $1 
-      ORDER BY created_at DESC 
+      FROM scan_metadata
+      WHERE identity_address = $1
+      ORDER BY created_at DESC
       LIMIT 1`,
       [iaddr]
     );

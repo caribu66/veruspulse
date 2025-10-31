@@ -23,7 +23,6 @@ export function Tabs({
   onTabChange,
   className = '',
 }: TabsProps) {
-  const tCommon = useTranslations('common');
   return (
     <div
       className={`relative bg-gradient-to-b from-slate-50/80 to-white/50 dark:from-slate-800/30 dark:to-slate-900/20 backdrop-blur-sm ${className}`}
@@ -133,11 +132,7 @@ export function Tabs({
                 bg-gradient-to-r from-transparent via-verus-blue to-transparent
                 dark:via-verus-blue-light
                 transition-all duration-300 ease-out
-                ${
-                  activeTab === tab.id
-                    ? 'w-3/4 opacity-100'
-                    : 'w-0 opacity-0'
-                }
+                ${activeTab === tab.id ? 'w-3/4 opacity-100' : 'w-0 opacity-0'}
               `}
             />
           </button>

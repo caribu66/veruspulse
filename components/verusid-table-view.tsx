@@ -39,10 +39,6 @@ export function VerusIDTableView({
   onSort,
   onIdentityClick,
 }: VerusIDTableViewProps) {
-  const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
   if (identities.length === 0) {

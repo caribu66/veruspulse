@@ -85,10 +85,11 @@ const BlockDetailsPage = ({
     return (difficulty / 1e6).toFixed(2) + ' M';
   }, []);
 
-  const _formatHex = useCallback((hex: string, length: number = 8) => {
-    if (hex.length <= length) return hex;
-    return `${hex.substring(0, length)}...${hex.substring(hex.length - length)}`;
-  }, []);
+  // Utility function for hex formatting (kept for future use)
+  // const formatHex = useCallback((hex: string, length: number = 8) => {
+  //   if (hex.length <= length) return hex;
+  //   return `${hex.substring(0, length)}...${hex.substring(hex.length - length)}`;
+  // }, []);
 
   // Memoized loading and error states
   const loadingState = useMemo(() => <BlockSkeleton />, []);

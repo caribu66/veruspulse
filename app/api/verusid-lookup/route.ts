@@ -65,11 +65,9 @@ export async function POST(request: NextRequest) {
 
     // Try cache first to avoid RPC call
     let cachedIdentity = null;
-    let _wasCached = false;
     try {
       cachedIdentity = await getCachedIdentity(identity);
       if (cachedIdentity) {
-        _wasCached = true;
         enhancedLogger.info('CACHE', `Found cached identity for: ${identity}`);
       }
     } catch (error) {

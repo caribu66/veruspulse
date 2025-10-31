@@ -51,7 +51,6 @@ export function QuickStatsTicker({
 }: QuickStatsTickerProps) {
   const t = useTranslations('hero');
   const tMempool = useTranslations('mempool');
-  const tNetwork = useTranslations('network');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Get real-time chart data
@@ -136,7 +135,7 @@ export function QuickStatsTicker({
       id: 'supply',
       label: t('circulatingSupply'),
       value: networkStats?.circulatingSupply
-        ? `${(networkStats.circulatingSupply / 1000000).toFixed(2)}M`
+        ? `${(networkStats?.circulatingSupply / 1000000).toFixed(2)}M`
         : '...',
       icon: CurrencyDollar,
       color:
@@ -147,8 +146,8 @@ export function QuickStatsTicker({
       id: 'staking-supply',
       label: t('totalStakingSupply'),
       value:
-        stakingStats?.netstakeweight && stakingStats.netstakeweight > 0
-          ? `${formatStake(stakingStats.netstakeweight)} VRSC`
+        stakingStats?.netstakeweight && stakingStats?.netstakeweight > 0
+          ? `${formatStake(stakingStats?.netstakeweight)} VRSC`
           : '...',
       icon: TrendUp,
       color:
@@ -223,7 +222,10 @@ export function QuickStatsTicker({
                   <div className="mt-1.5 opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden">
                     <MiniChart
                       data={chartData[stat.id] || []}
-                      color={stat.color.split(' ')[0].replace('text-', '')}
+                      color={(stat.color?.split(' ')[0] || 'blue').replace(
+                        'text-',
+                        ''
+                      )}
                       height={18}
                       showTrend={false}
                       className="w-full max-w-full"
@@ -295,7 +297,10 @@ export function QuickStatsTicker({
                     <div className="mt-1.5 opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden">
                       <MiniChart
                         data={chartData[stat.id] || []}
-                        color={stat.color.split(' ')[0].replace('text-', '')}
+                        color={(stat.color?.split(' ')[0] || 'blue').replace(
+                          'text-',
+                          ''
+                        )}
                         height={18}
                         showTrend={false}
                         className="w-full max-w-full"

@@ -9,7 +9,6 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '100');
-    const _verbose = searchParams.get('verbose') === 'true';
 
     // Get raw mempool transactions with verbose details
     const rawMempool = await verusAPI.getRawMempool(true);

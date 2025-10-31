@@ -18,7 +18,6 @@ export function HealthScoreGauge({
   showLabel = true,
   className = '',
 }: HealthScoreGaugeProps) {
-  const tCommon = useTranslations('common');
   const [animatedScore, setAnimatedScore] = useState(0);
 
   useEffect(() => {

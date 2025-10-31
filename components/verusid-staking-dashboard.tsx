@@ -35,7 +35,10 @@ import {
   formatCryptoValue,
   formatFriendlyNumber,
 } from '@/lib/utils/number-formatting';
-import { type NetworkParticipationData, type StakingMomentumData } from './types';
+import {
+  type NetworkParticipationData,
+  type StakingMomentumData,
+} from './types';
 import { ProfessionalAchievementProgress } from './professional-achievement-progress';
 import { Badge } from '@/components/ui/badge';
 import { useRealtimeEvents } from '@/lib/hooks/use-realtime-events';
@@ -90,11 +93,6 @@ export function VerusIDStakingDashboard({
   returnTo = '/?tab=verusids',
 }: DashboardProps) {
   const tCommon = useTranslations('common');
-  const tTime = useTranslations('time');
-  const t = useTranslations('dashboard');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -244,27 +242,35 @@ export function VerusIDStakingDashboard({
         throw new Error(data.error || 'Database not available');
       }
     } catch (err: any) {
-      console.warn('Failed to fetch individual stake events, using aggregated fallback:', err.message);
+      console.warn(
+        'Failed to fetch individual stake events, using aggregated fallback:',
+        err.message
+      );
       // Fallback: use aggregated data from the calendar (same data source!)
       if (stats?.timeSeries?.daily) {
         const fallbackStakes = stats.timeSeries.daily
           .filter((day: any) => day.stakeCount > 0)
           .flatMap((day: any) => {
             // Create individual stake entries from daily aggregates
-            return Array(day.stakeCount).fill(null).map((_: any, index: number) => ({
-              blockHeight: null,
-              blockTime: day.date,
-              amountVRSC: day.totalRewardsVRSC / day.stakeCount,
-              txid: null,
-              index, // Add index to make them unique
-            }));
+            return Array(day.stakeCount)
+              .fill(null)
+              .map((_: any, index: number) => ({
+                blockHeight: null,
+                blockTime: day.date,
+                amountVRSC: day.totalRewardsVRSC / day.stakeCount,
+                txid: null,
+                index, // Add index to make them unique
+              }));
           })
-          .sort((a: any, b: any) =>
-            new Date(b.blockTime).getTime() - new Date(a.blockTime).getTime()
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.blockTime).getTime() - new Date(a.blockTime).getTime()
           )
           .slice(0, 50); // Limit to 50 most recent
         setRecentStakes(fallbackStakes);
-        console.info(`✅ Using ${fallbackStakes.length} stakes from calendar data as fallback`);
+        console.info(
+          `✅ Using ${fallbackStakes.length} stakes from calendar data as fallback`
+        );
       } else {
         setRecentStakes([]);
       }
@@ -702,7 +708,7 @@ export function VerusIDStakingDashboard({
               <div className="relative">
                 <div
                   className={`w-3 h-3 rounded-full ${realtimeConnected ? 'bg-green-500 animate-pulse' : 'bg-slate-500'}`}
-                 />
+                />
                 {realtimeConnected && (
                   <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 animate-ping opacity-75" />
                 )}
@@ -1119,7 +1125,7 @@ export function VerusIDStakingDashboard({
                                 ? 'bg-slate-400'
                                 : 'bg-slate-600'
                         }`}
-                       />
+                      />
                       <span className="text-xs text-gray-400">
                         {networkParticipation.status === 'active'
                           ? 'Active Staking'
@@ -1756,7 +1762,7 @@ export function VerusIDStakingDashboard({
             className="flex items-center space-x-1 text-yellow-300 hover:text-verus-teal transition-colors"
           >
             <ArrowsClockwise className="h-4 w-4" />
-            <span>{tCommon("refresh")}</span>
+            <span>{tCommon('refresh')}</span>
           </button>
         </div>
       </div>

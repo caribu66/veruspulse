@@ -16,12 +16,8 @@ interface HeavyMetricsSectionProps {
   block: Block;
 }
 
-export function HeavyMetricsSection({
-  block,
-}: HeavyMetricsSectionProps) {
-  const tCommon = useTranslations('common');
+export function HeavyMetricsSection({ block }: HeavyMetricsSectionProps) {
   const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
   if (!block.feeTotal && block.feeTotal !== 0) {
     return null;
   }
@@ -114,7 +110,11 @@ export function HeavyMetricsSection({
 
             <BlockDetailRow
               label="Miner Type"
-              value={block.minerType === 'staker' ? tBlocks("staker") : tBlocks("miner")}
+              value={
+                block.minerType === 'staker'
+                  ? tBlocks('staker')
+                  : tBlocks('miner')
+              }
               icon={getMinerIcon(block.minerType || 'miner')}
             />
           </>

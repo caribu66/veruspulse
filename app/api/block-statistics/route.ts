@@ -1,10 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { verusAPI } from '@/lib/rpc-client-robust';
-import { Pool } from 'pg';
-
-const _pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
 
 export const dynamic = 'force-dynamic';
 

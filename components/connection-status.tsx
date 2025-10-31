@@ -17,11 +17,7 @@ interface DaemonStatus {
   latency: number;
 }
 
-export function ConnectionStatus({
-  className = '',
-}: ConnectionStatusProps) {
-  const tCommon = useTranslations('common');
-  const tNetwork = useTranslations('network');
+export function ConnectionStatus({ className = '' }: ConnectionStatusProps) {
   const [status, setStatus] = useState<DaemonStatus>({
     connected: false,
     host: '',

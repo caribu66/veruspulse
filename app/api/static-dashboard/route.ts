@@ -154,7 +154,6 @@ function calculateNetworkLatency(networkInfo: any): number {
 }
 
 function calculateMempoolEfficiency(mempoolInfo: any): number {
-  const _size = mempoolInfo?.size || 0;
   const bytes = mempoolInfo?.bytes || 0;
   const maxMempool = mempoolInfo?.maxmempool || 0;
 

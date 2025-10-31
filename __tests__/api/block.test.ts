@@ -15,7 +15,6 @@ jest.mock('@/lib/utils/coinbase');
 jest.mock('@/lib/utils/orphan');
 jest.mock('@/lib/monitoring/mempool-tracker');
 
-const mockVerusAPI = verusAPI as jest.Mocked<typeof verusAPI>;
 const mockVerusClientWithFallback = verusClientWithFallback as jest.Mocked<
   typeof verusClientWithFallback
 >;

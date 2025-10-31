@@ -22,7 +22,6 @@ interface NavItem {
 
 export function MobileBottomNav() {
   const tCommon = useTranslations('common');
-  const tVerusId = useTranslations('verusid');
 
   const { isMobile } = useMobileOptimizations();
   const pathname = usePathname();
@@ -32,7 +31,7 @@ export function MobileBottomNav() {
 
   const navItems: NavItem[] = [
     { icon: House, label: 'Home', href: '/' },
-    { icon: MagnifyingGlass, label: tCommon("search"), href: '/verusid' },
+    { icon: MagnifyingGlass, label: tCommon('search'), href: '/verusid' },
     { icon: User, label: 'Browse', href: '/verusid/browse' },
   ];
 

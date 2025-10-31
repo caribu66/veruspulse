@@ -8,7 +8,6 @@ import { useNavigationHistory } from '@/lib/hooks/use-navigation-history';
 import {
   Database,
   Clock,
-  Hash,
   Coins,
   ArrowRight,
   Copy,
@@ -27,7 +26,6 @@ import {
   Scales,
 } from '@phosphor-icons/react';
 import {
-  formatFriendlyNumber,
   formatCryptoValue,
   formatFileSize,
   formatDifficulty,
@@ -716,464 +714,484 @@ export function BlocksExplorer() {
                 sortDirection
               );
 
-              return sortedBlocks.map((block, index) => {
-                const previousBlock =
-                  index < sortedBlocks.length - 1
-                    ? sortedBlocks[index + 1]
-                    : null;
-                const temporalMetrics = calculateTemporalMetrics(
-                  block ?? null,
-                  previousBlock
-                );
+              return sortedBlocks
+                .filter((b): b is Block => b !== null && b !== undefined)
+                .map((block, index, filteredList) => {
+                  const nextBlock = filteredList[index + 1];
+                  const previousBlock =
+                    index < filteredList.length - 1 && nextBlock
+                      ? nextBlock
+                      : null;
+                  const temporalMetrics = calculateTemporalMetrics(
+                    block,
+                    previousBlock
+                  );
 
-                return (
-                  <div
-                    key={`blocks-explorer-${block.hash}`}
-                    className="bg-white dark:bg-slate-800 rounded-lg p-4 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60"
-                    onClick={() => {
-                      // Open block details in new tab
-                      window.open(`/block/${block.hash}`, '_blank', 'noopener,noreferrer');
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        {/* Navigation Arrows */}
-                        <div className="flex items-center space-x-1">
-                          {index < sortedBlocks.length - 1 && (
-                            <button
-                              onClick={e => {
-                                e.stopPropagation();
-                                const prevBlock = sortedBlocks[index + 1];
-                                if (prevBlock) {
-                                  const currentUrl =
-                                    window.location.pathname +
-                                    window.location.search;
-                                  addToHistory(currentUrl);
-                                  router.push(`/block/${prevBlock.hash}`);
-                                }
-                              }}
-                              className="p-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
-                              title={`Previous Block #${sortedBlocks[index + 1]?.height}`}
-                            >
-                              <CaretLeft className="h-3 w-3" />
-                            </button>
-                          )}
-                          <div className="text-gray-900 dark:text-white font-semibold">
-                            #{block.height}
-                          </div>
-                          {index > 0 && (
-                            <button
-                              onClick={e => {
-                                e.stopPropagation();
-                                const nextBlock = sortedBlocks[index - 1];
-                                if (nextBlock) {
-                                  const currentUrl =
-                                    window.location.pathname +
-                                    window.location.search;
-                                  addToHistory(currentUrl);
-                                  router.push(`/block/${nextBlock.hash}`);
-                                }
-                              }}
-                              className="p-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
-                              title={`Next Block #${sortedBlocks[index - 1]?.height}`}
-                            >
-                              <CaretRight className="h-3 w-3" />
-                            </button>
-                          )}
-                        </div>
-
-                        {/* PoS/PoW Badge */}
-                        {(block.rewardType || block.blocktype) && (
-                          <div
-                            className={`flex items-center space-x-1 px-2 py-1 rounded text-xs font-medium ${
-                              block.rewardType === 'pos' ||
-                              block.blocktype === 'minted'
-                                ? 'bg-slate-500/20 text-slate-200 border border-slate-400/30'
-                                : 'bg-verus-cyan/20 text-verus-cyan border border-orange-500/30'
-                            }`}
-                          >
-                            {block.rewardType === 'pos' ||
-                            block.blocktype === 'minted' ? (
-                              <Shield className="h-3 w-3" />
-                            ) : (
-                              <Hammer className="h-3 w-3" />
-                            )}
-                            <span>
-                              {block.rewardType === 'pos' ||
-                              block.blocktype === 'minted'
-                                ? 'PoS'
-                                : 'PoW'}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Quick Copy Buttons */}
-                        <div className="flex items-center space-x-1">
-                          <button
-                            onClick={e => {
-                              e.stopPropagation();
-                              copyToClipboard(
-                                block.height.toString(),
-                                `height-${index}`
-                              );
-                            }}
-                            className="flex items-center space-x-1 px-2 py-1.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
-                            title="Copy Height"
-                          >
-                            {copied === `height-${index}` ? (
-                              <Check className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <Copy className="h-4 w-4" />
-                            )}
-                            <span className="text-xs font-medium">Height</span>
-                          </button>
-                          <button
-                            onClick={e => {
-                              e.stopPropagation();
-                              copyToClipboard(block.hash, `hash-${index}`);
-                            }}
-                            className="flex items-center space-x-1 px-2 py-1.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
-                            title="Copy Hash"
-                          >
-                            {copied === `hash-${index}` ? (
-                              <Check className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <Copy className="h-4 w-4" />
-                            )}
-                            <span className="text-xs font-medium">Hash</span>
-                          </button>
-                        </div>
-                      </div>
-                      <div className="text-slate-300 text-sm">
-                        {formatTime(block.time)}
-                      </div>
-                    </div>
-
-                    {/* Compact Metadata Sub-row */}
-                    <div className="flex items-center space-x-4 text-xs text-gray-400 mb-3 pb-2 border-b border-white/5">
-                      {block.confirmations !== undefined && (
-                        <div className="flex items-center space-x-1">
-                          <Info className="h-3 w-3" />
-                          <span>
-                            {block.confirmations.toLocaleString()} conf
-                          </span>
-                        </div>
-                      )}
-                      {block.weight !== undefined && (
-                        <div className="flex items-center space-x-1">
-                          <span>Weight: {formatWU(block.weight)}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center space-x-1">
-                        <span>v{block.version}</span>
-                      </div>
-                      {block.chainwork && (
-                        <div
-                          className="flex items-center space-x-1 cursor-help"
-                          title={`Chainwork: ${block.chainwork}`}
-                        >
-                          <span>
-                            Work: {formatShortHex(block.chainwork, 6)}
-                          </span>
-                        </div>
-                      )}
-                      {block.bits && (
-                        <div
-                          className="flex items-center space-x-1 cursor-help"
-                          title={`Bits: ${block.bits}`}
-                        >
-                          <span>Bits: {formatShortHex(block.bits, 4)}</span>
-                        </div>
-                      )}
-                      {block.nonce && (
-                        <div
-                          className="flex items-center space-x-1 cursor-help"
-                          title={`Nonce: ${block.nonce}`}
-                        >
-                          <span>
-                            Nonce:{' '}
-                            {typeof block.nonce === 'string'
-                              ? formatShortHex(block.nonce, 4)
-                              : block.nonce}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Temporal Metrics */}
-                      {temporalMetrics.timeSincePrevious !== null && (
-                        <div className="flex items-center space-x-1">
-                          <Clock className="h-3 w-3" />
-                          <span
-                            className={
-                              temporalMetrics.intervalDelta &&
-                              temporalMetrics.intervalDelta > 0
-                                ? 'text-slate-300'
-                                : 'text-slate-200'
-                            }
-                          >
-                            {temporalMetrics.timeSincePrevious}s
-                            {temporalMetrics.intervalDelta !== null && (
-                              <span className="text-gray-500">
-                                ({temporalMetrics.intervalDelta > 0 ? '+' : ''}
-                                {temporalMetrics.intervalDelta.toFixed(0)}s)
-                              </span>
-                            )}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Difficulty Delta */}
-                      {temporalMetrics.difficultyDelta !== null && (
-                        <div className="flex items-center space-x-1">
-                          {temporalMetrics.difficultyDelta > 0 ? (
-                            <TrendUp className="h-3 w-3 text-slate-300" />
-                          ) : (
-                            <TrendDown className="h-3 w-3 text-slate-200" />
-                          )}
-                          <span
-                            className={
-                              temporalMetrics.difficultyDelta > 0
-                                ? 'text-slate-300'
-                                : 'text-slate-200'
-                            }
-                          >
-                            {temporalMetrics.difficultyDelta > 0 ? '+' : ''}
-                            {temporalMetrics.difficultyDelta.toFixed(1)}%
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Value Pool Deltas */}
-                    {block.valuePools && block.valuePools.length > 0 && (
-                      <div className="flex items-center space-x-2 mb-3">
-                        <span className="text-xs text-slate-300">Pools:</span>
-                        {block.valuePools.map(pool => (
-                          <div
-                            key={pool.id}
-                            className={`px-2 py-1 rounded text-xs font-medium ${
-                              pool.valueDelta > 0
-                                ? 'bg-slate-500/20 text-slate-200 border border-slate-400/30'
-                                : pool.valueDelta < 0
-                                  ? 'bg-slate-700/20 text-slate-300 border border-slate-600/30'
-                                  : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
-                            }`}
-                            title={`${pool.id} pool: ${pool.valueDelta > 0 ? '+' : ''}${pool.valueDelta.toFixed(8)} VRSC`}
-                          >
-                            {pool.id === 'sprout'
-                              ? 'S'
-                              : pool.id === 'sapling'
-                                ? 'Z'
-                                : 'T'}
-                            : {pool.valueDelta > 0 ? '+' : ''}
-                            {pool.valueDelta.toFixed(2)}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Heavy Metrics */}
-                    {heavyMetrics && (block as any).feeTotal !== undefined && (
-                      <div className="flex items-center space-x-2 mb-3">
-                        <span className="text-xs text-slate-300">
-                          Heavy Metrics:
-                        </span>
-                        <div className="flex items-center space-x-1 px-2 py-1 bg-verus-blue/20 text-verus-blue text-xs rounded">
-                          <span>
-                            Fees: {(block as any).feeTotal?.toFixed(6) || '0'}{' '}
-                            VRSC
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-1 px-2 py-1 bg-slate-600/20 text-slate-300 text-xs rounded">
-                          <span>
-                            Fee/Byte:{' '}
-                            {(
-                              (block as any).feePerByteAvg * 100000000
-                            )?.toFixed(0) || '0'}{' '}
-                            sat/B
-                          </span>
-                        </div>
-                        {(block as any).coinbasePayout && (
-                          <div className="flex items-center space-x-1 px-2 py-1 bg-slate-500/20 text-slate-200 text-xs rounded">
-                            <span>
-                              {(block as any).minerType === 'staker'
-                                ? '🛡️'
-                                : '⛏️'}
-                            </span>
-                            <span>
-                              {(block as any).isShieldedPayout
-                                ? 'Shielded'
-                                : `${(block as any).coinbasePayout?.substring(0, 8)}...${(block as any).coinbasePayout?.substring((block as any).coinbasePayout.length - 4)}`}
-                            </span>
-                          </div>
-                        )}
-                        {(block as any).feeApproximate && (
-                          <div className="flex items-center space-x-1 px-2 py-1 bg-verus-teal/20 text-verus-teal text-xs rounded">
-                            <span>~</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Transaction Analysis */}
-                    {block.tx &&
-                      block.tx.length > 0 &&
-                      (() => {
-                        const analysis = analyzeTransactions(block.tx);
-                        const topRecipients = getTopRecipients(
-                          analysis.recipientAddresses,
-                          2
+                  return (
+                    <div
+                      key={`blocks-explorer-${block.hash}`}
+                      className="bg-white dark:bg-slate-800 rounded-lg p-4 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-verus-blue/60"
+                      onClick={() => {
+                        // Open block details in new tab
+                        window.open(
+                          `/block/${block.hash}`,
+                          '_blank',
+                          'noopener,noreferrer'
                         );
-                        const avgTxSize = block.size / block.tx.length;
-                        const txDensity = (
-                          block.tx.length /
-                          (block.size / 1024)
-                        ).toFixed(1);
+                      }}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          {/* Navigation Arrows */}
+                          <div className="flex items-center space-x-1">
+                            {index < sortedBlocks.length - 1 && (
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  const prevBlock = sortedBlocks[index + 1];
+                                  if (prevBlock) {
+                                    const currentUrl =
+                                      window.location.pathname +
+                                      window.location.search;
+                                    addToHistory(currentUrl);
+                                    router.push(`/block/${prevBlock.hash}`);
+                                  }
+                                }}
+                                className="p-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
+                                title={`Previous Block #${sortedBlocks[index + 1]?.height}`}
+                              >
+                                <CaretLeft className="h-3 w-3" />
+                              </button>
+                            )}
+                            <div className="text-gray-900 dark:text-white font-semibold">
+                              #{block.height}
+                            </div>
+                            {index > 0 && (
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  const nextBlock = sortedBlocks[index - 1];
+                                  if (nextBlock) {
+                                    const currentUrl =
+                                      window.location.pathname +
+                                      window.location.search;
+                                    addToHistory(currentUrl);
+                                    router.push(`/block/${nextBlock.hash}`);
+                                  }
+                                }}
+                                className="p-1 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
+                                title={`Next Block #${sortedBlocks[index - 1]?.height}`}
+                              >
+                                <CaretRight className="h-3 w-3" />
+                              </button>
+                            )}
+                          </div>
 
-                        return (
-                          <div className="space-y-2 mb-3">
-                            {/* Transaction Mix */}
-                            <div className="flex items-center space-x-4 text-xs text-gray-400">
-                              <div className="flex items-center space-x-1">
-                                <span>Tx Mix:</span>
-                                <span className="text-slate-300">
-                                  {analysis.coinbaseCount} CB
-                                </span>
-                                <span className="text-gray-500">•</span>
-                                <span className="text-gray-900 dark:text-white">
-                                  {analysis.nonCoinbaseCount} reg
-                                </span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <span>Outputs:</span>
-                                <span className="text-slate-200">
-                                  {analysis.transparentOutputs} T
-                                </span>
-                                <span className="text-gray-500">•</span>
-                                <span className="text-slate-400">
-                                  {analysis.shieldedOutputs} Z
-                                </span>
-                              </div>
-                              {analysis.opReturnCount > 0 && (
-                                <div className="flex items-center space-x-1">
-                                  <span className="text-slate-300">
-                                    {analysis.opReturnCount} OP_RETURN
+                          {/* PoS/PoW Badge */}
+                          {(block.rewardType || block.blocktype) && (
+                            <div
+                              className={`flex items-center space-x-1 px-2 py-1 rounded text-xs font-medium ${
+                                block.rewardType === 'pos' ||
+                                block.blocktype === 'minted'
+                                  ? 'bg-slate-500/20 text-slate-200 border border-slate-400/30'
+                                  : 'bg-verus-cyan/20 text-verus-cyan border border-orange-500/30'
+                              }`}
+                            >
+                              {block.rewardType === 'pos' ||
+                              block.blocktype === 'minted' ? (
+                                <Shield className="h-3 w-3" />
+                              ) : (
+                                <Hammer className="h-3 w-3" />
+                              )}
+                              <span>
+                                {block.rewardType === 'pos' ||
+                                block.blocktype === 'minted'
+                                  ? 'PoS'
+                                  : 'PoW'}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Quick Copy Buttons */}
+                          <div className="flex items-center space-x-1">
+                            <button
+                              onClick={e => {
+                                e.stopPropagation();
+                                copyToClipboard(
+                                  block.height.toString(),
+                                  `height-${index}`
+                                );
+                              }}
+                              className="flex items-center space-x-1 px-2 py-1.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
+                              title="Copy Height"
+                            >
+                              {copied === `height-${index}` ? (
+                                <Check className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <Copy className="h-4 w-4" />
+                              )}
+                              <span className="text-xs font-medium">
+                                Height
+                              </span>
+                            </button>
+                            <button
+                              onClick={e => {
+                                e.stopPropagation();
+                                copyToClipboard(block.hash, `hash-${index}`);
+                              }}
+                              className="flex items-center space-x-1 px-2 py-1.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition-colors"
+                              title="Copy Hash"
+                            >
+                              {copied === `hash-${index}` ? (
+                                <Check className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <Copy className="h-4 w-4" />
+                              )}
+                              <span className="text-xs font-medium">Hash</span>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="text-slate-300 text-sm">
+                          {formatTime(block.time)}
+                        </div>
+                      </div>
+
+                      {/* Compact Metadata Sub-row */}
+                      <div className="flex items-center space-x-4 text-xs text-gray-400 mb-3 pb-2 border-b border-white/5">
+                        {block.confirmations !== undefined && (
+                          <div className="flex items-center space-x-1">
+                            <Info className="h-3 w-3" />
+                            <span>
+                              {block.confirmations.toLocaleString()} conf
+                            </span>
+                          </div>
+                        )}
+                        {block.weight !== undefined && (
+                          <div className="flex items-center space-x-1">
+                            <span>Weight: {formatWU(block.weight)}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center space-x-1">
+                          <span>v{block.version}</span>
+                        </div>
+                        {block.chainwork && (
+                          <div
+                            className="flex items-center space-x-1 cursor-help"
+                            title={`Chainwork: ${block.chainwork}`}
+                          >
+                            <span>
+                              Work: {formatShortHex(block.chainwork, 6)}
+                            </span>
+                          </div>
+                        )}
+                        {block.bits && (
+                          <div
+                            className="flex items-center space-x-1 cursor-help"
+                            title={`Bits: ${block.bits}`}
+                          >
+                            <span>Bits: {formatShortHex(block.bits, 4)}</span>
+                          </div>
+                        )}
+                        {block.nonce && (
+                          <div
+                            className="flex items-center space-x-1 cursor-help"
+                            title={`Nonce: ${block.nonce}`}
+                          >
+                            <span>
+                              Nonce:{' '}
+                              {typeof block.nonce === 'string'
+                                ? formatShortHex(block.nonce, 4)
+                                : block.nonce}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Temporal Metrics */}
+                        {temporalMetrics &&
+                          temporalMetrics.timeSincePrevious !== null && (
+                            <div className="flex items-center space-x-1">
+                              <Clock className="h-3 w-3" />
+                              <span
+                                className={
+                                  temporalMetrics.intervalDelta &&
+                                  temporalMetrics.intervalDelta > 0
+                                    ? 'text-slate-300'
+                                    : 'text-slate-200'
+                                }
+                              >
+                                {temporalMetrics.timeSincePrevious}s
+                                {temporalMetrics.intervalDelta !== null && (
+                                  <span className="text-gray-500">
+                                    (
+                                    {temporalMetrics.intervalDelta > 0
+                                      ? '+'
+                                      : ''}
+                                    {temporalMetrics.intervalDelta.toFixed(0)}s)
                                   </span>
+                                )}
+                              </span>
+                            </div>
+                          )}
+
+                        {/* Difficulty Delta */}
+                        {temporalMetrics &&
+                          temporalMetrics.difficultyDelta !== null && (
+                            <div className="flex items-center space-x-1">
+                              {temporalMetrics.difficultyDelta > 0 ? (
+                                <TrendUp className="h-3 w-3 text-slate-300" />
+                              ) : (
+                                <TrendDown className="h-3 w-3 text-slate-200" />
+                              )}
+                              <span
+                                className={
+                                  temporalMetrics.difficultyDelta > 0
+                                    ? 'text-slate-300'
+                                    : 'text-slate-200'
+                                }
+                              >
+                                {temporalMetrics.difficultyDelta > 0 ? '+' : ''}
+                                {temporalMetrics.difficultyDelta.toFixed(1)}%
+                              </span>
+                            </div>
+                          )}
+                      </div>
+
+                      {/* Value Pool Deltas */}
+                      {block.valuePools && block.valuePools.length > 0 && (
+                        <div className="flex items-center space-x-2 mb-3">
+                          <span className="text-xs text-slate-300">Pools:</span>
+                          {block.valuePools.map(pool => (
+                            <div
+                              key={pool.id}
+                              className={`px-2 py-1 rounded text-xs font-medium ${
+                                pool.valueDelta > 0
+                                  ? 'bg-slate-500/20 text-slate-200 border border-slate-400/30'
+                                  : pool.valueDelta < 0
+                                    ? 'bg-slate-700/20 text-slate-300 border border-slate-600/30'
+                                    : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                              }`}
+                              title={`${pool.id} pool: ${pool.valueDelta > 0 ? '+' : ''}${pool.valueDelta.toFixed(8)} VRSC`}
+                            >
+                              {pool.id === 'sprout'
+                                ? 'S'
+                                : pool.id === 'sapling'
+                                  ? 'Z'
+                                  : 'T'}
+                              : {pool.valueDelta > 0 ? '+' : ''}
+                              {pool.valueDelta.toFixed(2)}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Heavy Metrics */}
+                      {heavyMetrics &&
+                        (block as any).feeTotal !== undefined && (
+                          <div className="flex items-center space-x-2 mb-3">
+                            <span className="text-xs text-slate-300">
+                              Heavy Metrics:
+                            </span>
+                            <div className="flex items-center space-x-1 px-2 py-1 bg-verus-blue/20 text-verus-blue text-xs rounded">
+                              <span>
+                                Fees:{' '}
+                                {(block as any).feeTotal?.toFixed(6) || '0'}{' '}
+                                VRSC
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-1 px-2 py-1 bg-slate-600/20 text-slate-300 text-xs rounded">
+                              <span>
+                                Fee/Byte:{' '}
+                                {(
+                                  (block as any).feePerByteAvg * 100000000
+                                )?.toFixed(0) || '0'}{' '}
+                                sat/B
+                              </span>
+                            </div>
+                            {(block as any).coinbasePayout && (
+                              <div className="flex items-center space-x-1 px-2 py-1 bg-slate-500/20 text-slate-200 text-xs rounded">
+                                <span>
+                                  {(block as any).minerType === 'staker'
+                                    ? '🛡️'
+                                    : '⛏️'}
+                                </span>
+                                <span>
+                                  {(block as any).isShieldedPayout
+                                    ? 'Shielded'
+                                    : `${(block as any).coinbasePayout?.substring(0, 8)}...${(block as any).coinbasePayout?.substring((block as any).coinbasePayout.length - 4)}`}
+                                </span>
+                              </div>
+                            )}
+                            {(block as any).feeApproximate && (
+                              <div className="flex items-center space-x-1 px-2 py-1 bg-verus-teal/20 text-verus-teal text-xs rounded">
+                                <span>~</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                      {/* Transaction Analysis */}
+                      {block.tx &&
+                        block.tx.length > 0 &&
+                        (() => {
+                          const analysis = analyzeTransactions(block.tx);
+                          const topRecipients = getTopRecipients(
+                            analysis.recipientAddresses,
+                            2
+                          );
+                          const avgTxSize = block.size / block.tx.length;
+                          const txDensity = (
+                            block.tx.length /
+                            (block.size / 1024)
+                          ).toFixed(1);
+
+                          return (
+                            <div className="space-y-2 mb-3">
+                              {/* Transaction Mix */}
+                              <div className="flex items-center space-x-4 text-xs text-gray-400">
+                                <div className="flex items-center space-x-1">
+                                  <span>Tx Mix:</span>
+                                  <span className="text-slate-300">
+                                    {analysis.coinbaseCount} CB
+                                  </span>
+                                  <span className="text-gray-500">•</span>
+                                  <span className="text-gray-900 dark:text-white">
+                                    {analysis.nonCoinbaseCount} reg
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <span>Outputs:</span>
+                                  <span className="text-slate-200">
+                                    {analysis.transparentOutputs} T
+                                  </span>
+                                  <span className="text-gray-500">•</span>
+                                  <span className="text-slate-400">
+                                    {analysis.shieldedOutputs} Z
+                                  </span>
+                                </div>
+                                {analysis.opReturnCount > 0 && (
+                                  <div className="flex items-center space-x-1">
+                                    <span className="text-slate-300">
+                                      {analysis.opReturnCount} OP_RETURN
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Block Sizing Metrics */}
+                              <div className="flex items-center space-x-4 text-xs text-gray-400">
+                                <div className="flex items-center space-x-1">
+                                  <span>Density:</span>
+                                  <span className="text-gray-900 dark:text-white">
+                                    {txDensity} tx/kB
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <span>Avg Tx Size:</span>
+                                  <span className="text-gray-900 dark:text-white">
+                                    {formatFileSize(avgTxSize)}
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <span>Unique Addr:</span>
+                                  <span className="text-gray-900 dark:text-white">
+                                    {analysis.uniqueAddresses.size}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Top Recipients */}
+                              {topRecipients.length > 0 && (
+                                <div className="flex items-center space-x-2 text-xs">
+                                  <span className="text-slate-300">
+                                    Top Recipients:
+                                  </span>
+                                  {topRecipients.map((recipient, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="flex items-center space-x-1"
+                                    >
+                                      <Link
+                                        href={`/address/${recipient.addr}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-400 hover:underline font-mono"
+                                      >
+                                        {recipient.addr.substring(0, 8)}...
+                                        {recipient.addr.substring(
+                                          recipient.addr.length - 4
+                                        )}
+                                      </Link>
+                                      <span className="text-slate-200">
+                                        ({recipient.value.toFixed(2)} VRSC)
+                                      </span>
+                                      {idx < topRecipients.length - 1 && (
+                                        <span className="text-gray-500">•</span>
+                                      )}
+                                    </div>
+                                  ))}
                                 </div>
                               )}
                             </div>
+                          );
+                        })()}
 
-                            {/* Block Sizing Metrics */}
-                            <div className="flex items-center space-x-4 text-xs text-gray-400">
-                              <div className="flex items-center space-x-1">
-                                <span>Density:</span>
-                                <span className="text-gray-900 dark:text-white">
-                                  {txDensity} tx/kB
-                                </span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <span>Avg Tx Size:</span>
-                                <span className="text-gray-900 dark:text-white">
-                                  {formatFileSize(avgTxSize)}
-                                </span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <span>Unique Addr:</span>
-                                <span className="text-gray-900 dark:text-white">
-                                  {analysis.uniqueAddresses.size}
-                                </span>
-                              </div>
-                            </div>
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
+                        <div>
+                          <div className="text-slate-300 mb-1">Hash</div>
+                          <div className="text-gray-900 dark:text-white font-mono text-xs break-all">
+                            {block.hash}
+                          </div>
+                        </div>
 
-                            {/* Top Recipients */}
-                            {topRecipients.length > 0 && (
-                              <div className="flex items-center space-x-2 text-xs">
-                                <span className="text-slate-300">
-                                  Top Recipients:
-                                </span>
-                                {topRecipients.map((recipient, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="flex items-center space-x-1"
-                                  >
-                                    <Link
-                                      href={`/address/${recipient.addr}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-blue-400 hover:underline font-mono"
-                                    >
-                                      {recipient.addr.substring(0, 8)}...
-                                      {recipient.addr.substring(
-                                        recipient.addr.length - 4
-                                      )}
-                                    </Link>
-                                    <span className="text-slate-200">
-                                      ({recipient.value.toFixed(2)} VRSC)
-                                    </span>
-                                    {idx < topRecipients.length - 1 && (
-                                      <span className="text-gray-500">•</span>
-                                    )}
-                                  </div>
-                                ))}
+                        <div>
+                          <div className="text-slate-300 mb-1">
+                            Transactions
+                          </div>
+                          <div className="text-gray-900 dark:text-white">
+                            {formatTransactionCount(block.nTx)}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="text-slate-300 mb-1">
+                            Block Reward
+                          </div>
+                          <div className="text-gray-900 dark:text-white">
+                            {block.reward !== undefined && block.reward > 0 ? (
+                              <div className="flex flex-col space-y-1">
+                                <div className="flex items-center space-x-1">
+                                  <Coins className="h-4 w-4 text-verus-teal" />
+                                  <span className="font-semibold text-verus-teal">
+                                    {block.reward.toFixed(8)} VRSC
+                                  </span>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-1 text-gray-400">
+                                <Coins className="h-3 w-3" />
+                                <span className="text-xs">No reward data</span>
                               </div>
                             )}
                           </div>
-                        );
-                      })()}
-
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
-                      <div>
-                        <div className="text-slate-300 mb-1">Hash</div>
-                        <div className="text-gray-900 dark:text-white font-mono text-xs break-all">
-                          {block.hash}
                         </div>
-                      </div>
 
-                      <div>
-                        <div className="text-slate-300 mb-1">Transactions</div>
-                        <div className="text-gray-900 dark:text-white">
-                          {formatTransactionCount(block.nTx)}
+                        <div>
+                          <div className="text-slate-300 mb-1">Size</div>
+                          <div className="text-gray-900 dark:text-white">
+                            {formatFileSize(block.size)}
+                          </div>
                         </div>
-                      </div>
 
-                      <div>
-                        <div className="text-slate-300 mb-1">Block Reward</div>
-                        <div className="text-gray-900 dark:text-white">
-                          {block.reward !== undefined && block.reward > 0 ? (
-                            <div className="flex flex-col space-y-1">
-                              <div className="flex items-center space-x-1">
-                                <Coins className="h-4 w-4 text-verus-teal" />
-                                <span className="font-semibold text-verus-teal">
-                                  {block.reward.toFixed(8)} VRSC
-                                </span>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-center space-x-1 text-gray-400">
-                              <Coins className="h-3 w-3" />
-                              <span className="text-xs">No reward data</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="text-slate-300 mb-1">Size</div>
-                        <div className="text-gray-900 dark:text-white">
-                          {formatFileSize(block.size)}
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="text-slate-300 mb-1">Difficulty</div>
-                        <div className="text-gray-900 dark:text-white">
-                          {formatDifficulty(block.difficulty)}
+                        <div>
+                          <div className="text-slate-300 mb-1">Difficulty</div>
+                          <div className="text-gray-900 dark:text-white">
+                            {formatDifficulty(block.difficulty)}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              });
+                  );
+                });
             })()}
           </div>
         ) : (

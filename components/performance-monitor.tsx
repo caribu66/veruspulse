@@ -12,8 +12,6 @@ interface PerformanceMetrics {
 }
 
 export function PerformanceMonitor() {
-  const tCommon = useTranslations('common');
-
   const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 

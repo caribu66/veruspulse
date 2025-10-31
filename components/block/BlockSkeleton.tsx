@@ -1,9 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 export function BlockSkeleton() {
-  const tBlocks = useTranslations('blocks');
-
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 text-white">
       <div className="bg-gray-900 border border-gray-600 rounded-xl w-full mx-auto max-w-4xl p-6 shadow-2xl">

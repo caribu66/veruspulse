@@ -129,10 +129,6 @@ export function NetworkDashboard({
 }: DashboardProps) {
   const tCommon = useTranslations('common');
   const tDashboard = useTranslations('dashboard');
-  const tBlocks = useTranslations('blocks');
-  const tNetwork = useTranslations('network');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const t = useDashboardTranslations(); // Using typed hook
   // Tab state management
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
@@ -285,7 +281,7 @@ export function NetworkDashboard({
                 <ArrowsClockwise
                   className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
                 />
-                <span className="hidden sm:inline">{tCommon("refresh")}</span>
+                <span className="hidden sm:inline">{tCommon('refresh')}</span>
               </button>
             </div>
           </div>
@@ -663,7 +659,10 @@ export function NetworkDashboard({
                           </div>
                         </div>
                         <div className="text-blue-400 dark:text-blue-300 text-sm">
-                          Supply: {chain.supply ? formatFriendlyNumber(chain.supply) : 'N/A'}
+                          Supply:{' '}
+                          {chain.supply
+                            ? formatFriendlyNumber(chain.supply)
+                            : 'N/A'}
                         </div>
                       </div>
                     ))}

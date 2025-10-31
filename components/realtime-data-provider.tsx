@@ -43,13 +43,7 @@ interface RealtimeDataProviderProps {
   children: ReactNode;
 }
 
-export function RealtimeDataProvider({
-  children,
-}: RealtimeDataProviderProps) {
-  const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tNetwork = useTranslations('network');
-  const tStaking = useTranslations('staking');
+export function RealtimeDataProvider({ children }: RealtimeDataProviderProps) {
   const [updateCount, setUpdateCount] = useState(0);
   const [lastUpdate, setLastUpdate] = useState<any>(null);
 

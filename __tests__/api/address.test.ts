@@ -385,7 +385,7 @@ describe('/api/address/[address]', () => {
       const params = Promise.resolve({ address: 'RTest@Address' });
 
       const response = await GET(request, { params });
-      const data = await response.json();
+      await response.json();
 
       expect(response.status).toBe(200);
       expect(

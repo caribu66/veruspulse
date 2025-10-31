@@ -25,7 +25,6 @@ export function PullToRefresh({
   disabled = false,
   threshold = 80,
 }: PullToRefreshProps) {
-  const tCommon = useTranslations('common');
   const [isPulling, setIsPulling] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
@@ -38,8 +37,9 @@ export function PullToRefresh({
 
       // Only start if at top of scroll
       const container = containerRef.current;
-      if (container && container.scrollTop === 0) {
-        startY.current = e.touches[0].clientY;
+      const touch = e.touches[0];
+      if (container && touch && container.scrollTop === 0) {
+        startY.current = touch.clientY;
       }
     },
     [disabled, isRefreshing]
@@ -49,7 +49,9 @@ export function PullToRefresh({
     (e: React.TouchEvent) => {
       if (disabled || isRefreshing || startY.current === 0) return;
 
-      const currentY = e.touches[0].clientY;
+      const touch = e.touches[0];
+      if (!touch) return;
+      const currentY = touch.clientY;
       const distance = Math.max(0, currentY - startY.current);
 
       // Apply resistance curve (gets harder to pull as you go further)

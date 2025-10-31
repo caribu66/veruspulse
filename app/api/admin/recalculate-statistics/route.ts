@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { logger } from '@/lib/utils/logger';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     logger.info('🔄 Starting recalculation of VerusID statistics...');
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         created_at,
         updated_at
       )
-      SELECT 
+      SELECT
         sr.identity_address as address,
         COALESCE(i.friendly_name, i.base_name || '.VRSC@') as friendly_name,
         COUNT(*)::integer as total_stakes,
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     // Get final stats
     const statsQuery = `
-      SELECT 
+      SELECT
         COUNT(*) as total_identities,
         SUM(total_rewards_satoshis) as total_rewards_satoshis,
         (SUM(total_rewards_satoshis) / 100000000.0) as total_rewards_vrsc,

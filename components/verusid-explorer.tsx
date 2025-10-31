@@ -90,9 +90,6 @@ interface VerusIDBalance {
 export function VerusIDExplorer() {
   const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
 
   const [identity, setIdentity] = useState('');
   const [verusID, setVerusID] = useState<VerusID | null>(null);
@@ -596,7 +593,7 @@ export function VerusIDExplorer() {
                   }`}
                 >
                   <MagnifyingGlass className="h-4 w-4" />
-                  <span className="hidden sm:inline">{tCommon("search")}</span>
+                  <span className="hidden sm:inline">{tCommon('search')}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('browse')}
@@ -687,7 +684,7 @@ export function VerusIDExplorer() {
                   ) : (
                     <>
                       <MagnifyingGlass className="h-5 w-5" weight="bold" />
-                      <span>{tCommon("search")}</span>
+                      <span>{tCommon('search')}</span>
                     </>
                   )}
                 </button>
@@ -947,7 +944,7 @@ export function VerusIDExplorer() {
               tabs={[
                 {
                   id: 'overview',
-                  label: t("overview"),
+                  label: t('overview'),
                   icon: <Eye className="h-4 w-4" />,
                 },
                 {
@@ -1585,7 +1582,7 @@ export function VerusIDExplorer() {
               <div className="text-red-400 font-semibold text-lg">
                 {error.toLowerCase().includes('not found')
                   ? 'Identity Not Found'
-                  : tCommon("error")}
+                  : tCommon('error')}
               </div>
               <div className="text-red-300 text-sm mt-1">{error}</div>
 

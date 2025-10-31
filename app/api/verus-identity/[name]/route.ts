@@ -4,7 +4,7 @@ import { addSecurityHeaders } from '@/lib/middleware/security';
 import { logger } from '@/lib/utils/logger';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ name: string }> }
 ) {
   try {

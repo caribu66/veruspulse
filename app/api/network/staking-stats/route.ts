@@ -15,7 +15,7 @@ function getDbPool() {
   return dbPool;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check if UTXO database is enabled
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 
     // Get network-wide statistics
     const networkQuery = `
-      SELECT 
+      SELECT
         COUNT(*) as total_verusids,
         SUM(total_stakes) as total_stakes,
         SUM(total_rewards_satoshis) as total_rewards,
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 
     // Get recent block analytics (last 1000 blocks)
     const blocksQuery = `
-      SELECT 
+      SELECT
         COUNT(*) as total_blocks,
         COUNT(CASE WHEN block_type = 'minted' THEN 1 END) as pos_blocks,
         COUNT(CASE WHEN block_type = 'mined' THEN 1 END) as pow_blocks,
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
 
     // Get distribution statistics
     const distributionQuery = `
-      SELECT 
+      SELECT
         COUNT(CASE WHEN total_stakes BETWEEN 1 AND 10 THEN 1 END) as range_1_10,
         COUNT(CASE WHEN total_stakes BETWEEN 11 AND 50 THEN 1 END) as range_11_50,
         COUNT(CASE WHEN total_stakes BETWEEN 51 AND 100 THEN 1 END) as range_51_100,

@@ -42,9 +42,6 @@ export function EnrichedAddress({
   className = '',
   linkToExplorer = false,
 }: EnrichedAddressProps) {
-  const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tStaking = useTranslations('staking');
   const [knownAddress, setKnownAddress] = useState<KnownAddress | null>(null);
   const [loading, setLoading] = useState(true);
 

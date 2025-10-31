@@ -165,7 +165,7 @@ describe('UTXODatabaseService', () => {
       const result = await service.getUTXOs('RTestAddress123');
 
       expect(result).toHaveLength(2);
-      expect(result[0].address).toBe('RTestAddress123');
+      expect(result[0]?.address).toBe('RTestAddress123');
       expect(mockPool.query).toHaveBeenCalledWith(
         expect.stringContaining('WHERE address = $1'),
         ['RTestAddress123']
@@ -211,7 +211,7 @@ describe('UTXODatabaseService', () => {
 
       const eligibleUTXOs = result.filter(u => u.isEligible);
       expect(eligibleUTXOs.length).toBeGreaterThan(0);
-      expect(eligibleUTXOs[0].isEligible).toBe(true);
+      expect(eligibleUTXOs[0]?.isEligible).toBe(true);
     });
 
     it('should exclude spent UTXOs', async () => {

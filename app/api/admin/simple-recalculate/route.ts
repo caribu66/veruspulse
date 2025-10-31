@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { logger } from '@/lib/utils/logger';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     logger.info('🔄 Starting simple recalculation of VerusID statistics...');
 
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     // Get all unique identities from staking_rewards
     const identitiesQuery = `
-      SELECT DISTINCT 
+      SELECT DISTINCT
         sr.identity_address,
         COALESCE(i.friendly_name, i.base_name || '.VRSC@') as friendly_name
       FROM staking_rewards sr
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         // Get stats for this identity
         // CRITICAL: Only count stakes where source_address = identity_address (direct I-address stakes)
         const statsQuery = `
-          SELECT 
+          SELECT
             COUNT(*) as total_stakes,
             SUM(amount_sats) as total_rewards_satoshis,
             MIN(block_time) as first_stake_time,
@@ -127,10 +127,10 @@ export async function POST(request: NextRequest) {
     // Calculate network rankings
     logger.info('🏆 Calculating network rankings...');
     const rankingQuery = `
-      UPDATE verusid_statistics 
+      UPDATE verusid_statistics
       SET network_rank = subquery.rank
       FROM (
-        SELECT 
+        SELECT
           address,
           ROW_NUMBER() OVER (ORDER BY total_rewards_satoshis DESC) as rank
         FROM verusid_statistics
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
 
     // Get final stats
     const finalStatsQuery = `
-      SELECT 
+      SELECT
         COUNT(*) as total_identities,
         SUM(total_rewards_satoshis) as total_rewards_satoshis,
         (SUM(total_rewards_satoshis) / 100000000.0) as total_rewards_vrsc,

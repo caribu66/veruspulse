@@ -97,7 +97,7 @@ export async function GET(
 
 // POST endpoint for triggering historical sync with custom parameters
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ address: string }> }
 ): Promise<NextResponse> {
   try {

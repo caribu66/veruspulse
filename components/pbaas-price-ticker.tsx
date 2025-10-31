@@ -55,7 +55,6 @@ export function PBaaSPriceTicker({
   refreshInterval = 30000, // 30 seconds
   maxAssets = 5,
 }: PBaaSPriceTickerProps) {
-  const tCommon = useTranslations('common');
   const [prices, setPrices] = useState<LivePriceData[]>([]);
   const [vrscPriceSources, setVrscPriceSources] = useState<VRSCPriceSource[]>(
     []
@@ -77,7 +76,9 @@ export function PBaaSPriceTicker({
 
         // Deduplicate by symbol to avoid duplicate keys
         const uniquePrices = Array.from(
-          new Map(newPrices.map((price: LivePriceData) => [price.symbol, price])).values()
+          new Map(
+            newPrices.map((price: LivePriceData) => [price.symbol, price])
+          ).values()
         );
 
         // Track price changes for animations

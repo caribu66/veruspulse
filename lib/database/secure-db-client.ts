@@ -1,4 +1,9 @@
-import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from 'pg';
+import {
+  Pool,
+  type PoolClient,
+  type QueryResult,
+  type QueryResultRow,
+} from 'pg';
 import { logger } from '@/lib/utils/logger';
 import { SecurityMonitor } from '@/lib/security/security-monitor';
 
@@ -24,7 +29,7 @@ export class SecureDatabaseClient {
     this.monitor = SecurityMonitor.getInstance();
 
     // Handle pool errors
-    this.pool.on('error', err => {
+    this.pool?.on('error', err => {
       logger.error('Unexpected error on idle client', err);
     });
   }
@@ -46,7 +51,7 @@ export class SecureDatabaseClient {
       // Execute query
       const result = client
         ? await client.query<T>(text, params)
-        : await this.pool.query<T>(text, params);
+        : await this.pool?.query<T>(text, params);
 
       const duration = Date.now() - startTime;
 
@@ -102,7 +107,7 @@ export class SecureDatabaseClient {
   async transaction<T>(
     callback: (client: PoolClient) => Promise<T>
   ): Promise<T> {
-    const client = await this.pool.connect();
+    const client = await this.pool?.connect();
 
     try {
       await client.query('BEGIN');
@@ -121,14 +126,14 @@ export class SecureDatabaseClient {
    * Get a client from the pool for manual transaction management
    */
   async getClient(): Promise<PoolClient> {
-    return await this.pool.connect();
+    return await this.pool?.connect();
   }
 
   /**
    * Close the database connection pool
    */
   async close(): Promise<void> {
-    await this.pool.end();
+    await this.pool?.end();
   }
 
   /**
@@ -357,7 +362,7 @@ export class DatabaseOperations {
       countQuery.query,
       countQuery.params
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt(countResult.rows[0]?.count || '0');
 
     // Get paginated data
     const dataBuilder = new SecureQueryBuilder();
@@ -407,14 +412,14 @@ export class DatabaseOperations {
       countQuery,
       countParams
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt(countResult.rows[0]?.count || '0');
 
     // Get search results
     const dataQuery = `
-      SELECT * FROM ${table} 
-      WHERE ${searchConditions} 
-      ORDER BY id DESC 
-      LIMIT $${searchColumns.length + 1} 
+      SELECT * FROM ${table}
+      WHERE ${searchConditions}
+      ORDER BY id DESC
+      LIMIT $${searchColumns.length + 1}
       OFFSET $${searchColumns.length + 2}
     `;
     const dataParams = [...countParams, limit, offset];

@@ -31,7 +31,6 @@ export function Breadcrumb({
   className,
   separator = <CaretRight className="h-4 w-4 text-gray-500" />,
 }: BreadcrumbProps) {
-  const tCommon = useTranslations('common');
   const childrenArray = React.Children.toArray(children);
 
   return (
@@ -201,6 +200,8 @@ export function CollapsibleBreadcrumb({
   const firstItem = items[0];
   const lastItems = items.slice(-2);
   const hiddenCount = items.length - 3;
+
+  if (!firstItem) return null;
 
   return (
     <Breadcrumb className={className}>

@@ -21,7 +21,7 @@ export function detectLocaleFromHeader(acceptLanguage: string): Locale {
     .map(lang => {
       const [code, qValue] = lang.trim().split(';q=');
       return {
-        code: code.split('-')[0].toLowerCase(), // Extract language code
+        code: (code?.split('-')[0] || code || 'en').toLowerCase(), // Extract language code
         quality: qValue ? parseFloat(qValue) : 1.0,
       };
     })
@@ -29,6 +29,7 @@ export function detectLocaleFromHeader(acceptLanguage: string): Locale {
 
   // Find first supported language
   for (const { code } of languages) {
+    if (!code) continue;
     if (isSupportedLocale(code)) {
       return code;
     }
@@ -94,4 +95,3 @@ export function validateLocale(locale: string | undefined): Locale {
   }
   return locale;
 }
-

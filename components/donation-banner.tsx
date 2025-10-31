@@ -24,8 +24,6 @@ const SUGGESTED_AMOUNTS = {
 } as const;
 
 export function DonationBanner() {
-  const tCommon = useTranslations('common');
-
   const [isVisible, setIsVisible] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showQR, setShowQR] = useState(false);

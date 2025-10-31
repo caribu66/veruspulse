@@ -91,12 +91,14 @@ export function MovingPriceTicker({
 
   // Initial fetch
   useEffect(() => {
+    if (!currentPrice) return;
     fetchLivePrices();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-refresh
   useEffect(() => {
+    if (!currentPrice) return;
     const interval = setInterval(fetchLivePrices, refreshInterval);
     return () => clearInterval(interval);
   }, [fetchLivePrices, refreshInterval]);
@@ -109,6 +111,7 @@ export function MovingPriceTicker({
       }, 3000); // Switch every 3 seconds
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [prices.length, showMultipleAssets]);
 
   const formatPrice = (price: number) => {
@@ -142,7 +145,7 @@ export function MovingPriceTicker({
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
         <ArrowsClockwise className="h-4 w-4 animate-spin text-white/60" />
-        <span className="text-sm text-white/60">{tCommon("loading")}</span>
+        <span className="text-sm text-white/60">{tCommon('loading')}</span>
       </div>
     );
   }
@@ -157,7 +160,9 @@ export function MovingPriceTicker({
   }
 
   const currentPrice = prices[currentIndex];
-  const priceChange = priceChanges[currentPrice.symbol] || 0;
+  const priceChange = currentPrice?.symbol
+    ? priceChanges[currentPrice.symbol] || 0
+    : 0;
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
@@ -195,9 +200,9 @@ export function MovingPriceTicker({
                   </span>
                   <span
                     className={`text-sm font-bold transition-colors duration-300 ${
-                      priceChanges[price.symbol] > 0
+                      (priceChanges[price.symbol] || 0) > 0
                         ? 'text-green-400'
-                        : priceChanges[price.symbol] < 0
+                        : (priceChanges[price.symbol] || 0) < 0
                           ? 'text-red-400'
                           : 'text-white'
                     }`}
@@ -219,7 +224,7 @@ export function MovingPriceTicker({
             // Single asset with animation
             <div className="flex items-center space-x-2">
               <span className="text-xs text-white/70 font-medium">
-                {currentPrice.symbol}
+                {currentPrice?.symbol}
               </span>
               <span
                 className={`text-sm font-bold transition-all duration-300 ${
@@ -234,14 +239,14 @@ export function MovingPriceTicker({
                     priceChange !== 0 ? 'priceFlash 0.6s ease-in-out' : 'none',
                 }}
               >
-                {formatPrice(currentPrice.priceUSD)}
+                {formatPrice(currentPrice?.priceUSD ?? 0)}
               </span>
               <span
-                className={`text-xs flex items-center ${getChangeColor(currentPrice.change24h)}`}
+                className={`text-xs flex items-center ${getChangeColor(currentPrice?.change24h || 0)}`}
               >
-                {getChangeIcon(currentPrice.change24h)}
+                {getChangeIcon(currentPrice?.change24h || 0)}
                 <span className="ml-0.5">
-                  {formatChange(currentPrice.change24h)}
+                  {formatChange(currentPrice?.change24h || 0)}
                 </span>
               </span>
             </div>

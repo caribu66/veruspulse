@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import {
   Copy,
@@ -25,9 +24,7 @@ export function BlockHeader({
   heavyMetrics,
   onToggleHeavyMetrics,
 }: BlockHeaderProps) {
-  const tCommon = useTranslations('common');
   const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
   const [copied, setCopied] = useState(false);
   const { goBack } = useNavigationHistory();
 
@@ -127,14 +124,18 @@ export function BlockHeader({
         </div>
 
         <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
-          <div className="text-green-400 text-xs font-medium">{tBlocks("transactions")}</div>
+          <div className="text-green-400 text-xs font-medium">
+            {tBlocks('transactions')}
+          </div>
           <div className="text-white text-lg font-semibold">
             {block.nTx || block.tx?.length || 0}
           </div>
         </div>
 
         <div className="bg-verus-blue/10 border border-verus-blue/20 rounded-lg p-3">
-          <div className="text-verus-blue text-xs font-medium">{tBlocks("size")}</div>
+          <div className="text-verus-blue text-xs font-medium">
+            {tBlocks('size')}
+          </div>
           <div className="text-white text-lg font-semibold">
             {formatSize(block.size)}
           </div>

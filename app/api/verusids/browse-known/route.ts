@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
           const identity = identityResult.data.identity;
 
           // Get cached data
-          const _cachedData = await getCachedIdentity(verusid);
+          await getCachedIdentity(verusid);
 
           // Get balance data
           let balanceData = null;

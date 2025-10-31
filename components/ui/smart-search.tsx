@@ -75,9 +75,6 @@ export function SmartSearch({
   showRecentSearches = true,
   className,
 }: SmartSearchProps) {
-  const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);

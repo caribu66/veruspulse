@@ -102,9 +102,6 @@ interface VerusPBaaS {
 
 export function VerusFeaturesDashboard() {
   const tCommon = useTranslations('common');
-  const t = useTranslations('dashboard');
-  const tNetwork = useTranslations('network');
-  const tVerusId = useTranslations('verusid');
 
   const [identities, setIdentities] = useState<VerusIdentity[]>([]);
   const [currency, setCurrency] = useState<VerusCurrency | null>(null);
@@ -202,7 +199,7 @@ export function VerusFeaturesDashboard() {
           <ArrowsClockwise
             className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
           />
-          <span>{tCommon("refresh")}</span>
+          <span>{tCommon('refresh')}</span>
         </button>
       </div>
 
@@ -262,7 +259,9 @@ export function VerusFeaturesDashboard() {
           <div className="flex items-center space-x-3">
             <WarningCircle className="h-6 w-6 text-red-400" />
             <div>
-              <h3 className="text-lg font-bold text-red-400">{tCommon("error")}</h3>
+              <h3 className="text-lg font-bold text-red-400">
+                {tCommon('error')}
+              </h3>
               <p className="text-red-200 text-sm mt-1">{error}</p>
             </div>
           </div>

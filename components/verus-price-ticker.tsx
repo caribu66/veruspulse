@@ -49,7 +49,6 @@ export function VerusPriceTicker({
   showVolume = true,
   showMarketCap = true,
 }: VerusPriceTickerProps) {
-  const tCommon = useTranslations('common');
   const [prices, setPrices] = useState<LivePriceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -31,9 +31,6 @@ export function VerusIDFilters({
   filteredCount,
 }: VerusIDFiltersProps) {
   const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState(filters);
 
@@ -80,7 +77,9 @@ export function VerusIDFilters({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <Funnel className="h-5 w-5 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">{tCommon("filter")}</h3>
+          <h3 className="text-lg font-semibold text-white">
+            {tCommon('filter')}
+          </h3>
           {activeFilterCount > 0 && (
             <span className="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full">
               {activeFilterCount} active

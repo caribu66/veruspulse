@@ -117,8 +117,8 @@ describe('VerusID Utils Edge Cases', () => {
         createTestIdentity({ baseName: 'bob' }),
       ];
       const result = sortIdentities(identities, 'name', 'asc');
-      expect(result[0].baseName).toBe('alice');
-      expect(result[2].baseName).toBe('charlie');
+      expect(result[0]?.baseName).toBe('alice');
+      expect(result[2]?.baseName).toBe('charlie');
     });
 
     test('handles null values in apy sort', () => {
@@ -128,7 +128,7 @@ describe('VerusID Utils Edge Cases', () => {
         createTestIdentity({ apyAllTime: 100 }),
       ];
       const result = sortIdentities(identities, 'apy', 'desc');
-      expect(result[0].apyAllTime).toBe(100);
+      expect(result[0]?.apyAllTime).toBe(100);
     });
   });
 

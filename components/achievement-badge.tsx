@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslations } from 'next-intl';
 import {
   AchievementIconComponent,
@@ -43,7 +43,6 @@ export interface AchievementBadgeProps {
 }
 
 export function AchievementBadge({
-  slug,
   name,
   description,
   icon,
@@ -64,10 +63,6 @@ export function AchievementBadge({
   onClick,
   className = '',
 }: AchievementBadgeProps) {
-  const tCommon = useTranslations('common');
-  const tTime = useTranslations('time');
-  const tBlocks = useTranslations('blocks');
-  const tStaking = useTranslations('staking');
   const tierStyling = getTierStyling(tier);
   const rarityStyling = getRarityStyling(rarity);
 
@@ -371,7 +366,7 @@ export function AchievementBadge({
                             (1000 * 60 * 60 * 24)
                         );
                         if (daysAgo === 0) return 'Today! 🎉';
-                        if (daysAgo === 1) return tTime("yesterday");
+                        if (daysAgo === 1) return tTime('yesterday');
                         if (daysAgo < 7) return `${daysAgo} days ago`;
                         if (daysAgo < 30)
                           return `${Math.floor(daysAgo / 7)} weeks ago`;

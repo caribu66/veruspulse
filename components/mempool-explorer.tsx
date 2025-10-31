@@ -44,7 +44,6 @@ type SortDirection = 'asc' | 'desc';
 export function MempoolExplorer() {
   const t = useTranslations('mempool');
   const tCommon = useTranslations('common');
-  const tTime = useTranslations('time');
   const tErrors = useTranslations('errors');
   const router = useRouter();
   const { addToHistory } = useNavigationHistory();
@@ -180,7 +179,9 @@ export function MempoolExplorer() {
         <div className="flex items-center space-x-3">
           <WarningCircle className="h-5 w-5 text-slate-300" />
           <div>
-            <div className="text-slate-300 font-semibold">{tCommon('error')}</div>
+            <div className="text-slate-300 font-semibold">
+              {tCommon('error')}
+            </div>
             <div className="text-slate-400 text-sm">{error}</div>
           </div>
         </div>
@@ -206,9 +207,7 @@ export function MempoolExplorer() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">{t('title')}</h2>
-          <p className="text-slate-300 text-sm mt-1">
-            {t('description')}
-          </p>
+          <p className="text-slate-300 text-sm mt-1">{t('description')}</p>
         </div>
         <div className="flex items-center space-x-4">
           <button

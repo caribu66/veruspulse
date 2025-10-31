@@ -29,7 +29,6 @@ export const StatsCardSkeleton = () => (
 );
 
 export function ActivityCardSkeleton() {
-  const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
 
   return (

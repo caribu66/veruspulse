@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
 /**
  * GET: Check sync status
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const dbEnabled = process.env.UTXO_DATABASE_ENABLED === 'true';
     if (!dbEnabled || !process.env.DATABASE_URL) {
@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
 /**
  * DELETE: Stop sync
  */
-export async function DELETE(request: NextRequest) {
+export async function DELETE(_request: NextRequest) {
   try {
     const service = getSyncService();
     if (!service) {

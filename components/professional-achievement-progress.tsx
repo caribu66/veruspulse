@@ -150,7 +150,6 @@ export function ProfessionalAchievementProgress({
   rarityStats,
   className = '',
 }: ProfessionalAchievementProgressProps) {
-  const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
   const [viewMode, setViewMode] = useState<ViewMode>('all');
   const [filterCategory, setFilterCategory] = useState<FilterCategory>('all');
@@ -355,7 +354,7 @@ export function ProfessionalAchievementProgress({
                 <div
                   className="bg-gradient-to-r from-slate-600 to-slate-500 h-3 rounded-full transition-all duration-1000 ease-out"
                   style={{ width: `${completionRate}%` }}
-                 />
+                />
               </div>
               <div className="flex justify-between text-xs text-slate-300">
                 <span>
@@ -607,7 +606,7 @@ export function ProfessionalAchievementProgress({
                                   style={{
                                     width: `${achievement.percentage}%`,
                                   }}
-                                 />
+                                />
                               </div>
                               {achievement.current !== undefined &&
                                 achievement.target !== undefined && (

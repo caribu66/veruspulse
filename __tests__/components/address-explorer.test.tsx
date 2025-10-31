@@ -15,6 +15,11 @@ jest.mock('@/lib/utils/logger', () => ({
   },
 }));
 
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
 
 describe('AddressExplorer', () => {

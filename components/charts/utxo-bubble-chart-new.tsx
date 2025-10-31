@@ -31,9 +31,6 @@ export function UTXOBubbleChartNew({
   height = 400,
   className = '',
 }: UTXOBubbleChartProps) {
-  const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tStaking = useTranslations('staking');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Calculate bubble positions with a simple, reliable algorithm
@@ -610,7 +607,7 @@ export function UTXOBubbleChartNew({
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: '#10b981' }}
-           />
+          />
           <span className="text-sm text-gray-300">
             High Probability (≥50% avg)
           </span>
@@ -619,7 +616,7 @@ export function UTXOBubbleChartNew({
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: '#eab308' }}
-           />
+          />
           <span className="text-sm text-gray-300">
             Medium Probability (25-50% avg)
           </span>
@@ -628,7 +625,7 @@ export function UTXOBubbleChartNew({
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: '#f97316' }}
-           />
+          />
           <span className="text-sm text-gray-300">
             Low Probability (&lt;25% avg)
           </span>

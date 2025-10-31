@@ -80,10 +80,7 @@ interface DaemonStats {
 }
 
 export function DaemonMonitorDashboard() {
-  const tCommon = useTranslations('common');
-  const t = useTranslations('dashboard');
   const tBlocks = useTranslations('blocks');
-  const tNetwork = useTranslations('network');
 
   const [stats, setStats] = useState<DaemonStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -297,7 +294,7 @@ export function DaemonMonitorDashboard() {
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">{tBlocks("difficulty")}</p>
+                <p className="text-sm text-gray-500">{tBlocks('difficulty')}</p>
                 <p className="text-lg font-semibold">
                   {stats.blockchain.difficulty.toExponential(2)}
                 </p>
@@ -397,7 +394,9 @@ export function DaemonMonitorDashboard() {
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">{tNetwork("connections")}</p>
+                  <p className="text-sm text-gray-500">
+                    {tNetwork('connections')}
+                  </p>
                   <p className="text-2xl font-bold">
                     {stats.networkHealth.connections}
                   </p>
@@ -442,7 +441,9 @@ export function DaemonMonitorDashboard() {
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">{tBlocks("transactions")}</p>
+                  <p className="text-sm text-gray-500">
+                    {tBlocks('transactions')}
+                  </p>
                   <p className="text-2xl font-bold">
                     {formatNumber(stats.mempoolHealth.size)}
                   </p>
@@ -461,7 +462,7 @@ export function DaemonMonitorDashboard() {
                 </div>
                 {stats.mempool && (
                   <div className="text-sm">
-                    <p className="text-gray-500">{tBlocks("size")}</p>
+                    <p className="text-gray-500">{tBlocks('size')}</p>
                     <p className="font-medium">
                       {formatBytes(stats.mempool.bytes)}
                     </p>

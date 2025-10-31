@@ -37,9 +37,6 @@ export function MiniChart({
   formatValue = v => v.toString(),
   className = '',
 }: MiniChartProps) {
-  const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tNetwork = useTranslations('network');
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
 
@@ -66,9 +63,11 @@ export function MiniChart({
   const valueRange = maxValue - minValue || 1;
 
   // Calculate trend
+  const lastData = data[data.length - 1];
+  const firstData = data[0];
   const trend =
-    data.length > 1
-      ? ((data[data.length - 1].value - data[0].value) / data[0].value) * 100
+    data.length > 1 && lastData && firstData
+      ? ((lastData.value - firstData.value) / firstData.value) * 100
       : 0;
 
   // Generate path points
@@ -212,9 +211,9 @@ export function MiniChart({
       )}
 
       {/* Tooltip */}
-      {hoveredPoint !== null && (
+      {hoveredPoint !== null && data[hoveredPoint] && (
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10">
-          {formatValue(data[hoveredPoint].value)}
+          {formatValue(data[hoveredPoint]!.value)}
         </div>
       )}
     </div>
@@ -307,8 +306,6 @@ export function NetworkMetricsChart({
   mempoolData,
   blockTimeData,
 }: NetworkMetricsChartProps) {
-  const tBlocks = useTranslations('blocks');
-  const tNetwork = useTranslations('network');
   const [activeMetric, setActiveMetric] = useState<
     'hashrate' | 'difficulty' | 'mempool' | 'blocktime'
   >('hashrate');

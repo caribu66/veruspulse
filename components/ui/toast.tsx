@@ -86,9 +86,6 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
 export function useToast() {
-  const tCommon = useTranslations('common');
-  const tVerusId = useTranslations('verusid');
-
   const context = useContext(ToastContext);
   if (!context) {
     throw new Error('useToast must be used within ToastProvider');

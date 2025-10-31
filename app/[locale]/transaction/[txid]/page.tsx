@@ -68,7 +68,6 @@ const TransactionDetailsPage = ({
   params: Promise<{ txid: string }>;
 }) => {
   const tTransactions = useTranslations('transactions');
-  const tCommon = useTranslations('common');
   const [transaction, setTransaction] = useState<TransactionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -334,7 +333,9 @@ const TransactionDetailsPage = ({
                 {/* Inputs */}
                 <div>
                   <div className="text-blue-200 mb-3 font-semibold flex items-center justify-between">
-                    <span>{tTransactions('inputsLabel')} ({transaction.vin.length})</span>
+                    <span>
+                      {tTransactions('inputsLabel')} ({transaction.vin.length})
+                    </span>
                     {!isCoinbase && calculateTotalInput() > 0 && (
                       <span className="text-green-400 text-sm">
                         {calculateTotalInput().toFixed(8)} VRSC
@@ -389,7 +390,10 @@ const TransactionDetailsPage = ({
                 {/* Outputs */}
                 <div>
                   <div className="text-blue-200 mb-3 font-semibold flex items-center justify-between">
-                    <span>{tTransactions('outputsLabel')} ({transaction.vout.length})</span>
+                    <span>
+                      {tTransactions('outputsLabel')} ({transaction.vout.length}
+                      )
+                    </span>
                     <span className="text-green-400 text-sm">
                       {calculateTotalOutput().toFixed(8)} VRSC
                     </span>

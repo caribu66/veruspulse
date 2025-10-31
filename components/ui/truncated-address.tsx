@@ -27,7 +27,6 @@ export function TruncatedAddress({
   className,
   copyClassName,
 }: TruncatedAddressProps) {
-  const tCommon = useTranslations('common');
   const [copied, setCopied] = useState(false);
 
   const truncateAddress = (addr: string, maxLen: number): string => {

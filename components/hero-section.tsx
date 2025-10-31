@@ -18,7 +18,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatHashRate, formatStake } from '@/lib/utils/number-formatting';
-import { useTheme } from '@/contexts/theme-context';
+// useTheme removed - dark theme only
 import { SPACING_UTILS } from '@/lib/constants/design-tokens';
 
 interface HeroSectionProps {
@@ -44,7 +44,7 @@ export function HeroSection({
   const t = useTranslations('hero');
   const [isVisible, setIsVisible] = useState(false);
   const [currentFeature, setCurrentFeature] = useState(0);
-  const { theme } = useTheme();
+  // theme removed - dark theme only
 
   // Fade in animation on mount
   useEffect(() => {

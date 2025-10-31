@@ -15,12 +15,7 @@ interface BlockRewardSectionProps {
   block: Block;
 }
 
-export function BlockRewardSection({
-  block,
-}: BlockRewardSectionProps) {
-  const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tStaking = useTranslations('staking');
+export function BlockRewardSection({ block }: BlockRewardSectionProps) {
   if (!block.hasStakeReward && !block.reward) {
     return null;
   }

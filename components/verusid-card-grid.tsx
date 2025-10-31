@@ -30,10 +30,6 @@ export function VerusIDCardGrid({
   identities,
   onIdentityClick,
 }: VerusIDCardGridProps) {
-  const tCommon = useTranslations('common');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   if (identities.length === 0) {
     return (
       <div className="text-center py-12">

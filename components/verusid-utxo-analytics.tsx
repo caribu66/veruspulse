@@ -20,14 +20,9 @@ interface UTXOAnalyticsProps {
   iaddr: string;
 }
 
-export function VerusIDUTXOAnalytics({
-  iaddr,
-}: UTXOAnalyticsProps) {
+export function VerusIDUTXOAnalytics({ iaddr }: UTXOAnalyticsProps) {
   const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
-  const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
   const [liveUTXOData, setLiveUTXOData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -113,7 +108,9 @@ export function VerusIDUTXOAnalytics({
               className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all duration-200 text-white hover:scale-105"
             >
               <ArrowsClockwise className="h-4 w-4" />
-              <span className="font-medium text-sm sm:text-base">{tCommon("refresh")}</span>
+              <span className="font-medium text-sm sm:text-base">
+                {tCommon('refresh')}
+              </span>
             </button>
           </div>
         </div>

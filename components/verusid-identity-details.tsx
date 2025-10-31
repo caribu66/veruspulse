@@ -68,8 +68,6 @@ export function VerusIDIdentityDetails({
   balance,
   resolvedAuthorities,
 }: IdentityDetailsProps) {
-  const tCommon = useTranslations('common');
-  const tVerusId = useTranslations('verusid');
   const [copied, setCopied] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['authorities', 'properties'])

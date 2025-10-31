@@ -7,7 +7,6 @@ import {
   Coins,
   TrendUp,
   TrendDown,
-  Clock,
   Hash,
   ArrowRight,
   ArrowLeft,
@@ -15,17 +14,10 @@ import {
   Check,
   MagnifyingGlass,
   WarningCircle,
-  Info,
   ChartBar,
   ChartPie,
-  Medal,
 } from '@phosphor-icons/react';
-import {
-  formatFriendlyNumber,
-  formatCryptoValue,
-  formatFileSize,
-  formatTransactionCount,
-} from '@/lib/utils/number-formatting';
+import { formatCryptoValue } from '@/lib/utils/number-formatting';
 // import { StakeRewardsDashboard } from './stake-rewards-dashboard'; // Removed
 // import { StakeWeightCard } from './stake-weight-card'; // Removed
 // import { StakeAgeDashboard } from './stake-age-dashboard'; // Removed
@@ -70,11 +62,9 @@ interface AddressUTXO {
 }
 
 export function AddressExplorer() {
-  const tCommon = useTranslations('common');
   const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
   const tBlocks = useTranslations('blocks');
-  const tVerusId = useTranslations('verusid');
-  const tStaking = useTranslations('staking');
 
   const [address, setAddress] = useState('');
   const [balance, setBalance] = useState<AddressBalance | null>(null);
@@ -374,7 +364,9 @@ export function AddressExplorer() {
                   <Hash className="h-5 w-5 text-verus-blue" />
                 </div>
                 <div>
-                  <div className="text-white font-semibold">{tBlocks("transactions")}</div>
+                  <div className="text-white font-semibold">
+                    {tBlocks('transactions')}
+                  </div>
                   <div className="text-slate-300 text-sm">
                     {balance.txcount}
                   </div>
@@ -387,8 +379,12 @@ export function AddressExplorer() {
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-700">
             <div className="flex space-x-1 mb-6">
               {[
-                { key: 'overview', label: t("overview"), icon: ChartBar },
-                { key: 'transactions', label: tBlocks("transactions"), icon: Hash },
+                { key: 'overview', label: t('overview'), icon: ChartBar },
+                {
+                  key: 'transactions',
+                  label: tBlocks('transactions'),
+                  icon: Hash,
+                },
                 { key: 'utxos', label: 'UTXOs', icon: ChartPie },
               ].map(tab => {
                 const Icon = tab.icon;
@@ -579,7 +575,9 @@ export function AddressExplorer() {
           <div className="flex items-center space-x-3">
             <WarningCircle className="h-5 w-5 text-red-400" />
             <div>
-              <div className="text-red-400 font-semibold">{tCommon("error")}</div>
+              <div className="text-red-400 font-semibold">
+                {tCommon('error')}
+              </div>
               <div className="text-red-300 text-sm">{error}</div>
             </div>
           </div>

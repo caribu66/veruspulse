@@ -1,46 +1,20 @@
 'use client';
 
-import React, { createContext, useContext, useEffect } from 'react';
+// Theme context stub - Dark theme only
+// Kept for backward compatibility with existing imports
 
-type Theme = 'dark';
-
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void; // Keep for compatibility but does nothing
-  setTheme: (theme: Theme) => void; // Keep for compatibility but does nothing
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import React from 'react';
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Always use dark theme
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.add('dark');
-    root.setAttribute('data-theme', 'dark');
-    localStorage.setItem('theme', 'dark');
-  }, []);
-
-  // No-op functions for compatibility
-  const toggleTheme = () => {
-    // Dark theme only - no toggling
-  };
-
-  const setTheme = () => {
-    // Dark theme only - ignore set theme calls
-  };
-
-  return (
-    <ThemeContext.Provider value={{ theme: 'dark', toggleTheme, setTheme }}>
-      <div className="dark">{children}</div>
-    </ThemeContext.Provider>
-  );
+  // Always dark theme - no switching
+  return <>{children}</>;
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
+  // Return dark theme always
+  return {
+    theme: 'dark' as const,
+    resolvedTheme: 'dark' as const,
+    setTheme: () => {}, // No-op
+  };
 }

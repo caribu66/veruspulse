@@ -35,13 +35,13 @@ describe('Button Component', () => {
         <Button variant="secondary">Secondary</Button>
       );
       const button = container.querySelector('button');
-      expect(button).toHaveClass('bg-gray-200');
+      expect(button).toHaveClass('dark:bg-slate-800');
     });
 
     it('should apply danger variant styles', () => {
       const { container } = render(<Button variant="danger">Danger</Button>);
       const button = container.querySelector('button');
-      expect(button).toHaveClass('bg-red-600');
+      expect(button).toHaveClass('bg-verus-red');
     });
 
     it('should apply ghost variant styles', () => {

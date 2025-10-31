@@ -31,11 +31,9 @@ describe('AddressExplorer', () => {
         'Analyze Verus addresses, balances, and transaction history. VerusID support depends on blockchain configuration.'
       )
     ).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText(
-        'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
-      )
-    ).toBeInTheDocument();
+    // Check for input field existence
+    const input = screen.getByRole('textbox');
+    expect(input).toBeInTheDocument();
     expect(screen.getByText('MagnifyingGlass')).toBeInTheDocument();
   });
 
@@ -57,7 +55,7 @@ describe('AddressExplorer', () => {
     render(<AddressExplorer />);
 
     const input = screen.getByPlaceholderText(
-      'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
+      'Enter Verus address (R9vqQz8...) or VerusID (e.g., VerusPulse@)'
     );
     const button = screen.getByText('MagnifyingGlass');
 
@@ -96,7 +94,7 @@ describe('AddressExplorer', () => {
     render(<AddressExplorer />);
 
     const input = screen.getByPlaceholderText(
-      'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
+      'Enter Verus address (R9vqQz8...) or VerusID (e.g., VerusPulse@)'
     );
     const button = screen.getByText('MagnifyingGlass');
 
@@ -150,7 +148,7 @@ describe('AddressExplorer', () => {
     render(<AddressExplorer />);
 
     const input = screen.getByPlaceholderText(
-      'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
+      'Enter Verus address (R9vqQz8...) or VerusID (e.g., VerusPulse@)'
     );
     const button = screen.getByText('MagnifyingGlass');
 
@@ -188,7 +186,7 @@ describe('AddressExplorer', () => {
     render(<AddressExplorer />);
 
     const input = screen.getByPlaceholderText(
-      'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
+      'Enter Verus address (R9vqQz8...) or VerusID (e.g., VerusPulse@)'
     );
     const button = screen.getByText('MagnifyingGlass');
 
@@ -210,7 +208,7 @@ describe('AddressExplorer', () => {
     render(<AddressExplorer />);
 
     const input = screen.getByPlaceholderText(
-      'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
+      'Enter Verus address (R9vqQz8...) or VerusID (e.g., VerusPulse@)'
     );
     const button = screen.getByText('MagnifyingGlass');
 
@@ -236,7 +234,7 @@ describe('AddressExplorer', () => {
     render(<AddressExplorer />);
 
     const input = screen.getByPlaceholderText(
-      'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
+      'Enter Verus address (R9vqQz8...) or VerusID (e.g., VerusPulse@)'
     );
     const button = screen.getByText('MagnifyingGlass');
 
@@ -295,7 +293,7 @@ describe('AddressExplorer', () => {
     render(<AddressExplorer />);
 
     const input = screen.getByPlaceholderText(
-      'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
+      'Enter Verus address (R9vqQz8...) or VerusID (e.g., VerusPulse@)'
     );
     const button = screen.getByText('MagnifyingGlass');
 
@@ -313,7 +311,7 @@ describe('AddressExplorer', () => {
     render(<AddressExplorer />);
 
     const input = screen.getByPlaceholderText(
-      'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
+      'Enter Verus address (R9vqQz8...) or VerusID (e.g., VerusPulse@)'
     );
     const button = screen.getByText('MagnifyingGlass');
 
@@ -353,7 +351,7 @@ describe('AddressExplorer', () => {
     render(<AddressExplorer />);
 
     const input = screen.getByPlaceholderText(
-      'Enter Verus address (R9vqQz8...) or VerusID (verus@) - Note: VerusID requires identity APIs'
+      'Enter Verus address (R9vqQz8...) or VerusID (e.g., VerusPulse@)'
     );
 
     fireEvent.change(input, { target: { value: 'R9vqQz8test123' } });

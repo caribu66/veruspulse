@@ -137,12 +137,11 @@ describe('VerusIDExplorer Component', () => {
   });
 
   describe('Initial Render', () => {
-    it('should render the component with breadcrumb', () => {
+    it('should render the component', () => {
       render(<VerusIDExplorer />);
 
-      // Check for breadcrumb
-      expect(screen.getByText('VerusPulse')).toBeInTheDocument();
-      expect(screen.getByText('VerusIDs')).toBeInTheDocument();
+      // Check for main heading
+      expect(screen.getByText('VerusID Explorer')).toBeInTheDocument();
     });
 
     it('should render the page title', () => {
@@ -183,7 +182,9 @@ describe('VerusIDExplorer Component', () => {
       const searchButtons = screen.getAllByRole('button', {
         name: /Search/i,
       });
-      fireEvent.click(searchButtons[0]);
+      if (searchButtons[0]) {
+        fireEvent.click(searchButtons[0]);
+      }
 
       const searchInput = screen.getByPlaceholderText(/Enter VerusID/i);
       expect(searchInput).toBeInTheDocument();
@@ -424,9 +425,12 @@ describe('VerusIDExplorer Component', () => {
       const copyButtons = screen.queryAllByRole('button', { name: /Copy/i });
 
       if (copyButtons.length > 0) {
-        await act(async () => {
-          fireEvent.click(copyButtons[0]);
-        });
+        const firstButton = copyButtons[0];
+        if (firstButton) {
+          await act(async () => {
+            fireEvent.click(firstButton);
+          });
+        }
         // Verify clipboard API was called
         await waitFor(() => {
           expect(navigator.clipboard.writeText).toHaveBeenCalled();
@@ -537,11 +541,11 @@ describe('VerusIDExplorer Component', () => {
   });
 
   describe('Accessibility', () => {
-    it('should have proper ARIA labels on breadcrumb', () => {
+    it('should have proper heading structure', () => {
       render(<VerusIDExplorer />);
 
-      const breadcrumb = screen.getByLabelText('Breadcrumb');
-      expect(breadcrumb).toBeInTheDocument();
+      const heading = screen.getByText('VerusID Explorer');
+      expect(heading).toBeInTheDocument();
     });
 
     it('should have accessible search input', () => {

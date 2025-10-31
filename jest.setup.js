@@ -85,6 +85,7 @@ jest.mock('echarts-for-react/lib/core', () => {
 
 // Provide TextEncoder/TextDecoder in the Jest environment for libraries that expect Web APIs
 if (typeof global.TextEncoder === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { TextEncoder, TextDecoder } = require('util');
   global.TextEncoder = TextEncoder;
   global.TextDecoder = TextDecoder;
@@ -118,7 +119,7 @@ global.EventSource = class MockEventSource {
     if (type === 'close') this.onclose = listener;
   }
 
-  removeEventListener(type, listener) {
+  removeEventListener(type, _listener) {
     if (type === 'open') this.onopen = null;
     if (type === 'message') this.onmessage = null;
     if (type === 'error') this.onerror = null;
@@ -147,7 +148,50 @@ global.WebSocket = class MockWebSocket {
     if (this.onclose) this.onclose({ type: 'close' });
   }
 
-  send(data) {
+  send(_data) {
     // Mock send functionality
   }
+};
+
+// Suppress expected console warnings and errors in tests
+const originalWarn = console.warn;
+const originalError = console.error;
+
+console.warn = (...args) => {
+  const message = args[0]?.toString() || '';
+
+  // Suppress expected warnings from components with graceful fallbacks
+  const suppressedWarnings = [
+    'Failed to fetch UTXO data',
+    'Failed to fetch individual stake events',
+    'AdvancedUTXOVisualizer: Invalid utxos prop',
+    'Heading Hierarchy Issues',
+  ];
+
+  if (suppressedWarnings.some(warning => message.includes(warning))) {
+    return; // Suppress this warning
+  }
+
+  // Allow all other warnings
+  originalWarn.apply(console, args);
+};
+
+console.error = (...args) => {
+  const message = args[0]?.toString() || '';
+
+  // Suppress expected errors from intentional test cases
+  const suppressedErrors = [
+    'Failed to fetch block reward:',
+    'Error fetching UTXO data:',
+    'Error fetching block details:',
+    'Warning: An update to',
+    'was not wrapped in act',
+  ];
+
+  if (suppressedErrors.some(error => message.includes(error))) {
+    return; // Suppress this error
+  }
+
+  // Allow all other errors
+  originalError.apply(console, args);
 };

@@ -11,7 +11,9 @@ const withNextIntl = createNextIntlPlugin('./i18n.ts');
 const nextConfig = {
   // Next.js 15 Performance Optimizations
   reactStrictMode: true,
-  // Note: output: 'standalone' removed for compatibility with PM2 deployment
+
+  // Use standalone output to avoid static generation errors
+  output: 'standalone',
 
   // Disable ESLint during builds for deployment
   eslint: {
@@ -25,13 +27,29 @@ const nextConfig = {
 
   // Disable static page generation completely
   generateBuildId: async () => {
-    return Date.now().toString();
+    return `build-${Date.now()}`;
   },
 
-  // Skip static optimization for dynamic pages
+  // Skip static optimization - force all pages to be server-rendered
   experimental: {
     isrMemoryCacheSize: 0,
+    // Optimize CSS
+    optimizeCss: process.env.NODE_ENV === 'production',
+    // Enable optimistic client cache
+    optimisticClientCache: true,
+    // Server actions config
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+    // Disable static worker threads during build
+    workerThreads: false,
+    cpus: 1,
+    // Disable static page generation
+    ppr: false,
   },
+
+  // Force all pages to be dynamic
+  output: undefined, // Don't export static HTML
 
   // Disable Turbopack to avoid self.webpackChunk issues
   // ...(process.env.NODE_ENV === 'development' && {
@@ -160,12 +178,27 @@ const nextConfig = {
 
   // Webpack configuration
   webpack: (config, { dev, isServer }) => {
+    // Memory optimization: reduce cache and limit parallelism
+    config.infrastructureLogging = { level: 'error' };
+    config.stats = 'errors-only';
+
     // Optimize for development
     if (dev) {
       config.optimization = {
         ...config.optimization,
         moduleIds: 'named',
         chunkIds: 'named',
+        // Reduce memory by not keeping module references
+        removeAvailableModules: true,
+        removeEmptyChunks: true,
+        mergeDuplicateChunks: true,
+      };
+
+      // Limit webpack's memory usage
+      config.cache = {
+        type: 'filesystem',
+        maxMemoryGenerations: 1, // Aggressive memory management
+        cacheDirectory: '.next/cache/webpack',
       };
     }
 
@@ -263,8 +296,14 @@ const nextConfig = {
   // Logging configuration
   logging: {
     fetches: {
-      fullUrl: process.env.NODE_ENV === 'development',
+      fullUrl: true,
     },
+  },
+
+  // Enable detailed error traces - optimized for lower memory usage
+  onDemandEntries: {
+    maxInactiveAge: 15 * 1000, // Reduced from 25s to free up memory faster
+    pagesBufferLength: 2, // Keep only 2 pages in memory
   },
 
   // PoweredByHeader configuration

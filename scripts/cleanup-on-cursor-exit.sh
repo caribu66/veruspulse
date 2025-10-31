@@ -25,10 +25,10 @@ CLEANED=0
 kill_by_pattern() {
     local pattern="$1"
     local display_name="$2"
-    
+
     # Get PIDs matching the pattern, but exclude this script and grep itself
     PIDS=$(pgrep -f "$pattern" | grep -v "^$$\$")
-    
+
     if [ -n "$PIDS" ]; then
         echo -e "${YELLOW}Stopping $display_name...${NC}"
         echo "$PIDS" | while read -r pid; do
@@ -47,6 +47,18 @@ kill_by_pattern() {
 
 # Stop Next.js development server ONLY (not PM2-managed production)
 kill_by_pattern "next dev" "Next.js Dev Server"
+
+# Kill zombie jest-worker processes that consume memory
+echo -e "${YELLOW}Checking for zombie jest-worker processes...${NC}"
+ZOMBIE_COUNT=$(ps aux | grep -E 'jest-worker/processChild' | grep -v grep | wc -l)
+if [ "$ZOMBIE_COUNT" -gt 0 ]; then
+    echo -e "${YELLOW}  Found $ZOMBIE_COUNT zombie worker(s), killing them...${NC}"
+    pkill -9 -f "jest-worker/processChild" 2>/dev/null || true
+    echo -e "${GREEN}  ✓ Zombie workers killed${NC}"
+    CLEANED=$((CLEANED + 1))
+else
+    echo -e "${GREEN}  ✓ No zombie workers found${NC}"
+fi
 
 # DO NOT stop PM2-managed production server!
 # The production server is managed by PM2 and should stay running

@@ -2,6 +2,8 @@
 
 import { VerusIDExplorer } from '@/components/verusid-explorer';
 
+export const dynamic = 'force-dynamic';
+
 export default function VerusIDPage() {
   return (
     <div className="min-h-screen theme-bg-primary p-2 sm:p-4 lg:p-6 xl:p-8 overflow-hidden">
